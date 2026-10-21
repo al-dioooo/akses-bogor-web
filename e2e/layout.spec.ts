@@ -17,3 +17,11 @@ test("skip link is the first stop and moves focus to the main content", async ({
   await expect(page).toHaveURL(/#konten$/);
   await expect(page.getByRole("main")).toBeVisible();
 });
+
+test("main content keeps a readable width", async ({ page }) => {
+  await page.goto("/");
+  const box = await page.getByRole("main").boundingBox();
+  const viewport = page.viewportSize();
+  // Penjaga: token --spacing-* pernah mengubah max-w-2xl menjadi 3rem.
+  expect(box?.width).toBeGreaterThanOrEqual(Math.min(640, (viewport?.width ?? 0) - 32));
+});

@@ -9,7 +9,7 @@ Keputusan produk dan teknis ada di [akses-bogor-docs](https://github.com/al-dioo
 | Bagian | Pilihan |
 | --- | --- |
 | Framework | Next.js 16 (App Router), React 19, TypeScript |
-| Gaya | Tailwind CSS v4; token design system sebagai CSS variables |
+| Gaya | Tailwind CSS v4; token design system Figma sebagai CSS variables dan utility |
 | Bahasa | next-intl, satu locale `id` |
 | Tes dan lint | Playwright + axe-core, ESLint dengan `jsx-a11y` strict |
 | Hosting | Vercel |
@@ -33,11 +33,43 @@ pnpm exec playwright install chromium     # sekali saja, untuk pnpm test:a11y
 | `pnpm typecheck` | Pemeriksaan tipe, termasuk kunci di `messages/id.json` |
 | `pnpm build` | Build produksi |
 | `pnpm start` | Menjalankan hasil build |
+| `pnpm tokens` | Menulis ulang `src/app/tokens.css` dari ekspor variable Figma |
 | `pnpm test:a11y` | Build, lalu tes Playwright + axe-core di ponsel dan desktop |
 
 ## Environment Variables
 
 Belum ada. Alamat API dan token publik Mapbox ditambahkan bersama fitur pertama yang memakainya, lengkap dengan `.env.example`. Jangan commit `.env*`.
+
+## Token Design System
+
+Warna, spasi, radius, blur, dan ukuran berasal dari variable di [halaman Design System Figma](https://www.figma.com/design/aTaMQUxVF2P1zQlJY3s4du/AksesBogor?node-id=1-2) ([ADR-0009](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0009-design-system-kaca-ungu-inklusi.md)). Nama CSS-nya sama dengan code syntax di Figma: `color/text/primary` menjadi `--color-text-primary`.
+
+| Berkas | Isi |
+| --- | --- |
+| [design-tokens/figma-variables.json](design-tokens/figma-variables.json) | Snapshot ekspor variable Figma, satu variable per baris |
+| [src/app/tokens.css](src/app/tokens.css) | CSS hasil `pnpm tokens`; jangan diubah langsung |
+| [scripts/tokens.mjs](scripts/tokens.mjs) | Generator CSS |
+| [scripts/figma/export-variables.js](scripts/figma/export-variables.js) | Skrip ekspor yang dijalankan di file Figma |
+
+Mode warna:
+
+| Mode | Aktif saat |
+| --- | --- |
+| Glass | Bawaan |
+| Solid | `prefers-reduced-transparency: reduce` |
+| Dark | `prefers-color-scheme: dark`; menang bila Solid juga diminta |
+
+`<html data-theme="glass|solid|dark">` mengalahkan preferensi sistem, untuk pengaturan tampilan di aplikasi nanti atau untuk pengujian.
+
+Token warna, radius, dan blur juga menjadi utility Tailwind dengan nama token, misalnya `bg-bg-canvas`, `bg-surface-glass`, `text-text-primary`, `border-border-subtle`, `rounded-lg`, dan `backdrop-blur-glass`. Palet, radius, dan blur bawaan Tailwind dimatikan supaya hanya token yang terpakai. Token lain dipakai lewat variable, misalnya `p-(--spacing-md)`, `gap-(--spacing-lg)`, `size-(--size-control-md)`, atau `border-(length:--border-width-focus)`. Spasi sengaja tidak dijadikan utility bernama (`p-md`), karena Tailwind juga membaca `--spacing-*` untuk `max-w-*` dan `w-*`, sehingga `--spacing-2xl` akan mengubah arti `max-w-2xl`.
+
+Memperbarui token setelah variable di Figma berubah:
+
+1. Jalankan isi `scripts/figma/export-variables.js` di file Figma AksesBogor, lewat Figma MCP (`use_figma`) atau plugin pengembangan.
+2. Simpan JSON hasilnya ke `design-tokens/figma-variables.json`, dengan objek `source` yang lama dan tanggal `exportedAt` yang baru.
+3. Jalankan `pnpm tokens`, periksa diff kedua berkas, lalu commit. CI gagal bila `tokens.css` tidak sesuai snapshot.
+
+Text style dan effect style Figma (tipografi, bayangan kaca) belum diekspor karena bukan variable.
 
 ## Bahasa dan Teks
 

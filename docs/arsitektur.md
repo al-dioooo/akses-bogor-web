@@ -33,7 +33,9 @@ Sesuai [ADR-0021](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisi
 
 | Folder | Isi |
 | --- | --- |
-| `src/app` | Route App Router, layout, dan `globals.css` |
+| `src/app` | Route App Router, layout, `globals.css`, dan `tokens.css` hasil generator |
+| `design-tokens` | Snapshot ekspor variable Figma |
+| `scripts` | Generator token dan skrip ekspor Figma |
 | `src/i18n` | Konfigurasi next-intl |
 | `messages` | Teks antarmuka per bahasa |
 | `e2e` | Tes Playwright |
