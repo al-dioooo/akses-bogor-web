@@ -30,7 +30,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full flex flex-col">
         <a
           href="#konten"
-          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:inline-flex focus:min-h-11 focus:items-center focus:rounded-lg focus:bg-foreground focus:px-4 focus:text-background"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:inline-flex focus:min-h-11 focus:items-center focus:rounded-lg focus:bg-surface-inverse focus:px-4 focus:text-text-on-inverse focus:outline-2 focus:outline-offset-2 focus:outline-focus-ring"
         >
           {t("skipLink")}
         </a>

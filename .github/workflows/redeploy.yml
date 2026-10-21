@@ -1,0 +1,42 @@
+name: Redeploy on Vercel
+
+# Vercel Hobby only builds commits authored by the account owner. When someone
+# else pushes to main, add an empty commit authored by Aldio so Vercel deploys
+# the latest main.
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: vercel-redeploy
+  cancel-in-progress: true
+
+env:
+  OWNER_NAME: Aldio Lisafron
+  OWNER_EMAIL: 78518262+al-dioooo@users.noreply.github.com
+
+jobs:
+  redeploy:
+    if: github.event.head_commit.author.email != '78518262+al-dioooo@users.noreply.github.com'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: Commit an empty redeploy as the Vercel owner
+        run: |
+          git fetch --depth 1 origin main
+          git reset --hard origin/main
+          if [ "$(git log -1 --format=%ae)" = "$OWNER_EMAIL" ]; then
+            echo "Latest main is already by $OWNER_NAME, Vercel deploys it."
+            exit 0
+          fi
+          SHA="$(git rev-parse --short HEAD)"
+          git -c user.name="$OWNER_NAME" -c user.email="$OWNER_EMAIL" \
+            commit --allow-empty -m "chore(deploy): redeploy $SHA on Vercel"
+          git push origin HEAD:main
