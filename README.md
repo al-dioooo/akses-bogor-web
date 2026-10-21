@@ -61,7 +61,7 @@ Mode warna:
 
 `<html data-theme="glass|solid|dark">` mengalahkan preferensi sistem, untuk pengaturan tampilan di aplikasi nanti atau untuk pengujian.
 
-Token warna, spasi, radius, dan blur juga menjadi utility Tailwind dengan nama token, misalnya `bg-bg-canvas`, `bg-surface-glass`, `text-text-primary`, `border-border-subtle`, `p-md`, `gap-lg`, `rounded-lg`, dan `backdrop-blur-glass`. Palet, radius, dan blur bawaan Tailwind dimatikan supaya hanya token yang terpakai. Token lain dipakai lewat variable, misalnya `size-(--size-control-md)` atau `border-(length:--border-width-focus)`.
+Token warna, radius, dan blur juga menjadi utility Tailwind dengan nama token, misalnya `bg-bg-canvas`, `bg-surface-glass`, `text-text-primary`, `border-border-subtle`, `rounded-lg`, dan `backdrop-blur-glass`. Palet, radius, dan blur bawaan Tailwind dimatikan supaya hanya token yang terpakai. Token lain dipakai lewat variable, misalnya `p-(--spacing-md)`, `gap-(--spacing-lg)`, `size-(--size-control-md)`, atau `border-(length:--border-width-focus)`. Spasi sengaja tidak dijadikan utility bernama (`p-md`), karena Tailwind juga membaca `--spacing-*` untuk `max-w-*` dan `w-*`, sehingga `--spacing-2xl` akan mengubah arti `max-w-2xl`.
 
 Memperbarui token setelah variable di Figma berubah:
 

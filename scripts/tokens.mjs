@@ -9,8 +9,10 @@ import { readFile, writeFile } from "node:fs/promises";
 
 const SOURCE = "design-tokens/figma-variables.json";
 const TARGET = "src/app/tokens.css";
-// Grup yang punya namespace tema Tailwind, sehingga juga menjadi utility (bg-bg-canvas, p-md, ...).
-const THEME_GROUPS = new Set(["color", "spacing", "radius", "blur"]);
+// Grup yang punya namespace tema Tailwind, sehingga juga menjadi utility (bg-bg-canvas, rounded-lg, ...).
+// Spasi sengaja tidak: Tailwind juga membaca --spacing-* untuk max-w-*, w-*, dan sejenisnya, sehingga
+// --spacing-2xl (3rem) mengubah arti max-w-2xl. Spasi dipakai lewat variable, mis. p-(--spacing-md).
+const THEME_GROUPS = new Set(["color", "radius", "blur"]);
 // Grup yang ikut ukuran teks pengguna, jadi ditulis dalam rem.
 const REM_GROUPS = new Set(["spacing", "size"]);
 
