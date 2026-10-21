@@ -62,6 +62,8 @@
   --color-control-knob: var(--ink-0);
   --color-surface-inverse: var(--ink-900);
   --color-border-inverse: var(--alpha-white-12);
+  --color-danger-fill: var(--red-700);
+  --color-danger-fill-hover: var(--red-800);
 
   /* Dimension */
   --radius-sm: 8px;

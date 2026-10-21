@@ -1,5 +1,5 @@
 {
-  "source": {"figmaFile":"aTaMQUxVF2P1zQlJY3s4du","exportedAt":"2026-10-21","script":"scripts/figma/export-variables.js"},
+  "source": {"figmaFile":"aTaMQUxVF2P1zQlJY3s4du","exportedAt":"2026-10-22","script":"scripts/figma/export-variables.js"},
   "collections": [
     { "name": "Primitives", "modes": ["Value"], "defaultMode": "Value", "variables": [
       {"name":"violet/50","type":"COLOR","css":"var(--violet-50)","scopes":[],"values":{"Value":{"color":"#F4F1FF"}}},
@@ -124,7 +124,9 @@
       {"name":"color/focus/gap","type":"COLOR","css":"var(--color-focus-gap)","scopes":["EFFECT_COLOR"],"values":{"Glass":{"alias":"ink/0"},"Solid":{"alias":"ink/0"},"Dark":{"alias":"aurora/night"}}},
       {"name":"color/control/knob","type":"COLOR","css":"var(--color-control-knob)","scopes":["FRAME_FILL","SHAPE_FILL"],"values":{"Glass":{"alias":"ink/0"},"Solid":{"alias":"ink/0"},"Dark":{"alias":"ink/0"}}},
       {"name":"color/surface/inverse","type":"COLOR","css":"var(--color-surface-inverse)","scopes":["FRAME_FILL","SHAPE_FILL"],"values":{"Glass":{"alias":"ink/900"},"Solid":{"alias":"ink/900"},"Dark":{"alias":"ink/950"}}},
-      {"name":"color/border/inverse","type":"COLOR","css":"var(--color-border-inverse)","scopes":["FRAME_FILL","SHAPE_FILL","STROKE_COLOR"],"values":{"Glass":{"alias":"alpha/white-12"},"Solid":{"alias":"alpha/white-12"},"Dark":{"alias":"alpha/white-12"}}}
+      {"name":"color/border/inverse","type":"COLOR","css":"var(--color-border-inverse)","scopes":["FRAME_FILL","SHAPE_FILL","STROKE_COLOR"],"values":{"Glass":{"alias":"alpha/white-12"},"Solid":{"alias":"alpha/white-12"},"Dark":{"alias":"alpha/white-12"}}},
+      {"name":"color/danger/fill","type":"COLOR","css":"var(--color-danger-fill)","description":"Isi tombol untuk aksi yang menghapus data. Teks di atasnya color/text/on-brand (putih).","scopes":["FRAME_FILL","SHAPE_FILL"],"values":{"Glass":{"alias":"red/700"},"Solid":{"alias":"red/700"},"Dark":{"alias":"red/700"}}},
+      {"name":"color/danger/fill-hover","type":"COLOR","css":"var(--color-danger-fill-hover)","description":"Isi tombol untuk aksi yang menghapus data. Teks di atasnya color/text/on-brand (putih).","scopes":["FRAME_FILL","SHAPE_FILL"],"values":{"Glass":{"alias":"red/800"},"Solid":{"alias":"red/800"},"Dark":{"alias":"red/800"}}}
     ] },
     { "name": "Dimension", "modes": ["Value"], "defaultMode": "Value", "variables": [
       {"name":"spacing/2xs","type":"FLOAT","css":"var(--spacing-2xs)","scopes":["GAP"],"values":{"Value":{"value":4}}},
