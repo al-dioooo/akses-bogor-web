@@ -1,0 +1,285 @@
+/* Dibuat oleh scripts/tokens.mjs dari design-tokens/figma-variables.json. Jangan diubah langsung: jalankan `pnpm tokens`. */
+
+@theme static {
+  /* Hanya token design system yang menjadi utility. */
+  --color-*: initial;
+  --radius-*: initial;
+  --blur-*: initial;
+
+  /* Color · Glass (bawaan) */
+  --color-bg-canvas: var(--violet-50);
+  --color-bg-aurora-inclusion: var(--violet-200);
+  --color-bg-aurora-rain: var(--aurora-sky);
+  --color-bg-aurora-garden: var(--aurora-mint);
+  --color-surface-glass: var(--alpha-white-72);
+  --color-surface-glass-strong: var(--alpha-white-88);
+  --color-surface-glass-inverse: var(--alpha-ink950-72);
+  --color-surface-field: var(--alpha-white-88);
+  --color-surface-brand-subtle: var(--alpha-violet-12);
+  --color-surface-hover: var(--alpha-white-40);
+  --color-border-glass: var(--alpha-white-60);
+  --color-border-subtle: var(--ink-200);
+  --color-border-field: var(--ink-500);
+  --color-border-focus: var(--violet-600);
+  --color-border-error: var(--red-700);
+  --color-text-primary: var(--ink-900);
+  --color-text-secondary: var(--ink-600);
+  --color-text-brand: var(--violet-700);
+  --color-text-on-brand: var(--ink-0);
+  --color-text-on-inverse: var(--ink-0);
+  --color-text-on-inverse-secondary: var(--ink-300);
+  --color-text-disabled: var(--ink-400);
+  --color-text-error: var(--red-800);
+  --color-icon-primary: var(--ink-900);
+  --color-icon-secondary: var(--ink-600);
+  --color-icon-brand: var(--violet-600);
+  --color-icon-on-brand: var(--ink-0);
+  --color-brand-fill: var(--violet-600);
+  --color-brand-fill-hover: var(--violet-700);
+  --color-brand-fill-pressed: var(--violet-800);
+  --color-brand-glow: var(--alpha-violet-48);
+  --color-status-accessible-fg: var(--green-800);
+  --color-status-accessible-bg: var(--green-100);
+  --color-status-accessible-solid: var(--green-700);
+  --color-status-accessible-on-solid: var(--ink-0);
+  --color-status-partial-fg: var(--amber-800);
+  --color-status-partial-bg: var(--amber-100);
+  --color-status-partial-solid: var(--amber-400);
+  --color-status-partial-on-solid: var(--ink-900);
+  --color-status-inaccessible-fg: var(--red-800);
+  --color-status-inaccessible-bg: var(--red-100);
+  --color-status-inaccessible-solid: var(--red-700);
+  --color-status-inaccessible-on-solid: var(--ink-0);
+  --color-status-unknown-fg: var(--slate-600);
+  --color-status-unknown-bg: var(--slate-100);
+  --color-status-unknown-solid: var(--slate-600);
+  --color-status-unknown-on-solid: var(--ink-0);
+  --color-shadow-glass: var(--alpha-violet-12);
+  --color-shadow-highlight: var(--alpha-white-60);
+  --color-focus-ring: var(--violet-600);
+  --color-marker-ring: var(--ink-0);
+  --color-focus-gap: var(--ink-0);
+  --color-control-knob: var(--ink-0);
+  --color-surface-inverse: var(--ink-900);
+  --color-border-inverse: var(--alpha-white-12);
+  --color-danger-fill: var(--red-700);
+  --color-danger-fill-hover: var(--red-800);
+
+  /* Dimension */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 28px;
+  --radius-full: 999px;
+  --blur-glass: 24px;
+  --blur-glass-strong: 32px;
+}
+
+:root {
+  color-scheme: light;
+
+  /* Primitives */
+  --violet-50: #f4f1ff;
+  --violet-100: #eae4ff;
+  --violet-200: #d5c9ff;
+  --violet-300: #b8a4ff;
+  --violet-400: #9a7dff;
+  --violet-500: #7b5cff;
+  --violet-600: #6440e8;
+  --violet-700: #5230c2;
+  --violet-800: #40259a;
+  --violet-900: #2e1b70;
+  --violet-950: #1c1147;
+  --ink-0: #ffffff;
+  --ink-50: #f5f6fb;
+  --ink-100: #eceef6;
+  --ink-200: #dee1ec;
+  --ink-300: #c4c8d8;
+  --ink-400: #9599ad;
+  --ink-500: #6a6e81;
+  --ink-600: #4b5066;
+  --ink-700: #3a3f52;
+  --ink-800: #2a2e3d;
+  --ink-900: #1e2029;
+  --ink-950: #12131a;
+  --green-100: #dff8ee;
+  --green-300: #8be8c2;
+  --green-400: #39d597;
+  --green-700: #13804f;
+  --green-800: #0e6b41;
+  --amber-100: #fff7de;
+  --amber-300: #ffe08a;
+  --amber-400: #ffcc33;
+  --amber-500: #f5a623;
+  --amber-800: #7f4a00;
+  --red-100: #fde9e9;
+  --red-300: #f9b4b4;
+  --red-400: #f37777;
+  --red-700: #c0262d;
+  --red-800: #a11d24;
+  --slate-100: #eef1f6;
+  --slate-300: #c4ccda;
+  --slate-600: #52607a;
+  --aurora-sky: #c9e2ff;
+  --aurora-mint: #bdf3dc;
+  --aurora-night: #0f0c1f;
+  --aurora-violet-dark: #4a33b0;
+  --aurora-sky-dark: #1e3f80;
+  --aurora-mint-dark: #0f5a50;
+  --alpha-white-12: #ffffff1f;
+  --alpha-white-24: #ffffff3d;
+  --alpha-white-40: #ffffff66;
+  --alpha-white-60: #ffffff99;
+  --alpha-white-72: #ffffffb8;
+  --alpha-white-88: #ffffffe0;
+  --alpha-white-4: #ffffff0a;
+  --alpha-ink-8: #1e202914;
+  --alpha-ink-56: #1e20298f;
+  --alpha-ink-80: #1e2029cc;
+  --alpha-ink950-72: #12131ab8;
+  --alpha-ink950-88: #12131ae0;
+  --alpha-black-40: #00000066;
+  --alpha-violet-12: #7b5cff1f;
+  --alpha-violet-24: #7b5cff3d;
+  --alpha-violet-48: #7b5cff7a;
+  --alpha-green-16: #39d59729;
+  --alpha-amber-16: #ffcc3329;
+  --alpha-red-16: #f3777729;
+
+  /* Dimension */
+  --spacing-2xs: 0.25rem;
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 0.75rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+  --spacing-3xl: 4rem;
+  --spacing-4xl: 6rem;
+  --border-width-default: 1px;
+  --border-width-focus: 2px;
+  --size-control-sm: 2.25rem;
+  --size-control-md: 3rem;
+  --size-icon: 1.25rem;
+}
+
+/* Solid: permukaan opak untuk pengguna yang mengurangi transparansi. */
+@media (prefers-reduced-transparency: reduce) {
+  :root:not([data-theme]) {
+    --color-bg-canvas: var(--ink-50);
+    --color-bg-aurora-inclusion: var(--ink-50);
+    --color-bg-aurora-rain: var(--ink-50);
+    --color-bg-aurora-garden: var(--ink-50);
+    --color-surface-glass: var(--ink-0);
+    --color-surface-glass-strong: var(--ink-0);
+    --color-surface-glass-inverse: var(--ink-900);
+    --color-surface-field: var(--ink-0);
+    --color-surface-brand-subtle: var(--violet-100);
+    --color-surface-hover: var(--ink-100);
+    --color-border-glass: var(--ink-200);
+    --color-brand-glow: var(--alpha-violet-24);
+    --color-shadow-glass: var(--alpha-ink-8);
+    --color-shadow-highlight: var(--alpha-white-24);
+  }
+}
+
+/* Dark: ditulis setelah Solid, jadi Dark menang bila kedua preferensi aktif. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+    --color-bg-canvas: var(--aurora-night);
+    --color-bg-aurora-inclusion: var(--aurora-violet-dark);
+    --color-bg-aurora-rain: var(--aurora-sky-dark);
+    --color-bg-aurora-garden: var(--aurora-mint-dark);
+    --color-surface-glass: var(--alpha-ink-56);
+    --color-surface-glass-strong: var(--alpha-ink-80);
+    --color-surface-glass-inverse: var(--alpha-ink950-88);
+    --color-surface-field: var(--alpha-white-4);
+    --color-surface-brand-subtle: var(--alpha-violet-24);
+    --color-surface-hover: var(--alpha-white-12);
+    --color-border-glass: var(--alpha-white-12);
+    --color-border-subtle: var(--alpha-white-12);
+    --color-border-field: var(--ink-400);
+    --color-border-focus: var(--violet-300);
+    --color-border-error: var(--red-300);
+    --color-text-primary: var(--ink-50);
+    --color-text-secondary: var(--ink-300);
+    --color-text-brand: var(--violet-300);
+    --color-text-disabled: var(--ink-500);
+    --color-text-error: var(--red-300);
+    --color-icon-primary: var(--ink-50);
+    --color-icon-secondary: var(--ink-300);
+    --color-icon-brand: var(--violet-300);
+    --color-status-accessible-fg: var(--green-300);
+    --color-status-accessible-bg: var(--alpha-green-16);
+    --color-status-partial-fg: var(--amber-300);
+    --color-status-partial-bg: var(--alpha-amber-16);
+    --color-status-inaccessible-fg: var(--red-300);
+    --color-status-inaccessible-bg: var(--alpha-red-16);
+    --color-status-unknown-fg: var(--slate-300);
+    --color-status-unknown-bg: var(--alpha-white-12);
+    --color-shadow-glass: var(--alpha-black-40);
+    --color-shadow-highlight: var(--alpha-white-12);
+    --color-focus-ring: var(--violet-300);
+    --color-focus-gap: var(--aurora-night);
+    --color-surface-inverse: var(--ink-950);
+  }
+}
+
+:root[data-theme="solid"] {
+  --color-bg-canvas: var(--ink-50);
+  --color-bg-aurora-inclusion: var(--ink-50);
+  --color-bg-aurora-rain: var(--ink-50);
+  --color-bg-aurora-garden: var(--ink-50);
+  --color-surface-glass: var(--ink-0);
+  --color-surface-glass-strong: var(--ink-0);
+  --color-surface-glass-inverse: var(--ink-900);
+  --color-surface-field: var(--ink-0);
+  --color-surface-brand-subtle: var(--violet-100);
+  --color-surface-hover: var(--ink-100);
+  --color-border-glass: var(--ink-200);
+  --color-brand-glow: var(--alpha-violet-24);
+  --color-shadow-glass: var(--alpha-ink-8);
+  --color-shadow-highlight: var(--alpha-white-24);
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-bg-canvas: var(--aurora-night);
+  --color-bg-aurora-inclusion: var(--aurora-violet-dark);
+  --color-bg-aurora-rain: var(--aurora-sky-dark);
+  --color-bg-aurora-garden: var(--aurora-mint-dark);
+  --color-surface-glass: var(--alpha-ink-56);
+  --color-surface-glass-strong: var(--alpha-ink-80);
+  --color-surface-glass-inverse: var(--alpha-ink950-88);
+  --color-surface-field: var(--alpha-white-4);
+  --color-surface-brand-subtle: var(--alpha-violet-24);
+  --color-surface-hover: var(--alpha-white-12);
+  --color-border-glass: var(--alpha-white-12);
+  --color-border-subtle: var(--alpha-white-12);
+  --color-border-field: var(--ink-400);
+  --color-border-focus: var(--violet-300);
+  --color-border-error: var(--red-300);
+  --color-text-primary: var(--ink-50);
+  --color-text-secondary: var(--ink-300);
+  --color-text-brand: var(--violet-300);
+  --color-text-disabled: var(--ink-500);
+  --color-text-error: var(--red-300);
+  --color-icon-primary: var(--ink-50);
+  --color-icon-secondary: var(--ink-300);
+  --color-icon-brand: var(--violet-300);
+  --color-status-accessible-fg: var(--green-300);
+  --color-status-accessible-bg: var(--alpha-green-16);
+  --color-status-partial-fg: var(--amber-300);
+  --color-status-partial-bg: var(--alpha-amber-16);
+  --color-status-inaccessible-fg: var(--red-300);
+  --color-status-inaccessible-bg: var(--alpha-red-16);
+  --color-status-unknown-fg: var(--slate-300);
+  --color-status-unknown-bg: var(--alpha-white-12);
+  --color-shadow-glass: var(--alpha-black-40);
+  --color-shadow-highlight: var(--alpha-white-12);
+  --color-focus-ring: var(--violet-300);
+  --color-focus-gap: var(--aurora-night);
+  --color-surface-inverse: var(--ink-950);
+}

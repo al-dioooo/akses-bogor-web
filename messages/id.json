@@ -1,0 +1,14 @@
+{
+  "Metadata": {
+    "title": "AksesBogor",
+    "description": "Informasi aksesibilitas fasilitas publik di Kota Bogor: ramp, toilet difabel, guiding block, dan lift."
+  },
+  "Layout": {
+    "skipLink": "Lewati ke konten utama"
+  },
+  "Beranda": {
+    "title": "AksesBogor",
+    "intro": "Cari tahu apakah kampus, masjid, halte, dan rumah sakit di Kota Bogor bisa diakses sebelum kamu berangkat.",
+    "status": "Aplikasi ini sedang dibangun."
+  }
+}

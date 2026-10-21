@@ -1,0 +1,12 @@
+@import "tailwindcss";
+@import "./tokens.css";
+
+@theme inline {
+  --font-sans: var(--font-inter);
+  --font-heading: var(--font-plus-jakarta-sans);
+}
+
+body {
+  background: var(--color-bg-canvas);
+  color: var(--color-text-primary);
+}
