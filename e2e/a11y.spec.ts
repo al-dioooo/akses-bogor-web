@@ -2,7 +2,16 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
 // Tambahkan setiap halaman baru di sini.
-const PAGES = ["/", "/halaman-yang-tidak-ada"];
+const PAGES = [
+  "/",
+  "/jelajahi",
+  "/jelajahi?category=masjid&status=tidak_aksesibel",
+  "/jelajahi?q=tidak-ada-yang-cocok",
+  "/lokasi/4037ba19-b366-45bc-aceb-270944fe9372",
+  "/lokasi/f2aeb27d-5f54-42f8-8368-780b6d62b51c",
+  "/lokasi/00000000-0000-4000-8000-000000000000",
+  "/halaman-yang-tidak-ada",
+];
 
 const WCAG_22_AA = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"];
 

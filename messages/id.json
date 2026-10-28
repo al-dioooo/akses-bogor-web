@@ -160,5 +160,73 @@
     "body": "Mungkin halamannya masih dibuat, atau alamatnya salah ketik.",
     "home": "Ke Beranda",
     "explore": "Jelajahi lokasi"
+  },
+  "Lokasi": {
+    "summary": "{relevant, plural, =0 {Tidak ada fasilitas yang dibutuhkan} other {{available} dari {relevant} fasilitas tersedia}}",
+    "unknown": "{count} belum diketahui",
+    "verified": "Diverifikasi {date}"
+  },
+  "Jelajahi": {
+    "metaTitle": "Jelajahi Lokasi",
+    "eyebrow": "Jelajahi",
+    "title": "Jelajahi Lokasi",
+    "intro": "Cari tempat di Kota Bogor, lalu saring menurut kategori, kecamatan, fasilitas, dan status.",
+    "search": {
+      "label": "Cari nama tempat",
+      "placeholder": "Nama tempat, mis. halte atau rumah sakit",
+      "button": "Cari"
+    },
+    "filters": {
+      "categories": "Kategori",
+      "toggle": "Filter",
+      "active": "{count} aktif",
+      "district": "Kecamatan",
+      "allDistricts": "Semua kecamatan",
+      "facilities": "Fasilitas yang tersedia",
+      "facilitiesHint": "Hanya lokasi dengan semua fasilitas yang dipilih berstatus Tersedia.",
+      "status": "Status",
+      "apply": "Terapkan filter",
+      "reset": "Hapus filter"
+    },
+    "results": {
+      "loading": "Memuat lokasi…",
+      "count": "{total, plural, =0 {Tidak ada lokasi} other {Menampilkan {from}–{to} dari # lokasi}}",
+      "emptyTitle": "Tidak ada lokasi yang cocok",
+      "emptyBody": "Coba kata lain, atau kurangi filter yang dipakai.",
+      "noDataTitle": "Belum ada lokasi",
+      "noDataBody": "Lokasi tampil di sini setelah laporan warga diperiksa tim."
+    },
+    "pagination": {
+      "label": "Halaman hasil",
+      "previous": "Sebelumnya",
+      "next": "Berikutnya",
+      "page": "Halaman {page} dari {pages}"
+    }
+  },
+  "Detail": {
+    "back": "Kembali ke Jelajahi",
+    "loading": "Memuat lokasi…",
+    "landmark": "Patokan",
+    "summaryTitle": "Ringkasan fasilitas",
+    "ringOf": "dari {relevant}",
+    "summary": "{relevant, plural, =0 {Tidak ada fasilitas yang dibutuhkan} other {{available} dari {relevant} fasilitas tersedia}}",
+    "unknown": "{count} fasilitas belum diketahui",
+    "allAvailable": "semua fasilitas yang dibutuhkan tersedia",
+    "verified": "Terakhir diverifikasi {date}",
+    "recheckTitle": "Perlu dicek ulang",
+    "recheckBody": "Data ini diverifikasi lebih dari 12 bulan lalu. Kondisi di lokasi mungkin sudah berubah.",
+    "facilitiesTitle": "Fasilitas",
+    "edit": "Edit lokasi",
+    "report": "Laporkan kekurangan",
+    "descriptionTitle": "Tentang tempat ini",
+    "photosTitle": "Foto",
+    "noPhotos": "Belum ada foto yang tayang untuk tempat ini.",
+    "notFound": {
+      "metaTitle": "Lokasi tidak ditemukan",
+      "eyebrow": "Lokasi tidak ditemukan",
+      "title": "Lokasi ini tidak ada.",
+      "body": "Mungkin lokasinya sudah tidak tayang, atau tautannya salah.",
+      "explore": "Jelajahi lokasi lain"
+    }
   }
 }
