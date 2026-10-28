@@ -56,16 +56,21 @@ async function Stats() {
     { value: format.number(stats.contributors), label: t("contributors") },
   ];
   return (
-    <dl aria-label={t("label")} className="grid grid-cols-3 gap-2 sm:gap-4">
-      {items.map((item) => (
-        <div key={item.label} className="glass flex flex-col-reverse gap-1 rounded-2xl px-2 py-4 sm:py-5">
-          <dt className="text-sm text-text-secondary">{item.label}</dt>
-          <dd className="font-heading text-[clamp(1.75rem,1.4rem+1.5vw,2.5rem)] leading-none font-extrabold tracking-[-0.03em] tabular-nums">
-            {item.value}
-          </dd>
-        </div>
-      ))}
-    </dl>
+    <section aria-labelledby="judul-angka">
+      <h2 id="judul-angka" className="sr-only">
+        {t("label")}
+      </h2>
+      <dl className="grid grid-cols-3 gap-2 sm:gap-4">
+        {items.map((item) => (
+          <div key={item.label} className="glass flex flex-col-reverse gap-1 rounded-2xl px-2 py-4 sm:py-5">
+            <dt className="text-sm text-text-secondary">{item.label}</dt>
+            <dd className="font-heading text-[clamp(1.75rem,1.4rem+1.5vw,2.5rem)] leading-none font-extrabold tracking-[-0.03em] tabular-nums">
+              {item.value}
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </section>
   );
 }
 

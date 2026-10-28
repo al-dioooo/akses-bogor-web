@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 // Angka berasal dari API tiruan (e2e/mock-api): 7 lokasi, 5 dengan pintu masuk tanpa tangga, 3 kontributor.
 test("stats are computed from the API", async ({ page }) => {
   await page.goto("/");
-  const stats = page.getByRole("definition");
+  const stats = page.getByRole("region", { name: "AksesBogor dalam angka" }).getByRole("definition");
   await expect(stats).toHaveText(["7", "71%", "3"]);
 });
 
