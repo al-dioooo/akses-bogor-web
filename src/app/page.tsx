@@ -1,12 +1,16 @@
-import { getTranslations } from "next-intl/server";
+import { CategoryGrid } from "@/components/beranda/category-grid";
+import { Guide } from "@/components/beranda/guide";
+import { Hero } from "@/components/beranda/hero";
+import { Steps } from "@/components/beranda/steps";
 
-export default async function Home() {
-  const t = await getTranslations("Beranda");
+/** Beranda (Landing · DS v1): pencarian, statistik dari data, kategori, edukasi, dan ajakan melapor. */
+export default function Beranda() {
   return (
-    <main id="konten" className="mx-auto flex w-full max-w-2xl flex-1 flex-col justify-center gap-4 px-4 py-16">
-      <h1 className="font-heading text-4xl font-bold tracking-tight">{t("title")}</h1>
-      <p className="text-lg">{t("intro")}</p>
-      <p className="text-text-secondary">{t("status")}</p>
+    <main id="konten" className="flex flex-1 flex-col gap-(--spacing-4xl)">
+      <Hero />
+      <CategoryGrid />
+      <Guide />
+      <Steps />
     </main>
   );
 }

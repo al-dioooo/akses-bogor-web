@@ -34,11 +34,17 @@ pnpm exec playwright install chromium     # sekali saja, untuk pnpm test:a11y
 | `pnpm build` | Build produksi |
 | `pnpm start` | Menjalankan hasil build |
 | `pnpm tokens` | Menulis ulang `src/app/tokens.css` dari ekspor variable Figma |
-| `pnpm test:a11y` | Build, lalu tes Playwright + axe-core di ponsel dan desktop |
+| `pnpm test:a11y` | Build, lalu tes Playwright + axe-core di ponsel dan desktop, dengan data dari API tiruan di `e2e/mock-api` |
 
 ## Environment Variables
 
-Belum ada. Alamat API dan token publik Mapbox ditambahkan bersama fitur pertama yang memakainya, lengkap dengan `.env.example`. Jangan commit `.env*`.
+Contoh ada di [.env.example](.env.example); salin ke `.env.local`. Jangan commit `.env*`.
+
+| Variabel | Wajib | Keterangan |
+| --- | --- | --- |
+| `API_URL` | Ya | Alamat [akses-bogor-api](https://github.com/al-dioooo/akses-bogor-api), mis. `http://localhost:8080`. Hanya dibaca di server; browser tidak pernah memanggil API langsung |
+
+Token publik Mapbox ditambahkan bersama halaman Peta.
 
 ## Token Design System
 
