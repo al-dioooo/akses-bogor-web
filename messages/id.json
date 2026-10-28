@@ -202,5 +202,31 @@
       "next": "Berikutnya",
       "page": "Halaman {page} dari {pages}"
     }
+  },
+  "Detail": {
+    "back": "Kembali ke Jelajahi",
+    "loading": "Memuat lokasi…",
+    "landmark": "Patokan",
+    "summaryTitle": "Ringkasan fasilitas",
+    "ringOf": "dari {relevant}",
+    "summary": "{relevant, plural, =0 {Tidak ada fasilitas yang dibutuhkan} other {{available} dari {relevant} fasilitas tersedia}}",
+    "unknown": "{count} fasilitas belum diketahui",
+    "allAvailable": "semua fasilitas yang dibutuhkan tersedia",
+    "verified": "Terakhir diverifikasi {date}",
+    "recheckTitle": "Perlu dicek ulang",
+    "recheckBody": "Data ini diverifikasi lebih dari 12 bulan lalu. Kondisi di lokasi mungkin sudah berubah.",
+    "facilitiesTitle": "Fasilitas",
+    "edit": "Edit lokasi",
+    "report": "Laporkan kekurangan",
+    "descriptionTitle": "Tentang tempat ini",
+    "photosTitle": "Foto",
+    "noPhotos": "Belum ada foto yang tayang untuk tempat ini.",
+    "notFound": {
+      "metaTitle": "Lokasi tidak ditemukan",
+      "eyebrow": "Lokasi tidak ditemukan",
+      "title": "Lokasi ini tidak ada.",
+      "body": "Mungkin lokasinya sudah tidak tayang, atau tautannya salah.",
+      "explore": "Jelajahi lokasi lain"
+    }
   }
 }
