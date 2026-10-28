@@ -8,9 +8,69 @@
     "home": "AksesBogor, ke Beranda"
   },
   "Beranda": {
-    "title": "AksesBogor",
-    "intro": "Cari tahu apakah kampus, masjid, halte, dan rumah sakit di Kota Bogor bisa diakses sebelum kamu berangkat.",
-    "status": "Aplikasi ini sedang dibangun."
+    "eyebrow": "Peta aksesibilitas Kota Bogor",
+    "titleLead": "Cek aksesnya dulu.",
+    "titleAccent": "Berangkat lebih tenang.",
+    "intro": "Ramp, toilet difabel, guiding block, dan lift di kampus, masjid, halte, dan rumah sakit. Dicatat warga, diperiksa tim sebelum tayang.",
+    "search": {
+      "label": "Cari tempat",
+      "placeholder": "Nama tempat, mis. masjid atau halte",
+      "button": "Cari"
+    },
+    "stats": {
+      "label": "AksesBogor dalam angka",
+      "loading": "Memuat angka…",
+      "places": "lokasi terverifikasi",
+      "stepFree": "pintu masuk tanpa tangga",
+      "contributors": "kontributor"
+    },
+    "categories": {
+      "eyebrow": "Kategori",
+      "title": "Mulai dari jenis tempatnya.",
+      "count": "{count, plural, =0 {Belum ada lokasi} other {# lokasi}}"
+    },
+    "guide": {
+      "eyebrow": "Cara membaca",
+      "title": "Empat fasilitas. Empat status.",
+      "intro": "Status dihitung dari pintu masuk dulu, lalu fasilitas lain, dan selalu ditulis bersama alasannya.",
+      "facilitiesTitle": "Yang diperiksa di setiap tempat",
+      "statusesTitle": "Arti status",
+      "facility": {
+        "ramp": "Jalan masuk tanpa anak tangga dari jalan atau parkir, cukup lebar untuk kursi roda.",
+        "toilet_difabel": "Toilet umum yang muat kursi roda, dengan kloset duduk dan pegangan.",
+        "guiding_block": "Ubin pemandu untuk tunanetra yang tersambung sampai pintu masuk.",
+        "lift": "Lift yang bisa dipakai pengunjung untuk mencapai lantai lain."
+      },
+      "status": {
+        "aksesibel": "Semua fasilitas yang dibutuhkan tersedia dan bisa dipakai.",
+        "sebagian": "Pintu masuk bisa dilewati, tetapi ada fasilitas yang tidak tersedia.",
+        "tidak_aksesibel": "Pintu masuk tidak punya ramp atau jalur landai yang bisa dipakai.",
+        "belum_diketahui": "Pintu masuk atau sebagian besar fasilitas belum dipastikan. Bukan berarti tidak aksesibel."
+      }
+    },
+    "steps": {
+      "eyebrow": "Dari warga, diperiksa tim",
+      "title": "Data yang bisa dipegang.",
+      "items": {
+        "lapor": {
+          "title": "Warga melapor",
+          "body": "Pelapor mengisi nama tempat, jawaban untuk keempat fasilitas, dan foto, langsung dari lokasi."
+        },
+        "periksa": {
+          "title": "Tim memeriksa",
+          "body": "Tim dan mitra terlatih mencocokkan jawaban dengan foto atau kunjungan sebelum data tayang."
+        },
+        "tayang": {
+          "title": "Status tayang",
+          "body": "Status dihitung otomatis dan tanggal verifikasi terakhir selalu terlihat di halaman lokasi."
+        }
+      }
+    },
+    "cta": {
+      "title": "Tahu tempat yang belum ada di sini?",
+      "body": "Laporkan dalam tiga langkah. Setiap laporan membantu orang lain berangkat dengan lebih yakin.",
+      "button": "Laporkan tempat"
+    }
   },
   "Status": {
     "aksesibel": "Aksesibel",
