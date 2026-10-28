@@ -107,3 +107,91 @@ body {
     }
   }
 }
+
+/* Konten muncul saat digulir ke layar. Hanya bila browser mendukung scroll timeline dan gerak tidak
+   dikurangi, jadi konten tidak pernah tersembunyi tanpa animasi. */
+@keyframes muncul {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    :root:not([data-motion="off"]) .reveal {
+      animation: muncul var(--ease-out-expo) both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 60%;
+    }
+  }
+}
+
+/* Latar aurora: gumpalan Inklusi, Hujan, dan Kebun Raya (ADR-0009) yang bergeser pelan. Di mode Solid
+   warnanya sama dengan latar, jadi tidak terlihat. */
+@keyframes aurora-geser {
+  to {
+    transform: translate3d(6vmax, 4vmax, 0) scale(1.1);
+  }
+}
+
+.aurora {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.aurora > span {
+  position: absolute;
+  border-radius: var(--radius-full);
+  animation: aurora-geser 32s ease-in-out infinite alternate;
+}
+
+.aurora > span:nth-child(1) {
+  width: 70vmax;
+  height: 70vmax;
+  top: -30vmax;
+  left: -20vmax;
+  background: radial-gradient(closest-side, var(--color-bg-aurora-inclusion), transparent);
+}
+
+.aurora > span:nth-child(2) {
+  width: 60vmax;
+  height: 60vmax;
+  top: 5vmax;
+  right: -25vmax;
+  background: radial-gradient(closest-side, var(--color-bg-aurora-rain), transparent);
+  animation-delay: -11s;
+}
+
+.aurora > span:nth-child(3) {
+  width: 55vmax;
+  height: 55vmax;
+  bottom: -25vmax;
+  left: 15vmax;
+  background: radial-gradient(closest-side, var(--color-bg-aurora-garden), transparent);
+  animation-delay: -21s;
+}
+
+/* Pengaturan tampilan: "Kurangi gerakan" mematikan semua animasi, sama seperti preferensi perangkat. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+:root[data-motion="off"] *,
+:root[data-motion="off"] *::before,
+:root[data-motion="off"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
