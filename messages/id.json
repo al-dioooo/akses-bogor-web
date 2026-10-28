@@ -10,5 +10,41 @@
     "title": "AksesBogor",
     "intro": "Cari tahu apakah kampus, masjid, halte, dan rumah sakit di Kota Bogor bisa diakses sebelum kamu berangkat.",
     "status": "Aplikasi ini sedang dibangun."
+  },
+  "Status": {
+    "aksesibel": "Aksesibel",
+    "sebagian": "Sebagian",
+    "tidak_aksesibel": "Tidak aksesibel",
+    "belum_diketahui": "Belum diketahui"
+  },
+  "Kategori": {
+    "kampus": "Kampus",
+    "masjid": "Masjid",
+    "halte": "Halte",
+    "rumah_sakit": "Rumah Sakit"
+  },
+  "Fasilitas": {
+    "ramp": "Ramp / Jalur Landai",
+    "toilet_difabel": "Toilet Difabel",
+    "guiding_block": "Guiding Block",
+    "lift": "Lift / Elevator"
+  },
+  "Jawaban": {
+    "tersedia": "Tersedia",
+    "tidak_tersedia": "Tidak tersedia",
+    "tidak_perlu": "Tidak perlu",
+    "belum_tahu": "Belum diketahui"
+  },
+  "Alasan": {
+    "tidak_ada": "Tidak ada",
+    "rusak": "Rusak",
+    "terhalang": "Terhalang",
+    "terbatas": "Terbatas",
+    "tidak_sesuai": "Tidak sesuai"
+  },
+  "GagalMemuat": {
+    "title": "Data belum bisa dimuat",
+    "body": "Server AksesBogor sedang tidak bisa dihubungi. Coba lagi sebentar lagi.",
+    "retry": "Coba lagi"
   }
 }
