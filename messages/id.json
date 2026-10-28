@@ -8,9 +8,69 @@
     "home": "AksesBogor, ke Beranda"
   },
   "Beranda": {
-    "title": "AksesBogor",
-    "intro": "Cari tahu apakah kampus, masjid, halte, dan rumah sakit di Kota Bogor bisa diakses sebelum kamu berangkat.",
-    "status": "Aplikasi ini sedang dibangun."
+    "eyebrow": "Peta aksesibilitas Kota Bogor",
+    "titleLead": "Cek aksesnya dulu.",
+    "titleAccent": "Berangkat lebih tenang.",
+    "intro": "Ramp, toilet difabel, guiding block, dan lift di kampus, masjid, halte, dan rumah sakit. Dicatat warga, diperiksa tim sebelum tayang.",
+    "search": {
+      "label": "Cari tempat",
+      "placeholder": "Nama tempat, mis. masjid atau halte",
+      "button": "Cari"
+    },
+    "stats": {
+      "label": "AksesBogor dalam angka",
+      "loading": "Memuat angka…",
+      "places": "lokasi terverifikasi",
+      "stepFree": "pintu masuk tanpa tangga",
+      "contributors": "kontributor"
+    },
+    "categories": {
+      "eyebrow": "Kategori",
+      "title": "Mulai dari jenis tempatnya.",
+      "count": "{count, plural, =0 {Belum ada lokasi} other {# lokasi}}"
+    },
+    "guide": {
+      "eyebrow": "Cara membaca",
+      "title": "Empat fasilitas. Empat status.",
+      "intro": "Status dihitung dari pintu masuk dulu, lalu fasilitas lain, dan selalu ditulis bersama alasannya.",
+      "facilitiesTitle": "Yang diperiksa di setiap tempat",
+      "statusesTitle": "Arti status",
+      "facility": {
+        "ramp": "Jalan masuk tanpa anak tangga dari jalan atau parkir, cukup lebar untuk kursi roda.",
+        "toilet_difabel": "Toilet umum yang muat kursi roda, dengan kloset duduk dan pegangan.",
+        "guiding_block": "Ubin pemandu untuk tunanetra yang tersambung sampai pintu masuk.",
+        "lift": "Lift yang bisa dipakai pengunjung untuk mencapai lantai lain."
+      },
+      "status": {
+        "aksesibel": "Semua fasilitas yang dibutuhkan tersedia dan bisa dipakai.",
+        "sebagian": "Pintu masuk bisa dilewati, tetapi ada fasilitas yang tidak tersedia.",
+        "tidak_aksesibel": "Pintu masuk tidak punya ramp atau jalur landai yang bisa dipakai.",
+        "belum_diketahui": "Pintu masuk atau sebagian besar fasilitas belum dipastikan. Bukan berarti tidak aksesibel."
+      }
+    },
+    "steps": {
+      "eyebrow": "Dari warga, diperiksa tim",
+      "title": "Data yang bisa dipegang.",
+      "items": {
+        "lapor": {
+          "title": "Warga melapor",
+          "body": "Pelapor mengisi nama tempat, jawaban untuk keempat fasilitas, dan foto, langsung dari lokasi."
+        },
+        "periksa": {
+          "title": "Tim memeriksa",
+          "body": "Tim dan mitra terlatih mencocokkan jawaban dengan foto atau kunjungan sebelum data tayang."
+        },
+        "tayang": {
+          "title": "Status tayang",
+          "body": "Status dihitung otomatis dan tanggal verifikasi terakhir selalu terlihat di halaman lokasi."
+        }
+      }
+    },
+    "cta": {
+      "title": "Tahu tempat yang belum ada di sini?",
+      "body": "Laporkan dalam tiga langkah. Setiap laporan membantu orang lain berangkat dengan lebih yakin.",
+      "button": "Laporkan tempat"
+    }
   },
   "Status": {
     "aksesibel": "Aksesibel",
@@ -100,5 +160,73 @@
     "body": "Mungkin halamannya masih dibuat, atau alamatnya salah ketik.",
     "home": "Ke Beranda",
     "explore": "Jelajahi lokasi"
+  },
+  "Lokasi": {
+    "summary": "{relevant, plural, =0 {Tidak ada fasilitas yang dibutuhkan} other {{available} dari {relevant} fasilitas tersedia}}",
+    "unknown": "{count} belum diketahui",
+    "verified": "Diverifikasi {date}"
+  },
+  "Jelajahi": {
+    "metaTitle": "Jelajahi Lokasi",
+    "eyebrow": "Jelajahi",
+    "title": "Jelajahi Lokasi",
+    "intro": "Cari tempat di Kota Bogor, lalu saring menurut kategori, kecamatan, fasilitas, dan status.",
+    "search": {
+      "label": "Cari nama tempat",
+      "placeholder": "Nama tempat, mis. halte atau rumah sakit",
+      "button": "Cari"
+    },
+    "filters": {
+      "categories": "Kategori",
+      "toggle": "Filter",
+      "active": "{count} aktif",
+      "district": "Kecamatan",
+      "allDistricts": "Semua kecamatan",
+      "facilities": "Fasilitas yang tersedia",
+      "facilitiesHint": "Hanya lokasi dengan semua fasilitas yang dipilih berstatus Tersedia.",
+      "status": "Status",
+      "apply": "Terapkan filter",
+      "reset": "Hapus filter"
+    },
+    "results": {
+      "loading": "Memuat lokasi…",
+      "count": "{total, plural, =0 {Tidak ada lokasi} other {Menampilkan {from}–{to} dari # lokasi}}",
+      "emptyTitle": "Tidak ada lokasi yang cocok",
+      "emptyBody": "Coba kata lain, atau kurangi filter yang dipakai.",
+      "noDataTitle": "Belum ada lokasi",
+      "noDataBody": "Lokasi tampil di sini setelah laporan warga diperiksa tim."
+    },
+    "pagination": {
+      "label": "Halaman hasil",
+      "previous": "Sebelumnya",
+      "next": "Berikutnya",
+      "page": "Halaman {page} dari {pages}"
+    }
+  },
+  "Detail": {
+    "back": "Kembali ke Jelajahi",
+    "loading": "Memuat lokasi…",
+    "landmark": "Patokan",
+    "summaryTitle": "Ringkasan fasilitas",
+    "ringOf": "dari {relevant}",
+    "summary": "{relevant, plural, =0 {Tidak ada fasilitas yang dibutuhkan} other {{available} dari {relevant} fasilitas tersedia}}",
+    "unknown": "{count} fasilitas belum diketahui",
+    "allAvailable": "semua fasilitas yang dibutuhkan tersedia",
+    "verified": "Terakhir diverifikasi {date}",
+    "recheckTitle": "Perlu dicek ulang",
+    "recheckBody": "Data ini diverifikasi lebih dari 12 bulan lalu. Kondisi di lokasi mungkin sudah berubah.",
+    "facilitiesTitle": "Fasilitas",
+    "edit": "Edit lokasi",
+    "report": "Laporkan kekurangan",
+    "descriptionTitle": "Tentang tempat ini",
+    "photosTitle": "Foto",
+    "noPhotos": "Belum ada foto yang tayang untuk tempat ini.",
+    "notFound": {
+      "metaTitle": "Lokasi tidak ditemukan",
+      "eyebrow": "Lokasi tidak ditemukan",
+      "title": "Lokasi ini tidak ada.",
+      "body": "Mungkin lokasinya sudah tidak tayang, atau tautannya salah.",
+      "explore": "Jelajahi lokasi lain"
+    }
   }
 }
