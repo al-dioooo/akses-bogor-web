@@ -4,9 +4,106 @@
 @theme inline {
   --font-sans: var(--font-inter);
   --font-heading: var(--font-plus-jakarta-sans);
+  /* Kurva gerak keluarga produk (aksesin, lokerin): keluar cepat, berhenti lembut. */
+  --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 body {
   background: var(--color-bg-canvas);
   color: var(--color-text-primary);
+}
+
+/* Cincin fokus dari Focus/Ring (ADR-0009). Outline, bukan box-shadow, supaya tetap terlihat di mode kontras tinggi. */
+:focus-visible {
+  outline: var(--border-width-focus) solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+/* Lebar konten: 16 px di tepi ponsel (ADR-0012), 32 px di layar lebar, paling lebar 75rem. */
+@utility page-width {
+  width: min(75rem, 100% - 2rem);
+  margin-inline: auto;
+  @media (width >= 48rem) {
+    width: min(75rem, 100% - 4rem);
+  }
+}
+
+/* Glass/Regular dan Glass/Strong. Di mode Solid tokennya opak, jadi blur tidak terlihat. */
+@utility glass {
+  background-color: var(--color-surface-glass);
+  border: var(--border-width-default) solid var(--color-border-glass);
+  backdrop-filter: blur(var(--blur-glass)) saturate(1.4);
+  box-shadow:
+    inset 0 1px 0 var(--color-shadow-highlight),
+    0 8px 32px var(--color-shadow-glass);
+}
+
+@utility glass-strong {
+  background-color: var(--color-surface-glass-strong);
+  border: var(--border-width-default) solid var(--color-border-glass);
+  backdrop-filter: blur(var(--blur-glass-strong)) saturate(1.4);
+  box-shadow:
+    inset 0 1px 0 var(--color-shadow-highlight),
+    0 12px 40px var(--color-shadow-glass);
+}
+
+/* Tombol Primary berkilap dengan Glow/Brand. Titik paling terang tetap 4.5:1 terhadap teks putih. */
+@utility btn-gloss {
+  background-color: var(--color-brand-fill);
+  background-image: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--color-brand-fill) 88%, white),
+    var(--color-brand-fill) 55%,
+    var(--color-brand-fill-hover)
+  );
+  box-shadow:
+    inset 0 1px 1px color-mix(in oklab, white 55%, transparent),
+    inset 0 -2px 4px color-mix(in oklab, var(--color-brand-fill-pressed) 45%, transparent),
+    0 8px 24px -4px var(--color-brand-glow);
+  &:hover {
+    background-image: linear-gradient(
+      180deg,
+      var(--color-brand-fill),
+      var(--color-brand-fill-hover) 60%,
+      var(--color-brand-fill-pressed)
+    );
+  }
+}
+
+/* Label kecil di atas judul bagian, dengan titik dekoratif. Maknanya ada di teks. */
+@utility eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: var(--radius-full);
+  padding: 0.375rem 0.875rem;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-brand);
+  &::before {
+    content: "";
+    width: 0.375rem;
+    height: 0.375rem;
+    border-radius: var(--radius-full);
+    background: var(--color-brand-fill);
+    box-shadow: 0 0 0 3px var(--color-surface-brand-subtle);
+  }
+}
+
+/* Kartu terangkat 2 px saat disorot, hanya untuk perangkat dengan kursor. */
+@utility card-lift {
+  transition:
+    transform 200ms var(--ease-out-expo),
+    box-shadow 200ms var(--ease-out-expo);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow:
+        inset 0 1px 0 var(--color-shadow-highlight),
+        0 16px 40px var(--color-shadow-glass);
+    }
+  }
 }
