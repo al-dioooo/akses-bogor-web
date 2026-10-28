@@ -4,7 +4,8 @@
     "description": "Informasi aksesibilitas fasilitas publik di Kota Bogor: ramp, toilet difabel, guiding block, dan lift."
   },
   "Layout": {
-    "skipLink": "Lewati ke konten utama"
+    "skipLink": "Lewati ke konten utama",
+    "home": "AksesBogor, ke Beranda"
   },
   "Beranda": {
     "title": "AksesBogor",
@@ -46,5 +47,58 @@
     "title": "Data belum bisa dimuat",
     "body": "Server AksesBogor sedang tidak bisa dihubungi. Coba lagi sebentar lagi.",
     "retry": "Coba lagi"
+  },
+  "Nav": {
+    "label": "Menu utama",
+    "bottomLabel": "Menu cepat",
+    "beranda": "Beranda",
+    "jelajahi": "Jelajahi",
+    "peta": "Peta",
+    "aksesibilitas": "Aksesibilitas",
+    "difabel": "Difabel",
+    "tips": "Tips",
+    "tentang": "Tentang",
+    "laporkan": "Laporkan",
+    "laporkanTempat": "Laporkan tempat",
+    "masuk": "Masuk",
+    "lainnya": "Lainnya",
+    "lainnyaTitle": "Menu lainnya",
+    "tutup": "Tutup"
+  },
+  "Tampilan": {
+    "open": "Tampilan",
+    "title": "Pengaturan tampilan",
+    "mode": "Mode warna",
+    "modeHint": "Solid mematikan efek kaca supaya teks lebih mudah dibaca.",
+    "theme": {
+      "perangkat": "Ikuti perangkat",
+      "glass": "Kaca",
+      "solid": "Solid",
+      "dark": "Gelap"
+    },
+    "motion": "Gerakan",
+    "motionHint": "Kurangi gerakan menghentikan latar yang bergeser dan animasi saat menggulir.",
+    "motionOption": {
+      "perangkat": "Ikuti perangkat",
+      "off": "Kurangi gerakan"
+    },
+    "done": "Selesai"
+  },
+  "Footer": {
+    "tagline": "Informasi aksesibilitas fasilitas publik di Kota Bogor, dari laporan warga yang diperiksa tim sebelum tayang.",
+    "jelajahi": "Jelajahi",
+    "informasi": "Informasi",
+    "kebijakan": "Kebijakan",
+    "privasi": "Kebijakan Privasi",
+    "syarat": "Syarat Layanan",
+    "copyright": "© 2026 AksesBogor",
+    "toTop": "Kembali ke atas"
+  },
+  "NotFound": {
+    "eyebrow": "Halaman tidak ditemukan",
+    "title": "Halaman ini belum ada.",
+    "body": "Mungkin halamannya masih dibuat, atau alamatnya salah ketik.",
+    "home": "Ke Beranda",
+    "explore": "Jelajahi lokasi"
   }
 }
