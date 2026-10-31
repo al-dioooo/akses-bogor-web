@@ -12,6 +12,10 @@
     "titleLead": "Cek aksesnya dulu. Berangkat lebih",
     "titleAccent": "tenang.",
     "intro": "Ramp, toilet difabel, guiding block, dan lift di kampus, masjid, halte, dan rumah sakit. Dicatat warga, diperiksa tim sebelum tayang.",
+    "hero": {
+      "pause": "Hentikan gerakan",
+      "play": "Jalankan gerakan"
+    },
     "search": {
       "label": "Cari tempat",
       "placeholder": "Nama tempat, mis. masjid atau halte",
