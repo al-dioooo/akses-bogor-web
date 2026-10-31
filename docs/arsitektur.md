@@ -22,7 +22,7 @@ Teks antarmuka ada di `messages/id.json` dan dibaca lewat next-intl ([ADR-0020](
 ## Tampilan dan Gerak
 
 - Mode warna mengikuti perangkat (Terang atau Gelap). Pengaturan tampilan di header bisa memaksa salah satunya lewat `<html data-theme>`, dan "Kurangi gerakan" memasang `<html data-motion="off">`. Pilihan disimpan di `localStorage` (`aksesbogor-tampilan`) dan dipasang oleh skrip kecil di `<head>` sebelum halaman digambar.
-- Gerak memakai satu kurva (`ease-out-expo`): latar aurora bergeser pelan, kartu terangkat 2 px saat disorot, dan konten muncul saat digulir lewat scroll timeline CSS. Semuanya berhenti bila perangkat meminta gerak dikurangi atau `data-motion="off"`, dan konten tidak pernah disembunyikan bila browser tidak mendukung animasinya.
+- Gerak memakai satu kurva (`ease-out-expo`): kartu terangkat 2 px saat disorot, dan konten muncul saat digulir lewat scroll timeline CSS. Semuanya berhenti bila perangkat meminta gerak dikurangi atau `data-motion="off"`, dan konten tidak pernah disembunyikan bila browser tidak mendukung animasinya.
 - Ikon berasal dari Tabler Icons (MIT) dan disalin sebagai path di `src/ui/icons.ts`, tanpa dependensi tambahan.
 
 ## Pengujian Aksesibilitas

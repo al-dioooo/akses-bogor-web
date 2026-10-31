@@ -136,7 +136,7 @@
       "gelap": "Gelap"
     },
     "motion": "Gerakan",
-    "motionHint": "Kurangi gerakan menghentikan latar yang bergeser dan animasi saat menggulir.",
+    "motionHint": "Kurangi gerakan menghentikan ilustrasi yang bergerak dan animasi saat menggulir.",
     "motionOption": {
       "perangkat": "Ikuti perangkat",
       "off": "Kurangi gerakan"
