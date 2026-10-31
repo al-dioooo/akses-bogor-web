@@ -64,7 +64,8 @@
     },
     "steps": {
       "eyebrow": "Dari warga, diperiksa tim",
-      "title": "Data yang bisa dipegang.",
+      "title": "Data yang bisa",
+      "accent": "dipegang.",
       "items": {
         "lapor": {
           "title": "Warga melapor",
@@ -81,7 +82,8 @@
       }
     },
     "cta": {
-      "title": "Tahu tempat yang belum ada di sini?",
+      "title": "Tahu tempat yang belum ada di",
+      "accent": "sini?",
       "body": "Laporkan dalam tiga langkah. Setiap laporan membantu orang lain berangkat dengan lebih yakin.",
       "button": "Laporkan tempat"
     }
