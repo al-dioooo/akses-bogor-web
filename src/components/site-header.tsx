@@ -56,7 +56,8 @@ export async function SiteHeader() {
           />
           <Link href="/masuk" className={buttonClass("ghost", "sm")}>
             <Icon icon={IconUser} className="size-5 lg:hidden" />
-            {t("masuk")}
+            {/* Di layar 320 px label disembunyikan secara visual, tetap menjadi nama tombol. */}
+            <span className="max-[24rem]:sr-only">{t("masuk")}</span>
           </Link>
           <Link href="/laporkan" className={buttonClass("primary", "sm", "max-lg:hidden")}>
             <Icon icon={IconCirclePlus} />

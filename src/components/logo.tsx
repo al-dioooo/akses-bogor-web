@@ -9,7 +9,7 @@ export function Logo({ inverse = false }: { inverse?: boolean }) {
         <Icon icon={IconAccessible} className="size-6" />
       </span>
       <span
-        className={`font-heading text-[1.375rem] font-extrabold tracking-[-0.03em] ${inverse ? "text-text-on-inverse" : "text-text-primary"}`}
+        className={`font-heading text-xl font-extrabold tracking-[-0.03em] sm:text-[1.375rem] ${inverse ? "text-text-on-inverse" : "text-text-primary"}`}
       >
         AksesBogor
       </span>
