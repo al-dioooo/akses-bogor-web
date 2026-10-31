@@ -42,7 +42,7 @@ export async function Results({ filters }: { filters: ExploreFilters }) {
       {pages > 1 && (
         <nav aria-label={t("pagination.label")} className="flex flex-wrap items-center justify-between gap-3">
           {filters.page > 1 ? (
-            <Link href={exploreHref(filters, filters.page - 1)} className={buttonClass("glass", "md")}>
+            <Link href={exploreHref(filters, filters.page - 1)} className={buttonClass("outline", "md")}>
               <Icon icon={IconArrowLeft} />
               {t("pagination.previous")}
             </Link>
@@ -51,7 +51,7 @@ export async function Results({ filters }: { filters: ExploreFilters }) {
           )}
           <p className="text-sm text-text-secondary">{t("pagination.page", { page: filters.page, pages })}</p>
           {filters.page < pages ? (
-            <Link href={exploreHref(filters, filters.page + 1)} className={buttonClass("glass", "md")}>
+            <Link href={exploreHref(filters, filters.page + 1)} className={buttonClass("outline", "md")}>
               {t("pagination.next")}
               <Icon icon={IconArrowRight} />
             </Link>
@@ -77,7 +77,7 @@ async function Empty({ filtered }: { filtered: boolean }) {
         <p className="text-text-secondary">{t(filtered ? "results.emptyBody" : "results.noDataBody")}</p>
       </div>
       {filtered && (
-        <Link href="/jelajahi" className={buttonClass("glass", "sm")}>
+        <Link href="/jelajahi" className={buttonClass("outline", "sm")}>
           {t("filters.reset")}
         </Link>
       )}
@@ -92,7 +92,7 @@ export function ResultsSkeleton({ label }: { label: string }) {
       <span aria-hidden="true" className="h-6 w-56 rounded-sm bg-surface-brand-subtle" />
       <div aria-hidden="true" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {[0, 1, 2, 3, 4, 5].map((key) => (
-          <div key={key} className="glass h-80 rounded-2xl" />
+          <div key={key} className="panel h-80 rounded-2xl" />
         ))}
       </div>
     </div>

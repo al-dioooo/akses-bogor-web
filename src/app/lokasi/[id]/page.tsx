@@ -52,7 +52,7 @@ function DetailSkeleton({ label }: { label: string }) {
         <span className="h-14 w-4/5 rounded-lg bg-surface-brand-subtle" />
         <span className="h-6 w-1/2 rounded-sm bg-surface-brand-subtle" />
       </div>
-      <div aria-hidden="true" className="glass aspect-[16/10] rounded-2xl" />
+      <div aria-hidden="true" className="panel aspect-[16/10] rounded-2xl" />
     </div>
   );
 }

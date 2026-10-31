@@ -42,7 +42,7 @@ const subscribeScroll = (onChange: () => void) => {
   return () => window.removeEventListener("scroll", onChange);
 };
 
-/** Header bening di atas aurora, lalu menjadi kaca setelah halaman digulir 24 px. */
+/** Header tanpa latar di atas halaman, lalu berlatar dan bergaris bawah setelah digulir 24 px. */
 export function StickyHeader({ children }: { children: ReactNode }) {
   const scrolled = useSyncExternalStore(
     subscribeScroll,

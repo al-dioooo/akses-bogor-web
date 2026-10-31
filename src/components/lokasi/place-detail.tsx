@@ -67,7 +67,7 @@ export async function PlaceDetail({ place }: { place: Place }) {
       </header>
 
       <div className="grid items-start gap-6 lg:grid-cols-[1fr_1.3fr]">
-        <section aria-labelledby="judul-ringkasan" className="glass flex flex-col gap-5 rounded-2xl p-6 lg:sticky lg:top-24">
+        <section aria-labelledby="judul-ringkasan" className="panel flex flex-col gap-5 rounded-2xl p-6 lg:sticky lg:top-24">
           <h2 id="judul-ringkasan" className="font-heading text-lg font-bold tracking-[-0.02em]">
             {t("summaryTitle")}
           </h2>
@@ -105,11 +105,11 @@ export async function PlaceDetail({ place }: { place: Place }) {
           </h2>
           <FacilityList facilities={place.facilities} />
           <div className="flex flex-wrap gap-3 pt-2">
-            <Link href={`/laporkan?lokasi=${place.id}`} className={buttonClass("glass", "md")}>
+            <Link href={`/laporkan?lokasi=${place.id}`} className={buttonClass("outline", "md")}>
               <Icon icon={IconPencil} />
               {t("edit")}
             </Link>
-            <Link href={`/laporkan?lokasi=${place.id}&jenis=kekurangan`} className={buttonClass("glass", "md")}>
+            <Link href={`/laporkan?lokasi=${place.id}&jenis=kekurangan`} className={buttonClass("outline", "md")}>
               <Icon icon={IconMessageReport} />
               {t("report")}
             </Link>

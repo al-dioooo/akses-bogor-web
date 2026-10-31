@@ -75,7 +75,7 @@ export function DisplaySettings({ labels }: { labels: DisplayLabels }) {
       <dialog
         ref={dialog}
         aria-labelledby="tampilan-judul"
-        className="glass-strong m-auto w-[min(28rem,calc(100%-2rem))] rounded-2xl p-6 text-text-primary backdrop:bg-surface-scrim"
+        className="panel-raised m-auto w-[min(28rem,calc(100%-2rem))] rounded-2xl p-6 text-text-primary backdrop:bg-surface-scrim"
       >
         <form method="dialog" className="flex flex-col gap-6">
           <h2 id="tampilan-judul" className="font-heading text-xl font-bold tracking-[-0.02em]">

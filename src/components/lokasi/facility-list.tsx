@@ -20,7 +20,7 @@ export function FacilityList({ facilities }: { facilities: PlaceDetail["faciliti
       {facilities.map(({ facility, answer, reason, note }) => {
         const detail = [reason ? ta(reason) : null, note].filter(Boolean).join(" · ");
         return (
-          <li key={facility} className="glass flex gap-4 rounded-lg p-4">
+          <li key={facility} className="panel flex gap-4 rounded-lg p-4">
             <span className="grid size-11 shrink-0 place-items-center rounded-md bg-surface-brand-subtle text-icon-brand">
               <Icon icon={FACILITY_ICON[facility]} className="size-5.5" />
             </span>
