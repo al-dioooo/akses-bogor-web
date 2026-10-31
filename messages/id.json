@@ -184,7 +184,8 @@
   "Jelajahi": {
     "metaTitle": "Jelajahi Lokasi",
     "eyebrow": "Jelajahi",
-    "title": "Jelajahi Lokasi",
+    "title": "Semua",
+    "accent": "lokasi.",
     "intro": "Cari tempat di Kota Bogor, lalu saring menurut kategori, kecamatan, fasilitas, dan status.",
     "search": {
       "label": "Cari nama tempat",

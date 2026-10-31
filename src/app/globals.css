@@ -271,3 +271,12 @@ body {
     }
   }
 }
+
+/* Ruas "belum diketahui" di FacilityMeter: bergaris supaya beda dari ruas kosong tanpa bergantung warna. */
+@utility meter-unknown {
+  background: repeating-linear-gradient(
+    135deg,
+    var(--color-bg-sunken) 0 3px,
+    var(--color-status-unknown-solid) 3px 5px
+  );
+}
