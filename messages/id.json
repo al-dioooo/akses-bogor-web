@@ -22,6 +22,7 @@
       "loading": "Memuat angka…",
       "places": "lokasi terverifikasi",
       "stepFree": "pintu masuk tanpa tangga",
+      "stepFreeValue": "{count} dari {total}",
       "contributors": "kontributor"
     },
     "categories": {
