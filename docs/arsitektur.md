@@ -1,14 +1,14 @@
 # Arsitektur
 
-Sumber keputusan: [ADR-0013](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0013-tech-stack-nextjs-fastify.md) dan [ADR-0025](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0025-api-dan-postgresql-di-vps-sendiri.md). Bagian yang direncanakan tetapi belum ada ditandai garis putus-putus.
+Sumber keputusan: [ADR-0013](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0013-tech-stack-nextjs-fastify.md), [ADR-0025](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0025-api-dan-postgresql-di-vps-sendiri.md), dan [ADR-0026](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0026-api-dan-postgresql-di-evergarden-oci.md). Bagian yang direncanakan tetapi belum ada ditandai garis putus-putus.
 
 ```mermaid
 flowchart LR
   B[Browser / PWA] -->|halaman| W[akses-bogor-web<br/>Next.js di Vercel]
-  B -.->|API + sesi| F[akses-bogor-api<br/>Fastify di VPS, lewat Cloudflare Tunnel]
-  W -.->|render di server| F
+  B -.->|API + sesi| F[akses-bogor-api<br/>Fastify di Evergarden, lewat Cloudflare Tunnel]
+  W -->|render di server| F
   B -.->|tile dan pencarian| M[Mapbox GL JS]
-  F --> DB[(PostgreSQL 17 + PostGIS di VPS)]
+  F --> DB[(PostgreSQL 17 + PostGIS di Evergarden)]
 ```
 
 - Web tidak pernah terhubung langsung ke database atau Cloudflare R2. Semua data lewat [akses-bogor-api](https://github.com/al-dioooo/akses-bogor-api).
