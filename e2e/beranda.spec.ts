@@ -4,7 +4,7 @@ import { expect, test } from "@playwright/test";
 test("stats are computed from the API", async ({ page }) => {
   await page.goto("/");
   const stats = page.getByRole("region", { name: "AksesBogor dalam angka" }).getByRole("definition");
-  await expect(stats).toHaveText(["7", "71%", "3"]);
+  await expect(stats).toHaveText(["7", "5 dari 7", "3"]);
 });
 
 test("category tiles show counts and open Jelajahi with the category filter", async ({ page }) => {

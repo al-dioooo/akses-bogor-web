@@ -9,8 +9,8 @@
   },
   "Beranda": {
     "eyebrow": "Peta aksesibilitas Kota Bogor",
-    "titleLead": "Cek aksesnya dulu.",
-    "titleAccent": "Berangkat lebih tenang.",
+    "titleLead": "Cek aksesnya dulu. Berangkat lebih",
+    "titleAccent": "tenang.",
     "intro": "Ramp, toilet difabel, guiding block, dan lift di kampus, masjid, halte, dan rumah sakit. Dicatat warga, diperiksa tim sebelum tayang.",
     "search": {
       "label": "Cari tempat",
@@ -22,11 +22,11 @@
       "loading": "Memuat angka…",
       "places": "lokasi terverifikasi",
       "stepFree": "pintu masuk tanpa tangga",
+      "stepFreeValue": "{count} dari {total}",
       "contributors": "kontributor"
     },
     "categories": {
-      "eyebrow": "Kategori",
-      "title": "Mulai dari jenis tempatnya.",
+      "label": "Jenis tempat",
       "count": "{count, plural, =0 {Belum ada lokasi} other {# lokasi}}"
     },
     "guide": {

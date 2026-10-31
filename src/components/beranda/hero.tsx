@@ -1,89 +1,77 @@
 import Form from "next/form";
-import { getFormatter, getTranslations } from "next-intl/server";
+import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
-import { getStats } from "@/lib/api";
+import { CATEGORIES, getStats, type Category } from "@/lib/api";
 import { buttonClass } from "@/ui/button-styles";
 import { Icon } from "@/ui/icon";
 import { IconSearch } from "@/ui/icons";
-import { LoadErrorBoundary } from "@/ui/load-error";
+import { CATEGORY_ICON } from "@/ui/place-icons";
 
+/** Hero Beranda (ADR-0027): judul, pencarian, dan pintasan kategori. */
 export async function Hero() {
   const t = await getTranslations("Beranda");
   return (
-    <section aria-labelledby="judul-beranda" className="page-width flex flex-col items-center pt-12 text-center sm:pt-20">
-      <span className="lbl">{t("eyebrow")}</span>
-      <h1
-        id="judul-beranda"
-        className="mt-5 max-w-4xl font-heading text-[clamp(2.25rem,1.5rem+3.2vw,4rem)] leading-[1.06] font-extrabold tracking-[-0.035em] text-balance"
-      >
-        {t("titleLead")} <span className="text-text-brand">{t("titleAccent")}</span>
-      </h1>
-      <p className="mt-5 max-w-2xl text-lg text-text-secondary sm:text-xl">{t("intro")}</p>
-
-      <Form action="/jelajahi" role="search" className="panel-raised mt-8 flex w-full max-w-xl items-center gap-2 rounded-full p-1.5 pl-5 has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-2 has-[input:focus-visible]:outline-focus-ring">
-        <label htmlFor="cari-beranda" className="sr-only">
-          {t("search.label")}
-        </label>
-        <Icon icon={IconSearch} className="size-5 text-icon-secondary" />
-        {/* Cincin fokus digambar di seluruh kolom pencarian, bukan di input saja. */}
-        <input
-          id="cari-beranda"
-          name="q"
-          type="search"
-          maxLength={80}
-          placeholder={t("search.placeholder")}
-          className="min-h-12 min-w-0 flex-1 bg-transparent text-base text-text-primary placeholder:text-text-secondary focus-visible:outline-none"
-        />
-        <button className={buttonClass("primary", "md")}>{t("search.button")}</button>
-      </Form>
-
-      <div className="mt-10 w-full max-w-3xl">
-        <LoadErrorBoundary>
-          <Suspense fallback={<StatsSkeleton label={t("stats.loading")} />}>
-            <Stats />
+    <section aria-labelledby="judul-beranda" className="relative isolate flex flex-col overflow-hidden pb-(--spacing-3xl)">
+      <div className="page-width relative z-10 pt-6 lg:pt-[clamp(1rem,4vh,3rem)]">
+        <div className="flex max-w-[33rem] flex-col items-start">
+          <p className="lbl">{t("eyebrow")}</p>
+          <h1 id="judul-beranda" className="display mt-4 text-[clamp(2.75rem,1.4rem+3.9vw,5.2rem)] leading-[0.95] text-pretty">
+            {t("titleLead")} <span className="accent">{t("titleAccent")}</span>
+          </h1>
+          <p className="mt-5 max-w-[30rem] text-lg leading-relaxed text-text-secondary">{t("intro")}</p>
+          <Form
+            action="/jelajahi"
+            role="search"
+            className="mt-7 flex w-full max-w-[30rem] items-center gap-2 rounded-full border-2 border-border-strong bg-surface-raised p-1.5 pl-5 shadow-[0_18px_40px_-24px_var(--color-shadow-soft)] has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-2 has-[input:focus-visible]:outline-focus-ring"
+          >
+            <label htmlFor="cari-beranda" className="sr-only">
+              {t("search.label")}
+            </label>
+            <Icon icon={IconSearch} className="size-5 text-icon-secondary" />
+            {/* Cincin fokus digambar di seluruh kolom pencarian, bukan di input saja. */}
+            <input
+              id="cari-beranda"
+              name="q"
+              type="search"
+              maxLength={80}
+              placeholder={t("search.placeholder")}
+              className="min-h-11 min-w-0 flex-1 bg-transparent text-base text-text-primary placeholder:text-text-secondary focus-visible:outline-none"
+            />
+            <button className={buttonClass("ink", "sm")}>{t("search.button")}</button>
+          </Form>
+          <Suspense fallback={<Categories counts={null} />}>
+            <CategoriesWithCounts />
           </Suspense>
-        </LoadErrorBoundary>
+        </div>
       </div>
     </section>
   );
 }
 
-async function Stats() {
-  const [t, format, stats] = await Promise.all([getTranslations("Beranda.stats"), getFormatter(), getStats()]);
-  const items = [
-    { value: format.number(stats.places), label: t("places") },
-    { value: format.number(stats.places ? stats.stepFreeEntrance / stats.places : 0, { style: "percent" }), label: t("stepFree") },
-    { value: format.number(stats.contributors), label: t("contributors") },
-  ];
-  return (
-    <section aria-labelledby="judul-angka">
-      <h2 id="judul-angka" className="sr-only">
-        {t("label")}
-      </h2>
-      <dl className="grid grid-cols-3 gap-2 sm:gap-4">
-        {items.map((item) => (
-          <div key={item.label} className="panel flex flex-col-reverse gap-1 rounded-2xl px-2 py-4 sm:py-5">
-            <dt className="text-sm text-text-secondary">{item.label}</dt>
-            <dd className="font-heading text-[clamp(1.75rem,1.4rem+1.5vw,2.5rem)] leading-none font-extrabold tracking-[-0.03em] tabular-nums">
-              {item.value}
-            </dd>
-          </div>
-        ))}
-      </dl>
-    </section>
-  );
+async function CategoriesWithCounts() {
+  // Bila API tidak bisa dihubungi, kategori tetap bisa dibuka; galatnya tampil di pita angka.
+  const stats = await getStats().catch(() => null);
+  return <Categories counts={stats?.byCategory ?? null} />;
 }
 
-function StatsSkeleton({ label }: { label: string }) {
+/** Pintasan ke Jelajahi dengan filter kategori, berisi jumlah lokasi terverifikasi (FR-01). */
+async function Categories({ counts }: { counts: Record<Category, number> | null }) {
+  const [t, tk] = await Promise.all([getTranslations("Beranda.categories"), getTranslations("Kategori")]);
   return (
-    <div role="status" className="grid grid-cols-3 gap-2 sm:gap-4">
-      <span className="sr-only">{label}</span>
-      {[0, 1, 2].map((key) => (
-        <div key={key} aria-hidden="true" className="panel flex h-[6.25rem] flex-col items-center justify-center gap-2 rounded-2xl">
-          <span className="h-8 w-14 rounded-lg bg-surface-brand-subtle" />
-          <span className="h-3 w-20 rounded-sm bg-surface-brand-subtle" />
-        </div>
+    <ul aria-label={t("label")} className="mt-4 flex flex-wrap gap-2">
+      {CATEGORIES.map((category) => (
+        <li key={category}>
+          <Link
+            href={`/jelajahi?category=${category}`}
+            className="inline-flex min-h-11 items-center gap-2 rounded-full border border-border-subtle bg-surface-raised px-3.5 text-sm font-semibold transition-colors duration-200 hover:border-border-strong"
+          >
+            <Icon icon={CATEGORY_ICON[category]} className="size-4.5 text-icon-brand" />
+            {tk(category)}
+            {counts && <span className="font-mono text-xs font-medium text-text-secondary">{t("count", { count: counts[category] })}</span>}
+          </Link>
+        </li>
       ))}
-    </div>
+    </ul>
   );
 }

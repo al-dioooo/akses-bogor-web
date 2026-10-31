@@ -123,3 +123,18 @@ body {
   transition-duration: 0.01ms !important;
   scroll-behavior: auto !important;
 }
+
+/* Garis putus-putus di tengah pita jalan, seperti marka jalan di ilustrasi. */
+.road-band {
+  position: relative;
+  @media (width >= 64rem) {
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 50% 0 auto;
+      height: 4px;
+      background: repeating-linear-gradient(90deg, var(--color-text-on-inverse-secondary) 0 44px, transparent 44px 92px);
+      opacity: 0.6;
+    }
+  }
+}
