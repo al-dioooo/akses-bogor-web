@@ -1,16 +1,16 @@
-import { CategoryGrid } from "@/components/beranda/category-grid";
 import { Guide } from "@/components/beranda/guide";
 import { Hero } from "@/components/beranda/hero";
 import { Steps } from "@/components/beranda/steps";
 
-/** Beranda (Landing · DS v1): pencarian, statistik dari data, kategori, edukasi, dan ajakan melapor. */
+/** Beranda (ADR-0027): hero "Halte ke pintu", pita angka, lalu edukasi dan ajakan melapor. */
 export default function Beranda() {
   return (
-    <main id="konten" className="flex flex-1 flex-col gap-(--spacing-4xl)">
+    <main id="konten" className="flex flex-1 flex-col">
       <Hero />
-      <CategoryGrid />
-      <Guide />
-      <Steps />
+      <div className="flex flex-col gap-(--spacing-4xl) pt-(--spacing-4xl)">
+        <Guide />
+        <Steps />
+      </div>
     </main>
   );
 }
