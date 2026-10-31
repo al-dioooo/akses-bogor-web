@@ -10,7 +10,7 @@ export async function Guide() {
   const [t, tf] = await Promise.all([getTranslations("Beranda.guide"), getTranslations("Fasilitas")]);
   return (
     <section aria-labelledby="judul-panduan" className="page-width flex flex-col gap-8">
-      <SectionHeading id="judul-panduan" eyebrow={t("eyebrow")} title={t("title")} intro={t("intro")} />
+      <SectionHeading id="judul-panduan" label={t("eyebrow")} title={t("title")} intro={t("intro")} />
       <div className="grid gap-4 lg:grid-cols-2">
         <div className="reveal panel rounded-2xl p-5 sm:p-7">
           <h3 className="font-heading text-lg font-bold tracking-[-0.02em]">{t("facilitiesTitle")}</h3>

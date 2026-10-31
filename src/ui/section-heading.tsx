@@ -1,28 +1,33 @@
-/** Pola judul bagian dari keluarga produk: label kecil, judul dua ketukan, dan satu kalimat pengantar. */
+/**
+ * Judul bagian (ADR-0027): label bernomor, judul dua ketukan dengan satu kata aksen, dan satu kalimat
+ * pengantar di kolom kanan pada layar lebar.
+ */
 export function SectionHeading({
   id,
-  eyebrow,
+  label,
   title,
+  accent,
   intro,
   level = 2,
 }: {
   id: string;
-  eyebrow: string;
+  label: string;
   title: string;
+  accent?: string;
   intro?: string;
   level?: 1 | 2;
 }) {
   const Heading = level === 1 ? "h1" : "h2";
   return (
-    <div className="reveal flex max-w-2xl flex-col items-start gap-3">
-      <span className="eyebrow panel">{eyebrow}</span>
-      <Heading
-        id={id}
-        className="font-heading text-[clamp(1.75rem,1.25rem+2vw,2.5rem)] leading-[1.12] font-extrabold tracking-[-0.03em]"
-      >
-        {title}
-      </Heading>
-      {intro && <p className="text-lg text-text-secondary">{intro}</p>}
+    <div className="reveal grid items-end gap-x-16 gap-y-5 lg:grid-cols-[1.1fr_1fr]">
+      <div className="flex flex-col items-start gap-4">
+        <p className="lbl">{label}</p>
+        <Heading id={id} className="display text-[clamp(2.25rem,1.4rem+2.6vw,3.75rem)] leading-none">
+          {title}
+          {accent && <span className="accent"> {accent}</span>}
+        </Heading>
+      </div>
+      {intro && <p className="max-w-md text-lg text-text-secondary lg:justify-self-end">{intro}</p>}
     </div>
   );
 }

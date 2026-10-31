@@ -3,7 +3,9 @@
 
 @theme inline {
   --font-sans: var(--font-inter);
-  --font-heading: var(--font-plus-jakarta-sans);
+  --font-heading: var(--font-bricolage);
+  --font-mono: var(--font-plex-mono);
+  --font-accent: var(--font-instrument-serif);
   /* Kurva gerak keluarga produk (aksesin, lokerin): keluar cepat, berhenti lembut. */
   --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -13,18 +15,18 @@ body {
   color: var(--color-text-primary);
 }
 
-/* Cincin fokus dari Focus/Ring (ADR-0009). Outline, bukan box-shadow, supaya tetap terlihat di mode kontras tinggi. */
+/* Cincin fokus dari Focus/Ring (ADR-0027). Outline, bukan box-shadow, supaya tetap terlihat di mode kontras tinggi. */
 :focus-visible {
   outline: var(--border-width-focus) solid var(--color-focus-ring);
   outline-offset: 2px;
 }
 
-/* Lebar konten: 16 px di tepi ponsel (ADR-0012), 32 px di layar lebar, paling lebar 75rem. */
+/* Lebar konten: 16 px di tepi ponsel (ADR-0012), 40 px di layar lebar, paling lebar 77.5rem. */
 @utility page-width {
-  width: min(75rem, 100% - 2rem);
+  width: min(77.5rem, 100% - 2rem);
   margin-inline: auto;
   @media (width >= 48rem) {
-    width: min(75rem, 100% - 4rem);
+    width: min(77.5rem, 100% - 5rem);
   }
 }
 
@@ -40,27 +42,33 @@ body {
   box-shadow: 0 12px 32px -16px var(--color-shadow-soft);
 }
 
-/* Label kecil di atas judul bagian, dengan titik dekoratif. Maknanya ada di teks. */
-@utility eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  border-radius: var(--radius-full);
-  padding: 0.375rem 0.875rem;
+/* Label bernomor di atas judul bagian, mis. "01 / Kategori". */
+@utility lbl {
+  font-family: var(--font-mono);
   font-size: 0.75rem;
   line-height: 1rem;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--color-text-brand);
-  &::before {
-    content: "";
-    width: 0.375rem;
-    height: 0.375rem;
-    border-radius: var(--radius-full);
-    background: var(--color-brand-fill);
-    box-shadow: 0 0 0 3px var(--color-surface-brand-subtle);
-  }
+}
+
+/* Satu kata aksen di akhir judul, miring dan berwarna brand. */
+@utility accent {
+  font-family: var(--font-accent);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.06em;
+  letter-spacing: -0.01em;
+  color: var(--color-text-brand);
+}
+
+/* Judul besar: Bricolage ExtraBold dengan spasi huruf rapat. */
+@utility display {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
 }
 
 /* Kartu terangkat 2 px saat disorot, hanya untuk perangkat dengan kursor. */
