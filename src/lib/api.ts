@@ -1,3 +1,4 @@
+import { headers } from "next/headers";
 import { connection } from "next/server";
 
 // Tipe mengikuti docs/openapi.json di akses-bogor-api. Nilai enum adalah nilai produk; teks untuk
@@ -83,12 +84,28 @@ function apiUrl(path: string, query: Record<string, string | number | undefined>
   return url;
 }
 
+/**
+ * Dengan `WEB_SERVER_SECRET`, setiap panggilan ikut membawa IP pengunjung supaya rate limit API dihitung per pengunjung,
+ * bukan per IP server Vercel. Vercel menulis ulang `x-forwarded-for`, jadi isinya IP pengunjung yang asli.
+ */
+async function apiHeaders() {
+  const result: Record<string, string> = { accept: "application/json" };
+  const secret = process.env.WEB_SERVER_SECRET;
+  if (!secret) return result;
+  const visitorIp = (await headers()).get("x-forwarded-for")?.split(",")[0]?.trim();
+  if (visitorIp) {
+    result["x-web-server-secret"] = secret;
+    result["x-visitor-ip"] = visitorIp;
+  }
+  return result;
+}
+
 async function get<T>(path: string, query?: Record<string, string | number | undefined>): Promise<T> {
   // Data lokasi selalu diambil saat request, tidak saat build, jadi build tidak butuh API.
   await connection();
   let response: Response;
   try {
-    response = await fetch(apiUrl(path, query), { headers: { accept: "application/json" } });
+    response = await fetch(apiUrl(path, query), { headers: await apiHeaders() });
   } catch {
     throw new ApiError(0, "api_tidak_terhubung", "API tidak bisa dihubungi.");
   }
