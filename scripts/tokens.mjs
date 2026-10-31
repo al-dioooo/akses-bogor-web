@@ -2,9 +2,8 @@
 // Nama CSS diambil dari code syntax WEB di Figma, jadi `color/text/primary` menjadi
 // `--color-text-primary` (ADR-0013). Berkas JSON juga dirapikan: satu variable per baris.
 //
-// Mode warna (ADR-0009): Glass bawaan, Solid untuk prefers-reduced-transparency, Dark untuk
-// prefers-color-scheme: dark. Atribut data-theme="glass|solid|dark" di <html> mengalahkan
-// preferensi sistem.
+// Mode warna (ADR-0027): mode bawaan koleksi Color (Terang), lalu mode kedua (Gelap) untuk
+// prefers-color-scheme: dark. Atribut data-theme="terang|gelap" di <html> mengalahkan preferensi sistem.
 import { readFile, writeFile } from "node:fs/promises";
 
 const SOURCE = "design-tokens/figma-variables.json";
@@ -50,13 +49,8 @@ const primitives = collection("Primitives");
 const color = collection("Color");
 const dimension = collection("Dimension");
 const base = color.defaultMode;
-const modeFor = (name) => {
-  const mode = color.modes.find((m) => m.toLowerCase() === name);
-  if (!mode) throw new Error(`Mode ${name} tidak ada di koleksi Color`);
-  return mode;
-};
-const solid = modeFor("solid");
-const dark = modeFor("dark");
+const dark = color.modes.find((m) => m !== base);
+if (color.modes.length !== 2) throw new Error(`Koleksi Color harus punya dua mode, terang dan gelap: ${color.modes.join(", ")}`);
 const one = (c) => c.modes[0];
 const changed = (mode) => color.variables.filter((v) => differs(v, mode, base)).map((v) => decl(v, mode, "    "));
 
@@ -85,23 +79,12 @@ ${primitives.variables.map((v) => decl(v, one(primitives))).join("\n")}
 ${dimension.variables.filter((v) => !THEME_GROUPS.has(group(v))).map((v) => decl(v, one(dimension))).join("\n")}
 }
 
-/* ${solid}: permukaan opak untuk pengguna yang mengurangi transparansi. */
-@media (prefers-reduced-transparency: reduce) {
-  :root:not([data-theme]) {
-${changed(solid).join("\n")}
-  }
-}
-
-/* ${dark}: ditulis setelah ${solid}, jadi ${dark} menang bila kedua preferensi aktif. */
+/* ${dark}: mengikuti preferensi perangkat bila pengguna belum memilih mode. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme]) {
     color-scheme: dark;
 ${changed(dark).join("\n")}
   }
-}
-
-:root[data-theme="${solid.toLowerCase()}"] {
-${changed(solid).map((l) => l.slice(2)).join("\n")}
 }
 
 :root[data-theme="${dark.toLowerCase()}"] {

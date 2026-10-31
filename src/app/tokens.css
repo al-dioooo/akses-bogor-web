@@ -6,7 +6,7 @@
   --radius-*: initial;
   --blur-*: initial;
 
-  /* Color · Glass (bawaan) */
+  /* Color · Terang (bawaan) */
   --color-bg-canvas: var(--violet-50);
   --color-bg-aurora-inclusion: var(--violet-200);
   --color-bg-aurora-rain: var(--aurora-sky);
@@ -164,27 +164,7 @@
   --size-icon: 1.25rem;
 }
 
-/* Solid: permukaan opak untuk pengguna yang mengurangi transparansi. */
-@media (prefers-reduced-transparency: reduce) {
-  :root:not([data-theme]) {
-    --color-bg-canvas: var(--ink-50);
-    --color-bg-aurora-inclusion: var(--ink-50);
-    --color-bg-aurora-rain: var(--ink-50);
-    --color-bg-aurora-garden: var(--ink-50);
-    --color-surface-glass: var(--ink-0);
-    --color-surface-glass-strong: var(--ink-0);
-    --color-surface-glass-inverse: var(--ink-900);
-    --color-surface-field: var(--ink-0);
-    --color-surface-brand-subtle: var(--violet-100);
-    --color-surface-hover: var(--ink-100);
-    --color-border-glass: var(--ink-200);
-    --color-brand-glow: var(--alpha-violet-24);
-    --color-shadow-glass: var(--alpha-ink-8);
-    --color-shadow-highlight: var(--alpha-white-24);
-  }
-}
-
-/* Dark: ditulis setelah Solid, jadi Dark menang bila kedua preferensi aktif. */
+/* Gelap: mengikuti preferensi perangkat bila pengguna belum memilih mode. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme]) {
     color-scheme: dark;
@@ -227,24 +207,7 @@
   }
 }
 
-:root[data-theme="solid"] {
-  --color-bg-canvas: var(--ink-50);
-  --color-bg-aurora-inclusion: var(--ink-50);
-  --color-bg-aurora-rain: var(--ink-50);
-  --color-bg-aurora-garden: var(--ink-50);
-  --color-surface-glass: var(--ink-0);
-  --color-surface-glass-strong: var(--ink-0);
-  --color-surface-glass-inverse: var(--ink-900);
-  --color-surface-field: var(--ink-0);
-  --color-surface-brand-subtle: var(--violet-100);
-  --color-surface-hover: var(--ink-100);
-  --color-border-glass: var(--ink-200);
-  --color-brand-glow: var(--alpha-violet-24);
-  --color-shadow-glass: var(--alpha-ink-8);
-  --color-shadow-highlight: var(--alpha-white-24);
-}
-
-:root[data-theme="dark"] {
+:root[data-theme="gelap"] {
   color-scheme: dark;
   --color-bg-canvas: var(--aurora-night);
   --color-bg-aurora-inclusion: var(--aurora-violet-dark);
