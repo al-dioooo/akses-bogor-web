@@ -8,8 +8,8 @@ export default async function NotFound() {
   const t = await getTranslations("NotFound");
   return (
     <main id="konten" className="page-width flex flex-1 items-center py-(--spacing-3xl)">
-      <div className="glass mx-auto flex max-w-xl flex-col items-start gap-5 rounded-2xl p-8 sm:p-10">
-        <span className="eyebrow glass">{t("eyebrow")}</span>
+      <div className="panel mx-auto flex max-w-xl flex-col items-start gap-5 rounded-2xl p-8 sm:p-10">
+        <span className="eyebrow panel">{t("eyebrow")}</span>
         <h1 className="font-heading text-[clamp(2rem,1.5rem+2vw,2.75rem)] leading-[1.1] font-extrabold tracking-[-0.03em]">
           {t("title")}
         </h1>
@@ -19,7 +19,7 @@ export default async function NotFound() {
             <Icon icon={IconHome} />
             {t("home")}
           </Link>
-          <Link href="/jelajahi" className={buttonClass("glass", "md")}>
+          <Link href="/jelajahi" className={buttonClass("outline", "md")}>
             {t("explore")}
             <Icon icon={IconArrowRight} />
           </Link>

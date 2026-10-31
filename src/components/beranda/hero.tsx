@@ -11,7 +11,7 @@ export async function Hero() {
   const t = await getTranslations("Beranda");
   return (
     <section aria-labelledby="judul-beranda" className="page-width flex flex-col items-center pt-12 text-center sm:pt-20">
-      <span className="eyebrow glass">{t("eyebrow")}</span>
+      <span className="eyebrow panel">{t("eyebrow")}</span>
       <h1
         id="judul-beranda"
         className="mt-5 max-w-4xl font-heading text-[clamp(2.25rem,1.5rem+3.2vw,4rem)] leading-[1.06] font-extrabold tracking-[-0.035em] text-balance"
@@ -20,7 +20,7 @@ export async function Hero() {
       </h1>
       <p className="mt-5 max-w-2xl text-lg text-text-secondary sm:text-xl">{t("intro")}</p>
 
-      <Form action="/jelajahi" role="search" className="glass-strong mt-8 flex w-full max-w-xl items-center gap-2 rounded-full p-1.5 pl-5 has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-2 has-[input:focus-visible]:outline-focus-ring">
+      <Form action="/jelajahi" role="search" className="panel-raised mt-8 flex w-full max-w-xl items-center gap-2 rounded-full p-1.5 pl-5 has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-2 has-[input:focus-visible]:outline-focus-ring">
         <label htmlFor="cari-beranda" className="sr-only">
           {t("search.label")}
         </label>
@@ -62,7 +62,7 @@ async function Stats() {
       </h2>
       <dl className="grid grid-cols-3 gap-2 sm:gap-4">
         {items.map((item) => (
-          <div key={item.label} className="glass flex flex-col-reverse gap-1 rounded-2xl px-2 py-4 sm:py-5">
+          <div key={item.label} className="panel flex flex-col-reverse gap-1 rounded-2xl px-2 py-4 sm:py-5">
             <dt className="text-sm text-text-secondary">{item.label}</dt>
             <dd className="font-heading text-[clamp(1.75rem,1.4rem+1.5vw,2.5rem)] leading-none font-extrabold tracking-[-0.03em] tabular-nums">
               {item.value}
@@ -79,7 +79,7 @@ function StatsSkeleton({ label }: { label: string }) {
     <div role="status" className="grid grid-cols-3 gap-2 sm:gap-4">
       <span className="sr-only">{label}</span>
       {[0, 1, 2].map((key) => (
-        <div key={key} aria-hidden="true" className="glass flex h-[6.25rem] flex-col items-center justify-center gap-2 rounded-2xl">
+        <div key={key} aria-hidden="true" className="panel flex h-[6.25rem] flex-col items-center justify-center gap-2 rounded-2xl">
           <span className="h-8 w-14 rounded-lg bg-surface-brand-subtle" />
           <span className="h-3 w-20 rounded-sm bg-surface-brand-subtle" />
         </div>

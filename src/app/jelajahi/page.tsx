@@ -17,7 +17,7 @@ export default async function Jelajahi({ searchParams }: PageProps<"/jelajahi">)
   return (
     <main id="konten" className="page-width flex flex-1 flex-col gap-8 pt-10 sm:pt-14">
       <div className="flex max-w-2xl flex-col items-start gap-3">
-        <span className="eyebrow glass">{t("eyebrow")}</span>
+        <span className="eyebrow panel">{t("eyebrow")}</span>
         <h1 className="font-heading text-[clamp(2rem,1.5rem+2vw,3rem)] leading-[1.08] font-extrabold tracking-[-0.035em]">
           {t("title")}
         </h1>

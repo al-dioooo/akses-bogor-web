@@ -34,7 +34,7 @@ async function Tiles({ counts }: { counts: Record<Category, number> | null }) {
         <li key={category} className="reveal">
           <Link
             href={`/jelajahi?category=${category}`}
-            className="group glass card-lift relative flex h-full flex-col gap-6 rounded-2xl p-5 sm:p-6"
+            className="group panel card-lift relative flex h-full flex-col gap-6 rounded-2xl p-5 sm:p-6"
           >
             <span className="grid size-12 -rotate-6 place-items-center rounded-lg bg-surface-brand-subtle text-icon-brand transition-transform duration-300 ease-out-expo group-hover:rotate-0">
               <Icon icon={CATEGORY_ICON[category]} className="size-6" />

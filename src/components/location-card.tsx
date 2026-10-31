@@ -13,7 +13,7 @@ export function LocationCard({ place }: { place: PlaceListItem }) {
   const tk = useTranslations("Kategori");
   const format = useFormatter();
   return (
-    <article className="group glass card-lift relative flex h-full flex-col overflow-hidden rounded-2xl">
+    <article className="group panel card-lift relative flex h-full flex-col overflow-hidden rounded-2xl">
       <div className="relative aspect-[16/9] overflow-hidden">
         {place.coverPhoto?.url ? (
           <Image src={place.coverPhoto.url} alt={place.coverPhoto.alt} fill unoptimized className="object-cover" />
@@ -53,7 +53,7 @@ export function LocationCard({ place }: { place: PlaceListItem }) {
   );
 }
 
-/** Pengganti foto: ikon kategori di atas gradasi aurora. Hiasan saja. */
+/** Pengganti foto: ikon kategori di atas latar ungu muda. Hiasan saja. */
 function CategoryArt({ place }: { place: PlaceListItem }) {
   return (
     <div

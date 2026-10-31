@@ -22,7 +22,7 @@ const TAB =
 export function BottomNav({ labels, pathname }: { labels: BottomNavLabels; pathname: string | null }) {
   return (
     <nav aria-label={labels.label} className="fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-40 lg:hidden">
-      <ul className="glass-strong flex gap-1 rounded-2xl p-1.5">
+      <ul className="panel-raised flex gap-1 rounded-2xl p-1.5">
         {BOTTOM_NAV.map((tab) => {
           const active = isActive(tab.href, pathname);
           return (
@@ -55,7 +55,7 @@ export function BottomNav({ labels, pathname }: { labels: BottomNavLabels; pathn
         id="menu-lainnya"
         popover="auto"
         aria-labelledby="menu-lainnya-judul"
-        className="glass-strong inset-x-3 top-auto bottom-24 m-0 w-auto rounded-2xl p-3 text-text-primary"
+        className="panel-raised inset-x-3 top-auto bottom-24 m-0 w-auto rounded-2xl p-3 text-text-primary"
       >
         <div className="flex items-center justify-between pb-1 pl-3">
           <h2 id="menu-lainnya-judul" className="font-heading font-bold">

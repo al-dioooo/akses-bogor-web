@@ -16,7 +16,7 @@ export async function Steps() {
         <SectionHeading id="judul-alur" eyebrow={t("steps.eyebrow")} title={t("steps.title")} />
         <ol className="grid gap-4 md:grid-cols-3">
           {STEPS.map((step, index) => (
-            <li key={step} className="reveal glass flex flex-col gap-3 rounded-2xl p-6">
+            <li key={step} className="reveal panel flex flex-col gap-3 rounded-2xl p-6">
               <span aria-hidden="true" className="font-heading text-4xl font-extrabold tracking-[-0.04em] text-text-brand tabular-nums">
                 {String(index + 1).padStart(2, "0")}
               </span>

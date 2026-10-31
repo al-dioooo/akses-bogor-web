@@ -28,7 +28,7 @@ export async function FilterForm({ filters }: { filters: ExploreFilters }) {
   const active = panelFilterCount(filters);
   return (
     <Form action="/jelajahi" role="search" className="flex flex-col gap-4">
-      <div className="glass-strong flex items-center gap-2 rounded-full p-1.5 pl-5 has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-2 has-[input:focus-visible]:outline-focus-ring">
+      <div className="panel-raised flex items-center gap-2 rounded-full p-1.5 pl-5 has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-2 has-[input:focus-visible]:outline-focus-ring">
         <label htmlFor="cari-jelajahi" className="sr-only">
           {t("search.label")}
         </label>
@@ -58,7 +58,7 @@ export async function FilterForm({ filters }: { filters: ExploreFilters }) {
         </div>
       </fieldset>
 
-      <details open={active > 0} className="group glass rounded-2xl">
+      <details open={active > 0} className="group panel rounded-2xl">
         <summary className="flex min-h-12 cursor-pointer list-none items-center gap-2 rounded-2xl px-5 font-semibold [&::-webkit-details-marker]:hidden">
           <Icon icon={IconAdjustmentsHorizontal} />
           {t("filters.toggle")}

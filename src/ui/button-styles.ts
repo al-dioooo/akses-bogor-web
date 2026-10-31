@@ -1,6 +1,6 @@
 // Kelas tombol dan tautan berbentuk tombol. Bentuknya mengikuti aksesin-web (record varian dan ukuran),
-// dengan token AksesBogor: Primary berkilap ungu, Glass, dan Ghost (ADR-0009).
-export type ButtonVariant = "primary" | "glass" | "ghost";
+// dengan token AksesBogor: Primary ungu, Outline bergaris tinta, dan Ghost (ADR-0027).
+export type ButtonVariant = "primary" | "outline" | "ghost";
 export type ButtonSize = "sm" | "md" | "lg";
 
 const BASE =
@@ -8,8 +8,8 @@ const BASE =
   "transition-[transform,background-color,box-shadow,color] duration-200 ease-out-expo active:scale-[.98]";
 
 export const VARIANTS: Record<ButtonVariant, string> = {
-  primary: "btn-gloss text-text-on-brand",
-  glass: "glass text-text-primary hover:bg-surface-hover",
+  primary: "bg-brand-fill text-text-on-brand hover:bg-brand-fill-hover active:bg-brand-fill-pressed",
+  outline: "border-2 border-border-strong text-text-primary hover:bg-surface-hover",
   ghost: "text-text-primary hover:bg-surface-hover",
 };
 
