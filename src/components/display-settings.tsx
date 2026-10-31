@@ -6,7 +6,7 @@ import { Icon } from "@/ui/icon";
 import { IconSunMoon } from "@/ui/icons";
 import { DISPLAY_STORAGE_KEY } from "./display-script";
 
-const THEMES = ["perangkat", "glass", "solid", "dark"] as const;
+const THEMES = ["perangkat", "terang", "gelap"] as const;
 const MOTIONS = ["perangkat", "off"] as const;
 
 type Settings = { theme: (typeof THEMES)[number]; motion: (typeof MOTIONS)[number] };
@@ -48,7 +48,7 @@ function applySettings({ theme, motion }: Settings) {
   }
 }
 
-/** Mode warna (Kaca, Solid, Gelap) dan gerakan, seperti "Pengaturan gerakan" di aksesin. */
+/** Mode warna (Terang, Gelap) dan gerakan, seperti "Pengaturan gerakan" di aksesin. */
 export function DisplaySettings({ labels }: { labels: DisplayLabels }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const [settings, setSettings] = useState<Settings>({ theme: "perangkat", motion: "perangkat" });
@@ -116,7 +116,7 @@ function Choice<T extends string>(props: {
   return (
     <fieldset aria-describedby={hintId} className="flex flex-col gap-2">
       <legend className="mb-1 font-semibold">{props.legend}</legend>
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(8rem,1fr))] gap-2">
         {props.options.map((option) => (
           <label
             key={option.value}
