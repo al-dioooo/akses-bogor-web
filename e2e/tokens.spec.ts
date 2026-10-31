@@ -11,32 +11,30 @@ const resolve = (page: Page, token: string) =>
     return color;
   }, token);
 
-const INK_900 = "rgb(30, 32, 41)";
+const INK_950 = "rgb(18, 19, 26)";
 const INK_50 = "rgb(245, 246, 251)";
-const INK_0 = "rgb(255, 255, 255)";
-const VIOLET_50 = "rgb(244, 241, 255)";
-const AURORA_NIGHT = "rgb(15, 12, 31)";
+const PAPER_50 = "rgb(249, 249, 247)";
 
-test("Glass is the default mode", async ({ page }) => {
+test("Terang is the default mode", async ({ page }) => {
   await page.emulateMedia({ colorScheme: "light" });
   await page.goto("/");
-  expect(await resolve(page, "--color-bg-canvas")).toBe(VIOLET_50);
-  expect(await resolve(page, "--color-text-primary")).toBe(INK_900);
+  expect(await resolve(page, "--color-bg-canvas")).toBe(PAPER_50);
+  expect(await resolve(page, "--color-text-primary")).toBe(INK_950);
 });
 
-test("Dark follows prefers-color-scheme", async ({ page }) => {
+test("Gelap follows prefers-color-scheme", async ({ page }) => {
   await page.emulateMedia({ colorScheme: "dark" });
   await page.goto("/");
-  expect(await resolve(page, "--color-bg-canvas")).toBe(AURORA_NIGHT);
+  expect(await resolve(page, "--color-bg-canvas")).toBe(INK_950);
   expect(await resolve(page, "--color-text-primary")).toBe(INK_50);
 });
 
 test("data-theme overrides the system preference", async ({ page }) => {
   await page.emulateMedia({ colorScheme: "dark" });
   await page.goto("/");
-  await page.evaluate(() => document.documentElement.setAttribute("data-theme", "solid"));
-  expect(await resolve(page, "--color-surface-glass")).toBe(INK_0);
-  expect(await resolve(page, "--color-bg-canvas")).toBe(INK_50);
-  await page.evaluate(() => document.documentElement.setAttribute("data-theme", "glass"));
-  expect(await resolve(page, "--color-text-primary")).toBe(INK_900);
+  await page.evaluate(() => document.documentElement.setAttribute("data-theme", "terang"));
+  expect(await resolve(page, "--color-bg-canvas")).toBe(PAPER_50);
+  await page.emulateMedia({ colorScheme: "light" });
+  await page.evaluate(() => document.documentElement.setAttribute("data-theme", "gelap"));
+  expect(await resolve(page, "--color-text-primary")).toBe(INK_50);
 });

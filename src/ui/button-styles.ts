@@ -9,7 +9,7 @@ const BASE =
 
 export const VARIANTS: Record<ButtonVariant, string> = {
   primary: "btn-gloss text-text-on-brand",
-  glass: "glass text-text-primary hover:bg-surface-glass-strong",
+  glass: "glass text-text-primary hover:bg-surface-hover",
   ghost: "text-text-primary hover:bg-surface-hover",
 };
 

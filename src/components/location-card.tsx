@@ -58,9 +58,9 @@ function CategoryArt({ place }: { place: PlaceListItem }) {
   return (
     <div
       aria-hidden="true"
-      className="grid size-full place-items-center bg-[linear-gradient(135deg,var(--color-bg-aurora-inclusion),var(--color-bg-aurora-rain)_55%,var(--color-bg-aurora-garden))]"
+      className="grid size-full place-items-center bg-surface-brand-subtle"
     >
-      <span className="grid size-16 -rotate-6 place-items-center rounded-xl bg-surface-glass-strong text-icon-brand shadow-[0_8px_24px_var(--color-shadow-glass)] transition-transform duration-300 ease-out-expo group-hover:rotate-0">
+      <span className="grid size-16 -rotate-6 place-items-center rounded-xl bg-surface-raised text-icon-brand shadow-[0_8px_24px_-12px_var(--color-shadow-soft)] transition-transform duration-300 ease-out-expo group-hover:rotate-0">
         <Icon icon={CATEGORY_ICON[place.category]} className="size-8" />
       </span>
     </div>

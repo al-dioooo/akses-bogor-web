@@ -129,12 +129,11 @@
     "open": "Tampilan",
     "title": "Pengaturan tampilan",
     "mode": "Mode warna",
-    "modeHint": "Solid mematikan efek kaca supaya teks lebih mudah dibaca.",
+    "modeHint": "Ikuti perangkat memakai mode terang atau gelap sesuai pengaturan ponsel atau komputer.",
     "theme": {
       "perangkat": "Ikuti perangkat",
-      "glass": "Kaca",
-      "solid": "Solid",
-      "dark": "Gelap"
+      "terang": "Terang",
+      "gelap": "Gelap"
     },
     "motion": "Gerakan",
     "motionHint": "Kurangi gerakan menghentikan latar yang bergeser dan animasi saat menggulir.",

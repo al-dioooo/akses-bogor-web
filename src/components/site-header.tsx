@@ -47,7 +47,7 @@ export async function SiteHeader() {
               title: td("title"),
               mode: td("mode"),
               modeHint: td("modeHint"),
-              theme: { perangkat: td("theme.perangkat"), glass: td("theme.glass"), solid: td("theme.solid"), dark: td("theme.dark") },
+              theme: { perangkat: td("theme.perangkat"), terang: td("theme.terang"), gelap: td("theme.gelap") },
               motion: td("motion"),
               motionHint: td("motionHint"),
               motionOption: { perangkat: td("motionOption.perangkat"), off: td("motionOption.off") },

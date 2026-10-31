@@ -57,8 +57,8 @@ export async function PlaceDetail({ place }: { place: Place }) {
           {cover?.url ? (
             <Image src={cover.url} alt={cover.alt} fill unoptimized className="object-cover" />
           ) : (
-            <div className="grid size-full place-items-center bg-[linear-gradient(135deg,var(--color-bg-aurora-inclusion),var(--color-bg-aurora-rain)_55%,var(--color-bg-aurora-garden))]">
-              <span className="grid size-24 -rotate-6 place-items-center rounded-2xl bg-surface-glass-strong text-icon-brand shadow-[0_12px_32px_var(--color-shadow-glass)]">
+            <div className="grid size-full place-items-center bg-surface-brand-subtle">
+              <span className="grid size-24 -rotate-6 place-items-center rounded-2xl bg-surface-raised text-icon-brand shadow-[0_12px_32px_-12px_var(--color-shadow-soft)]">
                 <Icon icon={CATEGORY_ICON[place.category]} className="size-12" />
               </span>
             </div>

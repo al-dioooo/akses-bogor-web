@@ -52,7 +52,7 @@ export function StickyHeader({ children }: { children: ReactNode }) {
   return (
     <header
       data-scrolled={scrolled || undefined}
-      className="sticky top-0 z-40 border-b border-transparent transition-[background-color,border-color,box-shadow] duration-300 ease-out-expo data-scrolled:border-border-glass data-scrolled:bg-surface-glass-strong data-scrolled:shadow-[0_8px_32px_var(--color-shadow-glass)] data-scrolled:backdrop-blur-glass"
+      className="sticky top-0 z-40 border-b border-transparent transition-[background-color,border-color,box-shadow] duration-300 ease-out-expo data-scrolled:border-border-subtle data-scrolled:bg-bg-canvas"
     >
       {children}
     </header>
