@@ -31,6 +31,14 @@ export const STATUS_TONE: Record<Status, string> = {
   belum_diketahui: "bg-status-unknown-bg text-status-unknown-fg",
 };
 
+/** Warna teks status saja, untuk badge di atas latar yang sudah bernada status. */
+export const STATUS_FG: Record<Status, string> = {
+  aksesibel: "text-status-accessible-fg",
+  sebagian: "text-status-partial-fg",
+  tidak_aksesibel: "text-status-inaccessible-fg",
+  belum_diketahui: "text-status-unknown-fg",
+};
+
 export const CATEGORY_ICON: Record<Category, Glyph> = {
   kampus: IconSchool,
   masjid: IconBuildingMosque,
