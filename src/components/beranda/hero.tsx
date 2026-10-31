@@ -11,7 +11,7 @@ export async function Hero() {
   const t = await getTranslations("Beranda");
   return (
     <section aria-labelledby="judul-beranda" className="page-width flex flex-col items-center pt-12 text-center sm:pt-20">
-      <span className="eyebrow panel">{t("eyebrow")}</span>
+      <span className="lbl">{t("eyebrow")}</span>
       <h1
         id="judul-beranda"
         className="mt-5 max-w-4xl font-heading text-[clamp(2.25rem,1.5rem+3.2vw,4rem)] leading-[1.06] font-extrabold tracking-[-0.035em] text-balance"

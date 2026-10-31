@@ -12,7 +12,7 @@ export async function CategoryGrid() {
   const t = await getTranslations("Beranda.categories");
   return (
     <section aria-labelledby="judul-kategori" className="page-width flex flex-col gap-8">
-      <SectionHeading id="judul-kategori" eyebrow={t("eyebrow")} title={t("title")} />
+      <SectionHeading id="judul-kategori" label={t("eyebrow")} title={t("title")} />
       <Suspense fallback={<Tiles counts={null} />}>
         <TilesWithCounts />
       </Suspense>

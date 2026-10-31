@@ -13,7 +13,7 @@ export async function Steps() {
   return (
     <>
       <section aria-labelledby="judul-alur" className="page-width flex flex-col gap-8">
-        <SectionHeading id="judul-alur" eyebrow={t("steps.eyebrow")} title={t("steps.title")} />
+        <SectionHeading id="judul-alur" label={t("steps.eyebrow")} title={t("steps.title")} />
         <ol className="grid gap-4 md:grid-cols-3">
           {STEPS.map((step, index) => (
             <li key={step} className="reveal panel flex flex-col gap-3 rounded-2xl p-6">
