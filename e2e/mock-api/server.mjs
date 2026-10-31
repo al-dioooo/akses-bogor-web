@@ -1,11 +1,13 @@
 // API tiruan untuk tes Playwright, supaya CI tidak butuh akses-bogor-api dan database.
 // Datanya salinan respons API dari seed pengembangan (fixtures.json); filter meniru GET /places.
 // Pencarian "galat-tiruan" menjawab 500, untuk menguji keadaan galat di web.
+// GET /_tiruan/pengunjung?ip=... menjawab rahasia server web terakhir yang dikirim bersama IP pengunjung itu.
 import { readFileSync } from "node:fs";
 import { createServer } from "node:http";
 
 const { districts, places } = JSON.parse(readFileSync(new URL("./fixtures.json", import.meta.url), "utf8"));
 const port = Number(process.env.PORT ?? 3101);
+const secretsByVisitor = new Map();
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 const listItem = ({ id, name, category, district, status, summary, location, lastVerifiedAt, photos }) => ({
@@ -40,6 +42,7 @@ function filterPlaces(query) {
 function route(url) {
   const { pathname, searchParams } = url;
   if (pathname === "/healthz") return [200, { status: "ok" }];
+  if (pathname === "/_tiruan/pengunjung") return [200, { secret: secretsByVisitor.get(searchParams.get("ip")) ?? null }];
   if (pathname === "/districts") {
     return [200, districts.map((d) => ({ ...d, places: places.filter((p) => p.district.slug === d.slug).length }))];
   }
@@ -66,6 +69,8 @@ function route(url) {
 }
 
 createServer((request, response) => {
+  const visitorIp = request.headers["x-visitor-ip"];
+  if (visitorIp) secretsByVisitor.set(visitorIp, request.headers["x-web-server-secret"]);
   const [status, body] = route(new URL(request.url ?? "/", `http://localhost:${port}`));
   response.writeHead(status, { "content-type": "application/json; charset=utf-8" });
   response.end(JSON.stringify(body));

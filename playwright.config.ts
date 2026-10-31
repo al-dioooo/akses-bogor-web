@@ -1,7 +1,8 @@
 import { defineConfig, devices } from "@playwright/test";
 
 const port = 3100;
-const mockApiPort = 3101;
+export const mockApiPort = 3101;
+export const webServerSecret = "rahasia-tiruan-untuk-tes-playwright-saja";
 
 // ADR-0021: pemeriksaan otomatis di CI. Diuji di ponsel (mobile-first, ADR-0012) dan desktop.
 export default defineConfig({
@@ -29,7 +30,7 @@ export default defineConfig({
     {
       command: `pnpm build && pnpm start --port ${port}`,
       url: `http://localhost:${port}`,
-      env: { API_URL: `http://localhost:${mockApiPort}` },
+      env: { API_URL: `http://localhost:${mockApiPort}`, WEB_SERVER_SECRET: webServerSecret },
       reuseExistingServer: !process.env.CI,
       timeout: 180_000,
     },
