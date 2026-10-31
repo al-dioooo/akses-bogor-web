@@ -31,7 +31,7 @@ export async function Steps() {
         <div className="reveal relative isolate overflow-hidden rounded-2xl bg-surface-inverse px-6 py-10 text-text-on-inverse sm:px-12 sm:py-14">
           <span
             aria-hidden="true"
-            className="absolute -top-24 -right-16 -z-10 size-80 rounded-full bg-[radial-gradient(closest-side,var(--color-brand-glow),transparent)]"
+            className="absolute -top-24 -right-16 -z-10 size-80 rounded-full bg-[radial-gradient(closest-side,var(--color-surface-brand-subtle),transparent)]"
           />
           <h2
             id="judul-ajakan"

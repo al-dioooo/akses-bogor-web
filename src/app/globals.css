@@ -28,23 +28,16 @@ body {
   }
 }
 
-/* Glass/Regular dan Glass/Strong. Di mode Solid tokennya opak, jadi blur tidak terlihat. */
+/* Sementara: nama lama, permukaan datar (ADR-0027). Diganti komponen datar di PR berikutnya. */
 @utility glass {
-  background-color: var(--color-surface-glass);
-  border: var(--border-width-default) solid var(--color-border-glass);
-  backdrop-filter: blur(var(--blur-glass)) saturate(1.4);
-  box-shadow:
-    inset 0 1px 0 var(--color-shadow-highlight),
-    0 8px 32px var(--color-shadow-glass);
+  background-color: var(--color-surface-raised);
+  border: var(--border-width-default) solid var(--color-border-subtle);
 }
 
 @utility glass-strong {
-  background-color: var(--color-surface-glass-strong);
-  border: var(--border-width-default) solid var(--color-border-glass);
-  backdrop-filter: blur(var(--blur-glass-strong)) saturate(1.4);
-  box-shadow:
-    inset 0 1px 0 var(--color-shadow-highlight),
-    0 12px 40px var(--color-shadow-glass);
+  background-color: var(--color-surface-raised);
+  border: var(--border-width-default) solid var(--color-border-subtle);
+  box-shadow: 0 12px 32px -16px var(--color-shadow-soft);
 }
 
 /* Tombol Primary berkilap dengan Glow/Brand. Titik paling terang tetap 4.5:1 terhadap teks putih. */
@@ -58,8 +51,7 @@ body {
   );
   box-shadow:
     inset 0 1px 1px color-mix(in oklab, white 55%, transparent),
-    inset 0 -2px 4px color-mix(in oklab, var(--color-brand-fill-pressed) 45%, transparent),
-    0 8px 24px -4px var(--color-brand-glow);
+    inset 0 -2px 4px color-mix(in oklab, var(--color-brand-fill-pressed) 45%, transparent);
   &:hover {
     background-image: linear-gradient(
       180deg,
@@ -101,9 +93,7 @@ body {
   @media (hover: hover) and (pointer: fine) {
     &:hover {
       transform: translateY(-2px);
-      box-shadow:
-        inset 0 1px 0 var(--color-shadow-highlight),
-        0 16px 40px var(--color-shadow-glass);
+      box-shadow: 0 16px 32px -16px var(--color-shadow-soft);
     }
   }
 }

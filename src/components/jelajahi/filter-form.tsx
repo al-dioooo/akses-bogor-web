@@ -69,7 +69,7 @@ export async function FilterForm({ filters }: { filters: ExploreFilters }) {
           )}
           <Icon icon={IconChevronRight} className="ml-auto size-5 transition-transform duration-200 group-open:rotate-90" />
         </summary>
-        <div className="grid gap-6 border-t border-border-glass p-5 lg:grid-cols-3">
+        <div className="grid gap-6 border-t border-border-subtle p-5 lg:grid-cols-3">
           {districts.length > 0 && (
             <div className="flex flex-col gap-2">
               <label htmlFor="kecamatan" className="font-semibold">
