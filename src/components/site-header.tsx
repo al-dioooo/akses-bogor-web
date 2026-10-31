@@ -31,8 +31,8 @@ export async function SiteHeader() {
   const td = await getTranslations("Tampilan");
   return (
     <StickyHeader>
-      <div className="page-width flex min-h-16 items-center justify-between gap-3">
-        <Link href="/" aria-label={tl("home")} className="rounded-xl">
+      <div className="page-width flex min-h-19 items-center justify-between gap-3">
+        <Link href="/" aria-label={tl("home")} className="rounded-xl py-1">
           <Logo />
         </Link>
         <nav aria-label={t("label")} className="hidden lg:block">
