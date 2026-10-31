@@ -18,7 +18,7 @@ Alasan pilihan ini ada di [ADR-0013](https://github.com/al-dioooo/akses-bogor-do
 
 ## Menjalankan di Lokal
 
-Butuh Node.js 22 atau lebih baru dan pnpm 12 (`corepack enable` memakai versi di `package.json`).
+Butuh Node.js 24 atau lebih baru dan pnpm 12 (`corepack enable` memakai versi di `package.json`).
 
 ```bash
 pnpm install
@@ -99,7 +99,7 @@ Proyek Vercel di akun pemilik repo ([ADR-0013](https://github.com/al-dioooo/akse
 | Framework Preset | Next.js, dengan perintah install, build, dan output bawaan |
 | Root Directory | `./` |
 | Production Branch | `release` (Settings → Environments → Production) |
-| Node.js Version | 22.x, sama dengan `.nvmrc` |
+| Node.js Version | 24.x, sama dengan `.nvmrc` |
 | Environment Variables | `API_URL` = `https://akses-bogor-api.yorhagarden.xyz` dan `ENABLE_EXPERIMENTAL_COREPACK` = `1`, untuk Production dan Preview |
 
 - Rilis berarti merge `main` ke `release` lewat PR, sama seperti API. Push ke branch lain, termasuk `main`, menjadi preview deployment.
