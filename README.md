@@ -43,6 +43,7 @@ Contoh ada di [.env.example](.env.example); salin ke `.env.local`. Jangan commit
 | Variabel | Wajib | Keterangan |
 | --- | --- | --- |
 | `API_URL` | Ya | Alamat [akses-bogor-api](https://github.com/al-dioooo/akses-bogor-api), mis. `http://localhost:8080`. Hanya dibaca di server; browser tidak pernah memanggil API langsung |
+| `ENABLE_EXPERIMENTAL_COREPACK` | Di Vercel | `1`, supaya Vercel memakai versi pnpm dari `packageManager` di `package.json` |
 
 Token publik Mapbox ditambahkan bersama halaman Peta.
 
@@ -91,7 +92,20 @@ Diagram, pengaturan bahasa, lapisan pengujian, dan struktur folder ada di [docs/
 
 ## Deployment
 
-Belum di-deploy. Rencananya proyek Vercel di akun pemilik repo membangun `main` secara otomatis, dengan preview untuk setiap PR. Paket Hobby Vercel hanya membangun commit dari pemilik akun, jadi [.github/workflows/redeploy.yml](.github/workflows/redeploy.yml) menambahkan commit kosong atas nama pemilik setiap kali orang lain mendorong ke `main`, seperti di lokerin.
+Proyek Vercel di akun pemilik repo ([ADR-0013](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0013-tech-stack-nextjs-fastify.md)). API produksi ada di `https://akses-bogor-api.yorhagarden.xyz` ([ADR-0026](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0026-api-dan-postgresql-di-evergarden-oci.md)).
+
+| Pengaturan Vercel | Nilai |
+| --- | --- |
+| Framework Preset | Next.js, dengan perintah install, build, dan output bawaan |
+| Root Directory | `./` |
+| Production Branch | `release` (Settings → Environments → Production) |
+| Node.js Version | 22.x, sama dengan `.nvmrc` |
+| Environment Variables | `API_URL` = `https://akses-bogor-api.yorhagarden.xyz` dan `ENABLE_EXPERIMENTAL_COREPACK` = `1`, untuk Production dan Preview |
+
+- Rilis berarti merge `main` ke `release` lewat PR, sama seperti API. Push ke branch lain, termasuk `main`, menjadi preview deployment.
+- Preview deployment hanya bisa dibuka anggota proyek di Vercel. Tim membuka alamat produksi proyek (`*.vercel.app`, atau domain sendiri bila sudah dipasang).
+- Setiap alamat web baru juga ditambahkan ke `FRONTEND_ORIGINS` di API.
+- Paket Hobby Vercel hanya membatasi author commit untuk repo privat. Repo ini publik, jadi tidak perlu commit kosong atas nama pemilik seperti di lokerin. Bila repo dijadikan privat, deploy dari commit anggota lain akan diblokir.
 
 ## Kontribusi
 
