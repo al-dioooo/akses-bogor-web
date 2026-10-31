@@ -34,11 +34,21 @@
       "count": "{count, plural, =0 {Belum ada lokasi} other {# lokasi}}"
     },
     "guide": {
-      "eyebrow": "Cara membaca",
-      "title": "Empat fasilitas. Empat status.",
+      "eyebrow": "Rute ke pintu",
+      "title": "Empat fasilitas, dari halte sampai lantai",
+      "accent": "atas.",
       "intro": "Status dihitung dari pintu masuk dulu, lalu fasilitas lain, dan selalu ditulis bersama alasannya.",
-      "facilitiesTitle": "Yang diperiksa di setiap tempat",
-      "statusesTitle": "Arti status",
+      "where": {
+        "guiding_block": "Dari halte",
+        "ramp": "Pintu masuk",
+        "toilet_difabel": "Di dalam",
+        "lift": "Lantai lain"
+      },
+      "rampFact": "{count} dari {total}",
+      "rampFactLabel": "lokasi punya pintu masuk tanpa tangga",
+      "statusesEyebrow": "Sampai di pintu",
+      "statusesTitle": "Empat status, selalu dengan",
+      "statusesAccent": "alasannya.",
       "facility": {
         "ramp": "Jalan masuk tanpa anak tangga dari jalan atau parkir, cukup lebar untuk kursi roda.",
         "toilet_difabel": "Toilet umum yang muat kursi roda, dengan kloset duduk dan pegangan.",
@@ -54,7 +64,8 @@
     },
     "steps": {
       "eyebrow": "Dari warga, diperiksa tim",
-      "title": "Data yang bisa dipegang.",
+      "title": "Data yang bisa",
+      "accent": "dipegang.",
       "items": {
         "lapor": {
           "title": "Warga melapor",
@@ -71,7 +82,8 @@
       }
     },
     "cta": {
-      "title": "Tahu tempat yang belum ada di sini?",
+      "title": "Tahu tempat yang belum ada di",
+      "accent": "sini?",
       "body": "Laporkan dalam tiga langkah. Setiap laporan membantu orang lain berangkat dengan lebih yakin.",
       "button": "Laporkan tempat"
     }
