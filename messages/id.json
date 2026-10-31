@@ -34,16 +34,9 @@
       "count": "{count, plural, =0 {Belum ada lokasi} other {# lokasi}}"
     },
     "guide": {
-      "eyebrow": "Rute ke pintu",
       "title": "Empat fasilitas, dari halte sampai lantai",
       "accent": "atas.",
       "intro": "Status dihitung dari pintu masuk dulu, lalu fasilitas lain, dan selalu ditulis bersama alasannya.",
-      "where": {
-        "guiding_block": "Dari halte",
-        "ramp": "Pintu masuk",
-        "toilet_difabel": "Di dalam",
-        "lift": "Lantai lain"
-      },
       "rampFact": "{count} dari {total}",
       "rampFactLabel": "lokasi punya pintu masuk tanpa tangga",
       "statusesEyebrow": "Sampai di pintu",
@@ -86,6 +79,15 @@
       "accent": "sini?",
       "body": "Laporkan dalam tiga langkah. Setiap laporan membantu orang lain berangkat dengan lebih yakin.",
       "button": "Laporkan tempat"
+    }
+  },
+  "Rute": {
+    "label": "Rute ke pintu",
+    "where": {
+      "guiding_block": "Dari halte",
+      "ramp": "Pintu masuk",
+      "toilet_difabel": "Di dalam",
+      "lift": "Lantai lain"
     }
   },
   "Status": {
