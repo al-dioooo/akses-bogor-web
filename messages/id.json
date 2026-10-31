@@ -226,7 +226,7 @@
     "loading": "Memuat lokasi…",
     "landmark": "Patokan",
     "summaryTitle": "Ringkasan fasilitas",
-    "ringOf": "dari {relevant}",
+    "ofRelevant": "dari {relevant} fasilitas tersedia",
     "summary": "{relevant, plural, =0 {Tidak ada fasilitas yang dibutuhkan} other {{available} dari {relevant} fasilitas tersedia}}",
     "unknown": "{count} fasilitas belum diketahui",
     "allAvailable": "semua fasilitas yang dibutuhkan tersedia",
