@@ -23,7 +23,7 @@ export function FacilityList({ facilities }: { facilities: PlaceDetail["faciliti
   const tr = useTranslations("Rute");
   const answers = new Map(facilities.map((item) => [item.facility, item]));
   return (
-    <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <ol className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
       {ROUTE.map(({ facility, image }, index) => {
         const item = answers.get(facility);
         if (!item) return null;
@@ -38,19 +38,19 @@ export function FacilityList({ facilities }: { facilities: PlaceDetail["faciliti
                 src={image}
                 alt=""
                 placeholder="blur"
-                sizes="(min-width: 64rem) 18rem, (min-width: 40rem) 50vw, 100vw"
+                sizes="(min-width: 64rem) 18rem, 50vw"
                 className={`size-full object-cover ${item.answer === "tersedia" ? "" : "[filter:saturate(.35)_brightness(1.04)]"}`}
               />
               <span
                 aria-hidden="true"
-                className="absolute top-3.5 left-3.5 grid size-11 place-items-center rounded-full border-3 border-brand-fill bg-surface-raised font-mono text-sm font-semibold text-text-brand"
+                className="absolute top-3 left-3 grid size-9 place-items-center rounded-full border-3 border-brand-fill bg-surface-raised font-mono text-xs font-semibold text-text-brand sm:size-11 sm:text-sm"
               >
                 {routeNumber(index)}
               </span>
             </span>
-            <div className="flex flex-1 flex-col items-start gap-2.5 p-5">
+            <div className="flex flex-1 flex-col items-start gap-2.5 p-4 sm:p-5">
               <p className="font-mono text-xs font-medium tracking-[0.08em] text-text-secondary uppercase">{tr(`where.${facility}`)}</p>
-              <h3 className="font-heading text-[1.375rem] leading-tight font-bold tracking-[-0.02em]">{tf(facility)}</h3>
+              <h3 className="font-heading text-lg leading-tight font-bold tracking-[-0.02em] sm:text-[1.375rem]">{tf(facility)}</h3>
               <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-sm font-bold ${ANSWER_TONE[item.answer]}`}>
                 <Icon icon={ANSWER_ICON[item.answer]} className="size-4" />
                 {tj(item.answer)}
