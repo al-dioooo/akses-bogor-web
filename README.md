@@ -57,6 +57,7 @@ Warna, spasi, radius, dan ukuran berasal dari variable design system ([ADR-0027]
 | [src/app/tokens.css](src/app/tokens.css) | CSS hasil `pnpm tokens`; jangan diubah langsung |
 | [scripts/tokens.mjs](scripts/tokens.mjs) | Generator CSS |
 | [scripts/figma/export-variables.js](scripts/figma/export-variables.js) | Skrip ekspor yang dijalankan di file Figma |
+| [scripts/ilustrasi.mjs](scripts/ilustrasi.mjs) | Merender poster hero dan close-up dari adegan three.js ([catatan](src/assets/ilustrasi/README.md)) |
 
 Mode warna:
 
