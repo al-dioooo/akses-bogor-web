@@ -279,6 +279,51 @@ body {
   font-weight: 600;
 }
 
+/* "Rute ke pintu" (ADR-0028): di layar lebar dengan adegan hidup, kanvas lengket di kiri dan teks di kanan; selain
+   itu close-up diam di tiap baris. */
+.route-stage {
+  display: grid;
+}
+
+.route-view {
+  display: none;
+}
+
+@media (width >= 64rem) {
+  .route-stage[data-live] {
+    grid-template-columns: 1fr 1fr;
+    column-gap: var(--spacing-3xl);
+    align-items: start;
+  }
+
+  .route-stage[data-live] .route-view {
+    display: block;
+    position: sticky;
+    top: max(5rem, calc(50vh - 18vw));
+    aspect-ratio: 5 / 4;
+    overflow: hidden;
+    border-radius: 2rem;
+    & canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  .route-stage[data-live] .route-list {
+    gap: 0;
+  }
+
+  .route-stage[data-live] .route-stop {
+    grid-template-columns: 1fr;
+    min-height: 60vh;
+  }
+
+  .route-stage[data-live] .route-still {
+    display: none;
+  }
+}
+
 /* Garis putus-putus di tengah pita jalan, seperti marka jalan di ilustrasi. */
 .road-band {
   position: relative;
