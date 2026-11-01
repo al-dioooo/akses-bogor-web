@@ -75,10 +75,10 @@ export function DisplaySettings({ labels }: { labels: DisplayLabels }) {
       <dialog
         ref={dialog}
         aria-labelledby="tampilan-judul"
-        className="panel-raised m-auto w-[min(28rem,calc(100%-2rem))] rounded-2xl p-6 text-text-primary backdrop:bg-surface-scrim"
+        className="panel-raised m-auto w-[min(28rem,calc(100%-2rem))] rounded-3xl p-6 text-text-primary backdrop:bg-surface-scrim"
       >
         <form method="dialog" className="flex flex-col gap-6">
-          <h2 id="tampilan-judul" className="font-heading text-xl font-bold tracking-[-0.02em]">
+          <h2 id="tampilan-judul" className="display text-2xl">
             {labels.title}
           </h2>
           <Choice
@@ -120,7 +120,7 @@ function Choice<T extends string>(props: {
         {props.options.map((option) => (
           <label
             key={option.value}
-            className="flex min-h-11 cursor-pointer items-center gap-2.5 rounded-xl border border-border-subtle px-3 text-sm font-medium has-checked:border-border-focus has-checked:bg-surface-brand-subtle"
+            className="flex min-h-11 cursor-pointer items-center gap-2.5 rounded-full border-2 border-border-subtle px-4 text-sm font-semibold has-checked:border-border-strong has-checked:bg-surface-hover"
           >
             <input
               type="radio"

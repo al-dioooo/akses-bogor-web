@@ -18,10 +18,8 @@ export function MainNavList({ labels, pathname }: { labels: NavLabels; pathname:
             <Link
               href={item.href}
               aria-current={active ? "page" : undefined}
-              className={`inline-flex min-h-11 items-center rounded-full px-3.5 text-sm transition-colors duration-200 ${
-                active
-                  ? "bg-surface-brand-subtle font-semibold text-text-brand"
-                  : "font-medium text-text-secondary hover:bg-surface-hover hover:text-text-primary"
+              className={`inline-flex min-h-11 items-center rounded-full px-3.5 text-[0.9375rem] font-semibold transition-colors duration-200 ${
+                active ? "bg-text-primary text-bg-canvas" : "text-text-primary hover:bg-surface-hover"
               }`}
             >
               {labels[item.key]}
@@ -52,7 +50,7 @@ export function StickyHeader({ children }: { children: ReactNode }) {
   return (
     <header
       data-scrolled={scrolled || undefined}
-      className="sticky top-0 z-40 border-b border-transparent transition-[background-color,border-color,box-shadow] duration-300 ease-out-expo data-scrolled:border-border-subtle data-scrolled:bg-bg-canvas"
+      className="sticky top-0 z-40 border-b border-transparent transition-[background-color,border-color] duration-300 ease-out-expo data-scrolled:border-border-subtle data-scrolled:bg-bg-canvas"
     >
       {children}
     </header>

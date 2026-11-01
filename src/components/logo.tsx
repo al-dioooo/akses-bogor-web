@@ -9,9 +9,9 @@ export function Logo({ inverse = false }: { inverse?: boolean }) {
         <Icon icon={IconAccessible} className="size-6" />
       </span>
       <span
-        className={`font-heading text-xl font-extrabold tracking-[-0.035em] ${inverse ? "text-text-on-inverse" : "text-text-primary"}`}
+        className={`font-heading text-xl font-extrabold tracking-[-0.03em] sm:text-[1.375rem] ${inverse ? "text-text-on-inverse" : "text-text-primary"}`}
       >
-        Akses<span className={inverse ? "text-text-on-inverse-secondary" : "text-text-brand"}>Bogor</span>
+        AksesBogor
       </span>
     </span>
   );

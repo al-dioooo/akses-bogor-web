@@ -45,6 +45,8 @@ export const IconArrowRight: Glyph = ["M5 12l14 0", "M13 18l6 -6", "M13 6l6 6"];
 export const IconArrowUp: Glyph = ["M12 5l0 14", "M18 11l-6 -6", "M6 11l6 -6"];
 export const IconArrowUpRight: Glyph = ["M17 7l-10 10", "M8 7l9 0l0 9"];
 export const IconSunMoon: Glyph = ["M9.173 14.83a4 4 0 1 1 5.657 -5.657", "M11.294 12.707l.174 .247a7.5 7.5 0 0 0 8.845 2.492a9 9 0 0 1 -14.671 2.914", "M3 12h1", "M12 3v1", "M5.6 5.6l.7 .7", "M3 21l18 -18"];
+export const IconPlayerPause: Glyph = ["M6 6a1 1 0 0 1 1 -1h2a1 1 0 0 1 1 1v12a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1z", "M14 6a1 1 0 0 1 1 -1h2a1 1 0 0 1 1 1v12a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1z"];
+export const IconPlayerPlay: Glyph = ["M7 4v16l13 -8z"];
 
 // Konten
 export const IconMapPin: Glyph = ["M9 11a3 3 0 1 0 6 0a3 3 0 0 0 -6 0", "M17.657 16.657l-4.243 4.243a2 2 0 0 1 -2.827 0l-4.244 -4.243a8 8 0 1 1 11.314 0"];
