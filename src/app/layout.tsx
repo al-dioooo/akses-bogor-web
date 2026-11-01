@@ -17,6 +17,8 @@ const inter = Inter({
 const bricolage = Bricolage_Grotesque({
   variable: "--font-bricolage",
   subsets: ["latin"],
+  // Optical size membuat huruf lebih rapat di ukuran judul besar.
+  axes: ["opsz"],
 });
 
 const plexMono = IBM_Plex_Mono({
