@@ -124,8 +124,8 @@ body {
   scroll-behavior: auto !important;
 }
 
-/* Hero Beranda (ADR-0027): gambar lingkungan 2:1 di bawah teks pada layar lebar, di bawah teks pada ponsel.
-   Lapisan WebGL dan pin hanya tampil setelah gambar siap; tanpa WebGL, gambar statis tetap terlihat. */
+/* Hero Beranda (ADR-0028): poster 2:1 di bawah teks pada layar lebar, 4:3 di bawah teks pada ponsel. Pin tampil
+   setelah posisinya dihitung; kanvas three.js menutup poster pada bingkai yang sama setelah adegan siap. */
 .hero-stage {
   position: relative;
   aspect-ratio: 4 / 3;
@@ -154,12 +154,34 @@ body {
   }
 }
 
+/* Poster versi malam hanya tampil di mode Gelap; selektornya sama dengan tokens.css. */
+.hero-still[data-mode="gelap"] {
+  display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .hero-still[data-mode="terang"] {
+    display: none;
+  }
+  :root:not([data-theme]) .hero-still[data-mode="gelap"] {
+    display: block;
+  }
+}
+
+:root[data-theme="gelap"] .hero-still[data-mode="terang"] {
+  display: none;
+}
+
+:root[data-theme="gelap"] .hero-still[data-mode="gelap"] {
+  display: block;
+}
+
 .hero-canvas {
   opacity: 0;
   transition: opacity 600ms var(--ease-out-expo);
 }
 
-.hero-stage[data-ready] .hero-canvas,
+.hero-stage[data-live] .hero-canvas,
 .hero-stage[data-ready] .hero-pin {
   opacity: 1;
 }
