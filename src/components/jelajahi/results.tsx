@@ -25,7 +25,7 @@ export async function Results({ filters }: { filters: ExploreFilters }) {
   return (
     <section aria-labelledby="jumlah-hasil" className="flex flex-col gap-5">
       {/* Diumumkan pembaca layar setiap kali filter diterapkan. */}
-      <p id="jumlah-hasil" role="status" className="font-semibold">
+      <p id="jumlah-hasil" role="status" className="font-mono text-sm font-medium text-text-secondary">
         {t("results.count", { total: items.length ? total : 0, from, to: from + items.length - 1 })}
       </p>
       {items.length > 0 ? (
@@ -68,12 +68,12 @@ export async function Results({ filters }: { filters: ExploreFilters }) {
 async function Empty({ filtered }: { filtered: boolean }) {
   const t = await getTranslations("Jelajahi");
   return (
-    <div className="flex flex-col items-start gap-4 rounded-2xl border-2 border-dashed border-border-subtle p-8">
-      <span className="grid size-12 place-items-center rounded-lg bg-surface-brand-subtle text-icon-brand">
+    <div className="flex flex-col items-start gap-4 rounded-3xl bg-bg-sunken p-8 sm:p-10">
+      <span className="grid size-12 place-items-center rounded-full bg-surface-raised text-icon-brand">
         <Icon icon={IconSearch} className="size-6" />
       </span>
       <div>
-        <h2 className="font-heading text-lg font-bold">{t(filtered ? "results.emptyTitle" : "results.noDataTitle")}</h2>
+        <h2 className="display text-2xl">{t(filtered ? "results.emptyTitle" : "results.noDataTitle")}</h2>
         <p className="text-text-secondary">{t(filtered ? "results.emptyBody" : "results.noDataBody")}</p>
       </div>
       {filtered && (
@@ -92,7 +92,7 @@ export function ResultsSkeleton({ label }: { label: string }) {
       <span aria-hidden="true" className="h-6 w-56 rounded-sm bg-surface-brand-subtle" />
       <div aria-hidden="true" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {[0, 1, 2, 3, 4, 5].map((key) => (
-          <div key={key} className="panel h-80 rounded-2xl" />
+          <div key={key} className="panel h-72 rounded-3xl" />
         ))}
       </div>
     </div>
