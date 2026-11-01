@@ -19,7 +19,7 @@ export function SectionHeading({
 }) {
   const Heading = level === 1 ? "h1" : "h2";
   return (
-    <div className="reveal grid items-end gap-x-16 gap-y-5 lg:grid-cols-[1.1fr_1fr]">
+    <div className={`${level === 2 ? "reveal " : ""}grid items-end gap-x-16 gap-y-5 lg:grid-cols-[1.1fr_1fr]`}>
       <div className="flex flex-col items-start gap-4">
         <p className="lbl">{label}</p>
         <Heading id={id} className="display text-[clamp(2.25rem,1.4rem+2.6vw,3.75rem)] leading-none">

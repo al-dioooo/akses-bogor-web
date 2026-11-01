@@ -7,12 +7,13 @@ import { buttonClass } from "@/ui/button-styles";
 import { Icon } from "@/ui/icon";
 import { IconSearch } from "@/ui/icons";
 import { CATEGORY_ICON } from "@/ui/place-icons";
+import { HeroScene } from "./hero-scene";
 
-/** Hero Beranda (ADR-0027): judul, pencarian, dan pintasan kategori. */
+/** Hero Beranda (ADR-0027): judul, pencarian, dan kategori di atas ilustrasi "Halte ke pintu". */
 export async function Hero() {
   const t = await getTranslations("Beranda");
   return (
-    <section aria-labelledby="judul-beranda" className="relative isolate flex flex-col overflow-hidden pb-(--spacing-3xl)">
+    <section aria-labelledby="judul-beranda" className="relative isolate flex flex-col overflow-hidden lg:min-h-[calc(50vw+7.5rem)]">
       <div className="page-width relative z-10 pt-6 lg:pt-[clamp(1rem,4vh,3rem)]">
         <div className="flex max-w-[33rem] flex-col items-start">
           <p className="lbl">{t("eyebrow")}</p>
@@ -45,6 +46,7 @@ export async function Hero() {
           </Suspense>
         </div>
       </div>
+      <HeroScene />
     </section>
   );
 }

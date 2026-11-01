@@ -15,14 +15,14 @@ export async function generateMetadata({ params }: PageProps<"/lokasi/[id]">): P
   return { title: place?.name ?? t("metaTitle") };
 }
 
-/** Detail lokasi (Detail · DS v1). Tautan kembali tampil langsung; isi lokasi diambil saat request. */
+/** Detail lokasi (ADR-0027). Tautan kembali tampil langsung; isi lokasi diambil saat request. */
 export default async function LokasiPage({ params }: PageProps<"/lokasi/[id]">) {
   const t = await getTranslations("Detail");
   return (
-    <main id="konten" className="page-width flex flex-1 flex-col gap-6 pt-8 sm:pt-10">
+    <main id="konten" className="page-width flex flex-1 flex-col gap-6 pt-6 sm:pt-8">
       <Link
         href="/jelajahi"
-        className="-ml-3 inline-flex min-h-11 items-center gap-2 self-start rounded-full px-3 font-semibold text-text-brand hover:bg-surface-hover"
+        className="-ml-3 inline-flex min-h-11 items-center gap-2 self-start rounded-full px-3 font-bold hover:bg-surface-hover"
       >
         <Icon icon={IconArrowLeft} />
         {t("back")}
@@ -45,14 +45,13 @@ async function Place({ params }: { params: PageProps<"/lokasi/[id]">["params"] }
 
 function DetailSkeleton({ label }: { label: string }) {
   return (
-    <div role="status" className="grid gap-6 lg:grid-cols-[1.1fr_1fr]">
+    <div role="status" className="grid items-end gap-8 lg:grid-cols-[1.2fr_1fr] lg:gap-12">
       <span className="sr-only">{label}</span>
       <div aria-hidden="true" className="flex flex-col gap-4">
-        <span className="h-8 w-32 rounded-full bg-surface-brand-subtle" />
-        <span className="h-14 w-4/5 rounded-lg bg-surface-brand-subtle" />
-        <span className="h-6 w-1/2 rounded-sm bg-surface-brand-subtle" />
+        <span className="h-4 w-40 rounded-sm bg-bg-sunken" />
+        <span className="h-16 w-4/5 rounded-lg bg-bg-sunken" />
       </div>
-      <div aria-hidden="true" className="panel aspect-[16/10] rounded-2xl" />
+      <div aria-hidden="true" className="h-72 rounded-[1.75rem] bg-bg-sunken" />
     </div>
   );
 }
