@@ -28,6 +28,14 @@ test("the hero illustration stays still when reduced motion is requested", async
   await expect(page.getByRole("button", { name: "Hentikan gerakan" })).toHaveCount(0);
 });
 
+test("the route section shows the four close-ups when reduced motion is requested", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  const stills = page.getByRole("region", { name: /Empat fasilitas/ }).locator(".route-still");
+  await expect(stills).toHaveCount(4);
+  await expect(stills.first()).toBeVisible();
+});
+
 test("the hero motion can be paused and resumed", async ({ page }) => {
   await page.goto("/");
   const pause = page.getByRole("button", { name: "Hentikan gerakan" });

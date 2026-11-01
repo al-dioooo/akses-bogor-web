@@ -22,7 +22,7 @@ Teks antarmuka ada di `messages/id.json` dan dibaca lewat next-intl ([ADR-0020](
 ## Tampilan dan Gerak
 
 - Mode warna mengikuti perangkat (Terang atau Gelap). Pengaturan tampilan di header bisa memaksa salah satunya lewat `<html data-theme>`, dan "Kurangi gerakan" memasang `<html data-motion="off">`. Pilihan disimpan di `localStorage` (`aksesbogor-tampilan`) dan dipasang oleh skrip kecil di `<head>` sebelum halaman digambar.
-- Hero Beranda memakai ilustrasi "Halte ke pintu" dengan lapisan WebGL tanpa library (`src/components/beranda/scene-gl.ts`): paralaks menurut kedalaman, hujan tipis, dan pin fasilitas. Lapisan ini hanya bergerak bila gerak tidak dikurangi, hero terlihat, dan tab aktif, dan punya tombol hentikan; tanpa WebGL, gambar statis yang tampil ([ADR-0027](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0027-design-system-datar-dan-ilustrasi-3d.md)).
+- Hero Beranda dan "Rute ke pintu" memakai adegan 3D "Halte ke pintu" yang dibangun dari kode dengan three.js (`src/components/beranda/scene`, [ADR-0028](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0028-adegan-3d-three-js-untuk-hero-dan-rute.md)). Poster yang dirender dari adegan yang sama tampil dulu; three.js dimuat malas lewat `import()` hanya bila gerak tidak dikurangi dan WebGL ada, lalu kanvas menggantikan poster pada bingkai yang sama. Adegan bergerak hanya bila hero terlihat dan tab aktif, dan punya tombol hentikan. Di "Rute ke pintu" layar lebar, kamera berpindah ke fasilitas yang sedang dibaca; di ponsel tampil close-up diam. Mode Gelap menampilkan versi malam.
 - Gerak memakai satu kurva (`ease-out-expo`): kartu terangkat 2 px saat disorot, dan konten muncul saat digulir lewat scroll timeline CSS. Semuanya berhenti bila perangkat meminta gerak dikurangi atau `data-motion="off"`, dan konten tidak pernah disembunyikan bila browser tidak mendukung animasinya.
 - Ikon berasal dari Tabler Icons (MIT) dan disalin sebagai path di `src/ui/icons.ts`, tanpa dependensi tambahan.
 
@@ -46,9 +46,9 @@ Sesuai [ADR-0021](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisi
 | `src/lib` | Klien API dan pembaca filter Jelajahi dari URL |
 | `src/ui` | Komponen dasar: ikon, gaya tombol, Status badge, judul bagian, keadaan galat |
 | `src/components` | Bagian halaman: header, Bottom nav, footer, pengaturan tampilan, dan isi tiap halaman |
-| `src/assets` | Ilustrasi WebP dan catatan prompt pembuatannya |
+| `src/assets` | Poster dan close-up hasil render adegan, dengan catatan cara merender ulang |
 | `design-tokens` | Snapshot ekspor variable Figma |
-| `scripts` | Generator token dan skrip ekspor Figma |
+| `scripts` | Generator token, skrip ekspor Figma, dan perender ilustrasi |
 | `src/i18n` | Konfigurasi next-intl |
 | `messages` | Teks antarmuka per bahasa |
 | `e2e` | Tes Playwright; `e2e/mock-api` berisi API tiruan dan datanya |
