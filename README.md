@@ -49,11 +49,11 @@ Token publik Mapbox ditambahkan bersama halaman Peta.
 
 ## Token Design System
 
-Warna, spasi, radius, blur, dan ukuran berasal dari variable di [halaman Design System Figma](https://www.figma.com/design/aTaMQUxVF2P1zQlJY3s4du/AksesBogor?node-id=1-2) ([ADR-0009](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0009-design-system-kaca-ungu-inklusi.md)). Nama CSS-nya sama dengan code syntax di Figma: `color/text/primary` menjadi `--color-text-primary`.
+Warna, spasi, radius, dan ukuran berasal dari variable design system ([ADR-0027](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0027-design-system-datar-dan-ilustrasi-3d.md)). Nama CSS-nya sama dengan code syntax di Figma: `color/text/primary` menjadi `--color-text-primary`. Snapshot versi 2 diubah langsung di repo ini; variable di [Figma](https://www.figma.com/design/aTaMQUxVF2P1zQlJY3s4du/AksesBogor?node-id=1-2) masih versi 1 dan diperbarui menyusul.
 
 | Berkas | Isi |
 | --- | --- |
-| [design-tokens/figma-variables.json](design-tokens/figma-variables.json) | Snapshot ekspor variable Figma, satu variable per baris |
+| [design-tokens/figma-variables.json](design-tokens/figma-variables.json) | Snapshot variable, satu variable per baris |
 | [src/app/tokens.css](src/app/tokens.css) | CSS hasil `pnpm tokens`; jangan diubah langsung |
 | [scripts/tokens.mjs](scripts/tokens.mjs) | Generator CSS |
 | [scripts/figma/export-variables.js](scripts/figma/export-variables.js) | Skrip ekspor yang dijalankan di file Figma |
@@ -62,21 +62,19 @@ Mode warna:
 
 | Mode | Aktif saat |
 | --- | --- |
-| Glass | Bawaan |
-| Solid | `prefers-reduced-transparency: reduce` |
-| Dark | `prefers-color-scheme: dark`; menang bila Solid juga diminta |
+| Terang | Bawaan |
+| Gelap | `prefers-color-scheme: dark` |
 
-`<html data-theme="glass|solid|dark">` mengalahkan preferensi sistem, untuk pengaturan tampilan di aplikasi nanti atau untuk pengujian.
+`<html data-theme="terang|gelap">` mengalahkan preferensi sistem; dipasang oleh pengaturan tampilan di header dan dipakai di pengujian.
 
-Token warna, radius, dan blur juga menjadi utility Tailwind dengan nama token, misalnya `bg-bg-canvas`, `bg-surface-glass`, `text-text-primary`, `border-border-subtle`, `rounded-lg`, dan `backdrop-blur-glass`. Palet, radius, dan blur bawaan Tailwind dimatikan supaya hanya token yang terpakai. Token lain dipakai lewat variable, misalnya `p-(--spacing-md)`, `gap-(--spacing-lg)`, `size-(--size-control-md)`, atau `border-(length:--border-width-focus)`. Spasi sengaja tidak dijadikan utility bernama (`p-md`), karena Tailwind juga membaca `--spacing-*` untuk `max-w-*` dan `w-*`, sehingga `--spacing-2xl` akan mengubah arti `max-w-2xl`.
+Token warna dan radius juga menjadi utility Tailwind dengan nama token, misalnya `bg-bg-canvas`, `bg-surface-raised`, `text-text-primary`, `border-border-subtle`, dan `rounded-lg`. Palet, radius, dan blur bawaan Tailwind dimatikan supaya hanya token yang terpakai. Token lain dipakai lewat variable, misalnya `p-(--spacing-md)`, `gap-(--spacing-lg)`, `size-(--size-control-md)`, atau `border-(length:--border-width-focus)`. Spasi sengaja tidak dijadikan utility bernama (`p-md`), karena Tailwind juga membaca `--spacing-*` untuk `max-w-*` dan `w-*`, sehingga `--spacing-2xl` akan mengubah arti `max-w-2xl`.
 
-Memperbarui token setelah variable di Figma berubah:
+Memperbarui token:
 
-1. Jalankan isi `scripts/figma/export-variables.js` di file Figma AksesBogor, lewat Figma MCP (`use_figma`) atau plugin pengembangan.
-2. Simpan JSON hasilnya ke `design-tokens/figma-variables.json`, dengan objek `source` yang lama dan tanggal `exportedAt` yang baru.
-3. Jalankan `pnpm tokens`, periksa diff kedua berkas, lalu commit. CI gagal bila `tokens.css` tidak sesuai snapshot.
+1. Ubah `design-tokens/figma-variables.json`. Setelah variable Figma diperbarui ke versi 2, snapshot kembali diambil dari Figma: jalankan isi `scripts/figma/export-variables.js` di file Figma AksesBogor lewat Figma MCP (`use_figma`) atau plugin pengembangan, lalu simpan JSON-nya dengan objek `source` yang lama dan tanggal `exportedAt` yang baru.
+2. Jalankan `pnpm tokens`, periksa diff kedua berkas, lalu commit. CI gagal bila `tokens.css` tidak sesuai snapshot.
 
-Text style dan effect style Figma (tipografi, bayangan kaca) belum diekspor karena bukan variable.
+Text style dan effect style Figma (tipografi, bayangan) belum diekspor karena bukan variable.
 
 ## Bahasa dan Teks
 

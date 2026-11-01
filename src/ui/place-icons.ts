@@ -23,12 +23,20 @@ export const STATUS_ICON: Record<Status, Glyph> = {
   belum_diketahui: IconHelpCircle,
 };
 
-/** Warna teks dan latar status dari token (ADR-0009). */
+/** Warna teks dan latar status dari token (ADR-0027). */
 export const STATUS_TONE: Record<Status, string> = {
   aksesibel: "bg-status-accessible-bg text-status-accessible-fg",
   sebagian: "bg-status-partial-bg text-status-partial-fg",
   tidak_aksesibel: "bg-status-inaccessible-bg text-status-inaccessible-fg",
   belum_diketahui: "bg-status-unknown-bg text-status-unknown-fg",
+};
+
+/** Warna teks status saja, untuk badge di atas latar yang sudah bernada status. */
+export const STATUS_FG: Record<Status, string> = {
+  aksesibel: "text-status-accessible-fg",
+  sebagian: "text-status-partial-fg",
+  tidak_aksesibel: "text-status-inaccessible-fg",
+  belum_diketahui: "text-status-unknown-fg",
 };
 
 export const CATEGORY_ICON: Record<Category, Glyph> = {

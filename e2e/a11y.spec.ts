@@ -15,7 +15,7 @@ const PAGES = [
 
 const WCAG_22_AA = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"];
 
-// Mode Glass (terang) dan Dark diuji terpisah karena warnanya berbeda (ADR-0009).
+// Mode Terang dan Gelap diuji terpisah karena warnanya berbeda (ADR-0027).
 for (const path of PAGES) {
   for (const colorScheme of ["light", "dark"] as const) {
     test(`${path} (${colorScheme}) has no serious or critical WCAG 2.2 AA violations`, async ({ page }) => {

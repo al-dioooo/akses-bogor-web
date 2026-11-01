@@ -31,8 +31,8 @@ export async function SiteHeader() {
   const td = await getTranslations("Tampilan");
   return (
     <StickyHeader>
-      <div className="page-width flex min-h-16 items-center justify-between gap-3">
-        <Link href="/" aria-label={tl("home")} className="rounded-xl">
+      <div className="page-width flex min-h-19 items-center justify-between gap-3">
+        <Link href="/" aria-label={tl("home")} className="rounded-xl py-1">
           <Logo />
         </Link>
         <nav aria-label={t("label")} className="hidden lg:block">
@@ -47,7 +47,7 @@ export async function SiteHeader() {
               title: td("title"),
               mode: td("mode"),
               modeHint: td("modeHint"),
-              theme: { perangkat: td("theme.perangkat"), glass: td("theme.glass"), solid: td("theme.solid"), dark: td("theme.dark") },
+              theme: { perangkat: td("theme.perangkat"), terang: td("theme.terang"), gelap: td("theme.gelap") },
               motion: td("motion"),
               motionHint: td("motionHint"),
               motionOption: { perangkat: td("motionOption.perangkat"), off: td("motionOption.off") },
@@ -56,7 +56,8 @@ export async function SiteHeader() {
           />
           <Link href="/masuk" className={buttonClass("ghost", "sm")}>
             <Icon icon={IconUser} className="size-5 lg:hidden" />
-            {t("masuk")}
+            {/* Di layar 320 px label disembunyikan secara visual, tetap menjadi nama tombol. */}
+            <span className="max-[24rem]:sr-only">{t("masuk")}</span>
           </Link>
           <Link href="/laporkan" className={buttonClass("primary", "sm", "max-lg:hidden")}>
             <Icon icon={IconCirclePlus} />
