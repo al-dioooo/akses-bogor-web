@@ -347,3 +347,26 @@ body {
     var(--color-status-unknown-solid) 3px 5px
   );
 }
+
+/* Peta (FR-05): bingkai memotong isi yang meluber, jadi cincin fokus kanvas Mapbox digambar di sisi dalam. */
+.peta-frame .mapboxgl-canvas:focus-visible {
+  outline-offset: -4px;
+}
+
+/* Logo dan atribusi Mapbox digeser dari sudut bingkai yang membulat. Di ponsel atribusi turun ke dua baris di samping
+   logo, supaya keduanya tetap terbaca (ADR-0016). */
+.peta-frame .mapboxgl-ctrl-bottom-left {
+  bottom: 0.5rem;
+  left: 0.75rem;
+}
+
+.peta-frame .mapboxgl-ctrl-bottom-right {
+  bottom: 0.5rem;
+  right: 0.75rem;
+  max-width: calc(100% - 7.5rem);
+  text-align: right;
+}
+
+.peta-frame .mapboxgl-ctrl-attrib {
+  border-radius: 0.5rem;
+}
