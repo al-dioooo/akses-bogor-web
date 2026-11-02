@@ -29,10 +29,14 @@ export function PlaceList({ places, onShow }: { places: MapPlace[]; onShow?: (id
           </h3>
           <StatusBadge status={place.status} size="sm" />
           {onShow && (
-            <button type="button" onClick={() => onShow(place.id)} className={buttonClass("outline", "sm", "mt-auto")}>
+            <button
+              type="button"
+              onClick={() => onShow(place.id)}
+              aria-label={t("list.showPlace", { name: place.name })}
+              className={buttonClass("outline", "sm", "mt-auto")}
+            >
               <Icon icon={IconMapPin} />
               {t("list.show")}
-              <span className="sr-only">: {place.name}</span>
             </button>
           )}
         </li>

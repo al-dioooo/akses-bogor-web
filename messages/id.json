@@ -233,7 +233,8 @@
     "legend": "Legenda status",
     "list": {
       "title": "Daftar lokasi",
-      "show": "Tunjukkan di peta"
+      "show": "Tunjukkan di peta",
+      "showPlace": "Tunjukkan di peta: {name}"
     }
   },
   "Detail": {
