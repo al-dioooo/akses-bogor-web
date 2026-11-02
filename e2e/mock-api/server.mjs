@@ -56,6 +56,10 @@ function route(url) {
     const found = filterPlaces(searchParams);
     return [200, { total: found.length, limit, offset, items: found.slice(offset, offset + limit).map(listItem) }];
   }
+  // Token palsu: tes Playwright mencegat semua request ke Mapbox (e2e/mapbox.ts).
+  if (pathname === "/map/token") {
+    return [200, { token: "pk.tiruan", expiresAt: new Date(Date.now() + 55 * 60_000).toISOString() }];
+  }
   if (pathname === "/places/map") {
     if (searchParams.get("q") === "galat-tiruan") return [500, { galat: "galat_server", pesan: "Galat tiruan." }];
     const features = filterPlaces(searchParams).map(({ id, name, category, status, location }) => ({

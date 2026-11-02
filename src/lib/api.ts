@@ -61,6 +61,9 @@ export type MapFeature = {
 
 export type PlaceMap = { type: "FeatureCollection"; features: MapFeature[] };
 
+/** Token Mapbox sementara dari API (ADR-0016). */
+export type MapToken = { token: string; expiresAt: string };
+
 export type PlaceFilters = {
   q?: string;
   category?: Category[];
@@ -129,6 +132,9 @@ export const getPlaces = (filters: PlaceFilters = {}) =>
 /** Semua titik yang cocok dengan filter, paling banyak 2000 (FR-05). */
 export const getMapPlaces = (filters: Omit<PlaceFilters, "limit" | "offset"> = {}) =>
   get<PlaceMap>("/places/map", filterQuery(filters));
+
+/** Token peta untuk browser. API menjawab 503 `peta_belum_diatur` bila Mapbox belum diatur di server. */
+export const getMapToken = () => get<MapToken>("/map/token");
 
 /** `null` bila lokasi tidak ada atau id-nya tidak valid. */
 export async function getPlace(id: string): Promise<PlaceDetail | null> {
