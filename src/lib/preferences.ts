@@ -1,4 +1,4 @@
-// Preferensi yang dibaca hero dan "Rute ke pintu": gerak mengikuti perangkat dan tombol "Kurangi gerakan" di header,
+// Preferensi tampilan yang dibaca adegan Beranda dan peta: gerak mengikuti perangkat dan tombol "Kurangi gerakan" di header,
 // mode warna mengikuti perangkat atau <html data-theme>, dan warna latar halaman untuk kabut adegan.
 
 export type Theme = { night: boolean; background: string };

@@ -8,7 +8,7 @@ import posterPins from "@/assets/ilustrasi/halte-ke-pintu.json";
 import poster from "@/assets/ilustrasi/halte-ke-pintu.webp";
 import { Icon } from "@/ui/icon";
 import { IconPlayerPause, IconPlayerPlay } from "@/ui/icons";
-import { hasWebGL, motionReduced, readTheme, watchPreferences } from "./preferences";
+import { hasWebGL, motionReduced, readTheme, watchPreferences } from "@/lib/preferences";
 import { coverCrop, objectPosition, toBox } from "./scene/crop";
 import type { mountHero } from "./scene/mount";
 
