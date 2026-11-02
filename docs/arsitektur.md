@@ -7,13 +7,14 @@ flowchart LR
   B[Browser / PWA] -->|halaman| W[akses-bogor-web<br/>Next.js di Vercel]
   B -.->|API + sesi| F[akses-bogor-api<br/>Fastify di Evergarden, lewat Cloudflare Tunnel]
   W -->|render di server| F
-  B -.->|tile dan pencarian| M[Mapbox GL JS]
+  B -->|tile peta| M[Mapbox]
+  F -->|token peta sementara| M
   F --> DB[(PostgreSQL 17 + PostGIS di Evergarden)]
 ```
 
 - Web tidak pernah terhubung langsung ke database atau Cloudflare R2. Semua data lewat [akses-bogor-api](https://github.com/al-dioooo/akses-bogor-api).
 - Halaman mengambil data dari API di server Next.js saat request (`src/lib/api.ts`, alamatnya di `API_URL`). Pengambilan data tidak di-cache dan tidak berjalan saat build, jadi build tidak butuh API. Bagian yang menunggu data dibungkus `Suspense` dengan kerangka pemuatan, dan galat API tampil sebagai pesan dengan tombol coba lagi.
-- Peta dirender Mapbox GL JS di browser ([ADR-0016](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0016-peta-dan-pencarian-mapbox.md)), dengan tampilan daftar sebagai alternatif yang setara.
+- Peta dirender Mapbox GL JS di browser ([ADR-0016](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0016-peta-dan-pencarian-mapbox.md)), dengan tampilan daftar sebagai alternatif yang setara. Mapbox GL JS dimuat hanya di halaman Peta dan hanya bila WebGL ada. Token Mapbox sementara dibuat API dan diteruskan ke browser lewat route `/peta/kunci`; token rahasia tidak pernah keluar dari API.
 
 ## Bahasa
 
