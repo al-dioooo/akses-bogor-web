@@ -45,7 +45,7 @@ Contoh ada di [.env.example](.env.example); salin ke `.env.local`. Jangan commit
 | `API_URL` | Ya | Alamat [akses-bogor-api](https://github.com/al-dioooo/akses-bogor-api), mis. `http://localhost:8080`. Hanya dibaca di server; browser tidak pernah memanggil API langsung |
 | `ENABLE_EXPERIMENTAL_COREPACK` | Di Vercel | `1`, supaya Vercel memakai versi pnpm dari `packageManager` di `package.json` |
 
-Token publik Mapbox ditambahkan bersama halaman Peta.
+Peta tidak butuh variabel Mapbox di web. Browser mengambil token Mapbox sementara dari `/peta/kunci`, yang meneruskannya dari `GET /map/token` di API ([ADR-0016](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0016-peta-dan-pencarian-mapbox.md)). Selama API belum diatur, halaman Peta menampilkan legenda dan daftar lokasi tanpa peta.
 
 ## Token Design System
 
