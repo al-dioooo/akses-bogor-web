@@ -212,7 +212,8 @@
       "emptyTitle": "Tidak ada lokasi yang cocok",
       "emptyBody": "Coba kata lain, atau kurangi filter yang dipakai.",
       "noDataTitle": "Belum ada lokasi",
-      "noDataBody": "Lokasi tampil di sini setelah laporan warga diperiksa tim."
+      "noDataBody": "Lokasi tampil di sini setelah laporan warga diperiksa tim.",
+      "onMap": "Lihat di peta"
     },
     "pagination": {
       "label": "Halaman hasil",
