@@ -6,10 +6,10 @@ import { buttonClass } from "@/ui/button-styles";
 import { Icon } from "@/ui/icon";
 import { IconList } from "@/ui/icons";
 import { MapLegend } from "./legend";
-import { PlaceList } from "./place-list";
+import { PlaceMap } from "./place-map";
 import { toMapPlaces } from "./places";
 
-/** Isi Peta untuk filter di URL: jumlah, tombol ke daftar dengan filter yang sama (FR-05), legenda, dan daftar lokasi. */
+/** Isi Peta untuk filter di URL: jumlah, tombol ke daftar dengan filter yang sama (FR-05), peta, legenda, dan daftar lokasi. */
 export async function MapResults({ filters }: { filters: ExploreFilters }) {
   const [t, tj] = await Promise.all([getTranslations("Peta"), getTranslations("Jelajahi")]);
   const { features } = await getMapPlaces({
@@ -42,15 +42,7 @@ export async function MapResults({ filters }: { filters: ExploreFilters }) {
           </Link>
         </div>
       )}
-      <MapLegend />
-      {places.length > 0 && (
-        <section aria-labelledby="judul-daftar-peta" className="flex flex-col gap-4">
-          <h2 id="judul-daftar-peta" className="font-heading text-lg font-bold">
-            {t("list.title")}
-          </h2>
-          <PlaceList places={places} />
-        </section>
-      )}
+      <PlaceMap places={places} listHref={exploreHref(filters)} legend={<MapLegend />} />
     </>
   );
 }

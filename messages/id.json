@@ -231,8 +231,38 @@
     "count": "{total, plural, =0 {Tidak ada lokasi yang cocok} other {Menampilkan # lokasi}}",
     "asList": "Lihat sebagai daftar",
     "legend": "Legenda status",
+    "map": {
+      "title": "Peta lokasi Kota Bogor",
+      "hint": "Di peta, tombol panah menggeser peta, tombol + dan − memperbesar atau memperkecil, dan Tab berpindah ke lokasi berikutnya. Daftar di bawah berisi lokasi yang sedang tampil.",
+      "skip": "Lewati peta ke daftar lokasi",
+      "loading": "Memuat peta…",
+      "noscript": "Peta butuh JavaScript. Semua lokasi yang sama ada di daftar di bawah.",
+      "noWebglTitle": "Peta tidak bisa tampil di browser ini",
+      "failedTitle": "Peta belum bisa dimuat",
+      "fallbackBody": "Semua lokasi yang sama ada di daftar di bawah.",
+      "retry": "Coba lagi",
+      "attribution": "Tampilkan atribusi peta",
+      "logo": "Situs Mapbox",
+      "ctrlScroll": "Tekan Ctrl sambil menggulir untuk memperbesar peta",
+      "cmdScroll": "Tekan ⌘ sambil menggulir untuk memperbesar peta",
+      "twoFingers": "Geser peta dengan dua jari"
+    },
+    "controls": {
+      "label": "Kontrol peta",
+      "zoomIn": "Perbesar peta",
+      "zoomOut": "Perkecil peta",
+      "reset": "Tampilkan seluruh Kota Bogor"
+    },
+    "marker": "{name}, {category}, {status}",
+    "summary": {
+      "detail": "Lihat detail lokasi",
+      "close": "Tutup ringkasan"
+    },
     "list": {
       "title": "Daftar lokasi",
+      "inView": "Lokasi di tampilan peta",
+      "count": "{shown} dari {total} lokasi ada di tampilan peta",
+      "none": "Tidak ada lokasi di bagian peta ini. Geser atau perkecil peta, atau tampilkan seluruh Kota Bogor.",
       "show": "Tunjukkan di peta",
       "showPlace": "Tunjukkan di peta: {name}"
     }
