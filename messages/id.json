@@ -212,13 +212,28 @@
       "emptyTitle": "Tidak ada lokasi yang cocok",
       "emptyBody": "Coba kata lain, atau kurangi filter yang dipakai.",
       "noDataTitle": "Belum ada lokasi",
-      "noDataBody": "Lokasi tampil di sini setelah laporan warga diperiksa tim."
+      "noDataBody": "Lokasi tampil di sini setelah laporan warga diperiksa tim.",
+      "onMap": "Lihat di peta"
     },
     "pagination": {
       "label": "Halaman hasil",
       "previous": "Sebelumnya",
       "next": "Berikutnya",
       "page": "Halaman {page} dari {pages}"
+    }
+  },
+  "Peta": {
+    "metaTitle": "Peta Lokasi",
+    "eyebrow": "Peta",
+    "title": "Lokasi di",
+    "accent": "peta.",
+    "loading": "Memuat peta…",
+    "count": "{total, plural, =0 {Tidak ada lokasi yang cocok} other {Menampilkan # lokasi}}",
+    "asList": "Lihat sebagai daftar",
+    "legend": "Legenda status",
+    "list": {
+      "title": "Daftar lokasi",
+      "show": "Tunjukkan di peta"
     }
   },
   "Detail": {

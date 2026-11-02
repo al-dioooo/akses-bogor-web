@@ -16,8 +16,11 @@ const CHOICE =
   "transition-colors duration-200 hover:border-border-strong has-checked:border-border-strong has-checked:bg-text-primary " +
   "has-checked:text-bg-canvas has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-focus-ring";
 
-/** Formulir GET untuk pencarian dan filter (FR-02, FR-03). Bekerja tanpa JavaScript; hasilnya tersimpan di URL. */
-export async function FilterForm({ filters }: { filters: ExploreFilters }) {
+/**
+ * Formulir GET untuk pencarian dan filter (FR-02, FR-03). Bekerja tanpa JavaScript; hasilnya tersimpan di URL.
+ * Jelajahi dan Peta memakai formulir yang sama, jadi filternya bisa dibawa dari satu tampilan ke tampilan lain.
+ */
+export async function FilterForm({ filters, action = "/jelajahi" }: { filters: ExploreFilters; action?: "/jelajahi" | "/peta" }) {
   const [t, tk, tf, ts] = await Promise.all([
     getTranslations("Jelajahi"),
     getTranslations("Kategori"),
@@ -27,7 +30,7 @@ export async function FilterForm({ filters }: { filters: ExploreFilters }) {
   const districts: District[] = await getDistricts().catch(() => []);
   const active = panelFilterCount(filters);
   return (
-    <Form action="/jelajahi" role="search" className="flex flex-col gap-4">
+    <Form action={action} role="search" className="flex flex-col gap-4">
       <div className="flex items-center gap-2 rounded-full border-2 border-border-strong bg-surface-raised p-1.5 pl-5 has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-2 has-[input:focus-visible]:outline-focus-ring">
         <label htmlFor="cari-jelajahi" className="sr-only">
           {t("search.label")}
@@ -117,7 +120,7 @@ export async function FilterForm({ filters }: { filters: ExploreFilters }) {
           </fieldset>
           <div className="flex flex-wrap gap-3 lg:col-span-3">
             <button className={buttonClass("primary", "md")}>{t("filters.apply")}</button>
-            <Link href="/jelajahi" className={buttonClass("outline", "md")}>
+            <Link href={action} className={buttonClass("outline", "md")}>
               {t("filters.reset")}
             </Link>
           </div>

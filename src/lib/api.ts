@@ -51,6 +51,16 @@ export type Stats = {
   contributors: number;
 };
 
+/** Satu titik di peta: GeoJSON Feature dari `GET /places/map`, koordinat `[lng, lat]`. */
+export type MapFeature = {
+  type: "Feature";
+  id: string;
+  geometry: { type: "Point"; coordinates: [number, number] };
+  properties: { name: string; category: Category; status: Status };
+};
+
+export type PlaceMap = { type: "FeatureCollection"; features: MapFeature[] };
+
 export type PlaceFilters = {
   q?: string;
   category?: Category[];
@@ -105,16 +115,20 @@ export const getStats = () => get<Stats>("/places/stats");
 
 export const getDistricts = () => get<District[]>("/districts");
 
+const filterQuery = (filters: PlaceFilters) => ({
+  q: filters.q,
+  category: list(filters.category),
+  district: list(filters.district),
+  facility: list(filters.facility),
+  status: list(filters.status),
+});
+
 export const getPlaces = (filters: PlaceFilters = {}) =>
-  get<PlaceList>("/places", {
-    q: filters.q,
-    category: list(filters.category),
-    district: list(filters.district),
-    facility: list(filters.facility),
-    status: list(filters.status),
-    limit: filters.limit,
-    offset: filters.offset,
-  });
+  get<PlaceList>("/places", { ...filterQuery(filters), limit: filters.limit, offset: filters.offset });
+
+/** Semua titik yang cocok dengan filter, paling banyak 2000 (FR-05). */
+export const getMapPlaces = (filters: Omit<PlaceFilters, "limit" | "offset"> = {}) =>
+  get<PlaceMap>("/places/map", filterQuery(filters));
 
 /** `null` bila lokasi tidak ada atau id-nya tidak valid. */
 export async function getPlace(id: string): Promise<PlaceDetail | null> {

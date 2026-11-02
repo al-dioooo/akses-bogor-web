@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { getPlaces } from "@/lib/api";
-import { PAGE_SIZE, exploreHref, hasFilters, type ExploreFilters } from "@/lib/filters";
+import { PAGE_SIZE, exploreHref, hasFilters, mapHref, type ExploreFilters } from "@/lib/filters";
 import { buttonClass } from "@/ui/button-styles";
 import { Icon } from "@/ui/icon";
-import { IconArrowLeft, IconArrowRight, IconSearch } from "@/ui/icons";
+import { IconArrowLeft, IconArrowRight, IconMap2, IconSearch } from "@/ui/icons";
 import { LocationCard } from "../location-card";
 
 /** Daftar Location card dengan jumlah hasil yang sesuai data yang tampil (FR-04). */
@@ -24,10 +24,16 @@ export async function Results({ filters }: { filters: ExploreFilters }) {
 
   return (
     <section aria-labelledby="jumlah-hasil" className="flex flex-col gap-5">
-      {/* Diumumkan pembaca layar setiap kali filter diterapkan. */}
-      <p id="jumlah-hasil" role="status" className="font-mono text-sm font-medium text-text-secondary">
-        {t("results.count", { total: items.length ? total : 0, from, to: from + items.length - 1 })}
-      </p>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        {/* Diumumkan pembaca layar setiap kali filter diterapkan. */}
+        <p id="jumlah-hasil" role="status" className="font-mono text-sm font-medium text-text-secondary">
+          {t("results.count", { total: items.length ? total : 0, from, to: from + items.length - 1 })}
+        </p>
+        <Link href={mapHref(filters)} className={buttonClass("outline", "sm")}>
+          <Icon icon={IconMap2} />
+          {t("results.onMap")}
+        </Link>
+      </div>
       {items.length > 0 ? (
         <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((place) => (

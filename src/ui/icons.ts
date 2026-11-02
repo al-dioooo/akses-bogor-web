@@ -34,6 +34,7 @@ export const IconMap2: Glyph = ["M12 18.5l-3 -1.5l-6 3v-13l6 -3l6 3l6 -3v7.5", "
 export const IconCirclePlus: Glyph = ["M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0", "M9 12h6", "M12 9v6"];
 export const IconDots: Glyph = ["M4 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0", "M11 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0", "M18 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"];
 export const IconUser: Glyph = ["M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0", "M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"];
+export const IconList: Glyph = ["M9 6l11 0", "M9 12l11 0", "M9 18l11 0", "M5 6l0 .01", "M5 12l0 .01", "M5 18l0 .01"];
 export const IconSearch: Glyph = ["M3 10a7 7 0 1 0 14 0a7 7 0 1 0 -14 0", "M21 21l-6 -6"];
 export const IconAdjustmentsHorizontal: Glyph = ["M12 6a2 2 0 1 0 4 0a2 2 0 1 0 -4 0", "M4 6l8 0", "M16 6l4 0", "M6 12a2 2 0 1 0 4 0a2 2 0 1 0 -4 0", "M4 12l2 0", "M10 12l10 0", "M15 18a2 2 0 1 0 4 0a2 2 0 1 0 -4 0", "M4 18l11 0", "M19 18l1 0"];
 export const IconX: Glyph = ["M18 6l-12 12", "M6 6l12 12"];
