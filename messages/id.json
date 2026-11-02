@@ -221,6 +221,9 @@
       "page": "Halaman {page} dari {pages}"
     }
   },
+  "Peta": {
+    "legend": "Legenda status"
+  },
   "Detail": {
     "back": "Kembali ke Jelajahi",
     "loading": "Memuat lokasi…",
