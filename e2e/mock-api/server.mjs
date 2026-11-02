@@ -1,5 +1,5 @@
 // API tiruan untuk tes Playwright, supaya CI tidak butuh akses-bogor-api dan database.
-// Datanya salinan respons API dari seed pengembangan (fixtures.json); filter meniru GET /places.
+// Datanya salinan respons API dari seed pengembangan (fixtures.json); filter meniru GET /places dan GET /places/map.
 // Pencarian "galat-tiruan" menjawab 500, untuk menguji keadaan galat di web.
 import { readFileSync } from "node:fs";
 import { createServer } from "node:http";
@@ -55,6 +55,16 @@ function route(url) {
     const offset = Number(searchParams.get("offset") ?? 0);
     const found = filterPlaces(searchParams);
     return [200, { total: found.length, limit, offset, items: found.slice(offset, offset + limit).map(listItem) }];
+  }
+  if (pathname === "/places/map") {
+    if (searchParams.get("q") === "galat-tiruan") return [500, { galat: "galat_server", pesan: "Galat tiruan." }];
+    const features = filterPlaces(searchParams).map(({ id, name, category, status, location }) => ({
+      type: "Feature",
+      id,
+      geometry: { type: "Point", coordinates: [location.lng, location.lat] },
+      properties: { name, category, status },
+    }));
+    return [200, { type: "FeatureCollection", features }];
   }
   const id = pathname.match(/^\/places\/([^/]+)$/)?.[1];
   if (id) {
