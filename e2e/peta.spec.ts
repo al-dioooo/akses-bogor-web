@@ -1,11 +1,12 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./mapbox";
 
 // Data dari API tiruan (e2e/mock-api): 7 lokasi contoh dengan keempat status.
 test("lists every place on the map page with its status", async ({ page }) => {
   await page.goto("/peta");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Lokasi di peta.");
-  await expect(page.getByRole("status").filter({ hasText: "lokasi" })).toHaveText("Menampilkan 7 lokasi");
-  const list = page.getByRole("region", { name: "Daftar lokasi" });
+  await expect(page.getByRole("status").filter({ hasText: /^Menampilkan/ })).toHaveText("Menampilkan 7 lokasi");
+  // Judulnya "Lokasi di tampilan peta" setelah peta siap, atau "Daftar lokasi" tanpa WebGL.
+  const list = page.getByRole("region", { name: /^(Daftar lokasi|Lokasi di tampilan peta)$/ });
   await expect(list.getByRole("listitem")).toHaveCount(7);
   await expect(list.getByRole("link", { name: "Kampus contoh A" })).toHaveAttribute("href", /^\/lokasi\/[0-9a-f-]{36}$/);
 });
@@ -27,7 +28,7 @@ test("filters submit to the map page and carry over to the list view", async ({ 
   await page.getByRole("checkbox", { name: "Tidak aksesibel" }).check();
   await page.getByRole("button", { name: "Terapkan filter" }).click();
   await expect(page).toHaveURL(/\/peta\?.*category=masjid.*status=tidak_aksesibel/);
-  await expect(page.getByRole("status").filter({ hasText: "lokasi" })).toHaveText("Menampilkan 1 lokasi");
+  await expect(page.getByRole("status").filter({ hasText: /^Menampilkan/ })).toHaveText("Menampilkan 1 lokasi");
   await page.getByRole("link", { name: "Lihat sebagai daftar" }).click();
   await expect(page).toHaveURL(/\/jelajahi\?category=masjid&status=tidak_aksesibel$/);
   await expect(page.getByRole("heading", { name: "Masjid contoh B" })).toBeVisible();
