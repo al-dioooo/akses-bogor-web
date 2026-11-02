@@ -222,7 +222,11 @@
     }
   },
   "Peta": {
-    "legend": "Legenda status"
+    "legend": "Legenda status",
+    "list": {
+      "title": "Daftar lokasi",
+      "show": "Tunjukkan di peta"
+    }
   },
   "Detail": {
     "back": "Kembali ke Jelajahi",
