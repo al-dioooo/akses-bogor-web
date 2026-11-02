@@ -222,6 +222,13 @@
     }
   },
   "Peta": {
+    "metaTitle": "Peta Lokasi",
+    "eyebrow": "Peta",
+    "title": "Lokasi di",
+    "accent": "peta.",
+    "loading": "Memuat peta…",
+    "count": "{total, plural, =0 {Tidak ada lokasi yang cocok} other {Menampilkan # lokasi}}",
+    "asList": "Lihat sebagai daftar",
     "legend": "Legenda status",
     "list": {
       "title": "Daftar lokasi",
