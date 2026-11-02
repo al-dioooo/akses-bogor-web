@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { hasWebGL, motionReduced, readTheme, watchPreferences } from "./preferences";
+import { hasWebGL, motionReduced, readTheme, watchPreferences } from "@/lib/preferences";
 import type { mountRoute, Stop } from "./scene/mount";
 
 /**

@@ -1,7 +1,7 @@
 // Memasang adegan ke kanvas (ADR-0028): hero dengan pin dan sedikit paralaks pointer, dan "Rute ke pintu" dengan
 // kamera yang berpindah antar titik. Modul ini dimuat malas oleh komponennya; di sinilah three.js pertama kali masuk.
 import { NeutralToneMapping, PCFShadowMap, PerspectiveCamera, WebGLRenderer } from "three";
-import type { Theme } from "../preferences";
+import type { Theme } from "@/lib/preferences";
 import { coverCrop, FULL, objectPosition, toBox, type Crop } from "./crop";
 import { buildScene, mixView, STOP_TIME, VIEWS, type View, type ViewName } from "./index";
 
