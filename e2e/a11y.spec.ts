@@ -14,6 +14,8 @@ const PAGES = [
   "/lokasi/f2aeb27d-5f54-42f8-8368-780b6d62b51c",
   "/lokasi/00000000-0000-4000-8000-000000000000",
   "/halaman-yang-tidak-ada",
+  "/masuk",
+  "/masuk?sesi=berakhir",
 ];
 
 // Mode Terang dan Gelap diuji terpisah karena warnanya berbeda (ADR-0027).
