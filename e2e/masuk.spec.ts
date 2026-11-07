@@ -1,5 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { blockingViolations } from "./axe";
+import { blockGoogle, stubGoogle } from "./google";
 
 // Masuk dan Kode Masuk (FR-10, ADR-0014) dengan API tiruan: kode benar 123456, 000000 salah, 999999 kedaluwarsa.
 // Setiap tes memakai email sendiri karena API tiruan dipakai bersama semua tes.
@@ -13,6 +14,10 @@ async function requestCode(page: Page, email: string, from = "/masuk") {
 }
 
 const codeField = (page: Page) => page.getByLabel("Kode 6 digit");
+
+test.beforeEach(async ({ page }) => {
+  await stubGoogle(page);
+});
 
 test("signs in with an emailed code and returns to the page that asked for it (FR-20)", async ({ page }) => {
   await requestCode(page, unique("lama"), "/masuk?kembali=/peta");
@@ -128,3 +133,37 @@ for (const colorScheme of ["light", "dark"] as const) {
     expect(await blockingViolations(page)).toEqual([]);
   });
 }
+
+test.describe("Masuk dengan Google", () => {
+  test("renders the Google button in Indonesian and matching the colour mode", async ({ page }) => {
+    await page.emulateMedia({ colorScheme: "dark" });
+    await page.goto("/masuk");
+    await expect(page.getByRole("button", { name: "Masuk dengan Google" })).toBeVisible();
+    const options = await page.evaluate(() => (window as unknown as { __gisButton: Record<string, unknown> }).__gisButton);
+    expect(options).toMatchObject({ locale: "id", theme: "filled_black", text: "signin_with" });
+  });
+
+  test("signs in and suggests the Google name on Lengkapi Akun", async ({ page }) => {
+    await page.goto("/masuk?kembali=/peta");
+    await page.getByRole("button", { name: "Masuk dengan Google" }).click();
+    await expect(page).toHaveURL(/\/masuk\/lengkapi\?kembali=%2Fpeta$/);
+    await expect(page.getByLabel("Nama tampilan")).toHaveValue("Budi Santoso");
+  });
+
+  test("explains an unverified Google email", async ({ page }) => {
+    await page.unroute(/accounts\.google\.com/);
+    await stubGoogle(page, "tiruan-google-belum");
+    await page.goto("/masuk");
+    await page.getByRole("button", { name: "Masuk dengan Google" }).click();
+    await expect(page.getByRole("main").getByRole("alert")).toHaveText("Email akun Google ini belum terverifikasi. Masuk dengan kode email.");
+  });
+
+  test("points to the email code when the Google script cannot load", async ({ page }) => {
+    await page.unroute(/accounts\.google\.com/);
+    await blockGoogle(page);
+    await page.goto("/masuk");
+    await expect(page.getByText("Tombol Google tidak bisa dimuat. Masuk dengan kode email di bawah.")).toBeVisible();
+    await expect(page.getByLabel("Email")).toBeVisible();
+  });
+});
+

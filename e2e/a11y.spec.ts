@@ -1,4 +1,5 @@
 import { blockingViolations } from "./axe";
+import { stubGoogle } from "./google";
 import { expect, test } from "./mapbox";
 
 // Tambahkan setiap halaman baru di sini.
@@ -16,7 +17,12 @@ const PAGES = [
   "/halaman-yang-tidak-ada",
   "/masuk",
   "/masuk?sesi=berakhir",
+  "/kebijakan-privasi",
 ];
+
+test.beforeEach(async ({ page }) => {
+  await stubGoogle(page);
+});
 
 // Mode Terang dan Gelap diuji terpisah karena warnanya berbeda (ADR-0027).
 for (const path of PAGES) {
