@@ -16,6 +16,7 @@ async function signInNew(page: Page, kembali?: string) {
   await page.getByLabel("Kode 6 digit").fill("123456");
   await page.getByRole("button", { name: "Masuk", exact: true }).click();
   await expect(page).toHaveURL(/\/masuk\/lengkapi/);
+  await expect(page).toHaveTitle(/^Lengkapi akun/);
 }
 
 const nameField = (page: Page) => page.getByLabel("Nama tampilan");
