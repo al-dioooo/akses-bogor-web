@@ -10,6 +10,8 @@ async function requestCode(page: Page, email: string, from = "/masuk") {
   await page.getByLabel("Email").fill(email);
   await page.getByRole("button", { name: "Kirim kode" }).click();
   await expect(page).toHaveURL(/\/masuk\/kode/);
+  // Judul halaman dialirkan setelah navigasi; axe menganggap halaman tanpa judul sebagai pelanggaran.
+  await expect(page).toHaveTitle(/^Masukkan kode/);
 }
 
 const codeField = (page: Page) => page.getByLabel("Kode 6 digit");
