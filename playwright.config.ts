@@ -29,7 +29,8 @@ export default defineConfig({
     {
       command: `pnpm build && pnpm start --port ${port}`,
       url: `http://localhost:${port}`,
-      env: { API_URL: `http://localhost:${mockApiPort}` },
+      // Client ID palsu supaya tombol Google tampil; skripnya diganti tiruan di e2e/google.ts.
+      env: { API_URL: `http://localhost:${mockApiPort}`, NEXT_PUBLIC_GOOGLE_CLIENT_ID: "client-tiruan.apps.googleusercontent.com" },
       reuseExistingServer: !process.env.CI,
       timeout: 180_000,
     },
