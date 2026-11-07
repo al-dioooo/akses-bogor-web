@@ -59,6 +59,8 @@ test("skips itself for a completed account", async ({ page }) => {
   await page.getByRole("button", { name: "Kirim kode" }).click();
   await page.getByLabel("Kode 6 digit").fill("123456");
   await page.getByRole("button", { name: "Masuk", exact: true }).click();
+  // Tunggu cookie sesi terpasang (pengalihan ke Akun Saya) sebelum membuka halaman lain.
+  await expect(page).toHaveURL(/\/akun$/);
   await page.goto("/masuk/lengkapi?kembali=/jelajahi");
   await expect(page).toHaveURL(/\/jelajahi$/);
 });
