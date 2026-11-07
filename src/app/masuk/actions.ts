@@ -3,11 +3,12 @@
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import type { FormState } from "@/components/akun/form-state";
-import { requestCode, verifyCode, type SignedIn } from "@/lib/akun";
+import { completeAccount, requestCode, signInWithGoogle, verifyCode, type SignedIn } from "@/lib/akun";
 import { ApiError } from "@/lib/api";
 import { AFTER_SIGN_IN, safeReturnPath, withReturn } from "@/lib/kembali";
 import { normalizeCode } from "@/lib/kode";
-import { RESEND_SECONDS, clearPendingSignIn, pendingSignIn, savePendingSignIn, saveSession } from "@/lib/sesi";
+import { PRIVACY_POLICY_VERSION } from "@/lib/kebijakan";
+import { RESEND_SECONDS, clearPendingSignIn, pendingSignIn, savePendingSignIn, saveSession, sessionToken } from "@/lib/sesi";
 
 // Server Action untuk Masuk dan Kode Masuk (FR-10). Pesan galat dari API sudah berbahasa Indonesia untuk pengguna,
 // jadi diteruskan apa adanya; galat jaringan dan validasi di sini memakai messages/id.json.
@@ -84,3 +85,39 @@ export async function checkCode(_state: FormState, form: FormData): Promise<Form
   }
   return finishSignIn(signedIn, kembali);
 }
+
+/** Dipanggil tombol Google Identity Services dengan ID token (credential) dari Google (ADR-0014). */
+export async function signInGoogle(credential: string, kembaliValue: string | null): Promise<FormState> {
+  const kembali = safeReturnPath(kembaliValue);
+  let signedIn: SignedIn;
+  try {
+    signedIn = await signInWithGoogle(credential);
+  } catch (error) {
+    return { error: { message: await apiMessage(error) } };
+  }
+  return finishSignIn(signedIn, kembali);
+}
+
+const DISPLAY_NAME_MAX = 60;
+
+/** Lengkapi Akun: nama tampilan dan persetujuan Kebijakan Privasi versi yang ditampilkan (FR-11, FR-12). */
+export async function completeProfile(_state: FormState, form: FormData): Promise<FormState> {
+  const t = await getTranslations("Lengkapi.galat");
+  const kembali = safeReturnPath(form.get("kembali"));
+  const displayName = String(form.get("displayName") ?? "").trim();
+  const values = { displayName };
+  if (!displayName) return { error: { field: "displayName", message: t("namaKosong") }, values };
+  if (displayName.length > DISPLAY_NAME_MAX) return { error: { field: "displayName", message: t("namaPanjang") }, values };
+  if (form.get("acceptPrivacyPolicy") !== "ya") return { error: { field: "consent", message: t("belumSetuju") }, values };
+
+  const token = await sessionToken();
+  if (!token) redirect(withReturn("/masuk", kembali));
+  try {
+    await completeAccount(token, { displayName, privacyPolicyVersion: String(form.get("privacyPolicyVersion") ?? PRIVACY_POLICY_VERSION) });
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 401) redirect(withReturn("/masuk/sesi-berakhir", kembali));
+    return { error: { message: await apiMessage(error) }, values };
+  }
+  redirect(kembali ?? AFTER_SIGN_IN);
+}
+
