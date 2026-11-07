@@ -12,6 +12,7 @@ export type BottomNavLabels = NavLabels & {
   lainnya: string;
   lainnyaTitle: string;
   masuk: string;
+  akunSaya: string;
   tutup: string;
 };
 
@@ -19,7 +20,9 @@ const TAB =
   "flex min-h-14 flex-1 flex-col items-center justify-center gap-0.5 rounded-2xl text-xs font-medium transition-colors duration-200";
 
 /** Bottom nav ponsel (Frame Mobile): menempel di bawah, di bawah lebar 1024 px. */
-export function BottomNav({ labels, pathname }: { labels: BottomNavLabels; pathname: string | null }) {
+export function BottomNav({ labels, pathname, signedIn }: { labels: BottomNavLabels; pathname: string | null; signedIn: boolean }) {
+  // Di ponsel, Akun saya dibuka dari menu Lainnya (Frame Akun).
+  const account = signedIn ? { href: "/akun", label: labels.akunSaya } : { href: "/masuk", label: labels.masuk };
   return (
     <nav aria-label={labels.label} className="fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-40 lg:hidden">
       <ul className="panel-raised flex gap-1 rounded-3xl p-1.5">
@@ -72,7 +75,7 @@ export function BottomNav({ labels, pathname }: { labels: BottomNavLabels; pathn
           </button>
         </div>
         <ul>
-          {[...MORE_NAV.map((item) => ({ href: item.href, label: labels[item.key] })), { href: "/masuk", label: labels.masuk }].map(
+          {[...MORE_NAV.map((item) => ({ href: item.href, label: labels[item.key] })), account].map(
             (item) => (
               <li key={item.href}>
                 <Link
@@ -94,6 +97,6 @@ export function BottomNav({ labels, pathname }: { labels: BottomNavLabels; pathn
   );
 }
 
-export function ActiveBottomNav({ labels }: { labels: BottomNavLabels }) {
-  return <BottomNav labels={labels} pathname={usePathname()} />;
+export function ActiveBottomNav({ labels, signedIn }: { labels: BottomNavLabels; signedIn: boolean }) {
+  return <BottomNav labels={labels} pathname={usePathname()} signedIn={signedIn} />;
 }

@@ -3,7 +3,7 @@
 // Aturan tiruan:
 // - Kode yang benar selalu 123456. Kode 000000 menjawab kode_salah, 999999 menjawab kode_kedaluwarsa.
 // - Kode kedua untuk email yang sama dalam 60 detik menjawab 429. Email gagal@... menjawab 502.
-// - Email lama-... sudah punya akun lengkap bernama "Sari". Email lain membuat akun baru yang belum lengkap.
+// - Email lama-... dan pelapor-... sudah punya akun lengkap bernama "Sari". Email lain membuat akun baru yang belum lengkap.
 // - ID token Google "tiruan-google" masuk sebagai google@contoh.id; "tiruan-google-belum" menjawab 403.
 // - Token "akun:<email>" (akun lengkap) dan "baru:<email>" (belum lengkap) bisa langsung dipakai sebagai cookie.
 // - Akun pelapor... punya empat laporan contoh; akun lain belum punya laporan.
@@ -26,7 +26,8 @@ function createUser(email, { completed = false, displayName = "" } = {}) {
 const publicUser = ({ id, displayName, email, role, completed, createdAt }) => ({ id, displayName, email, role, needsCompletion: !completed, createdAt });
 
 function signIn(email, defaults) {
-  const user = users.get(email) ?? createUser(email, email.startsWith("lama-") ? { completed: true, displayName: "Sari" } : defaults);
+  const existing = email.startsWith("lama-") || email.startsWith("pelapor-");
+  const user = users.get(email) ?? createUser(email, existing ? { completed: true, displayName: "Sari" } : defaults);
   const token = `tiruan-${randomUUID()}`;
   tokens.set(token, email);
   return [200, { token, expiresAt: new Date(Date.now() + 90 * 24 * 60 * 60_000).toISOString(), user: publicUser(user) }];

@@ -1,7 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
 const port = 3100;
-const mockApiPort = 3101;
+export const mockApiPort = 3101;
 
 // ADR-0021: pemeriksaan otomatis di CI. Diuji di ponsel (mobile-first, ADR-0012) dan desktop.
 export default defineConfig({
