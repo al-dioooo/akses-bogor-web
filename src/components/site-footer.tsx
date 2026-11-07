@@ -32,7 +32,7 @@ export async function SiteFooter() {
     {
       title: t("kebijakan"),
       links: [
-        { href: "/privasi", label: t("privasi") },
+        { href: "/kebijakan-privasi", label: t("privasi") },
         { href: "/syarat", label: t("syarat") },
       ],
     },
