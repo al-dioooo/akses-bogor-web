@@ -309,7 +309,11 @@
       "emailKosong": "Isi alamat email Anda.",
       "emailTidakValid": "Alamat email belum lengkap. Contoh: nama@gmail.com",
       "server": "Server AksesBogor tidak bisa dihubungi. Coba lagi sebentar lagi."
-    }
+    },
+    "or": "atau",
+    "googleFailed": "Tombol Google tidak bisa dimuat. Masuk dengan kode email di bawah.",
+    "googleSigningIn": "Memeriksa akun Google…",
+    "privacy": "Data Anda dijaga sesuai <link>Kebijakan Privasi</link>."
   },
   "KodeMasuk": {
     "metaTitle": "Masukkan kode",
@@ -333,5 +337,182 @@
       "kodeKosong": "Isi kode 6 digit dari email.",
       "kodeFormat": "Kode terdiri dari 6 angka. Periksa lagi kode di email Anda."
     }
+  },
+  "Lengkapi": {
+    "metaTitle": "Lengkapi akun",
+    "eyebrow": "Langkah terakhir",
+    "title": "Lengkapi",
+    "accent": "akun.",
+    "intro": "Isi nama tampilan dan setujui Kebijakan Privasi sebelum mulai melapor. Cukup sekali.",
+    "loading": "Memuat data akun…",
+    "signedInAs": "Masuk sebagai",
+    "nameLabel": "Nama tampilan",
+    "nameHint": "Dilihat tim verifikator saat memeriksa laporan Anda, tidak tampil untuk umum. Paling banyak 60 karakter.",
+    "privacyTitle": "Kebijakan Privasi",
+    "privacyStored": "Kami menyimpan email, nama tampilan, dan laporan Anda.",
+    "privacyVerifier": "Verifikator hanya melihat nama tampilan Anda, bukan email.",
+    "privacyDelete": "Anda bisa menghapus akun kapan saja dari Akun Saya.",
+    "privacyLink": "Baca Kebijakan Privasi versi {version} (tab baru)",
+    "consentLabel": "Saya sudah membaca dan menyetujui Kebijakan Privasi AksesBogor.",
+    "submit": "Simpan dan lanjut",
+    "saving": "Menyimpan…",
+    "declineHint": "Tidak setuju? Keluar saja. Akun yang tidak dilengkapi dihapus otomatis dalam 24 jam.",
+    "decline": "Keluar tanpa melengkapi",
+    "galat": {
+      "namaKosong": "Isi nama tampilan.",
+      "namaPanjang": "Nama tampilan paling banyak 60 karakter.",
+      "belumSetuju": "Centang persetujuan Kebijakan Privasi untuk melanjutkan."
+    }
+  },
+  "KebijakanPrivasi": {
+    "metaTitle": "Kebijakan Privasi",
+    "eyebrow": "Kebijakan",
+    "title": "Kebijakan",
+    "accent": "Privasi.",
+    "version": "Versi {date}",
+    "draft": "Draf. Teks ini masih ditinjau tim dan bisa berubah sebelum AksesBogor diluncurkan.",
+    "contents": "Isi halaman",
+    "sections": [
+      {
+        "id": "siapa-kami",
+        "title": "Siapa kami",
+        "paragraphs": [
+          "AksesBogor adalah web yang mencatat aksesibilitas fasilitas publik di Kota Bogor bagi penyandang disabilitas dan pendampingnya. AksesBogor dikelola Tim AksesBogor sebagai proyek mahasiswa. Tim AksesBogor adalah pengendali data pribadi Anda sesuai UU No. 27 Tahun 2022 tentang Pelindungan Data Pribadi."
+        ]
+      },
+      {
+        "id": "data",
+        "title": "Data yang kami kumpulkan",
+        "paragraphs": [
+          "Anda bisa menjelajahi AksesBogor tanpa akun. Kami hanya mengumpulkan data pribadi bila Anda membuat akun atau melapor."
+        ],
+        "items": [
+          "Akun: alamat email, nama tampilan, peran (pengguna, verifikator, atau admin), serta waktu dan versi Kebijakan Privasi yang Anda setujui.",
+          "Masuk: kode 6 digit yang kami kirim ke email Anda, disimpan dalam bentuk acak (hash) selama 10 menit, dan sesi masuk (token, waktu dibuat, dan waktu terakhir dipakai). Bila Anda masuk dengan Google, kami menyimpan nomor akun Google Anda untuk menyambungkannya ke akun AksesBogor. Kami tidak menyimpan foto profil, kontak, atau token akses Google.",
+          "Laporan: isian laporan, titik lokasi, dan foto yang Anda kirim. Metadata lokasi (EXIF) dihapus dari foto sebelum disimpan.",
+          "Teknis: alamat IP, alamat halaman yang dibuka, dan waktunya tercatat di log server untuk keamanan dan memperbaiki galat.",
+          "Di perangkat Anda: pilihan tampilan (mode terang atau gelap, gerak) disimpan di browser Anda dan tidak dikirim ke kami. Cookie sesi hanya dipakai untuk menjaga Anda tetap masuk. Kami tidak memakai cookie iklan atau analitik."
+        ]
+      },
+      {
+        "id": "tujuan",
+        "title": "Untuk apa data dipakai",
+        "items": [
+          "Memasukkan Anda ke akun dan menjaga akun tetap aman.",
+          "Menampilkan Laporan saya dan mengirim email tentang status laporan Anda.",
+          "Memeriksa laporan sebelum tayang, menghubungi Anda bila verifikator butuh klarifikasi, dan mencegah spam.",
+          "Menjaga layanan tetap berjalan dan aman."
+        ],
+        "after": [
+          "Dasar pemrosesannya adalah persetujuan yang Anda berikan saat melengkapi akun. Anda bisa menarik persetujuan kapan saja dengan menghapus akun."
+        ]
+      },
+      {
+        "id": "penerima",
+        "title": "Siapa yang bisa melihat data Anda",
+        "paragraphs": [
+          "Verifikator AksesBogor melihat nama tampilan pelapor, bukan email, saat memeriksa laporan. Penyedia layanan berikut memproses data atas nama kami:"
+        ],
+        "items": [
+          "Oracle Cloud: server dan database di Batam, Indonesia.",
+          "Cloudflare: jaringan menuju server dan penyimpanan foto.",
+          "Vercel: menjalankan situs web.",
+          "Resend: mengirim email kode masuk dan pemberitahuan.",
+          "Google: hanya bila Anda memakai tombol Masuk dengan Google. Halaman Masuk memuat tombol dari Google.",
+          "Mapbox: menampilkan peta, dan menerima alamat IP serta area peta yang dilihat."
+        ],
+        "after": [
+          "Kami tidak menjual data pribadi dan tidak membagikannya untuk iklan."
+        ]
+      },
+      {
+        "id": "luar-negeri",
+        "title": "Data yang diproses di luar Indonesia",
+        "paragraphs": [
+          "Vercel, Resend, Google, Mapbox, dan Cloudflare bisa memproses data di luar Indonesia, termasuk di Amerika Serikat. Kami hanya mengirim data yang dibutuhkan layanan itu: email dan isi email ke Resend, serta alamat IP ke penyedia jaringan dan peta."
+        ]
+      },
+      {
+        "id": "masa-simpan",
+        "title": "Berapa lama data disimpan",
+        "table": {
+          "caption": "Masa simpan setiap jenis data",
+          "data": "Data",
+          "period": "Masa simpan",
+          "rows": [
+            [
+              "Akun",
+              "Sampai Anda menghapusnya"
+            ],
+            [
+              "Akun yang tidak dilengkapi",
+              "24 jam"
+            ],
+            [
+              "Kode masuk",
+              "10 menit, atau sampai dipakai"
+            ],
+            [
+              "Sesi masuk",
+              "30 hari sejak terakhir dipakai, paling lama 90 hari"
+            ],
+            [
+              "Laporan yang belum terbit",
+              "Sampai diputuskan, atau sampai akun dihapus"
+            ],
+            [
+              "Laporan yang sudah terbit",
+              "Tetap tayang tanpa nama pelapor setelah akun dihapus"
+            ],
+            [
+              "Cadangan database",
+              "Paling lama 30 hari"
+            ],
+            [
+              "Log server",
+              "Belum ditetapkan"
+            ]
+          ]
+        }
+      },
+      {
+        "id": "hak",
+        "title": "Hak Anda",
+        "items": [
+          "Melihat data: nama tampilan, email, dan laporan Anda ada di halaman Akun Saya.",
+          "Memperbaiki data: ubah nama tampilan di Akun Saya. Untuk mengganti email, buat akun baru dengan email itu.",
+          "Menghapus akun: pilih Hapus akun di Akun Saya. Penghapusan langsung berjalan dan tidak bisa dibatalkan. Nama, email, waktu persetujuan, semua sesi, dan laporan yang belum terbit beserta fotonya dihapus. Informasi tempat dan foto yang sudah terbit tetap tayang tanpa nama Anda. Kami mengirim satu email terakhir sebagai konfirmasi. Salinan di cadangan database hilang paling lama 30 hari kemudian.",
+          "Bertanya atau mengadu: hubungi kami lewat kontak di bawah. Kami menjawab paling lambat 3 × 24 jam."
+        ]
+      },
+      {
+        "id": "keamanan",
+        "title": "Keamanan",
+        "paragraphs": [
+          "Semua koneksi memakai HTTPS. Kode masuk disimpan dalam bentuk hash dan sesi memakai token bertanda tangan. Hanya anggota tim yang mengelola server yang bisa membuka database. Bila terjadi kebocoran data pribadi, kami memberi tahu Anda paling lambat 3 × 24 jam setelah mengetahuinya."
+        ]
+      },
+      {
+        "id": "anak",
+        "title": "Anak",
+        "paragraphs": [
+          "Bila Anda berusia di bawah 18 tahun, minta orang tua atau wali Anda membaca kebijakan ini dan menyetujuinya bersama Anda sebelum membuat akun."
+        ]
+      },
+      {
+        "id": "perubahan",
+        "title": "Perubahan kebijakan",
+        "paragraphs": [
+          "Bila kebijakan ini berubah, kami menaikkan nomor versinya dan meminta persetujuan Anda lagi saat Anda masuk berikutnya."
+        ]
+      },
+      {
+        "id": "kontak",
+        "title": "Kontak",
+        "paragraphs": [
+          "Email kontak resmi diisi tim sebelum peluncuran."
+        ]
+      }
+    ]
   }
 }
