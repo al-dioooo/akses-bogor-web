@@ -74,19 +74,28 @@ export type PlaceFilters = {
   offset?: number;
 };
 
-/** Galat dari API dalam bentuk `{ galat, pesan }`, atau galat jaringan dengan kode `api_tidak_terhubung`. */
+/**
+ * Galat dari API dalam bentuk `{ galat, pesan }`, atau galat jaringan dengan kode `api_tidak_terhubung`. `pesan` dari
+ * API sudah berbahasa Indonesia untuk pengguna. `retryAfterSeconds` diisi dari header `retry-after` pada 429.
+ */
 export class ApiError extends Error {
   constructor(
     readonly status: number,
     readonly galat: string,
     message: string,
+    readonly retryAfterSeconds?: number,
   ) {
     super(message);
     this.name = "ApiError";
   }
 }
 
-function apiUrl(path: string, query: Record<string, string | number | undefined> = {}) {
+/** Header untuk setiap panggilan API dari server web. */
+export async function apiHeaders(): Promise<Record<string, string>> {
+  return { accept: "application/json" };
+}
+
+export function apiUrl(path: string, query: Record<string, string | number | undefined> = {}) {
   const base = process.env.API_URL;
   if (!base) throw new ApiError(0, "api_belum_diatur", "API_URL belum diatur.");
   const url = new URL(path, base);
@@ -101,7 +110,7 @@ async function get<T>(path: string, query?: Record<string, string | number | und
   await connection();
   let response: Response;
   try {
-    response = await fetch(apiUrl(path, query), { headers: { accept: "application/json" } });
+    response = await fetch(apiUrl(path, query), { headers: await apiHeaders() });
   } catch {
     throw new ApiError(0, "api_tidak_terhubung", "API tidak bisa dihubungi.");
   }
