@@ -1,8 +1,9 @@
 // API tiruan untuk tes Playwright, supaya CI tidak butuh akses-bogor-api dan database.
 // Datanya salinan respons API dari seed pengembangan (fixtures.json); filter meniru GET /places dan GET /places/map.
-// Pencarian "galat-tiruan" menjawab 500, untuk menguji keadaan galat di web.
+// Pencarian "galat-tiruan" menjawab 500, untuk menguji keadaan galat di web. Route akun ada di akun.mjs.
 import { readFileSync } from "node:fs";
 import { createServer } from "node:http";
+import { handleAkun } from "./akun.mjs";
 
 const { districts, places } = JSON.parse(readFileSync(new URL("./fixtures.json", import.meta.url), "utf8"));
 const port = Number(process.env.PORT ?? 3101);
@@ -79,8 +80,16 @@ function route(url) {
   return [404, { galat: "tidak_ditemukan", pesan: "Alamat tidak ditemukan." }];
 }
 
-createServer((request, response) => {
-  const [status, body] = route(new URL(request.url ?? "/", `http://localhost:${port}`));
-  response.writeHead(status, { "content-type": "application/json; charset=utf-8" });
-  response.end(JSON.stringify(body));
+createServer(async (request, response) => {
+  const url = new URL(request.url ?? "/", `http://localhost:${port}`);
+  let payload;
+  if (request.method !== "GET") {
+    let raw = "";
+    for await (const chunk of request) raw += chunk;
+    payload = raw ? JSON.parse(raw) : undefined;
+  }
+  const [status, body, headers = {}] =
+    handleAkun(request.method, url.pathname, url.searchParams, request.headers, payload) ?? route(url);
+  response.writeHead(status, { "content-type": "application/json; charset=utf-8", ...headers });
+  response.end(status === 204 ? undefined : JSON.stringify(body));
 }).listen(port, () => console.log(`API tiruan di http://localhost:${port}`));
