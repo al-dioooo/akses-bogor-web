@@ -1,6 +1,6 @@
 name: CI
 
-# Setiap PR dan push ke main: lint, typecheck, lalu build dan tes Playwright + axe-core di ponsel
+# Setiap PR dan push ke main: lint, typecheck, tes Vitest, lalu build dan tes Playwright + axe-core di ponsel
 # dan desktop (ADR-0021). Laporan Playwright diunggah bila tes gagal.
 on:
   pull_request:
@@ -27,6 +27,8 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint
       - run: pnpm typecheck
+      - name: Tes komponen dan fungsi (Vitest)
+        run: pnpm test
       - name: Token sesuai ekspor Figma
         run: |
           pnpm tokens

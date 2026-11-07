@@ -11,7 +11,7 @@ Keputusan produk dan teknis ada di [akses-bogor-docs](https://github.com/al-dioo
 | Framework | Next.js 16 (App Router), React 19, TypeScript |
 | Gaya | Tailwind CSS v4; token design system Figma sebagai CSS variables dan utility |
 | Bahasa | next-intl, satu locale `id` |
-| Tes dan lint | Playwright + axe-core, ESLint dengan `jsx-a11y` strict |
+| Tes dan lint | Vitest + Testing Library untuk komponen, Playwright + axe-core untuk halaman, ESLint dengan `jsx-a11y` strict |
 | Hosting | Vercel |
 
 Alasan pilihan ini ada di [ADR-0013](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0013-tech-stack-nextjs-fastify.md).
@@ -34,6 +34,7 @@ pnpm exec playwright install chromium     # sekali saja, untuk pnpm test:a11y
 | `pnpm build` | Build produksi |
 | `pnpm start` | Menjalankan hasil build |
 | `pnpm tokens` | Menulis ulang `src/app/tokens.css` dari ekspor variable Figma |
+| `pnpm test` | Tes Vitest untuk komponen klien dan fungsi kecil (`src/**/*.test.ts(x)`) di jsdom |
 | `pnpm test:a11y` | Build, lalu tes Playwright + axe-core di ponsel dan desktop, dengan data dari API tiruan di `e2e/mock-api` |
 
 ## Environment Variables
