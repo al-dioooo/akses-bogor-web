@@ -292,5 +292,46 @@
       "body": "Mungkin lokasinya sudah tidak tayang, atau tautannya salah.",
       "explore": "Jelajahi lokasi lain"
     }
+  },
+  "Masuk": {
+    "metaTitle": "Masuk",
+    "eyebrow": "Akun AksesBogor",
+    "title": "Masuk untuk",
+    "accent": "melapor.",
+    "intro": "Menjelajah tetap bisa tanpa akun. Akun dibutuhkan untuk melaporkan tempat dan melihat status laporan Anda.",
+    "loading": "Memuat formulir masuk…",
+    "sessionEnded": "Sesi Anda sudah berakhir. Silakan masuk lagi.",
+    "emailLabel": "Email",
+    "emailHint": "Tanpa kata sandi. Kami kirim kode 6 digit ke email ini. Akun dibuat otomatis bila belum ada.",
+    "submit": "Kirim kode",
+    "sending": "Mengirim kode…",
+    "galat": {
+      "emailKosong": "Isi alamat email Anda.",
+      "emailTidakValid": "Alamat email belum lengkap. Contoh: nama@gmail.com",
+      "server": "Server AksesBogor tidak bisa dihubungi. Coba lagi sebentar lagi."
+    }
+  },
+  "KodeMasuk": {
+    "metaTitle": "Masukkan kode",
+    "eyebrow": "Kode masuk",
+    "title": "Cek email",
+    "accent": "Anda.",
+    "loading": "Memuat formulir kode…",
+    "sentTo": "Kami mengirim kode 6 digit ke",
+    "expiry": "Kode berlaku 10 menit dan hanya bisa dipakai sekali.",
+    "spam": "Belum ada? Periksa folder spam atau promosi, atau kirim ulang kode.",
+    "codeLabel": "Kode 6 digit",
+    "codeHint": "Bisa ditempel langsung dari email.",
+    "submit": "Masuk",
+    "checking": "Memeriksa kode…",
+    "resend": "Kirim ulang kode",
+    "resendWait": "Kode baru bisa diminta dalam {seconds} detik.",
+    "resendReady": "Kode baru bisa diminta sekarang.",
+    "resent": "Kode baru sudah dikirim. Kode sebelumnya tidak berlaku lagi.",
+    "changeEmail": "Ganti email",
+    "galat": {
+      "kodeKosong": "Isi kode 6 digit dari email.",
+      "kodeFormat": "Kode terdiri dari 6 angka. Periksa lagi kode di email Anda."
+    }
   }
 }

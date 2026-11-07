@@ -45,6 +45,14 @@ export async function pendingSignIn(): Promise<PendingSignIn | null> {
   }
 }
 
+/** Jeda sebelum kode baru boleh diminta (ADR-0014). */
+export const RESEND_SECONDS = 60;
+
+/** Sisa detik sampai kode baru boleh diminta, dihitung saat request. */
+export function secondsUntilResend({ sentAt }: PendingSignIn) {
+  return Math.max(0, RESEND_SECONDS - Math.floor((Date.now() - sentAt) / 1000));
+}
+
 export async function clearPendingSignIn() {
   (await cookies()).set(PENDING_COOKIE, "", { ...BASE, maxAge: 0 });
 }
