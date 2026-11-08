@@ -1,11 +1,12 @@
 // API tiruan untuk tes Playwright, supaya CI tidak butuh akses-bogor-api dan database.
 // Datanya salinan respons API dari seed pengembangan (fixtures.json); filter meniru GET /places dan GET /places/map.
 // Pencarian "galat-tiruan" menjawab 500, untuk menguji keadaan galat di web. Route akun ada di akun.mjs, route
-// Laporkan di laporkan.mjs.
+// Laporkan di laporkan.mjs, route panel verifikator di verifikasi.mjs.
 import { readFileSync } from "node:fs";
 import { createServer } from "node:http";
 import { handleAkun } from "./akun.mjs";
 import { handleLaporkan } from "./laporkan.mjs";
+import { handleVerifikasi } from "./verifikasi.mjs";
 
 const { districts, places } = JSON.parse(readFileSync(new URL("./fixtures.json", import.meta.url), "utf8"));
 const port = Number(process.env.PORT ?? 3101);
@@ -96,7 +97,9 @@ createServer(async (request, response) => {
   const [status, body, headers = {}] =
     handleAkun(request.method, url.pathname, url.searchParams, request.headers, payload) ??
     handleLaporkan(request.method, url.pathname, request.headers, payload, places) ??
+    handleVerifikasi(request.method, url, request.headers, payload, places) ??
     route(url);
   response.writeHead(status, { "content-type": "application/json; charset=utf-8", ...headers });
-  response.end(status === 204 ? undefined : JSON.stringify(body));
+  // Foto dikirim sebagai berkas biner, selebihnya JSON.
+  response.end(status === 204 ? undefined : Buffer.isBuffer(body) ? body : JSON.stringify(body));
 }).listen(port, () => console.log(`API tiruan di http://localhost:${port}`));
