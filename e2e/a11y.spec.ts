@@ -19,6 +19,7 @@ const PAGES = [
   "/masuk?sesi=berakhir",
   "/kebijakan-privasi",
   "/syarat",
+  "/tentang",
   "/laporkan",
   "/laporkan?lokasi=4037ba19-b366-45bc-aceb-270944fe9372&jenis=kekurangan",
 ];
