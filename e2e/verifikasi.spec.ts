@@ -83,6 +83,28 @@ test("loads unpublished report photos through the web server", async ({ page }) 
   expect(response.headers()["cache-control"]).toBe("private, no-store");
 });
 
+test("checks each answer and previews the status before publishing (FR-33)", async ({ page }) => {
+  await signIn(page, email("verifikator"));
+  await page.goto("/verifikasi/laporan/10000000-0000-4000-8000-000000000001");
+  const decision = page.getByRole("region", { name: "Keputusan" });
+  await expect(decision).toContainText("0 dari 4 jawaban diperiksa");
+  await expect(decision.getByRole("link", { name: "Tandai bukti untuk Ramp / Jalur Landai." })).toBeVisible();
+
+  await page.getByRole("group", { name: "Bukti untuk Ramp / Jalur Landai" }).getByRole("radio", { name: /^Terbukti/ }).check();
+  // Toilet "Tersedia" tanpa foto toilet: tanpa bukti menjadi Belum diketahui.
+  await page.getByRole("group", { name: "Bukti untuk Toilet Difabel" }).getByRole("radio", { name: /^Tanpa bukti/ }).check();
+  const guiding = page.getByRole("region", { name: "Guiding Block" });
+  await guiding.getByRole("radio", { name: /^Terbukti/ }).check();
+  await guiding.getByRole("radio", { name: "Tidak tersedia" }).check();
+  await expect(decision.getByRole("link", { name: "Pilih alasan Tidak tersedia untuk Guiding Block." })).toBeVisible();
+  await guiding.getByRole("radio", { name: "Tidak ada" }).check();
+  await page.getByRole("group", { name: "Bukti untuk Lift / Elevator" }).getByRole("radio", { name: /^Terbukti/ }).check();
+
+  await expect(decision).toContainText("Semua jawaban sudah diperiksa.");
+  await expect(decision).toContainText("Sebagian");
+  await expect(decision).toContainText("1 dari 3 fasilitas tersedia · 1 belum diketahui");
+});
+
 const REVIEW = "/verifikasi/laporan/10000000-0000-4000-8000-000000000001";
 
 for (const path of ["/verifikasi", "/verifikasi/jawaban", "/verifikasi/cek-ulang", REVIEW]) {
