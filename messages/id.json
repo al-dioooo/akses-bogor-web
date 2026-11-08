@@ -680,6 +680,58 @@
         "cari": "Pencarian sedang gangguan. Coba lagi, atau pakai lokasi Anda.",
         "cek": "Lokasi belum bisa diperiksa. Periksa koneksi, lalu tekan Pakai lokasi ini lagi."
       }
-    }
+    },
+    "metaTitle": "Laporkan tempat",
+    "eyebrow": "Laporkan",
+    "title": {
+      "baru": "Laporkan tempat",
+      "perubahan": "Edit lokasi",
+      "kekurangan": "Laporkan kekurangan"
+    },
+    "intro": {
+      "baru": "Tiga langkah: informasi dan lokasi, fasilitas, lalu foto. Isian tersimpan di perangkat ini sampai laporan dikirim.",
+      "perubahan": "Formulir sudah terisi data {name} saat ini. Ubah yang tidak sesuai; data lama tetap tayang sampai perubahan diverifikasi.",
+      "kekurangan": "Formulir sudah terisi data {name} saat ini. Ubah jawaban fasilitas, tambah foto, atau tulis catatan; data lama tetap tayang sampai laporan diverifikasi."
+    },
+    "loading": "Memuat formulir…",
+    "storageWarning": "Draf tidak bisa disimpan di perangkat ini, jadi isian hilang bila halaman ditutup. Kirim laporan sebelum keluar dari halaman ini.",
+    "restored": "Draf terakhir dipulihkan.",
+    "steps": {
+      "label": "Langkah laporan",
+      "1": "Informasi dan lokasi",
+      "2": "Fasilitas",
+      "3": "Foto dan deskripsi",
+      "ringkasan": "Ringkasan",
+      "heading": "Langkah {number} dari 3: {name}",
+      "current": "(langkah ini)",
+      "done": "(sudah diisi)"
+    },
+    "actions": {
+      "next": "Lanjut",
+      "back": "Kembali",
+      "toSummary": "Lihat ringkasan"
+    },
+    "errors": {
+      "title": "Periksa lagi isian berikut",
+      "namaKosong": "Isi nama tempat.",
+      "kategoriKosong": "Pilih satu kategori.",
+      "lokasiKosong": "Tentukan titik lokasi, lalu tekan Pakai lokasi ini.",
+      "lokasiMirip": "Jawab dulu peringatan tempat yang mungkin sudah ada.",
+      "terlaluPanjang": "Maksimal {max} karakter.",
+      "fotoTerlaluBanyak": "Maksimal {max} foto. Lepas sebagian foto.",
+      "tagKosong": "Pilih objek di foto {number}."
+    },
+    "info": {
+      "nameLabel": "Nama tempat",
+      "nameHint": "Nama yang tertulis di papan nama atau yang dikenal warga.",
+      "categoryLegend": "Kategori",
+      "categoryHint": "Pilih satu.",
+      "landmarkLabel": "Patokan (opsional)",
+      "landmarkHint": "Contoh: pintu samping dekat parkir motor.",
+      "fixedTitle": "Tempat yang dilaporkan",
+      "fixedBody": "Nama, kategori, dan lokasi tidak berubah di laporan kekurangan. Bila datanya salah, pakai Edit lokasi.",
+      "fixedEdit": "Edit lokasi {name}"
+    },
+    "counter": "{count} dari {max} karakter"
   }
 }
