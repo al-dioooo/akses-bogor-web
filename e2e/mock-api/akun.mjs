@@ -8,6 +8,7 @@
 // - Token "akun:<email>" (akun lengkap) dan "baru:<email>" (belum lengkap) bisa langsung dipakai sebagai cookie.
 // - Akun pelapor... punya empat laporan contoh; akun lain belum punya laporan.
 // - GET /_tiruan/akun?email=... menjawab apakah akunnya masih ada (untuk tes hapus akun).
+// - POST /_tiruan/cabut-sesi { email } mencabut semua sesi akun itu, seperti sesi yang berakhir.
 import { randomUUID } from "node:crypto";
 
 export const PRIVACY_POLICY_VERSION = "2026-11-08";
@@ -68,6 +69,10 @@ function sampleReports() {
 /** Menjawab route akun, atau `null` bila bukan route akun. */
 export function handleAkun(method, pathname, searchParams, headers, body) {
   if (method === "GET" && pathname === "/_tiruan/akun") return [200, { exists: users.has(searchParams.get("email")) }];
+  if (method === "POST" && pathname === "/_tiruan/cabut-sesi") {
+    for (const [token, email] of tokens) if (email === body?.email) tokens.delete(token);
+    return [200, { ok: true }];
+  }
 
   if (method === "POST" && pathname === "/auth/code") {
     const email = String(body?.email ?? "").trim().toLowerCase();

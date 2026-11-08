@@ -46,7 +46,7 @@ export function StepInfo({ draft, errors, update, onNearbyPending, map }: Props)
           {draft.category && tk(draft.category)} · {draft.location?.district.name}
         </p>
         <p className="text-text-secondary">{t("fixedBody")}</p>
-        <Link href={`/laporkan?lokasi=${draft.placeId}`} className={buttonClass("outline", "sm")}>
+        <Link href={`/laporkan?lokasi=${draft.placeId}`} className={buttonClass("outline", "sm", "py-2 text-left").replace("whitespace-nowrap ", "")}>
           <Icon icon={IconPencil} />
           {t("fixedEdit", { name: draft.name })}
         </Link>
@@ -74,7 +74,7 @@ export function StepInfo({ draft, errors, update, onNearbyPending, map }: Props)
         id="kategori"
         tabIndex={-1}
         aria-describedby={categoryError ? "kategori-petunjuk kategori-galat" : "kategori-petunjuk"}
-        className="flex flex-col gap-3"
+        className="flex min-w-0 flex-col gap-3"
       >
         <legend className="mb-1 font-semibold">{t("categoryLegend")}</legend>
         <p id="kategori-petunjuk" className="text-text-secondary">
