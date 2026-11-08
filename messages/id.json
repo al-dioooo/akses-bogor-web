@@ -997,9 +997,27 @@
       "title": "Fasilitas",
       "intro": "Bandingkan jawaban pelapor dengan data saat ini dan foto. Jawaban tanpa bukti menjadi Belum diketahui."
     },
+    "photos": {
+      "title": "Foto",
+      "count": "{count, plural, =0 {Tidak ada foto} other {# foto}}",
+      "none": "Laporan ini tanpa foto. Jawaban Tersedia atau Tidak perlu butuh bukti lain, misalnya konfirmasi pengelola.",
+      "fromAnswer": "Dari jawaban klarifikasi",
+      "hidden": "Disembunyikan",
+      "blurred": "{count, plural, other {# area dikaburkan}}",
+      "currentTitle": "Foto lokasi yang sudah tayang",
+      "open": "Buka foto {number} ukuran penuh"
+    },
     "description": {
       "title": "Deskripsi",
       "empty": "Pelapor tidak menulis deskripsi."
+    },
+    "clarifications": {
+      "title": "Klarifikasi",
+      "question": "Pertanyaan verifikator",
+      "answer": "Jawaban pelapor",
+      "asked": "Ditanyakan {date}",
+      "answered": "Dijawab {date}",
+      "waiting": "Belum dijawab. Tenggat {date}."
     }
   }
 }

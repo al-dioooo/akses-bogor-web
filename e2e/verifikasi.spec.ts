@@ -43,7 +43,7 @@ test("tells reporters that the desk is for verifiers only", async ({ page }) => 
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex, nofollow");
 });
 
-test("puts a change report next to the current place data (FR-31)", async ({ page }) => {
+test("puts a change report next to the current place data, with the private photo (FR-31)", async ({ page }) => {
   await signIn(page, email("verifikator"));
   await page.goto("/verifikasi");
   await page.getByRole("link", { name: /Halte contoh/ }).first().click();
@@ -52,9 +52,35 @@ test("puts a change report next to the current place data (FR-31)", async ({ pag
   await expect(lift).toContainText("Saat ini");
   await expect(lift).toContainText("Berubah");
   await expect(lift).toContainText("Tidak tersedia · Rusak");
+  const photo = page.getByRole("region", { name: /Foto/ }).getByRole("img");
+  await expect(photo).toHaveAttribute("src", /\/verifikasi\/foto\/[0-9a-f-]+\?versi=asli/);
+  await expect.poll(() => photo.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0);
 
   await page.goto("/verifikasi/laporan/10000000-0000-4000-8000-000000000004");
   await expect(page.getByRole("heading", { name: "Ini laporan Anda sendiri" })).toBeVisible();
+});
+
+test("shows the open clarification question on a report waiting for an answer", async ({ page }) => {
+  await signIn(page, email("verifikator"));
+  await page.goto("/verifikasi/jawaban");
+  await page.getByRole("link", { name: /Kampus contoh B/ }).click();
+  const thread = page.getByRole("region", { name: "Klarifikasi" });
+  await expect(thread).toContainText("Apakah lift sudah diperbaiki?");
+  await expect(thread).toContainText("Belum dijawab. Tenggat 12 November 2026");
+  await expect(page.getByRole("region", { name: "Foto" })).toContainText("Laporan ini tanpa foto");
+});
+
+test("loads unpublished report photos through the web server", async ({ page }) => {
+  await signIn(page, email("verifikator"));
+  await page.goto("/verifikasi/laporan/10000000-0000-4000-8000-000000000001");
+  const photos = page.getByRole("region", { name: "Foto" });
+  await expect(photos).toContainText("2 foto");
+  await expect(photos).toContainText("Ramp dari parkir");
+  const first = photos.getByRole("img").first();
+  await expect(first).toHaveAttribute("src", /^\/verifikasi\/foto\/[0-9a-f-]+\?versi=asli$/);
+  await expect.poll(() => first.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0);
+  const response = await page.request.get((await first.getAttribute("src"))!);
+  expect(response.headers()["cache-control"]).toBe("private, no-store");
 });
 
 const REVIEW = "/verifikasi/laporan/10000000-0000-4000-8000-000000000001";

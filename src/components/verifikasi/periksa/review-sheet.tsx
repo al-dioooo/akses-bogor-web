@@ -1,7 +1,9 @@
 import { useTranslations } from "next-intl";
 import type { Review } from "@/lib/verifikasi";
+import { ClarificationThread } from "./clarification-thread";
 import { FacilityCompare } from "./facility-compare";
 import { SheetHeading } from "./parts";
+import { PhotoGallery } from "./photo-gallery";
 import { PlaceFacts } from "./place-facts";
 
 /**
@@ -13,7 +15,9 @@ export function ReviewSheet({ review }: { review: Review }) {
   const sections = [
     { id: "tempat", title: t("place.title") },
     { id: "fasilitas", title: t("facilities.title") },
+    { id: "foto", title: t("photos.title") },
     { id: "deskripsi", title: t("description.title") },
+    ...(review.clarifications.length ? [{ id: "klarifikasi", title: t("clarifications.title") }] : []),
   ];
   return (
     <div className="grid items-start gap-10 lg:grid-cols-[13rem_minmax(0,1fr)]">
@@ -40,10 +44,22 @@ export function ReviewSheet({ review }: { review: Review }) {
           </SheetHeading>
           <FacilityCompare review={review} />
         </section>
+        <section id="foto" aria-labelledby="judul-foto" className="flex scroll-mt-24 flex-col gap-5">
+          <SheetHeading id="judul-foto" number={3} title={t("photos.title")}>
+            {t("photos.count", { count: review.photos.length })}
+          </SheetHeading>
+          <PhotoGallery review={review} />
+        </section>
         <section id="deskripsi" aria-labelledby="judul-deskripsi" className="flex scroll-mt-24 flex-col gap-5">
-          <SheetHeading id="judul-deskripsi" number={3} title={t("description.title")} />
+          <SheetHeading id="judul-deskripsi" number={4} title={t("description.title")} />
           <p className="rounded-2xl bg-bg-sunken p-4 break-words whitespace-pre-line">{review.submission.description ?? t("description.empty")}</p>
         </section>
+        {review.clarifications.length > 0 && (
+          <section id="klarifikasi" aria-labelledby="judul-klarifikasi" className="flex scroll-mt-24 flex-col gap-5">
+            <SheetHeading id="judul-klarifikasi" number={5} title={t("clarifications.title")} />
+            <ClarificationThread items={review.clarifications} />
+          </section>
+        )}
       </div>
     </div>
   );
