@@ -13,6 +13,7 @@ import { buttonClass } from "@/ui/button-styles";
 import { Icon } from "@/ui/icon";
 import { IconArrowLeft, IconArrowRight, IconSend } from "@/ui/icons";
 import { ErrorSummary, Stepper } from "./form-parts";
+import { PickerMap } from "./picker-map";
 import { sendDraft } from "./send";
 import { SendStatus, type SendProblem, type Sending } from "./send-status";
 import { StepFacilities } from "./step-facilities";
@@ -250,7 +251,15 @@ export function ReportForm({ kind, place, signedIn }: { kind: ReportKind; place:
       </h2>
       <ErrorSummary ref={summary} errors={errors} />
 
-      {step === "1" && <StepInfo draft={draft} errors={errors} update={update} onNearbyPending={setNearbyPending} />}
+      {step === "1" && (
+        <StepInfo
+          draft={draft}
+          errors={errors}
+          update={update}
+          onNearbyPending={setNearbyPending}
+          map={(candidate, move) => <PickerMap candidate={candidate} onMove={move} />}
+        />
+      )}
       {step === "2" && <StepFacilities draft={draft} errors={errors} update={update} />}
       {step === "3" && <StepPhotos draft={draft} errors={errors} update={update} />}
       {step === "ringkasan" && (

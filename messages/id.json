@@ -870,6 +870,19 @@
       "mine": "Lihat Laporan saya",
       "another": "Laporkan tempat lain",
       "loading": "Memuat laporan…"
+    },
+    "peta": {
+      "label": "Peta pemilih lokasi",
+      "hint": "Pin selalu di tengah peta. Geser peta dengan tombol arah di bawah, atau fokus ke peta lalu pakai tombol panah; tombol + dan − memperbesar atau memperkecil.",
+      "controls": "Kontrol peta",
+      "north": "Geser peta ke utara",
+      "south": "Geser peta ke selatan",
+      "west": "Geser peta ke barat",
+      "east": "Geser peta ke timur",
+      "zoomIn": "Perbesar peta",
+      "zoomOut": "Perkecil peta",
+      "loading": "Memuat peta…",
+      "unavailable": "Peta tidak bisa tampil. Pakai pencarian atau lokasi Anda untuk menentukan titik."
     }
   }
 }
