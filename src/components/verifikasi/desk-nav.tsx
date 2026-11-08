@@ -4,11 +4,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Icon } from "@/ui/icon";
-import { IconClipboardCheck, IconMessage, IconUsers, type Glyph } from "@/ui/icons";
+import { IconClipboardCheck, IconMessage, IconRefresh, IconUsers, type Glyph } from "@/ui/icons";
 
-const TABS: { href: string; key: "antrean" | "jawaban" | "tim"; icon: Glyph; admin?: boolean }[] = [
+const TABS: { href: string; key: "antrean" | "jawaban" | "cekUlang" | "tim"; icon: Glyph; admin?: boolean }[] = [
   { href: "/verifikasi", key: "antrean", icon: IconClipboardCheck },
   { href: "/verifikasi/jawaban", key: "jawaban", icon: IconMessage },
+  { href: "/verifikasi/cek-ulang", key: "cekUlang", icon: IconRefresh },
   { href: "/verifikasi/tim", key: "tim", icon: IconUsers, admin: true },
 ];
 

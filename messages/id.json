@@ -907,6 +907,7 @@
       "label": "Bagian meja verifikasi",
       "antrean": "Antrean",
       "jawaban": "Menunggu jawaban",
+      "cekUlang": "Perlu dicek ulang",
       "tim": "Tim verifikator"
     },
     "noAccess": {
@@ -937,6 +938,14 @@
       "galat": "Antrean gagal dimuat. Coba muat ulang halaman.",
       "dayUnit": "hari menunggu",
       "position": "Urutan {position}"
+    },
+    "recheck": {
+      "heading": "{count, plural, =0 {Tidak ada lokasi} other {# lokasi}}",
+      "intro": "Lokasi yang terakhir diverifikasi lebih dari 12 bulan lalu, terlama dulu. Cek ulang lewat Edit lokasi di halaman tempatnya.",
+      "emptyTitle": "Semua lokasi masih terbaru",
+      "emptyBody": "Tidak ada lokasi yang terakhir diverifikasi lebih dari 12 bulan lalu.",
+      "verified": "Terakhir diverifikasi {date}",
+      "ago": "{months, plural, other {# bulan lalu}}"
     }
   }
 }

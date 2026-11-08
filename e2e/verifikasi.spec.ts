@@ -29,6 +29,9 @@ test("shows the queue oldest first without the verifier's own report", async ({ 
   const waiting = main.getByRole("region", { name: "1 laporan" }).getByRole("listitem");
   await expect(waiting.first()).toContainText("Kampus contoh B");
   await expect(waiting.first()).toContainText("Jawaban paling lambat 12 November 2026");
+
+  await main.getByRole("link", { name: "Perlu dicek ulang" }).click();
+  await expect(main.getByRole("link", { name: /Halte contoh B/ })).toHaveAttribute("href", /\/lokasi\//);
   await expect(main.getByRole("link", { name: "Tim verifikator" })).toHaveCount(0);
 });
 
@@ -40,7 +43,7 @@ test("tells reporters that the desk is for verifiers only", async ({ page }) => 
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex, nofollow");
 });
 
-for (const path of ["/verifikasi", "/verifikasi/jawaban"]) {
+for (const path of ["/verifikasi", "/verifikasi/jawaban", "/verifikasi/cek-ulang"]) {
   for (const colorScheme of ["light", "dark"] as const) {
     test(`${path} (${colorScheme}) has no serious or critical WCAG 2.2 AA violations`, async ({ page }) => {
       await signIn(page, email("verifikator"));
