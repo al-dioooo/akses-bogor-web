@@ -1052,6 +1052,16 @@
         "description": "Deskripsi paling banyak 1.000 karakter."
       },
       "ready": "Semua jawaban sudah diperiksa."
+    },
+    "edit": {
+      "title": "Yang akan tayang",
+      "intro": "Perbaiki ejaan, kategori, atau pin bila perlu, dan hapus data pribadi dari patokan.",
+      "name": "Nama tempat",
+      "category": "Kategori",
+      "landmark": "Patokan",
+      "landmarkHint": "Opsional. Tanpa nomor telepon atau nama orang.",
+      "description": "Deskripsi yang tayang",
+      "descriptionHint": "Hapus data pribadi seperti nomor telepon atau nama orang sebelum terbit."
     }
   }
 }
