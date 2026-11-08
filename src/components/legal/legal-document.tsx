@@ -73,10 +73,22 @@ export async function LegalDocument({ namespace, version }: { namespace: "Kebija
   );
 }
 
+/**
+ * Tabel dua kolom terlalu sempit di bawah 400 px, jadi di layar itu baris-barisnya ditumpuk sebagai daftar. Hanya satu
+ * dari keduanya yang tampil, sehingga pembaca layar tidak membacanya dua kali.
+ */
 function RetentionTable({ table }: { table: NonNullable<LegalSection["table"]> }) {
   return (
     <div className="rounded-2xl border border-border-subtle">
-      <table className="w-full text-left text-base">
+      <dl className="text-base min-[25rem]:hidden">
+        {table.rows.map(([data, period], index) => (
+          <div key={data} className={`flex flex-col gap-1 p-4 ${index > 0 ? "border-t border-border-subtle" : ""}`}>
+            <dt className="font-semibold">{data}</dt>
+            <dd>{period}</dd>
+          </div>
+        ))}
+      </dl>
+      <table className="hidden w-full text-left text-base min-[25rem]:table">
         <caption className="sr-only">{table.caption}</caption>
         <thead className="bg-bg-sunken">
           <tr>
