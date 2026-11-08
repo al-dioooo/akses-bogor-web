@@ -74,7 +74,10 @@ export function newDraft(kind: ReportKind, place: PlaceDetail | null, now = Date
   };
 }
 
-export type FieldError = { field: string; message: string; values?: Record<string, string | number> };
+/** Kunci pesan galat di `Laporkan.errors` (messages/id.json). */
+export type ErrorKey = "namaKosong" | "kategoriKosong" | "lokasiKosong" | "lokasiMirip" | "terlaluPanjang" | "fotoTerlaluBanyak" | "tagKosong";
+
+export type FieldError = { field: string; message: ErrorKey; values?: Record<string, string | number> };
 
 /** Langkah 1 (FR-21, FR-22). Laporan kekurangan memakai nama, kategori, dan titik lokasi saat ini. */
 export function checkInfo(draft: ReportDraft): FieldError[] {
