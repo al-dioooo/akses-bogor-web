@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { Icon } from "@/ui/icon";
 import { IconArrowUp } from "@/ui/icons";
+import { PRIVACY_POLICY_PATH, TERMS_PATH } from "@/lib/kebijakan";
 import { Logo } from "./logo";
 
 const LINK = "inline-flex min-h-11 items-center text-text-on-inverse-secondary hover:text-text-on-inverse hover:underline";
@@ -32,8 +33,8 @@ export async function SiteFooter() {
     {
       title: t("kebijakan"),
       links: [
-        { href: "/kebijakan-privasi", label: t("privasi") },
-        { href: "/syarat", label: t("syarat") },
+        { href: PRIVACY_POLICY_PATH, label: t("privasi") },
+        { href: TERMS_PATH, label: t("syarat") },
       ],
     },
   ];

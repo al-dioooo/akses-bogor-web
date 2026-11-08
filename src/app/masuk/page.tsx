@@ -7,7 +7,7 @@ import { AuthPanelSkeleton, AuthShell } from "@/components/akun/auth-shell";
 import { EmailForm } from "@/components/akun/email-form";
 import { GoogleSignIn } from "@/components/akun/google-sign-in";
 import { getMe } from "@/lib/akun";
-import { PRIVACY_POLICY_PATH } from "@/lib/kebijakan";
+import { PRIVACY_POLICY_PATH, TERMS_PATH } from "@/lib/kebijakan";
 import { AFTER_SIGN_IN, safeReturnPath, withReturn } from "@/lib/kembali";
 import { pendingSignIn, sessionToken } from "@/lib/sesi";
 import { Icon } from "@/ui/icon";
@@ -60,8 +60,13 @@ async function SignIn({ searchParams }: { searchParams: PageProps<"/masuk">["sea
       <EmailForm defaultEmail={pending?.email} kembali={kembali} />
       <p className="text-sm text-text-secondary">
         {t.rich("privacy", {
-          link: (chunks) => (
+          privacy: (chunks) => (
             <Link href={PRIVACY_POLICY_PATH} className="font-semibold text-text-brand underline underline-offset-2">
+              {chunks}
+            </Link>
+          ),
+          terms: (chunks) => (
+            <Link href={TERMS_PATH} className="font-semibold text-text-brand underline underline-offset-2">
               {chunks}
             </Link>
           ),

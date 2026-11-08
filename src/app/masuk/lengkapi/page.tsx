@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import { AuthPanelSkeleton, AuthShell } from "@/components/akun/auth-shell";
 import { SignOutForm } from "@/components/akun/clear-drafts";
 import { CompleteForm } from "@/components/akun/complete-form";
-import { PRIVACY_POLICY_VERSION } from "@/lib/kebijakan";
+import { PRIVACY_POLICY_VERSION, TERMS_VERSION } from "@/lib/kebijakan";
 import { AFTER_SIGN_IN, safeReturnPath } from "@/lib/kembali";
 import { requireAccount } from "@/lib/sesi";
 import { buttonClass } from "@/ui/button-styles";
@@ -32,13 +32,18 @@ async function Complete({ searchParams }: { searchParams: PageProps<"/masuk/leng
   const { user } = await requireAccount(kembali ?? AFTER_SIGN_IN, { allowIncomplete: true });
   if (!user.needsCompletion) redirect(kembali ?? AFTER_SIGN_IN);
   const [t, format] = await Promise.all([getTranslations("Lengkapi"), getFormatter()]);
-  const versionLabel = format.dateTime(new Date(`${PRIVACY_POLICY_VERSION}T00:00:00+07:00`), { dateStyle: "long" });
+  const label = (version: string) => format.dateTime(new Date(`${version}T00:00:00+07:00`), { dateStyle: "long" });
   return (
     <>
       <p>
         {t("signedInAs")} <strong className="break-all">{user.email}</strong>
       </p>
-      <CompleteForm defaultName={user.displayName} kembali={kembali} versionLabel={versionLabel} />
+      <CompleteForm
+        defaultName={user.displayName}
+        kembali={kembali}
+        versionLabel={label(PRIVACY_POLICY_VERSION)}
+        termsVersionLabel={label(TERMS_VERSION)}
+      />
       <SignOutForm className="flex flex-col gap-2 border-t border-border-subtle pt-6">
         <p className="text-text-secondary">{t("declineHint")}</p>
         <button className={buttonClass("ghost", "sm", "self-start")}>{t("decline")}</button>

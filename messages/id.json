@@ -314,7 +314,7 @@
     "or": "atau",
     "googleFailed": "Tombol Google tidak bisa dimuat. Masuk dengan kode email di bawah.",
     "googleSigningIn": "Memeriksa akun Google…",
-    "privacy": "Data Anda dijaga sesuai <link>Kebijakan Privasi</link>."
+    "privacy": "Data Anda dijaga sesuai <privacy>Kebijakan Privasi</privacy>, dan pemakaian AksesBogor mengikuti <terms>Syarat Layanan</terms>."
   },
   "KodeMasuk": {
     "metaTitle": "Masukkan kode",
@@ -355,6 +355,7 @@
     "privacyDelete": "Anda bisa menghapus akun kapan saja dari Akun Saya.",
     "privacyLink": "Baca Kebijakan Privasi versi {version} (tab baru)",
     "consentLabel": "Saya sudah membaca dan menyetujui Kebijakan Privasi AksesBogor.",
+    "termsNotice": "Dengan menekan \"Simpan dan lanjut\", Anda juga menyetujui <link>Syarat Layanan AksesBogor versi {version} (tab baru)</link>.",
     "submit": "Simpan dan lanjut",
     "saving": "Menyimpan…",
     "declineHint": "Tidak setuju? Keluar saja. Akun yang tidak dilengkapi dihapus otomatis dalam 24 jam.",
@@ -497,7 +498,7 @@
             ],
             [
               "Log server",
-              "Belum ditetapkan"
+              "30 hari"
             ]
           ]
         }
@@ -531,6 +532,143 @@
         "title": "Perubahan kebijakan",
         "paragraphs": [
           "Bila kebijakan ini berubah, kami menaikkan nomor versinya dan meminta persetujuan Anda lagi saat Anda masuk berikutnya."
+        ]
+      },
+      {
+        "id": "kontak",
+        "title": "Kontak",
+        "paragraphs": [
+          "Email kontak resmi diisi tim sebelum peluncuran."
+        ]
+      }
+    ]
+  },
+  "SyaratLayanan": {
+    "metaTitle": "Syarat Layanan",
+    "eyebrow": "Kebijakan",
+    "title": "Syarat",
+    "accent": "Layanan.",
+    "version": "Versi {date}",
+    "draft": "Draf. Teks ini masih ditinjau tim dan bisa berubah sebelum AksesBogor diluncurkan.",
+    "contents": "Isi halaman",
+    "sections": [
+      {
+        "id": "tentang-syarat",
+        "title": "Tentang syarat ini",
+        "paragraphs": [
+          "AksesBogor adalah web yang mencatat aksesibilitas fasilitas publik di Kota Bogor bagi penyandang disabilitas dan pendampingnya. AksesBogor dikelola Tim AksesBogor sebagai proyek mahasiswa.",
+          "Syarat ini berlaku saat Anda memakai AksesBogor. Cara kami mengelola data pribadi Anda dijelaskan di Kebijakan Privasi. Saat melengkapi akun, Anda menyetujui syarat ini dengan menekan \"Simpan dan lanjut\"."
+        ]
+      },
+      {
+        "id": "tanpa-akun",
+        "title": "Memakai AksesBogor tanpa akun",
+        "paragraphs": [
+          "Siapa pun boleh membuka Beranda, Jelajahi, Peta, dan halaman lokasi tanpa akun. Akun hanya dibutuhkan untuk melapor."
+        ]
+      },
+      {
+        "id": "akun",
+        "title": "Akun Anda",
+        "items": [
+          "Anda masuk dengan akun Google atau kode 6 digit yang kami kirim ke email Anda. Jaga akses ke email itu, karena siapa pun yang bisa membukanya bisa masuk ke akun Anda.",
+          "Satu akun untuk satu orang. Jangan memakai akun orang lain atau mengaku sebagai orang lain.",
+          "Nama tampilan dilihat tim verifikator saat memeriksa laporan Anda. Pakai nama yang sopan dan tidak menyesatkan.",
+          "Bila Anda berusia di bawah 18 tahun, minta orang tua atau wali Anda membaca syarat ini dan menyetujuinya bersama Anda sebelum membuat akun.",
+          "Anda bisa menghapus akun kapan saja dari Akun Saya. Apa yang dihapus dan apa yang tetap tayang dijelaskan di Kebijakan Privasi."
+        ]
+      },
+      {
+        "id": "melapor",
+        "title": "Melapor",
+        "items": [
+          "Laporkan tempat umum di Kota Bogor berdasarkan pengamatan atau pengetahuan Anda sendiri.",
+          "\"Tersedia\" berarti fasilitasnya ada dan bisa dipakai. Bila Anda tidak yakin, pilih \"Belum tahu\".",
+          "Kirim foto yang Anda ambil sendiri dan yang memperlihatkan tempat atau fasilitasnya. Hindari wajah orang, pelat nomor, dan bagian dalam ruang pribadi.",
+          "Satu laporan untuk satu tempat. Untuk tempat yang sudah ada di AksesBogor, pakai \"Edit lokasi\" atau \"Laporkan kekurangan\" di halaman lokasinya.",
+          "Ada batas jumlah laporan dan foto per akun untuk mencegah spam."
+        ]
+      },
+      {
+        "id": "verifikasi",
+        "title": "Laporan diperiksa sebelum tayang",
+        "items": [
+          "Setiap laporan diperiksa tim verifikator AksesBogor sebelum tayang. Sebelum itu, laporan dan fotonya tidak bisa dilihat publik.",
+          "Verifikator boleh memperbaiki nama, kategori, titik di peta, dan deskripsi; mengubah jawaban fasilitas yang tidak didukung bukti menjadi \"Belum tahu\"; serta mengaburkan atau menyembunyikan foto.",
+          "Verifikator bisa meminta klarifikasi. Jawab dari Laporan saya dalam 7 hari; laporan yang tidak dijawab dalam waktu itu ditolak.",
+          "Laporan bisa ditolak dengan salah satu alasan baku. Kami mengirim email saat laporan Anda diterbitkan, ditolak beserta alasannya, atau butuh klarifikasi.",
+          "Status lokasi dihitung otomatis dari jawaban fasilitas yang sudah diperiksa. Laporan yang diterbitkan tampil tanpa nama pelapor."
+        ]
+      },
+      {
+        "id": "hak",
+        "title": "Hak atas laporan dan foto Anda",
+        "paragraphs": [
+          "Laporan, foto, dan jawaban klarifikasi tetap milik Anda. Dengan mengirimnya, Anda memberi Tim AksesBogor izin tanpa bayaran, tidak eksklusif, berlaku di mana pun, dan tidak bisa ditarik kembali untuk:"
+        ],
+        "items": [
+          "menyimpan, memeriksa, dan menyunting isinya, termasuk memperkecil, memotong, mengaburkan, dan menyimpan ulang foto;",
+          "menayangkannya di AksesBogor sebagai informasi tempat; dan",
+          "membagikan informasi tempat dan foto yang sudah terbit, termasuk dengan lisensi data terbuka yang dipilih tim. Data yang dibagikan tidak memuat nama atau email Anda."
+        ],
+        "after": [
+          "Izin ini tetap berlaku untuk bagian yang sudah terbit setelah Anda menghapus akun, sehingga informasi tempat tetap bisa dipakai orang lain. Anda menyatakan bahwa Anda berhak memberi izin ini, misalnya karena foto itu Anda ambil sendiri."
+        ]
+      },
+      {
+        "id": "larangan",
+        "title": "Yang tidak boleh",
+        "items": [
+          "Mengirim laporan palsu, laporan untuk tempat yang tidak Anda kenal, atau laporan yang sengaja menyesatkan.",
+          "Mengirim spam, iklan, atau isi yang tidak berhubungan dengan aksesibilitas tempat.",
+          "Mengirim foto atau teks yang melanggar hukum, melanggar hak orang lain, atau merendahkan orang lain.",
+          "Mencoba membobol akun lain, mengakali pemeriksaan, atau membebani layanan dengan permintaan otomatis dalam jumlah besar."
+        ],
+        "after": [
+          "Kami bisa menolak laporan yang melanggar syarat ini dan menghentikan akses akun yang terus melanggar."
+        ]
+      },
+      {
+        "id": "informasi",
+        "title": "Informasi aksesibilitas",
+        "paragraphs": [
+          "Informasi di AksesBogor berasal dari laporan warga yang sudah diperiksa tim, tetapi keadaan tempat bisa berubah setelah diperiksa. Lihat tanggal \"Terakhir diverifikasi\" di halaman lokasi, dan hubungi pengelola tempat bila kunjungan Anda bergantung pada satu fasilitas. Bila informasinya sudah tidak sesuai, beri tahu kami lewat \"Laporkan kekurangan\".",
+          "AksesBogor tidak berafiliasi dengan pengelola tempat yang tercatat, dan status sebuah tempat bukan penilaian resmi."
+        ]
+      },
+      {
+        "id": "pihak-lain",
+        "title": "Layanan pihak lain",
+        "paragraphs": [
+          "Peta dan pencarian tempat memakai Mapbox dan data OpenStreetMap. Batas kecamatan berasal dari © kontributor OpenStreetMap dengan lisensi ODbL. Masuk dengan Google memakai layanan Google. Layanan itu memiliki syarat sendiri."
+        ]
+      },
+      {
+        "id": "ketersediaan",
+        "title": "Ketersediaan layanan",
+        "paragraphs": [
+          "AksesBogor dikerjakan tim mahasiswa. Kami berusaha menjaganya tetap berjalan, tetapi layanan bisa terhenti sementara, berubah, atau dihentikan."
+        ]
+      },
+      {
+        "id": "tanggung-jawab",
+        "title": "Batas tanggung jawab",
+        "paragraphs": [
+          "AksesBogor disediakan sebagaimana adanya. Sejauh diizinkan hukum, Tim AksesBogor tidak bertanggung jawab atas kerugian yang timbul karena mengandalkan informasi di AksesBogor yang ternyata tidak lengkap, sudah berubah, atau keliru."
+        ]
+      },
+      {
+        "id": "perubahan",
+        "title": "Perubahan syarat",
+        "paragraphs": [
+          "Bila syarat ini berubah, kami menaikkan nomor versinya di halaman ini. Bila perubahannya menyangkut hak atau kewajiban pelapor, kami meminta persetujuan Anda lagi saat Anda masuk berikutnya."
+        ]
+      },
+      {
+        "id": "hukum",
+        "title": "Hukum yang berlaku",
+        "paragraphs": [
+          "Syarat ini tunduk pada hukum Republik Indonesia."
         ]
       },
       {

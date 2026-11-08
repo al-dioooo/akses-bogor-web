@@ -25,7 +25,8 @@ const save = (page: Page) => page.getByRole("button", { name: "Simpan dan lanjut
 
 test("saves the name and consent, then returns to the page that asked for sign-in", async ({ page }) => {
   await signInNew(page, "/peta");
-  await expect(page.getByRole("link", { name: /Baca Kebijakan Privasi versi 9 November 2026/ })).toHaveAttribute("target", "_blank");
+  await expect(page.getByRole("link", { name: /Baca Kebijakan Privasi versi 10 November 2026/ })).toHaveAttribute("target", "_blank");
+  await expect(page.getByRole("link", { name: /Syarat Layanan AksesBogor versi 10 November 2026/ })).toHaveAttribute("href", "/syarat");
   await nameField(page).fill("Sari Lestari");
   await consent(page).check();
   await save(page).click();
@@ -76,10 +77,19 @@ for (const colorScheme of ["light", "dark"] as const) {
   });
 }
 
+test("Syarat Layanan shows its version, the draft notice, and links to each section", async ({ page }) => {
+  await page.goto("/syarat");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Syarat Layanan.");
+  await expect(page.getByText("Versi 10 November 2026")).toBeVisible();
+  await expect(page.getByText(/^Draf\./)).toBeVisible();
+  await page.getByRole("navigation", { name: "Isi halaman" }).getByRole("link", { name: "Hak atas laporan dan foto Anda" }).click();
+  await expect(page).toHaveURL(/#hak$/);
+});
+
 test("Kebijakan Privasi shows the version that is agreed to and links to each section", async ({ page }) => {
   await page.goto("/kebijakan-privasi");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Kebijakan Privasi.");
-  await expect(page.getByText("Versi 9 November 2026")).toBeVisible();
+  await expect(page.getByText("Versi 10 November 2026")).toBeVisible();
   await page.getByRole("navigation", { name: "Isi halaman" }).getByRole("link", { name: "Hak Anda" }).click();
   await expect(page).toHaveURL(/#hak$/);
   await expect(page.getByRole("table", { name: "Masa simpan setiap jenis data" })).toBeVisible();
