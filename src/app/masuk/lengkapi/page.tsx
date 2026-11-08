@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getFormatter, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
-import { signOut } from "@/app/akun/actions";
 import { AuthPanelSkeleton, AuthShell } from "@/components/akun/auth-shell";
+import { SignOutForm } from "@/components/akun/clear-drafts";
 import { CompleteForm } from "@/components/akun/complete-form";
 import { PRIVACY_POLICY_VERSION } from "@/lib/kebijakan";
 import { AFTER_SIGN_IN, safeReturnPath } from "@/lib/kembali";
@@ -39,10 +39,10 @@ async function Complete({ searchParams }: { searchParams: PageProps<"/masuk/leng
         {t("signedInAs")} <strong className="break-all">{user.email}</strong>
       </p>
       <CompleteForm defaultName={user.displayName} kembali={kembali} versionLabel={versionLabel} />
-      <form action={signOut} className="flex flex-col gap-2 border-t border-border-subtle pt-6">
+      <SignOutForm className="flex flex-col gap-2 border-t border-border-subtle pt-6">
         <p className="text-text-secondary">{t("declineHint")}</p>
         <button className={buttonClass("ghost", "sm", "self-start")}>{t("decline")}</button>
-      </form>
+      </SignOutForm>
     </>
   );
 }
