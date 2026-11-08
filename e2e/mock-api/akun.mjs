@@ -10,7 +10,7 @@
 // - GET /_tiruan/akun?email=... menjawab apakah akunnya masih ada (untuk tes hapus akun).
 import { randomUUID } from "node:crypto";
 
-export const PRIVACY_POLICY_VERSION = "2026-11-07";
+export const PRIVACY_POLICY_VERSION = "2026-11-08";
 const users = new Map();
 const tokens = new Map();
 const lastCodeAt = new Map();

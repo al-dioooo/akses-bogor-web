@@ -390,9 +390,10 @@
         "items": [
           "Akun: alamat email, nama tampilan, peran (pengguna, verifikator, atau admin), serta waktu dan versi Kebijakan Privasi yang Anda setujui.",
           "Masuk: kode 6 digit yang kami kirim ke email Anda, disimpan dalam bentuk acak (hash) selama 10 menit, dan sesi masuk (token, waktu dibuat, dan waktu terakhir dipakai). Bila Anda masuk dengan Google, kami menyimpan nomor akun Google Anda untuk menyambungkannya ke akun AksesBogor. Kami tidak menyimpan foto profil, kontak, atau token akses Google.",
-          "Laporan: isian laporan, titik lokasi, dan foto yang Anda kirim. Metadata lokasi (EXIF) dihapus dari foto sebelum disimpan.",
+          "Laporan: isian laporan (nama tempat, kategori, patokan, jawaban fasilitas, catatan, dan deskripsi), titik yang Anda konfirmasi di peta, dan foto yang Anda kirim. Lokasi perangkat hanya dibaca saat Anda menekan Gunakan lokasi saya dan tidak disimpan. Foto diperkecil lalu disimpan ulang tanpa metadata (EXIF), termasuk lokasi GPS.",
+          "Pencarian tempat: kata kunci yang Anda ketik di pencarian formulir laporan diteruskan ke Mapbox lewat server kami, tanpa alamat IP Anda, dan tidak kami simpan.",
           "Teknis: alamat IP, alamat halaman yang dibuka, dan waktunya tercatat di log server untuk keamanan dan memperbaiki galat.",
-          "Di perangkat Anda: pilihan tampilan (mode terang atau gelap, gerak) disimpan di browser Anda dan tidak dikirim ke kami. Cookie sesi hanya dipakai untuk menjaga Anda tetap masuk. Kami tidak memakai cookie iklan atau analitik."
+          "Di perangkat Anda: pilihan tampilan (mode terang atau gelap, gerak) disimpan di browser Anda dan tidak dikirim ke kami. Draf laporan yang belum dikirim, termasuk fotonya, juga disimpan di browser Anda dan baru dikirim ke kami saat Anda menekan Kirim laporan. Cookie sesi hanya dipakai untuk menjaga Anda tetap masuk. Kami tidak memakai cookie iklan atau analitik."
         ]
       },
       {
@@ -412,15 +413,15 @@
         "id": "penerima",
         "title": "Siapa yang bisa melihat data Anda",
         "paragraphs": [
-          "Verifikator AksesBogor melihat nama tampilan pelapor, bukan email, saat memeriksa laporan. Penyedia layanan berikut memproses data atas nama kami:"
+          "Verifikator AksesBogor melihat nama tampilan pelapor, bukan email, beserta isian dan foto laporan saat memeriksanya. Sebelum diverifikasi, laporan dan foto tidak bisa dilihat publik. Pengunjung AksesBogor melihat informasi tempat dan foto yang sudah diterbitkan, tanpa nama pelapor. Penyedia layanan berikut memproses data atas nama kami:"
         ],
         "items": [
           "Oracle Cloud: server dan database di Batam, Indonesia.",
-          "Cloudflare: jaringan menuju server dan penyimpanan foto.",
+          "Cloudflare: jaringan menuju server, dan penyimpanan foto di Cloudflare R2.",
           "Vercel: menjalankan situs web.",
           "Resend: mengirim email kode masuk dan pemberitahuan.",
           "Google: hanya bila Anda memakai tombol Masuk dengan Google. Halaman Masuk memuat tombol dari Google.",
-          "Mapbox: menampilkan peta, dan menerima alamat IP serta area peta yang dilihat."
+          "Mapbox: menampilkan peta dan mencari tempat. Mapbox menerima alamat IP dan area peta yang dilihat dari browser Anda, serta kata kunci pencarian dari server kami."
         ],
         "after": [
           "Kami tidak menjual data pribadi dan tidak membagikannya untuk iklan."
@@ -430,7 +431,7 @@
         "id": "luar-negeri",
         "title": "Data yang diproses di luar Indonesia",
         "paragraphs": [
-          "Vercel, Resend, Google, Mapbox, dan Cloudflare bisa memproses data di luar Indonesia, termasuk di Amerika Serikat. Kami hanya mengirim data yang dibutuhkan layanan itu: email dan isi email ke Resend, serta alamat IP ke penyedia jaringan dan peta."
+          "Vercel, Resend, Google, Mapbox, dan Cloudflare bisa memproses data di luar Indonesia, termasuk di Amerika Serikat. Kami hanya mengirim data yang dibutuhkan layanan itu: email dan isi email ke Resend, alamat IP ke penyedia jaringan dan peta, kata kunci pencarian ke Mapbox, dan foto laporan ke Cloudflare R2."
         ]
       },
       {
@@ -460,6 +461,14 @@
             [
               "Laporan yang belum terbit",
               "Sampai diputuskan, atau sampai akun dihapus"
+            ],
+            [
+              "Foto yang terunggah tetapi laporannya tidak jadi terkirim",
+              "24 jam"
+            ],
+            [
+              "Draf laporan di browser Anda",
+              "Sampai terkirim, sampai Anda keluar, atau 7 hari setelah terakhir diubah"
             ],
             [
               "Laporan yang sudah terbit",

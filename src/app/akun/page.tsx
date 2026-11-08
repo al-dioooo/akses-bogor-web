@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getFormatter, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
+import { SignOutForm } from "@/components/akun/clear-drafts";
 import { MyReports } from "@/components/akun/my-reports";
 import { RenameForm } from "@/components/akun/rename-form";
 import { getMyReports } from "@/lib/akun";
@@ -11,7 +12,6 @@ import { Icon } from "@/ui/icon";
 import { IconChevronRight, IconLogout } from "@/ui/icons";
 import { LoadErrorBoundary } from "@/ui/load-error";
 import { SectionHeading } from "@/ui/section-heading";
-import { signOut } from "./actions";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("AkunSaya");
@@ -74,12 +74,12 @@ async function Account() {
           <RenameForm currentName={user.displayName} />
         </section>
 
-        <form action={signOut}>
+        <SignOutForm>
           <button className={buttonClass("outline", "md", "w-full")}>
             <Icon icon={IconLogout} />
             {t("signOut")}
           </button>
-        </form>
+        </SignOutForm>
 
         <section aria-labelledby="hapus-akun" className="flex flex-col gap-2 rounded-3xl border-2 border-border-error p-5 sm:p-6">
           <h2 id="hapus-akun" className="font-heading text-lg font-bold">
