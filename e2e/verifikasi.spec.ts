@@ -105,6 +105,25 @@ test("checks each answer and previews the status before publishing (FR-33)", asy
   await expect(decision).toContainText("1 dari 3 fasilitas tersedia · 1 belum diketahui");
 });
 
+test("lets the verifier fix the place fields, and only for new places and Edit lokasi", async ({ page }) => {
+  await signIn(page, email("verifikator"));
+  await page.goto("/verifikasi/laporan/10000000-0000-4000-8000-000000000001");
+  const name = page.getByLabel("Nama tempat", { exact: true });
+  await name.fill("");
+  const problem = page.getByRole("region", { name: "Keputusan" }).getByRole("link", { name: "Isi nama tempat, paling banyak 120 karakter." });
+  await problem.click();
+  await expect(name).toBeFocused();
+  await name.fill("Masjid Jami Al-Contoh");
+  await expect(problem).toHaveCount(0);
+  await expect(page.getByRole("group", { name: "Kategori" }).getByRole("radio", { name: "Masjid" })).toBeChecked();
+  await expect(page.getByLabel("Deskripsi yang tayang")).toHaveValue("Ramp di pintu utama, toilet di sebelah kanan.");
+
+  await page.goto("/verifikasi/laporan/10000000-0000-4000-8000-000000000002");
+  await expect(page.getByRole("heading", { name: "Halte contoh", level: 1 })).toBeVisible();
+  await expect(page.getByLabel("Nama tempat", { exact: true })).toHaveCount(0);
+  await expect(page.getByLabel("Deskripsi yang tayang")).toBeVisible();
+});
+
 const REVIEW = "/verifikasi/laporan/10000000-0000-4000-8000-000000000001";
 
 for (const path of ["/verifikasi", "/verifikasi/jawaban", "/verifikasi/cek-ulang", REVIEW]) {

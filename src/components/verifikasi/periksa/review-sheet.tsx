@@ -10,6 +10,7 @@ import { DecisionSummary } from "./decision-summary";
 import { FacilityCompare } from "./facility-compare";
 import { SheetHeading } from "./parts";
 import { PhotoGallery } from "./photo-gallery";
+import { DescriptionEdit, PlaceEdit } from "./place-edit";
 import { PlaceFacts } from "./place-facts";
 
 /**
@@ -21,6 +22,7 @@ export function ReviewSheet({ review }: { review: Review }) {
   const [decision, setDecision] = useState(() => initialDecision(review));
   const problems = decisionProblems(review, decision);
   const open = review.status === "menunggu" || review.status === "klarifikasi";
+  const update = (change: Partial<typeof decision>) => setDecision((current) => ({ ...current, ...change }));
   const sections = [
     { id: "tempat", title: t("place.title") },
     { id: "fasilitas", title: t("facilities.title") },
@@ -54,6 +56,7 @@ export function ReviewSheet({ review }: { review: Review }) {
         <section id="tempat" aria-labelledby="judul-tempat" className="flex scroll-mt-24 flex-col gap-5">
           <SheetHeading id="judul-tempat" number={1} title={t("place.title")} />
           <PlaceFacts review={review} />
+          {open && review.kind !== "kekurangan" && <PlaceEdit review={review} decision={decision} update={update} />}
         </section>
         <section id="fasilitas" aria-labelledby="judul-fasilitas" className="flex scroll-mt-24 flex-col gap-5">
           <SheetHeading id="judul-fasilitas" number={2} title={t("facilities.title")}>
@@ -83,6 +86,7 @@ export function ReviewSheet({ review }: { review: Review }) {
         <section id="deskripsi" aria-labelledby="judul-deskripsi" className="flex scroll-mt-24 flex-col gap-5">
           <SheetHeading id="judul-deskripsi" number={4} title={t("description.title")} />
           <p className="rounded-2xl bg-bg-sunken p-4 break-words whitespace-pre-line">{review.submission.description ?? t("description.empty")}</p>
+          {open && <DescriptionEdit value={decision.description} onValue={(description) => update({ description })} />}
         </section>
         {review.clarifications.length > 0 && (
           <section id="klarifikasi" aria-labelledby="judul-klarifikasi" className="flex scroll-mt-24 flex-col gap-5">
