@@ -26,6 +26,7 @@ const save = (page: Page) => page.getByRole("button", { name: "Simpan dan lanjut
 test("saves the name and consent, then returns to the page that asked for sign-in", async ({ page }) => {
   await signInNew(page, "/peta");
   await expect(page.getByRole("link", { name: /Baca Kebijakan Privasi versi 10 November 2026/ })).toHaveAttribute("target", "_blank");
+  await expect(page.getByRole("link", { name: /Syarat Layanan AksesBogor versi 10 November 2026/ })).toHaveAttribute("href", "/syarat");
   await nameField(page).fill("Sari Lestari");
   await consent(page).check();
   await save(page).click();

@@ -314,7 +314,7 @@
     "or": "atau",
     "googleFailed": "Tombol Google tidak bisa dimuat. Masuk dengan kode email di bawah.",
     "googleSigningIn": "Memeriksa akun Google…",
-    "privacy": "Data Anda dijaga sesuai <link>Kebijakan Privasi</link>."
+    "privacy": "Data Anda dijaga sesuai <privacy>Kebijakan Privasi</privacy>, dan pemakaian AksesBogor mengikuti <terms>Syarat Layanan</terms>."
   },
   "KodeMasuk": {
     "metaTitle": "Masukkan kode",
@@ -355,6 +355,7 @@
     "privacyDelete": "Anda bisa menghapus akun kapan saja dari Akun Saya.",
     "privacyLink": "Baca Kebijakan Privasi versi {version} (tab baru)",
     "consentLabel": "Saya sudah membaca dan menyetujui Kebijakan Privasi AksesBogor.",
+    "termsNotice": "Dengan menekan \"Simpan dan lanjut\", Anda juga menyetujui <link>Syarat Layanan AksesBogor versi {version} (tab baru)</link>.",
     "submit": "Simpan dan lanjut",
     "saving": "Menyimpan…",
     "declineHint": "Tidak setuju? Keluar saja. Akun yang tidak dilengkapi dihapus otomatis dalam 24 jam.",

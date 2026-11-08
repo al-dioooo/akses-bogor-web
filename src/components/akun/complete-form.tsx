@@ -3,7 +3,7 @@
 import { useActionState, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { completeProfile } from "@/app/masuk/actions";
-import { PRIVACY_POLICY_PATH, PRIVACY_POLICY_VERSION } from "@/lib/kebijakan";
+import { PRIVACY_POLICY_PATH, PRIVACY_POLICY_VERSION, TERMS_PATH } from "@/lib/kebijakan";
 import { buttonClass } from "@/ui/button-styles";
 import { fieldClass } from "@/ui/field-styles";
 import { Icon } from "@/ui/icon";
@@ -13,9 +13,20 @@ import { EMPTY_FORM } from "./form-state";
 
 /**
  * Lengkapi Akun (FR-11, FR-12): nama tampilan dan persetujuan Kebijakan Privasi. Tautan kebijakan berada di luar label
- * kotak centang, supaya mengetuk tautan tidak ikut mencentang, dan membuka tab baru supaya isian tidak hilang.
+ * kotak centang, supaya mengetuk tautan tidak ikut mencentang, dan membuka tab baru supaya isian tidak hilang. Syarat
+ * Layanan disetujui lewat tombol simpan, terpisah dari kotak centang privasi (ADR-0040).
  */
-export function CompleteForm({ defaultName, kembali, versionLabel }: { defaultName: string; kembali: string | null; versionLabel: string }) {
+export function CompleteForm({
+  defaultName,
+  kembali,
+  versionLabel,
+  termsVersionLabel,
+}: {
+  defaultName: string;
+  kembali: string | null;
+  versionLabel: string;
+  termsVersionLabel: string;
+}) {
   const t = useTranslations("Lengkapi");
   const [state, action, pending] = useActionState(completeProfile, EMPTY_FORM);
   const [name, setName] = useState(defaultName);
@@ -88,6 +99,17 @@ export function CompleteForm({ defaultName, kembali, versionLabel }: { defaultNa
       </fieldset>
 
       {!state.error?.field && <FormAlert message={state.error?.message} />}
+      <p className="text-text-secondary">
+        {t.rich("termsNotice", {
+          version: termsVersionLabel,
+          link: (chunks) => (
+            <a href={TERMS_PATH} target="_blank" rel="noopener" className="font-semibold text-text-brand underline underline-offset-2">
+              {chunks}
+              <Icon icon={IconExternalLink} className="ml-1 inline size-4.5 align-[-0.2em]" />
+            </a>
+          ),
+        })}
+      </p>
       <button disabled={pending} className={buttonClass("primary", "md", "w-full disabled:opacity-70")}>
         {pending ? t("saving") : t("submit")}
       </button>
