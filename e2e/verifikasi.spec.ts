@@ -43,7 +43,23 @@ test("tells reporters that the desk is for verifiers only", async ({ page }) => 
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex, nofollow");
 });
 
-for (const path of ["/verifikasi", "/verifikasi/jawaban", "/verifikasi/cek-ulang"]) {
+test("puts a change report next to the current place data (FR-31)", async ({ page }) => {
+  await signIn(page, email("verifikator"));
+  await page.goto("/verifikasi");
+  await page.getByRole("link", { name: /Halte contoh/ }).first().click();
+  await expect(page.getByRole("heading", { level: 1, name: "Halte contoh" })).toBeVisible();
+  const lift = page.getByRole("region", { name: "Lift / Elevator" });
+  await expect(lift).toContainText("Saat ini");
+  await expect(lift).toContainText("Berubah");
+  await expect(lift).toContainText("Tidak tersedia · Rusak");
+
+  await page.goto("/verifikasi/laporan/10000000-0000-4000-8000-000000000004");
+  await expect(page.getByRole("heading", { name: "Ini laporan Anda sendiri" })).toBeVisible();
+});
+
+const REVIEW = "/verifikasi/laporan/10000000-0000-4000-8000-000000000001";
+
+for (const path of ["/verifikasi", "/verifikasi/jawaban", "/verifikasi/cek-ulang", REVIEW]) {
   for (const colorScheme of ["light", "dark"] as const) {
     test(`${path} (${colorScheme}) has no serious or critical WCAG 2.2 AA violations`, async ({ page }) => {
       await signIn(page, email("verifikator"));

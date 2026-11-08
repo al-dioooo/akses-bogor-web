@@ -947,5 +947,59 @@
       "verified": "Terakhir diverifikasi {date}",
       "ago": "{months, plural, other {# bulan lalu}}"
     }
+  },
+  "Pemeriksaan": {
+    "metaTitle": "Periksa laporan",
+    "loading": "Memuat laporan…",
+    "back": "Kembali ke antrean",
+    "kind": {
+      "baru": "Tempat baru",
+      "perubahan": "Edit lokasi",
+      "kekurangan": "Laporkan kekurangan"
+    },
+    "meta": {
+      "submitted": "Dikirim {date}",
+      "waiting": "{days} hari menunggu",
+      "reporter": "Dari {name}",
+      "reporterDeleted": "Pelapor sudah menghapus akun"
+    },
+    "decided": {
+      "diterbitkan": "Laporan ini sudah diterbitkan.",
+      "ditolak": "Laporan ini sudah ditolak dengan alasan {reason}.",
+      "viewPlace": "Lihat lokasi"
+    },
+    "own": {
+      "title": "Ini laporan Anda sendiri",
+      "body": "Verifikator tidak memeriksa laporannya sendiri. Biarkan verifikator lain yang memeriksanya."
+    },
+    "index": "Bagian pemeriksaan",
+    "place": {
+      "title": "Tempat dan titik",
+      "name": "Nama tempat",
+      "category": "Kategori",
+      "district": "Kecamatan",
+      "landmark": "Patokan",
+      "point": "Titik",
+      "empty": "Tidak diisi",
+      "coordinates": "{lat}, {lng}",
+      "fixed": "Laporan kekurangan tidak mengubah nama, kategori, titik, dan patokan.",
+      "nearbyTitle": "Lokasi bernama mirip dalam 50 m",
+      "nearbyBody": "Periksa apakah laporan ini duplikat. Bila ya, tolak dengan alasan Duplikat.",
+      "distance": "{meters} m dari titik laporan"
+    },
+    "compare": {
+      "current": "Saat ini",
+      "reported": "Laporan",
+      "changed": "Berubah",
+      "same": "Sama"
+    },
+    "facilities": {
+      "title": "Fasilitas",
+      "intro": "Bandingkan jawaban pelapor dengan data saat ini dan foto. Jawaban tanpa bukti menjadi Belum diketahui."
+    },
+    "description": {
+      "title": "Deskripsi",
+      "empty": "Pelapor tidak menulis deskripsi."
+    }
   }
 }
