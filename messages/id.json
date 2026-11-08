@@ -633,5 +633,53 @@
     "body": "Data pribadi dan laporan yang belum terbit sudah kami hapus, dan semua sesi sudah berakhir. Terima kasih sudah membantu memetakan aksesibilitas Kota Bogor.",
     "home": "Ke Beranda",
     "explore": "Jelajahi lokasi"
+  },
+  "Laporkan": {
+    "lokasi": {
+      "legend": "Lokasi",
+      "hint": "Arahkan pin ke pintu masuk yang paling mudah diakses, bukan ke tengah gedung atau jalan di depannya.",
+      "searchLabel": "Cari nama tempat atau alamat",
+      "searchHint": "Ketik minimal 3 huruf, lalu pilih hasil dengan tombol panah dan Enter.",
+      "searchButton": "Cari",
+      "searching": "Mencari…",
+      "results": "{count, plural, =0 {Tidak ada hasil untuk “{q}”. Coba nama lain, atau pakai lokasi Anda.} other {# hasil untuk “{q}”. Pilih dengan tombol panah atau ketuk hasilnya.}}",
+      "resultsLabel": "Hasil pencarian",
+      "existing": "Sudah ada di AksesBogor",
+      "existingOption": "{name}, {district} (sudah ada di AksesBogor)",
+      "useMyLocation": "Gunakan lokasi saya",
+      "locating": "Mencari lokasi perangkat…",
+      "located": "Lokasi perangkat ditemukan, akurasi sekitar {meters} m. Periksa titiknya, lalu tekan Pakai lokasi ini.",
+      "picked": "Titik dipindah ke {name}. Periksa titiknya, lalu tekan Pakai lokasi ini.",
+      "candidate": "Titik terpilih",
+      "candidateFrom": {
+        "cari": "Dari pencarian: {name}",
+        "gps": "Dari lokasi perangkat, akurasi sekitar {meters} m",
+        "peta": "Dari tengah peta",
+        "awal": "Lokasi saat ini"
+      },
+      "coordinates": "{lat}, {lng}",
+      "noCandidate": "Belum ada titik. Cari tempatnya, pakai lokasi Anda, atau geser peta.",
+      "existingPicked": "{name} sudah ada di AksesBogor. Bila ada informasi baru tentang tempat itu, laporkan kekurangannya saja.",
+      "reportGap": "Laporkan kekurangan di {name}",
+      "confirm": "Pakai lokasi ini",
+      "checking": "Memeriksa lokasi…",
+      "confirmed": "Lokasi dipakai: Kecamatan {district}.",
+      "confirmedTitle": "Lokasi dipakai",
+      "confirmedBody": "Kecamatan {district} · {coordinates}",
+      "change": "Ubah lokasi",
+      "moved": "Titik sudah berubah. Tekan Pakai lokasi ini untuk memakai titik yang baru.",
+      "nearbyTitle": "Mungkin tempat ini sudah ada",
+      "nearbyBody": "Kami menemukan tempat terdaftar dengan nama mirip di dekat titik ini. Bila sama, laporkan kekurangannya saja supaya tidak dobel.",
+      "nearbyItem": "{name}, {distance} m dari titik ini",
+      "nearbyDifferent": "Bukan, ini tempat lain",
+      "nearbyAcknowledged": "Baik, laporan ini dicatat sebagai tempat baru.",
+      "galat": {
+        "gpsDitolak": "Izin lokasi ditolak. Izinkan lokasi di pengaturan browser, atau cari tempatnya.",
+        "gpsTidakAda": "Lokasi perangkat tidak bisa dibaca. Coba lagi di luar ruangan, atau cari tempatnya.",
+        "gpsTidakDidukung": "Browser ini tidak bisa membaca lokasi perangkat. Cari tempatnya saja.",
+        "cari": "Pencarian sedang gangguan. Coba lagi, atau pakai lokasi Anda.",
+        "cek": "Lokasi belum bisa diperiksa. Periksa koneksi, lalu tekan Pakai lokasi ini lagi."
+      }
+    }
   }
 }
