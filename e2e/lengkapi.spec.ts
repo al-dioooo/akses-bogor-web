@@ -77,6 +77,15 @@ for (const colorScheme of ["light", "dark"] as const) {
   });
 }
 
+test("Syarat Layanan shows its version, the draft notice, and links to each section", async ({ page }) => {
+  await page.goto("/syarat");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Syarat Layanan.");
+  await expect(page.getByText("Versi 10 November 2026")).toBeVisible();
+  await expect(page.getByText(/^Draf\./)).toBeVisible();
+  await page.getByRole("navigation", { name: "Isi halaman" }).getByRole("link", { name: "Hak atas laporan dan foto Anda" }).click();
+  await expect(page).toHaveURL(/#hak$/);
+});
+
 test("Kebijakan Privasi shows the version that is agreed to and links to each section", async ({ page }) => {
   await page.goto("/kebijakan-privasi");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Kebijakan Privasi.");
