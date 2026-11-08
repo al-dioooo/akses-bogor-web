@@ -1062,6 +1062,52 @@
       "landmarkHint": "Opsional. Tanpa nomor telepon atau nama orang.",
       "description": "Deskripsi yang tayang",
       "descriptionHint": "Hapus data pribadi seperti nomor telepon atau nama orang sebelum terbit."
+    },
+    "actions": {
+      "legend": "Pilih keputusan",
+      "choice": {
+        "terbitkan": "Terbitkan",
+        "klarifikasi": "Minta klarifikasi",
+        "tolak": "Tolak"
+      },
+      "choiceHint": {
+        "terbitkan": "Jawaban yang diperiksa tayang dan status dihitung ulang.",
+        "klarifikasi": "Tanyakan satu hal ke pelapor. Ia punya 7 hari untuk menjawab.",
+        "tolak": "Pelapor menerima pesan baku sesuai alasannya."
+      },
+      "noteLabel": "Catatan untuk verifikator lain",
+      "noteHint": "Tidak dikirim ke pelapor dan tidak tayang, mis. “Ramp terlihat di foto 2”.",
+      "publish": "Terbitkan laporan",
+      "publishBlocked": "Lengkapi daftar Sebelum terbit dulu.",
+      "questionLabel": "Pertanyaan untuk pelapor",
+      "questionHint": "Satu hal yang kurang, ditulis sopan. Contoh: “Bisakah Anda menambahkan foto pintu masuk utama dari area parkir?”",
+      "questionEmpty": "Tulis pertanyaannya dulu.",
+      "clarifyOpen": "Laporan ini masih menunggu jawaban pelapor. Anda tetap bisa menerbitkan atau menolaknya.",
+      "clarify": "Kirim pertanyaan",
+      "reasonLegend": "Alasan penolakan",
+      "reasonEmpty": "Pilih alasan penolakan dulu.",
+      "messageFor": "Pesan untuk pelapor: {message}",
+      "reject": "Tolak laporan",
+      "pending": "Menyimpan keputusan…",
+      "done": {
+        "diterbitkan": {
+          "title": "Laporan diterbitkan",
+          "body": "Data tempat sudah diperbarui dan pelapor mendapat email."
+        },
+        "klarifikasi": {
+          "title": "Pertanyaan terkirim",
+          "body": "Pelapor mendapat email dan punya waktu sampai {date} untuk menjawab."
+        },
+        "ditolak": {
+          "title": "Laporan ditolak",
+          "body": "Pelapor mendapat email berisi alasannya. Foto laporan ini sudah dihapus."
+        }
+      },
+      "viewPlace": "Lihat halaman tempat",
+      "backToQueue": "Kembali ke antrean",
+      "reload": "Muat ulang laporan",
+      "galat": "Keputusan belum tersimpan. {message}",
+      "server": "Server AksesBogor tidak bisa dihubungi. Coba lagi sebentar lagi."
     }
   }
 }
