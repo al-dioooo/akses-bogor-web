@@ -680,6 +680,92 @@
       }
     ]
   },
+  "Tentang": {
+    "metaTitle": "Tentang AksesBogor",
+    "eyebrow": "Tentang",
+    "title": "Tentang",
+    "accent": "AksesBogor.",
+    "intro": "AksesBogor mencatat apakah kampus, masjid, halte, dan rumah sakit di Kota Bogor bisa dipakai penyandang disabilitas, supaya Anda bisa menilai sebuah tempat sebelum berangkat. Datanya berasal dari laporan warga yang diperiksa tim sebelum tayang.",
+    "factsLabel": "Cakupan AksesBogor",
+    "facts": [
+      {
+        "value": "6",
+        "label": "kecamatan",
+        "detail": "Seluruh Kota Bogor: Bogor Barat, Bogor Selatan, Bogor Tengah, Bogor Timur, Bogor Utara, dan Tanah Sareal."
+      },
+      {
+        "value": "4",
+        "label": "kategori tempat",
+        "detail": "Kampus, masjid, halte, dan rumah sakit."
+      },
+      {
+        "value": "4",
+        "label": "fasilitas",
+        "detail": "Ramp, toilet difabel, guiding block, dan lift."
+      }
+    ],
+    "forWhom": {
+      "title": "Untuk siapa",
+      "body": "Untuk pengguna kursi roda, tunanetra dan low vision, serta pendamping dan keluarga yang ingin tahu keadaan sebuah tempat sebelum berkunjung. Juga untuk warga yang ingin membantu dengan melaporkan tempat di sekitarnya."
+    },
+    "process": {
+      "title": "Dari laporan warga, diperiksa tim",
+      "steps": [
+        {
+          "title": "Warga melapor",
+          "body": "Pelapor masuk dengan akun, lalu mengisi nama tempat, titik di peta, jawaban untuk keempat fasilitas, dan foto."
+        },
+        {
+          "title": "Tim memeriksa",
+          "body": "Verifikator mencocokkan setiap jawaban dengan fotonya, mengaburkan wajah dan pelat nomor, dan bisa meminta klarifikasi kepada pelapor."
+        },
+        {
+          "title": "Status tayang",
+          "body": "Status dihitung dari pintu masuk dulu, lalu fasilitas lain. Tanggal verifikasi terakhir selalu terlihat di halaman lokasi."
+        }
+      ],
+      "after": "Laporan tidak tayang sebelum diperiksa, dan nama pelapor tidak pernah ditampilkan."
+    },
+    "limits": {
+      "title": "Yang perlu Anda ketahui",
+      "items": [
+        "Keadaan tempat bisa berubah setelah diperiksa. Lihat tanggal \"Terakhir diverifikasi\", dan hubungi pengelola tempat bila kunjungan Anda bergantung pada satu fasilitas.",
+        "Status \"Belum diketahui\" berarti belum dipastikan, bukan berarti tidak aksesibel.",
+        "Status di AksesBogor bukan penilaian resmi, dan AksesBogor tidak berafiliasi dengan pengelola tempat.",
+        "AksesBogor belum memberi petunjuk rute."
+      ]
+    },
+    "team": {
+      "title": "Siapa kami",
+      "body": "AksesBogor dikerjakan Tim AksesBogor sebagai proyek mahasiswa.",
+      "pending": "Nama tim dan kampus diisi sebelum peluncuran."
+    },
+    "sources": {
+      "title": "Sumber data dan lisensi",
+      "items": [
+        "Informasi tempat: laporan warga yang sudah diperiksa Tim AksesBogor. Lisensi data terbukanya belum dipilih; bila data dibuka, lisensinya diumumkan di halaman ini.",
+        "Peta: © Mapbox © OpenStreetMap.",
+        "Batas kecamatan: © kontributor OpenStreetMap, berlisensi ODbL."
+      ]
+    },
+    "accessibility": {
+      "title": "Aksesibilitas situs ini",
+      "body": "AksesBogor dirancang mengikuti WCAG 2.2 level AA: bisa dipakai dengan keyboard dan pembaca layar, status selalu ditulis dengan teks dan ikon, dan peta selalu punya tampilan daftar. Setiap perubahan diuji otomatis. Bila ada bagian yang sulit dipakai, beri tahu kami lewat kontak di bawah."
+    },
+    "contact": {
+      "title": "Kontak",
+      "pending": "Email kontak resmi diisi tim sebelum peluncuran.",
+      "readAlso": "Baca juga",
+      "privacy": "Kebijakan Privasi",
+      "terms": "Syarat Layanan"
+    },
+    "cta": {
+      "title": "Kenal tempat yang belum tercatat?",
+      "body": "Laporkan dari ponsel, langsung di lokasi. Tim memeriksanya sebelum tayang.",
+      "report": "Laporkan tempat",
+      "explore": "Jelajahi lokasi"
+    }
+  },
   "AkunSaya": {
     "metaTitle": "Akun saya",
     "eyebrow": "Akun",
