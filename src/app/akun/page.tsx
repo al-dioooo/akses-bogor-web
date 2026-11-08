@@ -9,7 +9,7 @@ import { getMyReports } from "@/lib/akun";
 import { requireAccount } from "@/lib/sesi";
 import { buttonClass } from "@/ui/button-styles";
 import { Icon } from "@/ui/icon";
-import { IconChevronRight, IconLogout } from "@/ui/icons";
+import { IconArrowRight, IconChevronRight, IconClipboardCheck, IconLogout } from "@/ui/icons";
 import { LoadErrorBoundary } from "@/ui/load-error";
 import { SectionHeading } from "@/ui/section-heading";
 
@@ -73,6 +73,20 @@ async function Account() {
           </dl>
           <RenameForm currentName={user.displayName} />
         </section>
+
+        {user.role !== "pengguna" && (
+          <section aria-labelledby="meja-verifikasi" className="flex flex-col gap-3 rounded-3xl bg-surface-brand-subtle p-5 sm:p-6">
+            <h2 id="meja-verifikasi" className="flex items-center gap-2 font-heading text-lg font-bold">
+              <Icon icon={IconClipboardCheck} className="size-5 text-icon-brand" />
+              {t("verifierTitle")}
+            </h2>
+            <p className="text-text-secondary">{t("verifierBody")}</p>
+            <Link href="/verifikasi" className={buttonClass("primary", "sm", "self-start")}>
+              {t("verifierLink")}
+              <Icon icon={IconArrowRight} />
+            </Link>
+          </section>
+        )}
 
         <SignOutForm>
           <button className={buttonClass("outline", "md", "w-full")}>
