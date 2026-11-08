@@ -624,7 +624,8 @@
     },
     "questionLabel": "Pertanyaan verifikator",
     "questionDue": "Jawab paling lambat {date}.",
-    "viewPlace": "Lihat lokasi"
+    "viewPlace": "Lihat lokasi",
+    "answer": "Jawab pertanyaan"
   },
   "HapusAkun": {
     "metaTitle": "Hapus akun",
@@ -1178,5 +1179,36 @@
       "saving": "Menyimpan area…",
       "result": "Area tersimpan. Pratinjau di halaman sudah memakai foto yang dikaburkan."
     }
+  },
+  "JawabKlarifikasi": {
+    "metaTitle": "Jawab pertanyaan verifikator",
+    "eyebrow": "Laporan saya",
+    "title": "Pertanyaan",
+    "accent": "verifikator.",
+    "loading": "Memuat laporan…",
+    "back": "Kembali ke Laporan saya",
+    "about": "Tentang laporan Anda untuk {name}",
+    "due": "Jawab paling lambat {date}. Bila belum dijawab sampai batas itu, laporan ini ditutup.",
+    "closed": "Laporan ini tidak sedang menunggu jawaban Anda.",
+    "answerLabel": "Jawaban Anda",
+    "answerHint": "Jawab pertanyaan di atas sejelas mungkin. Tanpa nomor telepon atau data pribadi orang lain.",
+    "answerEmpty": "Tulis jawaban Anda dulu.",
+    "photosTitle": "Foto tambahan",
+    "photosHint": "Opsional. Masih bisa {count, plural, =0 {0 foto; laporan ini sudah berisi 10 foto} other {# foto}}.",
+    "add": "Tambah foto",
+    "uploading": "Mengunggah {name}…",
+    "uploaded": "{name} terunggah.",
+    "uploadFailed": "{name} gagal diunggah. {message}",
+    "photo": "Foto {number}",
+    "tag": "Isi foto {number}",
+    "tagEmpty": "Pilih isi foto",
+    "tagMissing": "Pilih isi untuk setiap foto.",
+    "caption": "Keterangan foto {number} (opsional)",
+    "remove": "Hapus foto {number}",
+    "send": "Kirim jawaban",
+    "sending": "Mengirim jawaban…",
+    "sentTitle": "Jawaban terkirim",
+    "sentBody": "Laporan Anda kembali ke antrean di posisi semula. Kami mengirim email setelah laporan diputuskan.",
+    "server": "Server AksesBogor tidak bisa dihubungi. Coba lagi sebentar lagi."
   }
 }

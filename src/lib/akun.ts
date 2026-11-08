@@ -95,3 +95,24 @@ export const renameAccount = (token: string, displayName: string) => call<User>(
 export const getMyReports = (token: string) => call<{ items: MyReport[] }>("GET", "/me/reports", { token });
 
 export const deleteAccount = (token: string) => call<void>("DELETE", "/me", { token });
+
+export type MyReportDetail = Pick<MyReport, "id" | "kind" | "status" | "placeId" | "submittedAt"> & {
+  placeName: string;
+  /** Foto laporan; jawaban klarifikasi boleh menambah sampai total 10 (ADR-0023). */
+  photos: number;
+  clarifications: { id: string; question: string; askedAt: string; dueAt: string; answer: string | null; answeredAt: string | null }[];
+};
+
+/** `null` bila laporan tidak ada atau milik akun lain. */
+export async function getMyReport(token: string, id: string): Promise<MyReportDetail | null> {
+  try {
+    return await call<MyReportDetail>("GET", `/me/reports/${encodeURIComponent(id)}`, { token });
+  } catch (error) {
+    if (error instanceof ApiError && (error.status === 404 || error.status === 400)) return null;
+    throw error;
+  }
+}
+
+/** Jawaban klarifikasi dengan foto yang sudah diunggah lewat `/laporkan/foto` (ADR-0036). */
+export const answerClarification = (token: string, id: string, body: { answer: string; photos: { id: string; tag: string; caption?: string }[] }) =>
+  call<{ status: "menunggu" }>("POST", `/me/reports/${encodeURIComponent(id)}/clarification`, { token, body });
