@@ -1120,6 +1120,26 @@
       "saved": "Foto {number} tersimpan.",
       "saving": "Menyimpan foto {number}…",
       "galat": "Foto {number} belum tersimpan. {message}"
+    },
+    "blur": {
+      "open": "Kaburkan area foto {number}",
+      "title": "Kaburkan area foto {number}",
+      "instructions": "Tandai wajah, pelat nomor, atau tulisan yang terbaca. Seret di atas foto, atau tekan Tambah area lalu pilih areanya: tombol panah menggeser, Shift dan panah mengubah ukuran, Delete menghapus. Ukurannya juga bisa diketik di kolom angka.",
+      "photo": "Foto {number} dengan {count, plural, =0 {tanpa area} other {# area}} yang akan dikaburkan",
+      "area": "Area {number}: kiri {x}%, atas {y}%, lebar {w}%, tinggi {h}%",
+      "add": "Tambah area",
+      "limit": "Paling banyak 20 area per foto.",
+      "fields": "Ukuran area {number} dalam persen",
+      "x": "Kiri",
+      "y": "Atas",
+      "w": "Lebar",
+      "h": "Tinggi",
+      "remove": "Hapus area {number}",
+      "empty": "Belum ada area. Foto tayang apa adanya.",
+      "save": "Simpan area",
+      "cancel": "Batal",
+      "saving": "Menyimpan area…",
+      "result": "Area tersimpan. Pratinjau di halaman sudah memakai foto yang dikaburkan."
     }
   }
 }
