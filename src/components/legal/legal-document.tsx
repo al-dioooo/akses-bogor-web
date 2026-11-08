@@ -16,7 +16,7 @@ export type LegalSection = {
  * bagian-bagiannya. Teksnya salinan dokumen di akses-bogor-docs (product/), dibaca dari `messages/id.json`. Daftar isi
  * menempel di samping mulai layar lebar; di ponsel daftar itu ada di atas teks.
  */
-export async function LegalDocument({ namespace, version }: { namespace: "KebijakanPrivasi"; version: string }) {
+export async function LegalDocument({ namespace, version }: { namespace: "KebijakanPrivasi" | "SyaratLayanan"; version: string }) {
   const [t, format] = await Promise.all([getTranslations(namespace), getFormatter()]);
   const sections = t.raw("sections") as LegalSection[];
   const date = format.dateTime(new Date(`${version}T00:00:00+07:00`), { dateStyle: "long" });
