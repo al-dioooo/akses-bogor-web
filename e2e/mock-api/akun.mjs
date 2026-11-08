@@ -6,6 +6,7 @@
 // - Email lama-... dan pelapor-... sudah punya akun lengkap bernama "Sari". Email lain membuat akun baru yang belum lengkap.
 // - ID token Google "tiruan-google" masuk sebagai google@contoh.id; "tiruan-google-belum" menjawab 403.
 // - Token "akun:<email>" (akun lengkap) dan "baru:<email>" (belum lengkap) bisa langsung dipakai sebagai cookie.
+// - Email yang diawali "verifikator" atau "admin" mendapat peran itu.
 // - Akun pelapor... punya empat laporan contoh; akun lain belum punya laporan.
 // - GET /_tiruan/akun?email=... menjawab apakah akunnya masih ada (untuk tes hapus akun).
 // - POST /_tiruan/cabut-sesi { email } mencabut semua sesi akun itu, seperti sesi yang berakhir.
@@ -18,8 +19,11 @@ const lastCodeAt = new Map();
 
 const error = (status, galat, pesan, headers) => [status, { galat, pesan }, headers];
 
+/** Peran dari awalan email, untuk tes panel verifikator (verifikasi.mjs). */
+const roleOf = (email) => (email.startsWith("admin") ? "admin" : email.startsWith("verifikator") ? "verifikator" : "pengguna");
+
 function createUser(email, { completed = false, displayName = "" } = {}) {
-  const user = { id: randomUUID(), email, displayName, role: "pengguna", completed, createdAt: new Date().toISOString() };
+  const user = { id: randomUUID(), email, displayName, role: roleOf(email), completed, createdAt: new Date().toISOString() };
   users.set(email, user);
   return user;
 }
@@ -32,6 +36,11 @@ function signIn(email, defaults) {
   const token = `tiruan-${randomUUID()}`;
   tokens.set(token, email);
   return [200, { token, expiresAt: new Date(Date.now() + 90 * 24 * 60 * 60_000).toISOString(), user: publicUser(user) }];
+}
+
+/** Akun dengan email itu, atau semua akun tanpa email. */
+export function findUser(email) {
+  return email === undefined ? [...users.values()] : (users.get(email) ?? null);
 }
 
 export function userFromToken(authorization) {
