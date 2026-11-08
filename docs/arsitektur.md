@@ -15,6 +15,7 @@ flowchart LR
 - Halaman mengambil data dari API di server Next.js saat request (`src/lib/api.ts`, alamatnya di `API_URL`). Pengambilan data tidak di-cache dan tidak berjalan saat build, jadi build tidak butuh API. Bagian yang menunggu data dibungkus `Suspense` dengan kerangka pemuatan, dan galat API tampil sebagai pesan dengan tombol coba lagi.
 - Sesi akun disimpan server web di cookie `HttpOnly`, `Secure`, `SameSite=Lax` miliknya sendiri (`__Host-aksesbogor-sesi`), lalu dikirim ke API sebagai `Authorization: Bearer` (`src/lib/sesi.ts`, `src/lib/akun.ts`). Browser tidak pernah memegang token dalam bentuk yang bisa dibaca JavaScript, dan tidak ada cookie lintas situs.
 - Peta dirender Mapbox GL JS di browser ([ADR-0016](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0016-peta-dan-pencarian-mapbox.md)), dengan tampilan daftar sebagai alternatif yang setara. Mapbox GL JS dimuat hanya di halaman Peta dan hanya bila WebGL ada. Token Mapbox sementara dibuat API dan diteruskan ke browser lewat route `/peta/kunci`; token rahasia tidak pernah keluar dari API.
+- Laporkan (FR-20 sampai FR-27) memakai route handler `/laporkan/cek-lokasi`, `/laporkan/cari`, `/laporkan/foto`, dan `/laporkan/kirim` yang meneruskan permintaan browser ke API. Dua yang pertama tanpa akun; foto dan kirim memakai token dari cookie sesi dan menolak permintaan dari situs lain ([ADR-0033](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0033-isi-dulu-masuk-saat-kirim-dan-draf-di-perangkat.md)).
 
 ## Bahasa
 
