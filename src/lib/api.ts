@@ -1,4 +1,3 @@
-import { headers } from "next/headers";
 import { connection } from "next/server";
 
 // Tipe mengikuti docs/openapi.json di akses-bogor-api. Nilai enum adalah nilai produk; teks untuk
@@ -111,6 +110,9 @@ export async function apiHeaders(): Promise<Record<string, string>> {
   const result: Record<string, string> = { accept: "application/json" };
   const secret = process.env.WEB_SERVER_SECRET;
   if (!secret) return result;
+  // Diimpor saat dipanggil: komponen klien ikut mengimpor konstanta dari modul ini, dan next/headers hanya boleh ada
+  // di sisi server.
+  const { headers } = await import("next/headers");
   const visitorIp = (await headers()).get("x-forwarded-for")?.split(",")[0]?.trim();
   if (visitorIp) {
     result["x-web-server-secret"] = secret;
