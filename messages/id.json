@@ -803,6 +803,35 @@
       },
       "descriptionLabel": "Deskripsi tambahan (opsional)",
       "descriptionHint": "Hal lain yang perlu diketahui pengunjung, mis. jam buka toilet atau pintu mana yang dipakai. Jangan tulis nama atau nomor telepon orang."
+    },
+    "ringkasan": {
+      "intro": "Periksa lagi isian Anda sebelum dikirim. Laporan masuk antrean verifikasi dan baru tayang setelah diperiksa tim.",
+      "edit": "Ubah {section}",
+      "incomplete": "Langkah {step} belum lengkap.",
+      "incompleteAction": "Lengkapi langkah {step}",
+      "infoTitle": "Informasi dan lokasi",
+      "facilitiesTitle": "Fasilitas",
+      "photosTitle": "Foto dan deskripsi",
+      "name": "Nama tempat",
+      "category": "Kategori",
+      "location": "Lokasi",
+      "locationValue": "Kecamatan {district} · {coordinates}",
+      "noLocation": "Belum ditentukan",
+      "landmark": "Patokan",
+      "none": "Tidak diisi",
+      "answer": "{answer}",
+      "answerWithReason": "{answer} · {reason}",
+      "note": "Catatan: {note}",
+      "photoCount": "{count, plural, =0 {Tanpa foto} other {# foto}}",
+      "photoItem": "Foto {number}: {tag}",
+      "noTag": "objek belum dipilih",
+      "description": "Deskripsi tambahan",
+      "signInNotice": "Anda akan diminta masuk sebelum laporan dikirim. Isian dan foto tetap tersimpan di perangkat ini.",
+      "deleteDraft": "Hapus draf",
+      "deleteConfirm": "Hapus semua isian dan foto di draf ini? Tindakan ini tidak bisa dibatalkan.",
+      "deleteYes": "Ya, hapus draf",
+      "deleteNo": "Batal",
+      "deleted": "Draf dihapus. Formulir kembali kosong."
     }
   }
 }

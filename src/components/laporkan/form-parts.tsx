@@ -10,8 +10,11 @@ import { IconAlertTriangle, IconCheck } from "@/ui/icons";
 
 const NUMBERED = ["1", "2", "3"] as const;
 
-/** Penanda langkah (Laporkan · Langkah 1–3): langkah aktif ditandai `aria-current="step"`, bukan hanya warna. */
-export function Stepper({ step }: { step: Step }) {
+/**
+ * Penanda langkah (Laporkan · Langkah 1–3): langkah aktif ditandai `aria-current="step"`, dan langkah sebelumnya yang
+ * isiannya sudah lengkap diberi centang dan teks, bukan hanya warna.
+ */
+export function Stepper({ step, complete }: { step: Step; complete: (step: Step) => boolean }) {
   const t = useTranslations("Laporkan.steps");
   const index = step === "ringkasan" ? 3 : NUMBERED.indexOf(step);
   return (
@@ -19,7 +22,7 @@ export function Stepper({ step }: { step: Step }) {
       <ol className="grid grid-cols-4 gap-1.5">
         {[...NUMBERED, "ringkasan" as const].map((item, i) => {
           const current = item === step;
-          const done = i < index;
+          const done = i < index && complete(item);
           return (
             <li key={item} aria-current={current ? "step" : undefined} className="flex flex-col gap-1.5">
               <span className={`h-1.5 rounded-full ${current || done ? "bg-brand-fill" : "bg-bg-sunken"}`} />

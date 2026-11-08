@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { ReportForm } from "@/components/laporkan/report-form";
 import { getPlace } from "@/lib/api";
 import type { ReportKind } from "@/lib/laporan";
+import { hasSession } from "@/lib/sesi";
 import { LoadErrorBoundary } from "@/ui/load-error";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -38,7 +39,7 @@ export default async function LaporkanPage({ searchParams }: PageProps<"/laporka
 }
 
 async function Report({ searchParams }: { searchParams: PageProps<"/laporkan">["searchParams"] }) {
-  const [params, t] = await Promise.all([searchParams, getTranslations("Laporkan")]);
+  const [params, t, signedIn] = await Promise.all([searchParams, getTranslations("Laporkan"), hasSession()]);
   const placeId = typeof params.lokasi === "string" ? params.lokasi : null;
   const place = placeId ? await getPlace(placeId) : null;
   if (placeId && !place) notFound();
@@ -53,7 +54,7 @@ async function Report({ searchParams }: { searchParams: PageProps<"/laporkan">["
         </h1>
         <p className="text-lg text-text-secondary">{t(`intro.${kind}`, { name: place?.name ?? "" })}</p>
       </div>
-      <ReportForm kind={kind} place={place} />
+      <ReportForm kind={kind} place={place} signedIn={signedIn} />
     </>
   );
 }

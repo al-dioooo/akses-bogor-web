@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { FormAlert } from "@/components/akun/form-parts";
 import type { PlaceDetail } from "@/lib/api";
-import { loadDraft, purgeExpiredDrafts, saveDraft } from "@/lib/draf";
+import { deleteDraft, loadDraft, purgeExpiredDrafts, saveDraft } from "@/lib/draf";
 import { checkStep, newDraft, STEPS, type FieldError, type ReportDraft, type Step } from "@/lib/isian-laporan";
 import type { ReportKind } from "@/lib/laporan";
 import { buttonClass } from "@/ui/button-styles";
@@ -15,6 +15,7 @@ import { ErrorSummary, Stepper } from "./form-parts";
 import { StepFacilities } from "./step-facilities";
 import { StepInfo } from "./step-info";
 import { StepPhotos } from "./step-photos";
+import { StepSummary } from "./step-summary";
 
 const NEXT: Record<Step, Step | null> = { "1": "2", "2": "3", "3": "ringkasan", ringkasan: null };
 const PREVIOUS: Record<Step, Step | null> = { "1": null, "2": "1", "3": "2", ringkasan: "3" };
@@ -25,7 +26,7 @@ const SAVE_DELAY_MS = 300;
  * berpindah langkah. Draf disimpan di IndexedDB setiap kali isian berubah dan dipulihkan saat halaman dibuka lagi,
  * termasuk setelah ke Masuk dan kembali (ADR-0033).
  */
-export function ReportForm({ kind, place }: { kind: ReportKind; place: PlaceDetail | null }) {
+export function ReportForm({ kind, place, signedIn }: { kind: ReportKind; place: PlaceDetail | null; signedIn: boolean }) {
   const t = useTranslations("Laporkan");
   const params = useSearchParams();
   const requested = params.get("langkah");
@@ -33,7 +34,7 @@ export function ReportForm({ kind, place }: { kind: ReportKind; place: PlaceDeta
 
   const [draft, setDraft] = useState<ReportDraft | null>(null);
   const [storage, setStorage] = useState<"ok" | "tidak-ada">("ok");
-  const [restored, setRestored] = useState(false);
+  const [notice, setNotice] = useState<"restored" | "deleted" | null>(null);
   const [checkedStep, setCheckedStep] = useState<Step | null>(null);
   const [nearbyPending, setNearbyPending] = useState(false);
   const changed = useRef(false);
@@ -51,7 +52,7 @@ export function ReportForm({ kind, place }: { kind: ReportKind; place: PlaceDeta
         const saved = await loadDraft(fresh.draftKey);
         if (cancelled) return;
         setDraft(saved ?? fresh);
-        setRestored(Boolean(saved));
+        if (saved) setNotice("restored");
       } catch {
         if (cancelled) return;
         setStorage("tidak-ada");
@@ -135,6 +136,15 @@ export function ReportForm({ kind, place }: { kind: ReportKind; place: PlaceDeta
   };
   const errors = checkedStep === step ? stepErrors(step) : [];
 
+  async function removeDraft() {
+    await deleteDraft(draft!.draftKey).catch(() => undefined);
+    changed.current = false;
+    setDraft(newDraft(kind, place));
+    setCheckedStep(null);
+    setNotice("deleted");
+    goTo("1");
+  }
+
   function next() {
     const target = NEXT[step];
     if (!target) return;
@@ -151,10 +161,10 @@ export function ReportForm({ kind, place }: { kind: ReportKind; place: PlaceDeta
   const previous = PREVIOUS[step];
   return (
     <div className="flex flex-col gap-6">
-      <Stepper step={step} />
+      <Stepper step={step} complete={(target) => checkStep(target, draft).length === 0} />
       {storage !== "ok" && <FormAlert message={t("storageWarning")} />}
       <p role="status" className="empty:hidden">
-        {restored ? t("restored") : ""}
+        {notice === "restored" ? t("restored") : notice === "deleted" ? t("ringkasan.deleted") : ""}
       </p>
       <h2 ref={heading} tabIndex={-1} className="display text-[clamp(1.75rem,1.3rem+1.4vw,2.5rem)] leading-tight">
         {number ? t("steps.heading", { number, name: t(`steps.${number}`) }) : t("steps.ringkasan")}
@@ -164,6 +174,7 @@ export function ReportForm({ kind, place }: { kind: ReportKind; place: PlaceDeta
       {step === "1" && <StepInfo draft={draft} errors={errors} update={update} onNearbyPending={setNearbyPending} />}
       {step === "2" && <StepFacilities draft={draft} errors={errors} update={update} />}
       {step === "3" && <StepPhotos draft={draft} errors={errors} update={update} />}
+      {step === "ringkasan" && <StepSummary draft={draft} signedIn={signedIn} goTo={goTo} onDelete={removeDraft} />}
 
       {/* Di ponsel, Form action bar menempel di bawah layar menggantikan Bottom nav (Frame Mobile). */}
       <div ref={actionBar} className="flex flex-wrap gap-3 max-lg:fixed max-lg:inset-x-0 max-lg:bottom-0 max-lg:z-30 max-lg:border-t max-lg:border-border-subtle max-lg:bg-bg-canvas max-lg:px-4 max-lg:pt-3 max-lg:pb-[max(0.75rem,env(safe-area-inset-bottom))] lg:pt-2">

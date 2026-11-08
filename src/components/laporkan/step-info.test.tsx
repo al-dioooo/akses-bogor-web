@@ -53,11 +53,12 @@ describe("StepInfo", () => {
 });
 
 describe("Stepper", () => {
-  it("marks the current step with text, not only colour", () => {
-    render(<Stepper step="2" />, { wrapper: WithIntl });
-    const current = screen.getAllByRole("listitem")[1]!;
-    expect(current.getAttribute("aria-current")).toBe("step");
-    expect(current.textContent).toBe("Fasilitas(langkah ini)");
-    expect(screen.getAllByRole("listitem")[0]!.textContent).toBe("Informasi dan lokasi(sudah diisi)");
+  it("marks the current step and the completed steps with text, not only colour", () => {
+    render(<Stepper step="3" complete={(step) => step === "1"} />, { wrapper: WithIntl });
+    const [first, second, current] = screen.getAllByRole("listitem");
+    expect(current!.getAttribute("aria-current")).toBe("step");
+    expect(current!.textContent).toBe("Foto dan deskripsi(langkah ini)");
+    expect(first!.textContent).toBe("Informasi dan lokasi(sudah diisi)");
+    expect(second!.textContent).toBe("Fasilitas");
   });
 });
