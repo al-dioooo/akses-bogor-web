@@ -12,6 +12,7 @@ import { buttonClass } from "@/ui/button-styles";
 import { Icon } from "@/ui/icon";
 import { IconArrowLeft, IconArrowRight } from "@/ui/icons";
 import { ErrorSummary, Stepper } from "./form-parts";
+import { StepFacilities } from "./step-facilities";
 import { StepInfo } from "./step-info";
 
 const NEXT: Record<Step, Step | null> = { "1": "2", "2": "3", "3": "ringkasan", ringkasan: null };
@@ -160,6 +161,7 @@ export function ReportForm({ kind, place }: { kind: ReportKind; place: PlaceDeta
       <ErrorSummary ref={summary} errors={errors} />
 
       {step === "1" && <StepInfo draft={draft} errors={errors} update={update} onNearbyPending={setNearbyPending} />}
+      {step === "2" && <StepFacilities draft={draft} errors={errors} update={update} />}
 
       {/* Di ponsel, Form action bar menempel di bawah layar menggantikan Bottom nav (Frame Mobile). */}
       <div ref={actionBar} className="flex flex-wrap gap-3 max-lg:fixed max-lg:inset-x-0 max-lg:bottom-0 max-lg:z-30 max-lg:border-t max-lg:border-border-subtle max-lg:bg-bg-canvas max-lg:px-4 max-lg:pt-3 max-lg:pb-[max(0.75rem,env(safe-area-inset-bottom))] lg:pt-2">
