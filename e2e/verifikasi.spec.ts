@@ -174,6 +174,25 @@ test("asks the reporter a question with a seven-day deadline (FR-41)", async ({ 
   await expect(page.getByRole("main")).toContainText("Masjid Jami contoh");
 });
 
+test("fixes photo tags and captions and hides photos before deciding (FR-34)", async ({ page }) => {
+  await signIn(page, email("verifikator"));
+  await page.goto("/verifikasi/laporan/10000000-0000-4000-8000-000000000001");
+  const photos = page.getByRole("region", { name: "Foto" });
+  await photos.getByLabel("Tag foto 2").selectOption({ label: "Lift" });
+  await expect(photos.getByRole("status").filter({ hasText: "Foto 2 tersimpan." })).toBeVisible();
+  await photos.getByLabel("Keterangan foto 2").fill("Pintu lift lantai dasar");
+  await photos.getByRole("button", { name: "Simpan keterangan" }).nth(1).click();
+  await expect(photos).toContainText("Pintu lift lantai dasar");
+  const hide = photos.getByRole("button", { name: "Sembunyikan foto 2" });
+  await expect(hide).toHaveAttribute("aria-pressed", "false");
+  await hide.click();
+  const show = photos.getByRole("button", { name: "Tampilkan lagi foto 2" });
+  await expect(show).toHaveAttribute("aria-pressed", "true");
+  await expect(photos).toContainText("Foto yang disembunyikan dihapus saat laporan terbit.");
+  await page.reload();
+  await expect(page.getByRole("region", { name: "Foto" }).getByLabel("Tag foto 2")).toHaveValue("lift");
+});
+
 const REVIEW = "/verifikasi/laporan/10000000-0000-4000-8000-000000000001";
 
 for (const path of ["/verifikasi", "/verifikasi/jawaban", "/verifikasi/cek-ulang", REVIEW]) {

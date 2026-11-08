@@ -12,20 +12,32 @@ export const reviewPhotoSrc = (photo: Pick<ReviewPhoto, "id" | "blur">, version 
  * Foto laporan untuk diperiksa (FR-31, FR-34), dengan tag, keterangan, dan penanda foto dari jawaban klarifikasi,
  * disembunyikan, atau dikaburkan. `controls` adalah tempat moderasi per foto.
  */
-export function PhotoGallery({ review, controls }: { review: Review; controls?: (photo: ReviewPhoto, index: number) => ReactNode }) {
+export function PhotoGallery({
+  review,
+  photos = review.photos,
+  versions = {},
+  controls,
+}: {
+  review: Review;
+  /** Foto terbaru setelah moderasi; bawaan dari laporan. */
+  photos?: ReviewPhoto[];
+  /** Nomor versi per foto, supaya pratinjau dimuat ulang setelah area kabur berubah. */
+  versions?: Record<string, number>;
+  controls?: (photo: ReviewPhoto, index: number) => ReactNode;
+}) {
   const t = useTranslations("Pemeriksaan.photos");
   const tags = useTranslations("Laporkan.foto.tags");
-  if (review.photos.length === 0) return <p className="rounded-2xl bg-bg-sunken p-4">{t("none")}</p>;
+  if (photos.length === 0) return <p className="rounded-2xl bg-bg-sunken p-4">{t("none")}</p>;
   return (
     <ul className="grid gap-4 sm:grid-cols-2">
-      {review.photos.map((photo, index) => (
+      {photos.map((photo, index) => (
         <li key={photo.id}>
           <figure className="flex h-full flex-col overflow-hidden rounded-3xl border-2 border-border-subtle bg-surface-raised">
-            <a href={reviewPhotoSrc(photo)} target="_blank" rel="noopener" className="block bg-bg-sunken">
+            <a href={reviewPhotoSrc(photo, versions[photo.id])} target="_blank" rel="noopener" className="block bg-bg-sunken">
               {/* Foto privat dari route handler sendiri; tidak lewat optimasi gambar Next supaya tidak tersimpan di cache. */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={reviewPhotoSrc(photo)}
+                src={reviewPhotoSrc(photo, versions[photo.id])}
                 alt={photo.alt || tags(photo.tag)}
                 width={photo.width}
                 height={photo.height}

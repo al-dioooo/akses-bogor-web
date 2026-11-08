@@ -11,6 +11,7 @@ import { DecisionSummary } from "./decision-summary";
 import { FacilityCompare } from "./facility-compare";
 import { SheetHeading } from "./parts";
 import { PhotoGallery } from "./photo-gallery";
+import { PhotoModeration } from "./photo-moderation";
 import { DescriptionEdit, PlaceEdit } from "./place-edit";
 import { PlaceFacts } from "./place-facts";
 
@@ -24,6 +25,13 @@ export function ReviewSheet({ review }: { review: Review }) {
   const problems = decisionProblems(review, decision);
   const open = review.status === "menunggu" || review.status === "klarifikasi";
   const update = (change: Partial<typeof decision>) => setDecision((current) => ({ ...current, ...change }));
+  // Foto setelah moderasi, dan versinya supaya pratinjau kabur dimuat ulang (ADR-0037).
+  const [photos, setPhotos] = useState(review.photos);
+  const [versions, setVersions] = useState<Record<string, number>>({});
+  const savePhoto = (photo: (typeof photos)[number]) => {
+    setPhotos((current) => current.map((item) => (item.id === photo.id ? photo : item)));
+    setVersions((current) => ({ ...current, [photo.id]: (current[photo.id] ?? 0) + 1 }));
+  };
   const sections = [
     { id: "tempat", title: t("place.title") },
     { id: "fasilitas", title: t("facilities.title") },
@@ -82,7 +90,12 @@ export function ReviewSheet({ review }: { review: Review }) {
           <SheetHeading id="judul-foto" number={3} title={t("photos.title")}>
             {t("photos.count", { count: review.photos.length })}
           </SheetHeading>
-          <PhotoGallery review={review} />
+          <PhotoGallery
+            review={review}
+            photos={photos}
+            versions={versions}
+            controls={open ? (photo, index) => <PhotoModeration reportId={review.id} photo={photo} number={index + 1} onSaved={savePhoto} /> : undefined}
+          />
         </section>
         <section id="deskripsi" aria-labelledby="judul-deskripsi" className="flex scroll-mt-24 flex-col gap-5">
           <SheetHeading id="judul-deskripsi" number={4} title={t("description.title")} />
