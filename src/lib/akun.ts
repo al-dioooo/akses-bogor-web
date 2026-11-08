@@ -43,9 +43,10 @@ export type MyReport = {
   clarificationDueAt: string | null;
 };
 
-type Options = { token?: string; body?: unknown };
+export type Options = { token?: string; body?: unknown };
 
-async function call<T>(method: "GET" | "POST" | "PATCH" | "DELETE", path: string, { token, body }: Options = {}): Promise<T> {
+/** Panggilan API dari server web dengan token sesi; galat menjadi `ApiError`. Dipakai juga oleh `lib/verifikasi.ts`. */
+export async function call<T>(method: "GET" | "POST" | "PATCH" | "DELETE", path: string, { token, body }: Options = {}): Promise<T> {
   const headers = await apiHeaders();
   if (token) headers.authorization = `Bearer ${token}`;
   if (body !== undefined) headers["content-type"] = "application/json";
