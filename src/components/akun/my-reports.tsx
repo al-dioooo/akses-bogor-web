@@ -65,10 +65,14 @@ export async function MyReports({ reports }: { reports: MyReport[] }) {
             </div>
           )}
           {report.status === "klarifikasi" && report.clarificationQuestion && (
-            <div className="rounded-2xl bg-bg-sunken p-4">
+            <div className="flex flex-col rounded-2xl bg-bg-sunken p-4">
               <p className="font-semibold">{t("questionLabel")}</p>
               <p>{report.clarificationQuestion}</p>
               {report.clarificationDueAt && <p className="text-text-secondary">{t("questionDue", { date: date(report.clarificationDueAt) })}</p>}
+              <Link href={`/akun/laporan/${report.id}`} className={buttonClass("primary", "sm", "mt-3 self-start")}>
+                {t("answer")}
+                <Icon icon={IconArrowRight} />
+              </Link>
             </div>
           )}
           {report.status === "diterbitkan" && report.placeId && (
