@@ -1018,6 +1018,40 @@
       "asked": "Ditanyakan {date}",
       "answered": "Dijawab {date}",
       "waiting": "Belum dijawab. Tenggat {date}."
+    },
+    "check": {
+      "evidenceLegend": "Bukti untuk {facility}",
+      "evidence": {
+        "terbukti": "Terbukti",
+        "tanpa_bukti": "Tanpa bukti"
+      },
+      "evidenceHint": {
+        "terbukti": "Terlihat di foto, kunjungan lapangan, atau konfirmasi pengelola.",
+        "tanpa_bukti": "Tayang sebagai Belum diketahui."
+      },
+      "answerLegend": "Jawaban yang tayang untuk {facility}",
+      "reasonLegend": "Alasan tidak tersedia untuk {facility}",
+      "noteLabel": "Catatan yang tayang untuk {facility}",
+      "noteHint": "Tampil di halaman tempat. Maksimal 200 karakter, tanpa data pribadi.",
+      "publishes": "Akan tayang"
+    },
+    "result": {
+      "title": "Keputusan",
+      "preview": "Pratinjau status",
+      "previewHint": "Dihitung dari jawaban yang akan tayang. Status akhir dihitung server saat terbit.",
+      "summary": "{available} dari {relevant} fasilitas tersedia",
+      "unknown": "{count} belum diketahui",
+      "progress": "{done} dari 4 jawaban diperiksa",
+      "problemsTitle": "Sebelum terbit",
+      "problems": {
+        "unchecked": "Tandai bukti untuk {facility}.",
+        "reason": "Pilih alasan Tidak tersedia untuk {facility}.",
+        "note": "Catatan {facility} paling banyak 200 karakter.",
+        "name": "Isi nama tempat, paling banyak 120 karakter.",
+        "landmark": "Patokan paling banyak 140 karakter.",
+        "description": "Deskripsi paling banyak 1.000 karakter."
+      },
+      "ready": "Semua jawaban sudah diperiksa."
     }
   }
 }
