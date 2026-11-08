@@ -765,6 +765,44 @@
       },
       "noteLabel": "Catatan untuk {facility} (opsional)",
       "noteHint": "Contoh: kunci toilet di pos satpam. Jangan tulis nama atau nomor telepon orang."
+    },
+    "foto": {
+      "title": "Foto",
+      "intro": "Foto membantu verifikator memastikan jawaban Anda. Foto tidak wajib, hingga 10 foto. Hindari wajah orang dan pelat nomor.",
+      "count": "{count} dari {max} foto",
+      "suggestedTitle": "Foto yang membantu verifikasi",
+      "suggestedDone": "(sudah ada)",
+      "suggestedMissing": "(belum ada)",
+      "pick": "Pilih foto",
+      "pickHint": "JPEG, PNG, atau WebP, hingga 20 MB per foto. Foto diperkecil di perangkat ini sebelum dikirim, dan metadata lokasinya dibuang.",
+      "drop": "Atau letakkan foto di sini",
+      "processing": "Memproses {count, plural, other {# foto}}…",
+      "added": "{count, plural, other {# foto}} ditambahkan. Pilih objek di setiap foto.",
+      "removed": "Foto {number} dilepas.",
+      "full": "Sudah 10 foto. Lepas foto lain dulu untuk menambah.",
+      "problemsTitle": "Sebagian foto tidak bisa ditambahkan",
+      "problem": {
+        "jenis": "{name}: format tidak didukung. Pilih JPEG, PNG, atau WebP.",
+        "terlaluBesar": "{name}: lebih dari 20 MB.",
+        "tidakTerbaca": "{name}: tidak bisa dibaca di browser ini. Coba simpan ulang sebagai JPEG.",
+        "penuh": "{name}: tidak ditambahkan karena sudah 10 foto."
+      },
+      "item": "Foto {number}",
+      "preview": "Pratinjau foto {number}, {name}",
+      "size": "{width} × {height} px · {kb} KB",
+      "tagLabel": "Objek di foto {number}",
+      "tagPlaceholder": "Pilih objek",
+      "captionLabel": "Keterangan foto {number} (opsional)",
+      "remove": "Lepas foto {number}",
+      "tags": {
+        "pintu_masuk": "Pintu masuk dan ramp",
+        "toilet_difabel": "Toilet difabel",
+        "guiding_block": "Guiding block",
+        "lift": "Lift",
+        "lainnya": "Lainnya"
+      },
+      "descriptionLabel": "Deskripsi tambahan (opsional)",
+      "descriptionHint": "Hal lain yang perlu diketahui pengunjung, mis. jam buka toilet atau pintu mana yang dipakai. Jangan tulis nama atau nomor telepon orang."
     }
   }
 }
