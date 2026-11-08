@@ -3,7 +3,7 @@
 import { getTranslations } from "next-intl/server";
 import { ApiError } from "@/lib/api";
 import { sessionToken } from "@/lib/sesi";
-import { clarifyReport, publishReport, rejectReport, type PublishInput, type RejectionReason } from "@/lib/verifikasi";
+import { clarifyReport, moderatePhoto, publishReport, rejectReport, type ModerationPatch, type PublishInput, type RejectionReason, type ReviewPhoto } from "@/lib/verifikasi";
 
 // Keputusan verifikator (FR-32, ADR-0036), dipanggil dari halaman pemeriksaan. Sesi, peran, laporan sendiri, dan
 // keputusan ganda diperiksa API; galatnya diteruskan dengan pesan dari API.
@@ -44,4 +44,19 @@ export async function rejectDecision(id: string, reason: RejectionReason, note: 
     await rejectReport(token, id, { reason, ...(note.trim() ? { note: note.trim() } : {}) });
     return { status: "ditolak" };
   });
+}
+
+export type ModerationResult = { ok: true; photo: ReviewPhoto } | { ok: false; code: string; message: string };
+
+/** Moderasi satu foto sebelum keputusan (FR-34, ADR-0037): tag, keterangan, sembunyikan, atau area kabur. */
+export async function moderateReportPhoto(reportId: string, photoId: string, patch: ModerationPatch): Promise<ModerationResult> {
+  const t = await getTranslations("Pemeriksaan.actions");
+  const token = await sessionToken();
+  if (!token) return { ok: false, code: "belum_masuk", message: t("server") };
+  try {
+    return { ok: true, photo: await moderatePhoto(token, reportId, photoId, patch) };
+  } catch (error) {
+    if (error instanceof ApiError && error.status > 0) return { ok: false, code: error.galat, message: error.message };
+    return { ok: false, code: "api_tidak_terhubung", message: t("server") };
+  }
 }
