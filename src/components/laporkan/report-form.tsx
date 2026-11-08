@@ -23,7 +23,6 @@ import { StepSummary } from "./step-summary";
 
 const NEXT: Record<Step, Step | null> = { "1": "2", "2": "3", "3": "ringkasan", ringkasan: null };
 const PREVIOUS: Record<Step, Step | null> = { "1": null, "2": "1", "3": "2", ringkasan: "3" };
-const SAVE_DELAY_MS = 300;
 
 /**
  * Formulir Laporkan (FR-20 sampai FR-27). Langkah tercatat di URL (`?langkah=`), jadi Kembali dan Maju browser
@@ -73,20 +72,25 @@ export function ReportForm({ kind, place, signedIn }: { kind: ReportKind; place:
     };
   }, [kind, place]);
 
-  // Simpan setelah isian berhenti berubah sebentar, dan langsung saat halaman disembunyikan atau ditutup.
+  // Setiap perubahan langsung disimpan. Bila penyimpanan sebelumnya belum selesai, perubahan berikutnya digabung menjadi
+  // satu penyimpanan sesudahnya, jadi IndexedDB tidak ditulis lebih sering dari kemampuannya dan perubahan terakhir
+  // tidak menunggu pelapor berhenti mengetik. Menunggu jeda membuat isian hilang bila halaman dimuat ulang cepat.
+  const saving = useRef(false);
+  const pending = useRef<ReportDraft | null>(null);
   useEffect(() => {
     if (!draft || !changed.current || storage !== "ok") return;
-    const save = () => (saveBlocked.current ? Promise.resolve() : saveDraft(draft).catch(() => setStorage("tidak-ada")));
-    const timer = setTimeout(save, SAVE_DELAY_MS);
-    const flush = () => {
-      clearTimeout(timer);
-      void save();
-    };
-    window.addEventListener("pagehide", flush);
-    return () => {
-      clearTimeout(timer);
-      window.removeEventListener("pagehide", flush);
-    };
+    pending.current = draft;
+    if (saving.current) return;
+    saving.current = true;
+    void (async () => {
+      while (pending.current) {
+        const next = pending.current;
+        pending.current = null;
+        if (saveBlocked.current) continue;
+        await saveDraft(next).catch(() => setStorage("tidak-ada"));
+      }
+      saving.current = false;
+    })();
   }, [draft, storage]);
 
   const update = useCallback((change: Partial<ReportDraft>) => {
