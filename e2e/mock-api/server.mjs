@@ -1,9 +1,11 @@
 // API tiruan untuk tes Playwright, supaya CI tidak butuh akses-bogor-api dan database.
 // Datanya salinan respons API dari seed pengembangan (fixtures.json); filter meniru GET /places dan GET /places/map.
-// Pencarian "galat-tiruan" menjawab 500, untuk menguji keadaan galat di web. Route akun ada di akun.mjs.
+// Pencarian "galat-tiruan" menjawab 500, untuk menguji keadaan galat di web. Route akun ada di akun.mjs, route
+// Laporkan di laporkan.mjs.
 import { readFileSync } from "node:fs";
 import { createServer } from "node:http";
 import { handleAkun } from "./akun.mjs";
+import { handleLaporkan } from "./laporkan.mjs";
 
 const { districts, places } = JSON.parse(readFileSync(new URL("./fixtures.json", import.meta.url), "utf8"));
 const port = Number(process.env.PORT ?? 3101);
@@ -84,12 +86,17 @@ createServer(async (request, response) => {
   const url = new URL(request.url ?? "/", `http://localhost:${port}`);
   let payload;
   if (request.method !== "GET") {
-    let raw = "";
-    for await (const chunk of request) raw += chunk;
-    payload = raw ? JSON.parse(raw) : undefined;
+    const chunks = [];
+    for await (const chunk of request) chunks.push(chunk);
+    const raw = Buffer.concat(chunks);
+    // Foto dikirim sebagai badan mentah, selebihnya JSON.
+    const json = (request.headers["content-type"] ?? "").startsWith("application/json");
+    payload = json ? (raw.length ? JSON.parse(raw.toString("utf8")) : undefined) : raw;
   }
   const [status, body, headers = {}] =
-    handleAkun(request.method, url.pathname, url.searchParams, request.headers, payload) ?? route(url);
+    handleAkun(request.method, url.pathname, url.searchParams, request.headers, payload) ??
+    handleLaporkan(request.method, url.pathname, request.headers, payload, places) ??
+    route(url);
   response.writeHead(status, { "content-type": "application/json; charset=utf-8", ...headers });
   response.end(status === 204 ? undefined : JSON.stringify(body));
 }).listen(port, () => console.log(`API tiruan di http://localhost:${port}`));
