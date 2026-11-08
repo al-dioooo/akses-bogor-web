@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { signIn, uniqueEmail } from "./akun-masuk";
+import { mockApi, signIn, uniqueEmail } from "./akun-masuk";
 import { blockingViolations } from "./axe";
 import { stubGoogle } from "./google";
 
@@ -229,6 +229,37 @@ test("marks blur areas with the keyboard or by dragging, and previews the result
   const photos = page.getByRole("region", { name: "Foto" });
   await expect(photos).toContainText("1 area dikaburkan");
   await expect(photos.getByRole("img").first()).toHaveAttribute("src", /versi=kabur&v=1$/);
+});
+
+test("lets an admin add and remove verifiers by exact email (FR-36)", async ({ page, request }) => {
+  // Akun lengkap yang akan dijadikan verifikator; email lama- di API tiruan langsung lengkap dengan nama Sari.
+  const member = email("lama");
+  await request.post(`${mockApi()}/auth/code/verify`, { data: { email: member, code: "123456" } });
+
+  await signIn(page, email("admin"));
+  await page.goto("/verifikasi");
+  await page.getByRole("navigation", { name: "Bagian meja verifikasi" }).getByRole("link", { name: "Tim verifikator" }).click();
+  await expect(page).toHaveURL(/\/verifikasi\/tim$/);
+  const add = page.getByRole("region", { name: "Tambah verifikator" });
+  await add.getByLabel("Email akun").fill("tidak-ada@contoh.id");
+  await add.getByRole("button", { name: "Jadikan verifikator" }).click();
+  await expect(add.getByRole("alert")).toContainText("Tidak ada akun dengan email itu.");
+
+  await add.getByLabel("Email akun").fill(member);
+  await add.getByRole("button", { name: "Jadikan verifikator" }).click();
+  await expect(add.getByRole("status")).toContainText("Sari sekarang verifikator.");
+  const row = page.getByRole("listitem").filter({ hasText: member });
+  await expect(row).toContainText("Verifikator");
+  await row.getByRole("button", { name: "Cabut peran verifikator Sari" }).click();
+  await expect(page.getByRole("listitem").filter({ hasText: member })).toHaveCount(0);
+  expect(await blockingViolations(page)).toEqual([]);
+});
+
+test("keeps the team page for admins only", async ({ page }) => {
+  await signIn(page, email("verifikator"));
+  await page.goto("/verifikasi/tim");
+  await expect(page.getByRole("main")).toContainText("Halaman ini khusus admin.");
+  await expect(page.getByRole("link", { name: "Tim verifikator" })).toHaveCount(0);
 });
 
 const REVIEW = "/verifikasi/laporan/10000000-0000-4000-8000-000000000001";

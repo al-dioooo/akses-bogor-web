@@ -946,6 +946,26 @@
       "emptyBody": "Tidak ada lokasi yang terakhir diverifikasi lebih dari 12 bulan lalu.",
       "verified": "Terakhir diverifikasi {date}",
       "ago": "{months, plural, other {# bulan lalu}}"
+    },
+    "tim": {
+      "heading": "{count, plural, other {# anggota tim}}",
+      "intro": "Beri peran verifikator hanya kepada akun yang sudah ikut pelatihan. Peran admin diatur lewat skrip di server.",
+      "adminOnly": "Halaman ini khusus admin. Minta admin tim untuk menambah atau mencabut verifikator.",
+      "role": {
+        "verifikator": "Verifikator",
+        "admin": "Admin"
+      },
+      "adminNote": "Peran admin hanya bisa diubah lewat skrip di server.",
+      "remove": "Cabut peran verifikator {name}",
+      "removed": "{name} sekarang pengguna biasa.",
+      "addTitle": "Tambah verifikator",
+      "email": "Email akun",
+      "emailHint": "Email yang dipakai orang itu untuk masuk ke AksesBogor. Akunnya harus sudah dilengkapi.",
+      "add": "Jadikan verifikator",
+      "adding": "Menyimpan…",
+      "added": "{name} sekarang verifikator.",
+      "emailEmpty": "Isi email akunnya dulu.",
+      "server": "Server AksesBogor tidak bisa dihubungi. Coba lagi sebentar lagi."
     }
   },
   "Pemeriksaan": {
