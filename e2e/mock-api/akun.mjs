@@ -33,7 +33,7 @@ function signIn(email, defaults) {
   return [200, { token, expiresAt: new Date(Date.now() + 90 * 24 * 60 * 60_000).toISOString(), user: publicUser(user) }];
 }
 
-function userFromToken(authorization) {
+export function userFromToken(authorization) {
   const token = authorization?.replace(/^Bearer /, "");
   if (!token) return null;
   const direct = token.match(/^(akun|baru):(.+)$/);
@@ -117,7 +117,22 @@ export function handleAkun(method, pathname, searchParams, headers, body) {
     user.displayName = String(body?.displayName ?? "").trim();
     return [200, publicUser(user)];
   }
-  if (method === "GET" && pathname === "/me/reports") return [200, { items: user.email.startsWith("pelapor") ? sampleReports() : [] }];
+  if (method === "GET" && pathname === "/me/reports") {
+    // Laporan yang dikirim lewat Laporkan tiruan (laporkan.mjs) tampil paling atas.
+    const sent = (user.reports ?? []).map(({ response }) => ({
+      id: response.id,
+      kind: response.kind,
+      status: response.status,
+      placeId: response.placeId,
+      placeName: response.name,
+      submittedAt: response.submittedAt,
+      decidedAt: null,
+      rejectionReason: null,
+      clarificationQuestion: null,
+      clarificationDueAt: null,
+    }));
+    return [200, { items: [...sent, ...(user.email.startsWith("pelapor") ? sampleReports() : [])] }];
+  }
   if (method === "DELETE" && pathname === "/me") {
     users.delete(user.email);
     for (const [token, email] of tokens) if (email === user.email) tokens.delete(token);
