@@ -43,7 +43,7 @@ test("tells reporters that the desk is for verifiers only", async ({ page }) => 
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex, nofollow");
 });
 
-test("puts a change report next to the current place data (FR-31)", async ({ page }) => {
+test("puts a change report next to the current place data, with the private photo (FR-31)", async ({ page }) => {
   await signIn(page, email("verifikator"));
   await page.goto("/verifikasi");
   await page.getByRole("link", { name: /Halte contoh/ }).first().click();
@@ -52,6 +52,9 @@ test("puts a change report next to the current place data (FR-31)", async ({ pag
   await expect(lift).toContainText("Saat ini");
   await expect(lift).toContainText("Berubah");
   await expect(lift).toContainText("Tidak tersedia · Rusak");
+  const photo = page.getByRole("region", { name: /Foto/ }).getByRole("img");
+  await expect(photo).toHaveAttribute("src", /\/verifikasi\/foto\/[0-9a-f-]+\?versi=asli/);
+  await expect.poll(() => photo.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0);
 
   await page.goto("/verifikasi/laporan/10000000-0000-4000-8000-000000000004");
   await expect(page.getByRole("heading", { name: "Ini laporan Anda sendiri" })).toBeVisible();
