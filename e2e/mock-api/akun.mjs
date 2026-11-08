@@ -7,12 +7,13 @@
 // - ID token Google "tiruan-google" masuk sebagai google@contoh.id; "tiruan-google-belum" menjawab 403.
 // - Token "akun:<email>" (akun lengkap) dan "baru:<email>" (belum lengkap) bisa langsung dipakai sebagai cookie.
 // - Email yang diawali "verifikator" atau "admin" mendapat peran itu.
-// - Akun pelapor... punya empat laporan contoh; akun lain belum punya laporan.
+// - Akun pelapor... punya empat laporan contoh; akun lain belum punya laporan. Pertanyaan klarifikasinya bisa dijawab
+//   lewat POST /me/reports/{id}/clarification, lalu laporan itu kembali menunggu verifikasi.
 // - GET /_tiruan/akun?email=... menjawab apakah akunnya masih ada (untuk tes hapus akun).
 // - POST /_tiruan/cabut-sesi { email } mencabut semua sesi akun itu, seperti sesi yang berakhir.
 import { randomUUID } from "node:crypto";
 
-export const PRIVACY_POLICY_VERSION = "2026-11-08";
+export const PRIVACY_POLICY_VERSION = "2026-11-09";
 const users = new Map();
 const tokens = new Map();
 const lastCodeAt = new Map();
@@ -62,8 +63,8 @@ const SAMPLE_REPORTS = [
   { kind: "perubahan", status: "ditolak", placeName: "Rumah sakit contoh", rejectionReason: "bukti_tidak_cukup", days: 20 },
 ];
 
-function sampleReports() {
-  return SAMPLE_REPORTS.map(({ days, ...report }, i) => ({
+function sampleReports(user) {
+  return SAMPLE_REPORTS.map(({ days, ...report }, i) => answered(user, {
     id: `00000000-0000-4000-8000-00000000000${i + 1}`,
     placeId: null,
     rejectionReason: null,
@@ -72,7 +73,25 @@ function sampleReports() {
     decidedAt: report.status === "diterbitkan" || report.status === "ditolak" ? new Date(Date.UTC(2026, 9, 30 - days + 2)).toISOString() : null,
     submittedAt: new Date(Date.UTC(2026, 9, 30 - days)).toISOString(),
     ...report,
+    // Pertanyaan contoh selalu masih bisa dijawab: tenggatnya 5 hari dari sekarang.
+    ...(report.status === "klarifikasi" ? { clarificationDueAt: new Date(Date.now() + 5 * 24 * 3600_000).toISOString() } : {}),
   }));
+}
+
+/** Laporan contoh yang sudah dijawab pelapornya kembali menunggu verifikasi. */
+function answered(user, report) {
+  return user?.answers?.[report.id] ? { ...report, status: "menunggu", clarificationQuestion: null, clarificationDueAt: null } : report;
+}
+
+/** Satu laporan contoh dengan klarifikasinya, seperti GET /me/reports/{id}. */
+function reportDetail(user, id) {
+  const report = sampleReports(user).find((item) => item.id === id);
+  if (!report) return null;
+  const sample = SAMPLE_REPORTS.find((item) => item.placeName === report.placeName);
+  const clarifications = sample.clarificationQuestion
+    ? [{ id: `${id}-k`, question: sample.clarificationQuestion, askedAt: report.submittedAt, dueAt: new Date(Date.now() + 5 * 24 * 3600_000).toISOString(), answer: user.answers?.[id] ?? null, answeredAt: user.answers?.[id] ? new Date().toISOString() : null }]
+    : [];
+  return { id, kind: report.kind, status: report.status, placeId: report.placeId, placeName: report.placeName, submittedAt: report.submittedAt, photos: 2, clarifications };
 }
 
 /** Menjawab route akun, atau `null` bila bukan route akun. */
@@ -145,7 +164,19 @@ export function handleAkun(method, pathname, searchParams, headers, body) {
       clarificationQuestion: null,
       clarificationDueAt: null,
     }));
-    return [200, { items: [...sent, ...(user.email.startsWith("pelapor") ? sampleReports() : [])] }];
+    return [200, { items: [...sent, ...(user.email.startsWith("pelapor") ? sampleReports(user) : [])] }];
+  }
+  const detail = pathname.match(/^\/me\/reports\/([^/]+)(\/clarification)?$/);
+  if (detail && user.email.startsWith("pelapor")) {
+    const report = reportDetail(user, detail[1]);
+    if (!report) return error(404, "laporan_tidak_ditemukan", "Laporan ini tidak ditemukan di akun Anda.");
+    if (method === "GET" && !detail[2]) return [200, report];
+    if (method === "POST" && detail[2]) {
+      if (report.status !== "klarifikasi") return error(409, "tidak_menunggu_jawaban", "Laporan ini tidak sedang menunggu jawaban Anda.");
+      user.answers = { ...user.answers, [report.id]: String(body?.answer ?? "") };
+      user.answerPhotos = body?.photos ?? [];
+      return [200, { status: "menunggu" }];
+    }
   }
   if (method === "DELETE" && pathname === "/me") {
     users.delete(user.email);
