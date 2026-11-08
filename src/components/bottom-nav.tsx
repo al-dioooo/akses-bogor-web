@@ -21,6 +21,8 @@ const TAB =
 
 /** Bottom nav ponsel (Frame Mobile): menempel di bawah, di bawah lebar 1024 px. */
 export function BottomNav({ labels, pathname, signedIn }: { labels: BottomNavLabels; pathname: string | null; signedIn: boolean }) {
+  // Selama mengisi Laporkan, Form action bar menggantikan Bottom nav (Frame Mobile).
+  if (pathname === "/laporkan") return null;
   // Di ponsel, Akun saya dibuka dari menu Lainnya (Frame Akun).
   const account = signedIn ? { href: "/akun", label: labels.akunSaya } : { href: "/masuk", label: labels.masuk };
   return (
