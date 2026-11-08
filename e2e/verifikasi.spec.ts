@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import { signIn, uniqueEmail } from "./akun-masuk";
 import { blockingViolations } from "./axe";
 import { stubGoogle } from "./google";
@@ -122,6 +122,56 @@ test("lets the verifier fix the place fields, and only for new places and Edit l
   await expect(page.getByRole("heading", { name: "Halte contoh", level: 1 })).toBeVisible();
   await expect(page.getByLabel("Nama tempat", { exact: true })).toHaveCount(0);
   await expect(page.getByLabel("Deskripsi yang tayang")).toBeVisible();
+});
+
+async function checkAll(page: Page) {
+  for (const facility of ["Ramp / Jalur Landai", "Toilet Difabel", "Guiding Block", "Lift / Elevator"]) {
+    await page.getByRole("group", { name: `Bukti untuk ${facility}` }).getByRole("radio", { name: /^Terbukti/ }).check();
+  }
+}
+
+test("publishes a checked report and offers the place page (FR-32)", async ({ page }) => {
+  await signIn(page, email("verifikator"));
+  await page.goto("/verifikasi/laporan/10000000-0000-4000-8000-000000000001");
+  const decision = page.getByRole("region", { name: "Keputusan" });
+  await decision.getByRole("button", { name: "Terbitkan laporan" }).click();
+  await expect(decision).toContainText("Lengkapi daftar Sebelum terbit dulu.");
+  await checkAll(page);
+  await decision.getByLabel("Catatan untuk verifikator lain").fill("Ramp terlihat di foto 1");
+  await decision.getByRole("button", { name: "Terbitkan laporan" }).click();
+  const done = decision.getByRole("heading", { name: "Laporan diterbitkan" });
+  await expect(done).toBeFocused();
+  await expect(decision.getByRole("link", { name: "Lihat halaman tempat" })).toHaveAttribute("href", /^\/lokasi\//);
+  await page.goto("/verifikasi");
+  await expect(page.getByRole("main")).not.toContainText("Masjid Jami contoh");
+});
+
+test("rejects with a standard reason and shows the message the reporter gets", async ({ page }) => {
+  await signIn(page, email("verifikator"));
+  await page.goto("/verifikasi/laporan/10000000-0000-4000-8000-000000000002");
+  const decision = page.getByRole("region", { name: "Keputusan" });
+  await decision.getByRole("radio", { name: /^Tolak/ }).check();
+  await decision.getByRole("button", { name: "Tolak laporan" }).click();
+  await expect(decision).toContainText("Pilih alasan penolakan dulu.");
+  const duplicate = decision.getByRole("radio", { name: /^Duplikat/ });
+  await expect(duplicate).toHaveAccessibleName(/Pesan untuk pelapor: Tempat ini sudah ada di AksesBogor/);
+  await duplicate.check();
+  await decision.getByRole("button", { name: "Tolak laporan" }).click();
+  await expect(decision.getByRole("heading", { name: "Laporan ditolak" })).toBeFocused();
+});
+
+test("asks the reporter a question with a seven-day deadline (FR-41)", async ({ page }) => {
+  await signIn(page, email("verifikator"));
+  await page.goto("/verifikasi/laporan/10000000-0000-4000-8000-000000000001");
+  const decision = page.getByRole("region", { name: "Keputusan" });
+  await decision.getByRole("radio", { name: /^Minta klarifikasi/ }).check();
+  await decision.getByRole("button", { name: "Kirim pertanyaan" }).click();
+  await expect(decision).toContainText("Tulis pertanyaannya dulu.");
+  await decision.getByLabel("Pertanyaan untuk pelapor").fill("Bisakah Anda menambahkan foto toilet dari pintunya?");
+  await decision.getByRole("button", { name: "Kirim pertanyaan" }).click();
+  await expect(decision.getByRole("heading", { name: "Pertanyaan terkirim" })).toBeFocused();
+  await page.goto("/verifikasi/jawaban");
+  await expect(page.getByRole("main")).toContainText("Masjid Jami contoh");
 });
 
 const REVIEW = "/verifikasi/laporan/10000000-0000-4000-8000-000000000001";

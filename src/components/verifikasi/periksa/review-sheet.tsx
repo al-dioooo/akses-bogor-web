@@ -6,6 +6,7 @@ import type { Review } from "@/lib/verifikasi";
 import { AnswerCheck } from "./answer-check";
 import { ClarificationThread } from "./clarification-thread";
 import { decisionProblems, initialDecision } from "./decision";
+import { DecisionActions } from "./decision-actions";
 import { DecisionSummary } from "./decision-summary";
 import { FacilityCompare } from "./facility-compare";
 import { SheetHeading } from "./parts";
@@ -100,6 +101,7 @@ export function ReviewSheet({ review }: { review: Review }) {
             <div className="rounded-3xl border-2 border-border-strong p-4 sm:p-6">
               <DecisionSummary decision={decision} problems={problems} />
             </div>
+            <DecisionActions review={review} decision={decision} problems={problems} onNote={(note) => update({ note })} />
           </section>
         )}
       </div>
