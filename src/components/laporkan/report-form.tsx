@@ -1,17 +1,20 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { FormAlert } from "@/components/akun/form-parts";
 import type { PlaceDetail } from "@/lib/api";
 import { deleteDraft, loadDraft, purgeExpiredDrafts, saveDraft } from "@/lib/draf";
-import { checkStep, newDraft, STEPS, type FieldError, type ReportDraft, type Step } from "@/lib/isian-laporan";
+import { checkStep, firstIncompleteStep, newDraft, STEPS, type FieldError, type ReportDraft, type Step } from "@/lib/isian-laporan";
+import { withReturn } from "@/lib/kembali";
 import type { ReportKind } from "@/lib/laporan";
 import { buttonClass } from "@/ui/button-styles";
 import { Icon } from "@/ui/icon";
-import { IconArrowLeft, IconArrowRight } from "@/ui/icons";
+import { IconArrowLeft, IconArrowRight, IconSend } from "@/ui/icons";
 import { ErrorSummary, Stepper } from "./form-parts";
+import { sendDraft } from "./send";
+import { SendStatus, type SendProblem, type Sending } from "./send-status";
 import { StepFacilities } from "./step-facilities";
 import { StepInfo } from "./step-info";
 import { StepPhotos } from "./step-photos";
@@ -38,10 +41,15 @@ export function ReportForm({ kind, place, signedIn }: { kind: ReportKind; place:
   const [checkedStep, setCheckedStep] = useState<Step | null>(null);
   const [nearbyPending, setNearbyPending] = useState(false);
   const changed = useRef(false);
+  // Setelah draf dihapus (terkirim atau "Hapus draf"), penyimpanan yang masih tertunda tidak boleh menulisnya lagi.
+  const saveBlocked = useRef(false);
   const heading = useRef<HTMLHeadingElement>(null);
   const summary = useRef<HTMLDivElement>(null);
   const focusAfterRender = useRef<"judul" | "galat" | null>(null);
   const actionBar = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+  const [sending, setSending] = useState<Sending | null>(null);
+  const [sendProblem, setSendProblem] = useState<SendProblem | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -67,7 +75,7 @@ export function ReportForm({ kind, place, signedIn }: { kind: ReportKind; place:
   // Simpan setelah isian berhenti berubah sebentar, dan langsung saat halaman disembunyikan atau ditutup.
   useEffect(() => {
     if (!draft || !changed.current || storage !== "ok") return;
-    const save = () => saveDraft(draft).catch(() => setStorage("tidak-ada"));
+    const save = () => (saveBlocked.current ? Promise.resolve() : saveDraft(draft).catch(() => setStorage("tidak-ada")));
     const timer = setTimeout(save, SAVE_DELAY_MS);
     const flush = () => {
       clearTimeout(timer);
@@ -82,6 +90,7 @@ export function ReportForm({ kind, place, signedIn }: { kind: ReportKind; place:
 
   const update = useCallback((change: Partial<ReportDraft>) => {
     changed.current = true;
+    saveBlocked.current = false;
     setDraft((current) => (current ? { ...current, ...change, updatedAt: Date.now() } : current));
   }, []);
 
@@ -136,13 +145,83 @@ export function ReportForm({ kind, place, signedIn }: { kind: ReportKind; place:
   };
   const errors = checkedStep === step ? stepErrors(step) : [];
 
-  async function removeDraft() {
-    await deleteDraft(draft!.draftKey).catch(() => undefined);
+  /** Draf di perangkat dihapus dan formulir dikosongkan; Next.js menyimpan halaman yang ditinggalkan, jadi isinya harus bersih. */
+  async function discard(key: string) {
+    saveBlocked.current = true;
     changed.current = false;
     setDraft(newDraft(kind, place));
     setCheckedStep(null);
+    setSendProblem(null);
+    await deleteDraft(key).catch(() => undefined);
+  }
+
+  async function removeDraft() {
+    await discard(draft!.draftKey);
     setNotice("deleted");
     goTo("1");
+  }
+
+  /** Alamat kembali setelah masuk: ringkasan formulir yang sama, dengan lokasi dan jenis laporannya. */
+  function returnPath() {
+    const url = new URL(window.location.href);
+    url.searchParams.set("langkah", "ringkasan");
+    return `${url.pathname}${url.search}`;
+  }
+
+  /**
+   * "Kirim laporan" (ADR-0033): tanpa sesi, pelapor ke Masuk lalu kembali ke ringkasan. Dengan sesi, foto diunggah
+   * satu per satu lalu laporan dikirim. Id foto yang terunggah disimpan di draf, jadi mencoba lagi tidak mengunggah
+   * ulang. Apa pun yang gagal, draf tetap ada.
+   */
+  async function send() {
+    if (!draft || sending) return;
+    const missing = firstIncompleteStep(draft);
+    if (missing) {
+      setCheckedStep(missing);
+      goTo(missing);
+      return;
+    }
+    await saveDraft(draft).catch(() => undefined);
+    if (!signedIn) return window.location.assign(withReturn("/masuk", returnPath()));
+
+    setSendProblem(null);
+    const attempt = async (current: ReportDraft, retried: boolean): Promise<void> => {
+      setSending({ phase: "foto", current: 0, uploads: {} });
+      const progress = (key: string, state: Sending["uploads"][string]) =>
+        setSending((now) => (now ? { ...now, uploads: { ...now.uploads, [key]: state } } : now));
+      const outcome = await sendDraft(current, {
+        onUploadStart: (key, index) => {
+          setSending((now) => (now ? { ...now, current: index } : now));
+          progress(key, { state: "mengunggah", fraction: 0 });
+        },
+        onUploadProgress: (key, fraction) => progress(key, { state: "mengunggah", fraction }),
+        onUploaded: (key, id) => {
+          progress(key, { state: "terunggah", fraction: 1 });
+          changed.current = true;
+          setDraft((now) => (now ? { ...now, photos: now.photos.map((photo) => (photo.key === key ? { ...photo, uploadedId: id } : photo)) } : now));
+        },
+        onSubmitting: () => setSending((now) => (now ? { ...now, phase: "kirim" } : now)),
+      });
+      if (outcome.ok) {
+        setSending(null);
+        await discard(current.draftKey);
+        router.push(`/laporkan/terkirim?laporan=${outcome.report.id}`);
+        return;
+      }
+      if (outcome.reason === "masuk") return window.location.assign(withReturn("/masuk/sesi-berakhir", returnPath()));
+      if (outcome.reason === "lengkapi") return window.location.assign(withReturn("/masuk/lengkapi", returnPath()));
+      if (outcome.reason === "foto-hilang" && !retried) {
+        // Unggahan lebih dari 24 jam sudah dihapus API (ADR-0031): unggah ulang sekali.
+        const fresh = { ...current, photos: current.photos.map((photo) => ({ ...photo, uploadedId: null })) };
+        update({ photos: fresh.photos });
+        return attempt(fresh, true);
+      }
+      setSending(null);
+      if (outcome.reason === "foto") setSendProblem({ kind: "foto", key: outcome.key, message: outcome.message });
+      else if (outcome.reason === "lokasi") setSendProblem({ kind: "lokasi", message: outcome.message });
+      else setSendProblem({ kind: "galat", message: outcome.reason === "galat" ? outcome.message : null });
+    };
+    await attempt(draft, false);
   }
 
   function next() {
@@ -174,7 +253,21 @@ export function ReportForm({ kind, place, signedIn }: { kind: ReportKind; place:
       {step === "1" && <StepInfo draft={draft} errors={errors} update={update} onNearbyPending={setNearbyPending} />}
       {step === "2" && <StepFacilities draft={draft} errors={errors} update={update} />}
       {step === "3" && <StepPhotos draft={draft} errors={errors} update={update} />}
-      {step === "ringkasan" && <StepSummary draft={draft} signedIn={signedIn} goTo={goTo} onDelete={removeDraft} />}
+      {step === "ringkasan" && (
+        <>
+          <StepSummary draft={draft} signedIn={signedIn} goTo={goTo} onDelete={removeDraft} />
+          <SendStatus
+            photos={draft.photos}
+            sending={sending}
+            problem={sendProblem}
+            onRemovePhoto={(key) => {
+              update({ photos: draft.photos.filter((photo) => photo.key !== key) });
+              setSendProblem(null);
+            }}
+            onFixLocation={() => goTo("1")}
+          />
+        </>
+      )}
 
       {/* Di ponsel, Form action bar menempel di bawah layar menggantikan Bottom nav (Frame Mobile). */}
       <div ref={actionBar} className="flex flex-wrap gap-3 max-lg:fixed max-lg:inset-x-0 max-lg:bottom-0 max-lg:z-30 max-lg:border-t max-lg:border-border-subtle max-lg:bg-bg-canvas max-lg:px-4 max-lg:pt-3 max-lg:pb-[max(0.75rem,env(safe-area-inset-bottom))] lg:pt-2">
@@ -184,10 +277,15 @@ export function ReportForm({ kind, place, signedIn }: { kind: ReportKind; place:
             {t("actions.back")}
           </button>
         )}
-        {NEXT[step] && (
+        {NEXT[step] ? (
           <button type="button" onClick={next} className={buttonClass("primary", "md", "max-lg:flex-[2]")}>
             {step === "3" ? t("actions.toSummary") : t("actions.next")}
             <Icon icon={IconArrowRight} />
+          </button>
+        ) : (
+          <button type="button" onClick={() => void send()} disabled={Boolean(sending)} className={buttonClass("primary", "md", "max-lg:flex-[2] disabled:opacity-70")}>
+            <Icon icon={IconSend} />
+            {sending ? t("kirim.sending") : signedIn ? t("kirim.send") : t("kirim.signIn")}
           </button>
         )}
       </div>
