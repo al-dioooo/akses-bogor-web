@@ -10,6 +10,17 @@
   --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+/*
+ * Kolom yang mendapat fokus tidak tertutup header yang menempel di atas, atau Bottom nav dan Form action bar di bawah
+ * layar ponsel (WCAG 2.4.11).
+ */
+html {
+  scroll-padding-top: 6rem;
+  @media (width < 64rem) {
+    scroll-padding-bottom: 7.5rem;
+  }
+}
+
 body {
   background: var(--color-bg-canvas);
   color: var(--color-text-primary);

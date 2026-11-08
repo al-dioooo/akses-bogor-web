@@ -732,6 +732,39 @@
       "fixedBody": "Nama, kategori, dan lokasi tidak berubah di laporan kekurangan. Bila datanya salah, pakai Edit lokasi.",
       "fixedEdit": "Edit lokasi {name}"
     },
-    "counter": "{count} dari {max} karakter"
+    "counter": "{count} dari {max} karakter",
+    "fasilitas": {
+      "intro": "Jawab setiap fasilitas sesuai yang Anda lihat. Belum tahu juga jawaban yang baik; verifikator akan memeriksanya.",
+      "hint": {
+        "ramp": "Jalan tanpa tangga dari jalan atau parkir sampai pintu masuk. Bila pintu masuk sudah rata, jawab Tidak perlu.",
+        "toilet_difabel": "Toilet yang muat kursi roda dan punya pegangan. Bila tidak ada toilet umum sama sekali, jawab Tidak perlu.",
+        "guiding_block": "Ubin bertekstur untuk pengguna tongkat, dari jalan sampai pintu masuk.",
+        "lift": "Lift ke lantai lain. Bila semua layanan ada di lantai dasar, jawab Tidak perlu."
+      },
+      "answerLegend": "Jawaban untuk {facility}",
+      "answers": {
+        "tersedia": "Tersedia",
+        "tidak_tersedia": "Tidak tersedia",
+        "tidak_perlu": "Tidak perlu",
+        "belum_tahu": "Belum tahu"
+      },
+      "answerHint": {
+        "tersedia": "Ada dan bisa dipakai",
+        "tidak_tersedia": "Dibutuhkan, tetapi tidak ada atau tidak bisa dipakai",
+        "tidak_perlu": "Tidak dibutuhkan di tempat ini",
+        "belum_tahu": "Belum sempat memeriksa"
+      },
+      "reasonLegend": "Alasan tidak tersedia (opsional)",
+      "reasonSkip": "Lewati",
+      "reasonHint": {
+        "tidak_ada": "Belum pernah dibangun",
+        "rusak": "Ada tetapi rusak",
+        "terhalang": "Ada tetapi tertutup benda, mis. parkir motor",
+        "terbatas": "Ada tetapi tidak untuk umum",
+        "tidak_sesuai": "Ada tetapi terlalu curam, sempit, atau kecil"
+      },
+      "noteLabel": "Catatan untuk {facility} (opsional)",
+      "noteHint": "Contoh: kunci toilet di pos satpam. Jangan tulis nama atau nomor telepon orang."
+    }
   }
 }
