@@ -9,9 +9,13 @@
   },
   "Beranda": {
     "eyebrow": "Peta aksesibilitas Kota Bogor",
-    "titleLead": "Cek aksesnya dulu.",
-    "titleAccent": "Berangkat lebih tenang.",
+    "titleLead": "Cek aksesnya dulu. Berangkat lebih",
+    "titleAccent": "tenang.",
     "intro": "Ramp, toilet difabel, guiding block, dan lift di kampus, masjid, halte, dan rumah sakit. Dicatat warga, diperiksa tim sebelum tayang.",
+    "hero": {
+      "pause": "Hentikan gerakan",
+      "play": "Jalankan gerakan"
+    },
     "search": {
       "label": "Cari tempat",
       "placeholder": "Nama tempat, mis. masjid atau halte",
@@ -22,19 +26,22 @@
       "loading": "Memuat angka…",
       "places": "lokasi terverifikasi",
       "stepFree": "pintu masuk tanpa tangga",
+      "stepFreeValue": "{count} dari {total}",
       "contributors": "kontributor"
     },
     "categories": {
-      "eyebrow": "Kategori",
-      "title": "Mulai dari jenis tempatnya.",
+      "label": "Jenis tempat",
       "count": "{count, plural, =0 {Belum ada lokasi} other {# lokasi}}"
     },
     "guide": {
-      "eyebrow": "Cara membaca",
-      "title": "Empat fasilitas. Empat status.",
+      "title": "Empat fasilitas, dari halte sampai lantai",
+      "accent": "atas.",
       "intro": "Status dihitung dari pintu masuk dulu, lalu fasilitas lain, dan selalu ditulis bersama alasannya.",
-      "facilitiesTitle": "Yang diperiksa di setiap tempat",
-      "statusesTitle": "Arti status",
+      "rampFact": "{count} dari {total}",
+      "rampFactLabel": "lokasi punya pintu masuk tanpa tangga",
+      "statusesEyebrow": "Sampai di pintu",
+      "statusesTitle": "Empat status, selalu dengan",
+      "statusesAccent": "alasannya.",
       "facility": {
         "ramp": "Jalan masuk tanpa anak tangga dari jalan atau parkir, cukup lebar untuk kursi roda.",
         "toilet_difabel": "Toilet umum yang muat kursi roda, dengan kloset duduk dan pegangan.",
@@ -50,7 +57,8 @@
     },
     "steps": {
       "eyebrow": "Dari warga, diperiksa tim",
-      "title": "Data yang bisa dipegang.",
+      "title": "Data yang bisa",
+      "accent": "dipegang.",
       "items": {
         "lapor": {
           "title": "Warga melapor",
@@ -67,9 +75,19 @@
       }
     },
     "cta": {
-      "title": "Tahu tempat yang belum ada di sini?",
+      "title": "Tahu tempat yang belum ada di",
+      "accent": "sini?",
       "body": "Laporkan dalam tiga langkah. Setiap laporan membantu orang lain berangkat dengan lebih yakin.",
       "button": "Laporkan tempat"
+    }
+  },
+  "Rute": {
+    "label": "Rute ke pintu",
+    "where": {
+      "guiding_block": "Dari halte",
+      "ramp": "Pintu masuk",
+      "toilet_difabel": "Di dalam",
+      "lift": "Lantai lain"
     }
   },
   "Status": {
@@ -123,21 +141,21 @@
     "masuk": "Masuk",
     "lainnya": "Lainnya",
     "lainnyaTitle": "Menu lainnya",
-    "tutup": "Tutup"
+    "tutup": "Tutup",
+    "akunSaya": "Akun saya"
   },
   "Tampilan": {
     "open": "Tampilan",
     "title": "Pengaturan tampilan",
     "mode": "Mode warna",
-    "modeHint": "Solid mematikan efek kaca supaya teks lebih mudah dibaca.",
+    "modeHint": "Ikuti perangkat memakai mode terang atau gelap sesuai pengaturan ponsel atau komputer.",
     "theme": {
       "perangkat": "Ikuti perangkat",
-      "glass": "Kaca",
-      "solid": "Solid",
-      "dark": "Gelap"
+      "terang": "Terang",
+      "gelap": "Gelap"
     },
     "motion": "Gerakan",
-    "motionHint": "Kurangi gerakan menghentikan latar yang bergeser dan animasi saat menggulir.",
+    "motionHint": "Kurangi gerakan menghentikan ilustrasi yang bergerak dan animasi saat menggulir.",
     "motionOption": {
       "perangkat": "Ikuti perangkat",
       "off": "Kurangi gerakan"
@@ -169,7 +187,8 @@
   "Jelajahi": {
     "metaTitle": "Jelajahi Lokasi",
     "eyebrow": "Jelajahi",
-    "title": "Jelajahi Lokasi",
+    "title": "Semua",
+    "accent": "lokasi.",
     "intro": "Cari tempat di Kota Bogor, lalu saring menurut kategori, kecamatan, fasilitas, dan status.",
     "search": {
       "label": "Cari nama tempat",
@@ -194,7 +213,8 @@
       "emptyTitle": "Tidak ada lokasi yang cocok",
       "emptyBody": "Coba kata lain, atau kurangi filter yang dipakai.",
       "noDataTitle": "Belum ada lokasi",
-      "noDataBody": "Lokasi tampil di sini setelah laporan warga diperiksa tim."
+      "noDataBody": "Lokasi tampil di sini setelah laporan warga diperiksa tim.",
+      "onMap": "Lihat di peta"
     },
     "pagination": {
       "label": "Halaman hasil",
@@ -203,12 +223,57 @@
       "page": "Halaman {page} dari {pages}"
     }
   },
+  "Peta": {
+    "metaTitle": "Peta Lokasi",
+    "eyebrow": "Peta",
+    "title": "Lokasi di",
+    "accent": "peta.",
+    "loading": "Memuat peta…",
+    "count": "{total, plural, =0 {Tidak ada lokasi yang cocok} other {Menampilkan # lokasi}}",
+    "asList": "Lihat sebagai daftar",
+    "legend": "Legenda status",
+    "map": {
+      "title": "Peta lokasi Kota Bogor",
+      "hint": "Di peta, tombol panah menggeser peta, tombol + dan − memperbesar atau memperkecil, dan Tab berpindah ke lokasi berikutnya. Daftar di bawah berisi lokasi yang sedang tampil.",
+      "skip": "Lewati peta ke daftar lokasi",
+      "loading": "Memuat peta…",
+      "noscript": "Peta butuh JavaScript. Semua lokasi yang sama ada di daftar di bawah.",
+      "noWebglTitle": "Peta tidak bisa tampil di browser ini",
+      "failedTitle": "Peta belum bisa dimuat",
+      "fallbackBody": "Semua lokasi yang sama ada di daftar di bawah.",
+      "retry": "Coba lagi",
+      "attribution": "Tampilkan atribusi peta",
+      "logo": "Situs Mapbox",
+      "ctrlScroll": "Tekan Ctrl sambil menggulir untuk memperbesar peta",
+      "cmdScroll": "Tekan ⌘ sambil menggulir untuk memperbesar peta",
+      "twoFingers": "Geser peta dengan dua jari"
+    },
+    "controls": {
+      "label": "Kontrol peta",
+      "zoomIn": "Perbesar peta",
+      "zoomOut": "Perkecil peta",
+      "reset": "Tampilkan seluruh Kota Bogor"
+    },
+    "marker": "{name}, {category}, {status}",
+    "summary": {
+      "detail": "Lihat detail lokasi",
+      "close": "Tutup ringkasan"
+    },
+    "list": {
+      "title": "Daftar lokasi",
+      "inView": "Lokasi di tampilan peta",
+      "count": "{shown} dari {total} lokasi ada di tampilan peta",
+      "none": "Tidak ada lokasi di bagian peta ini. Geser atau perkecil peta, atau tampilkan seluruh Kota Bogor.",
+      "show": "Tunjukkan di peta",
+      "showPlace": "Tunjukkan di peta: {name}"
+    }
+  },
   "Detail": {
     "back": "Kembali ke Jelajahi",
     "loading": "Memuat lokasi…",
     "landmark": "Patokan",
     "summaryTitle": "Ringkasan fasilitas",
-    "ringOf": "dari {relevant}",
+    "ofRelevant": "dari {relevant} fasilitas tersedia",
     "summary": "{relevant, plural, =0 {Tidak ada fasilitas yang dibutuhkan} other {{available} dari {relevant} fasilitas tersedia}}",
     "unknown": "{count} fasilitas belum diketahui",
     "allAvailable": "semua fasilitas yang dibutuhkan tersedia",
@@ -228,5 +293,922 @@
       "body": "Mungkin lokasinya sudah tidak tayang, atau tautannya salah.",
       "explore": "Jelajahi lokasi lain"
     }
+  },
+  "Masuk": {
+    "metaTitle": "Masuk",
+    "eyebrow": "Akun AksesBogor",
+    "title": "Masuk untuk",
+    "accent": "melapor.",
+    "intro": "Menjelajah tetap bisa tanpa akun. Akun dibutuhkan untuk melaporkan tempat dan melihat status laporan Anda.",
+    "loading": "Memuat formulir masuk…",
+    "sessionEnded": "Sesi Anda sudah berakhir. Silakan masuk lagi.",
+    "emailLabel": "Email",
+    "emailHint": "Tanpa kata sandi. Kami kirim kode 6 digit ke email ini. Akun dibuat otomatis bila belum ada.",
+    "submit": "Kirim kode",
+    "sending": "Mengirim kode…",
+    "galat": {
+      "emailKosong": "Isi alamat email Anda.",
+      "emailTidakValid": "Alamat email belum lengkap. Contoh: nama@gmail.com",
+      "server": "Server AksesBogor tidak bisa dihubungi. Coba lagi sebentar lagi."
+    },
+    "or": "atau",
+    "googleFailed": "Tombol Google tidak bisa dimuat. Masuk dengan kode email di bawah.",
+    "googleSigningIn": "Memeriksa akun Google…",
+    "privacy": "Data Anda dijaga sesuai <link>Kebijakan Privasi</link>."
+  },
+  "KodeMasuk": {
+    "metaTitle": "Masukkan kode",
+    "eyebrow": "Kode masuk",
+    "title": "Cek email",
+    "accent": "Anda.",
+    "loading": "Memuat formulir kode…",
+    "sentTo": "Kami mengirim kode 6 digit ke",
+    "expiry": "Kode berlaku 10 menit dan hanya bisa dipakai sekali.",
+    "spam": "Belum ada? Periksa folder spam atau promosi, atau kirim ulang kode.",
+    "codeLabel": "Kode 6 digit",
+    "codeHint": "Bisa ditempel langsung dari email.",
+    "submit": "Masuk",
+    "checking": "Memeriksa kode…",
+    "resend": "Kirim ulang kode",
+    "resendWait": "Kode baru bisa diminta dalam {seconds} detik.",
+    "resendReady": "Kode baru bisa diminta sekarang.",
+    "resent": "Kode baru sudah dikirim. Kode sebelumnya tidak berlaku lagi.",
+    "changeEmail": "Ganti email",
+    "galat": {
+      "kodeKosong": "Isi kode 6 digit dari email.",
+      "kodeFormat": "Kode terdiri dari 6 angka. Periksa lagi kode di email Anda."
+    }
+  },
+  "Lengkapi": {
+    "metaTitle": "Lengkapi akun",
+    "eyebrow": "Langkah terakhir",
+    "title": "Lengkapi",
+    "accent": "akun.",
+    "intro": "Isi nama tampilan dan setujui Kebijakan Privasi sebelum mulai melapor. Cukup sekali.",
+    "loading": "Memuat data akun…",
+    "signedInAs": "Masuk sebagai",
+    "nameLabel": "Nama tampilan",
+    "nameHint": "Dilihat tim verifikator saat memeriksa laporan Anda, tidak tampil untuk umum. Paling banyak 60 karakter.",
+    "privacyTitle": "Kebijakan Privasi",
+    "privacyStored": "Kami menyimpan email, nama tampilan, dan laporan Anda.",
+    "privacyVerifier": "Verifikator hanya melihat nama tampilan Anda, bukan email.",
+    "privacyDelete": "Anda bisa menghapus akun kapan saja dari Akun Saya.",
+    "privacyLink": "Baca Kebijakan Privasi versi {version} (tab baru)",
+    "consentLabel": "Saya sudah membaca dan menyetujui Kebijakan Privasi AksesBogor.",
+    "submit": "Simpan dan lanjut",
+    "saving": "Menyimpan…",
+    "declineHint": "Tidak setuju? Keluar saja. Akun yang tidak dilengkapi dihapus otomatis dalam 24 jam.",
+    "decline": "Keluar tanpa melengkapi",
+    "galat": {
+      "namaKosong": "Isi nama tampilan.",
+      "namaPanjang": "Nama tampilan paling banyak 60 karakter.",
+      "belumSetuju": "Centang persetujuan Kebijakan Privasi untuk melanjutkan."
+    }
+  },
+  "KebijakanPrivasi": {
+    "metaTitle": "Kebijakan Privasi",
+    "eyebrow": "Kebijakan",
+    "title": "Kebijakan",
+    "accent": "Privasi.",
+    "version": "Versi {date}",
+    "draft": "Draf. Teks ini masih ditinjau tim dan bisa berubah sebelum AksesBogor diluncurkan.",
+    "contents": "Isi halaman",
+    "sections": [
+      {
+        "id": "siapa-kami",
+        "title": "Siapa kami",
+        "paragraphs": [
+          "AksesBogor adalah web yang mencatat aksesibilitas fasilitas publik di Kota Bogor bagi penyandang disabilitas dan pendampingnya. AksesBogor dikelola Tim AksesBogor sebagai proyek mahasiswa. Tim AksesBogor adalah pengendali data pribadi Anda sesuai UU No. 27 Tahun 2022 tentang Pelindungan Data Pribadi."
+        ]
+      },
+      {
+        "id": "data",
+        "title": "Data yang kami kumpulkan",
+        "paragraphs": [
+          "Anda bisa menjelajahi AksesBogor tanpa akun. Kami hanya mengumpulkan data pribadi bila Anda membuat akun atau melapor."
+        ],
+        "items": [
+          "Akun: alamat email, nama tampilan, peran (pengguna, verifikator, atau admin), serta waktu dan versi Kebijakan Privasi yang Anda setujui.",
+          "Masuk: kode 6 digit yang kami kirim ke email Anda, disimpan dalam bentuk acak (hash) selama 10 menit, dan sesi masuk (token, waktu dibuat, dan waktu terakhir dipakai). Bila Anda masuk dengan Google, kami menyimpan nomor akun Google Anda untuk menyambungkannya ke akun AksesBogor. Kami tidak menyimpan foto profil, kontak, atau token akses Google.",
+          "Laporan: isian laporan (nama tempat, kategori, patokan, jawaban fasilitas, catatan, dan deskripsi), titik yang Anda konfirmasi di peta, dan foto yang Anda kirim. Lokasi perangkat hanya dibaca saat Anda menekan Gunakan lokasi saya dan tidak disimpan. Foto diperkecil lalu disimpan ulang tanpa metadata (EXIF), termasuk lokasi GPS. Bila verifikator meminta klarifikasi, jawaban Anda dan foto tambahannya ikut disimpan sebagai bagian laporan.",
+          "Pencarian tempat: kata kunci yang Anda ketik di pencarian formulir laporan diteruskan ke Mapbox lewat server kami, tanpa alamat IP Anda, dan tidak kami simpan.",
+          "Teknis: alamat IP, alamat halaman yang dibuka, dan waktunya tercatat di log server untuk keamanan dan memperbaiki galat.",
+          "Di perangkat Anda: pilihan tampilan (mode terang atau gelap, gerak) disimpan di browser Anda dan tidak dikirim ke kami. Draf laporan yang belum dikirim, termasuk fotonya, juga disimpan di browser Anda dan baru dikirim ke kami saat Anda menekan Kirim laporan. Cookie sesi hanya dipakai untuk menjaga Anda tetap masuk. Kami tidak memakai cookie iklan atau analitik."
+        ]
+      },
+      {
+        "id": "tujuan",
+        "title": "Untuk apa data dipakai",
+        "items": [
+          "Memasukkan Anda ke akun dan menjaga akun tetap aman.",
+          "Menampilkan Laporan saya dan mengirim email saat laporan Anda diterbitkan, ditolak beserta alasannya, atau butuh klarifikasi.",
+          "Memeriksa laporan sebelum tayang, menghubungi Anda bila verifikator butuh klarifikasi, dan mencegah spam.",
+          "Mencatat siapa mengubah data tempat dan kapan (log audit), supaya perubahan bisa ditelusuri. Log ini berisi akun verifikator dan perubahan data tempat, tanpa email, nama pelapor, atau isi klarifikasi.",
+          "Menjaga layanan tetap berjalan dan aman."
+        ],
+        "after": [
+          "Dasar pemrosesannya adalah persetujuan yang Anda berikan saat melengkapi akun. Anda bisa menarik persetujuan kapan saja dengan menghapus akun."
+        ]
+      },
+      {
+        "id": "penerima",
+        "title": "Siapa yang bisa melihat data Anda",
+        "paragraphs": [
+          "Verifikator AksesBogor melihat nama tampilan pelapor, bukan email, beserta isian, foto, dan jawaban klarifikasi saat memeriksanya. Sebelum diverifikasi, laporan dan foto tidak bisa dilihat publik. Sebelum foto terbit, verifikator mengaburkan wajah dan pelat nomor atau menyembunyikan fotonya; hanya hasil yang sudah dikaburkan yang tayang. Admin AksesBogor melihat nama tampilan dan email anggota tim verifikator untuk mengatur peran mereka. Pengunjung AksesBogor melihat informasi tempat dan foto yang sudah diterbitkan, tanpa nama pelapor. Penyedia layanan berikut memproses data atas nama kami:"
+        ],
+        "items": [
+          "Oracle Cloud: server dan database di Batam, Indonesia.",
+          "Cloudflare: jaringan menuju server, dan penyimpanan foto di Cloudflare R2.",
+          "Vercel: menjalankan situs web.",
+          "Resend: mengirim email kode masuk dan pemberitahuan.",
+          "Google: hanya bila Anda memakai tombol Masuk dengan Google. Halaman Masuk memuat tombol dari Google.",
+          "Mapbox: menampilkan peta dan mencari tempat. Mapbox menerima alamat IP dan area peta yang dilihat dari browser Anda, serta kata kunci pencarian dari server kami."
+        ],
+        "after": [
+          "Kami tidak menjual data pribadi dan tidak membagikannya untuk iklan."
+        ]
+      },
+      {
+        "id": "luar-negeri",
+        "title": "Data yang diproses di luar Indonesia",
+        "paragraphs": [
+          "Vercel, Resend, Google, Mapbox, dan Cloudflare bisa memproses data di luar Indonesia, termasuk di Amerika Serikat. Kami hanya mengirim data yang dibutuhkan layanan itu: email dan isi email ke Resend, alamat IP ke penyedia jaringan dan peta, kata kunci pencarian ke Mapbox, dan foto laporan ke Cloudflare R2."
+        ]
+      },
+      {
+        "id": "masa-simpan",
+        "title": "Berapa lama data disimpan",
+        "table": {
+          "caption": "Masa simpan setiap jenis data",
+          "data": "Data",
+          "period": "Masa simpan",
+          "rows": [
+            [
+              "Akun",
+              "Sampai Anda menghapusnya"
+            ],
+            [
+              "Akun yang tidak dilengkapi",
+              "24 jam"
+            ],
+            [
+              "Kode masuk",
+              "10 menit, atau sampai dipakai"
+            ],
+            [
+              "Sesi masuk",
+              "30 hari sejak terakhir dipakai, paling lama 90 hari"
+            ],
+            [
+              "Laporan yang menunggu verifikasi atau klarifikasi",
+              "Sampai diputuskan, atau sampai akun dihapus"
+            ],
+            [
+              "Laporan yang ditolak",
+              "Isian dan alasan sampai akun dihapus; fotonya dihapus saat laporan ditolak"
+            ],
+            [
+              "Foto yang disembunyikan verifikator",
+              "Dihapus saat laporan diterbitkan"
+            ],
+            [
+              "Foto asli sebelum dikaburkan",
+              "Dihapus saat laporan diterbitkan; hanya versi yang dikaburkan yang tayang"
+            ],
+            [
+              "Foto yang terunggah tetapi laporannya tidak jadi terkirim",
+              "24 jam"
+            ],
+            [
+              "Draf laporan di browser Anda",
+              "Sampai terkirim, sampai Anda keluar, atau 7 hari setelah terakhir diubah"
+            ],
+            [
+              "Laporan yang sudah terbit",
+              "Tetap tayang tanpa nama pelapor setelah akun dihapus"
+            ],
+            [
+              "Log audit perubahan data tempat",
+              "Tanpa batas waktu; akun verifikator yang dihapus ditulis \"verifikator dihapus\""
+            ],
+            [
+              "Cadangan database",
+              "Paling lama 30 hari"
+            ],
+            [
+              "Log server",
+              "Belum ditetapkan"
+            ]
+          ]
+        }
+      },
+      {
+        "id": "hak",
+        "title": "Hak Anda",
+        "items": [
+          "Melihat data: nama tampilan, email, dan laporan Anda ada di halaman Akun Saya.",
+          "Memperbaiki data: ubah nama tampilan di Akun Saya. Untuk mengganti email, buat akun baru dengan email itu.",
+          "Menghapus akun: pilih Hapus akun di Akun Saya. Penghapusan langsung berjalan dan tidak bisa dibatalkan. Nama, email, waktu persetujuan, semua sesi, dan laporan yang belum terbit beserta fotonya dihapus. Informasi tempat dan foto yang sudah terbit tetap tayang tanpa nama Anda. Kami mengirim satu email terakhir sebagai konfirmasi. Salinan di cadangan database hilang paling lama 30 hari kemudian.",
+          "Bertanya atau mengadu: hubungi kami lewat kontak di bawah. Kami menjawab paling lambat 3 × 24 jam."
+        ]
+      },
+      {
+        "id": "keamanan",
+        "title": "Keamanan",
+        "paragraphs": [
+          "Semua koneksi memakai HTTPS. Kode masuk disimpan dalam bentuk hash dan sesi memakai token bertanda tangan. Hanya anggota tim yang mengelola server yang bisa membuka database. Bila terjadi kebocoran data pribadi, kami memberi tahu Anda paling lambat 3 × 24 jam setelah mengetahuinya."
+        ]
+      },
+      {
+        "id": "anak",
+        "title": "Anak",
+        "paragraphs": [
+          "Bila Anda berusia di bawah 18 tahun, minta orang tua atau wali Anda membaca kebijakan ini dan menyetujuinya bersama Anda sebelum membuat akun."
+        ]
+      },
+      {
+        "id": "perubahan",
+        "title": "Perubahan kebijakan",
+        "paragraphs": [
+          "Bila kebijakan ini berubah, kami menaikkan nomor versinya dan meminta persetujuan Anda lagi saat Anda masuk berikutnya."
+        ]
+      },
+      {
+        "id": "kontak",
+        "title": "Kontak",
+        "paragraphs": [
+          "Email kontak resmi diisi tim sebelum peluncuran."
+        ]
+      }
+    ]
+  },
+  "AkunSaya": {
+    "metaTitle": "Akun saya",
+    "eyebrow": "Akun",
+    "title": "Akun",
+    "accent": "saya.",
+    "loading": "Memuat akun…",
+    "dataTitle": "Data akun",
+    "email": "Email",
+    "role": "Peran",
+    "roles": {
+      "pengguna": "Pengguna",
+      "verifikator": "Verifikator",
+      "admin": "Admin"
+    },
+    "since": "Akun dibuat",
+    "nameLabel": "Nama tampilan",
+    "nameHint": "Dilihat tim verifikator, tidak tampil untuk umum. Email tidak bisa diubah; untuk email lain, buat akun baru.",
+    "save": "Simpan nama",
+    "saving": "Menyimpan…",
+    "renamed": "Nama tampilan sudah diubah.",
+    "signOut": "Keluar",
+    "deleteTitle": "Hapus akun",
+    "deleteBody": "Data pribadi dan laporan yang belum terbit akan dihapus. Informasi tempat yang sudah terbit tetap tayang tanpa nama Anda.",
+    "deleteLink": "Lihat apa yang dihapus",
+    "galat": {
+      "namaKosong": "Isi nama tampilan.",
+      "namaPanjang": "Nama tampilan paling banyak 60 karakter.",
+      "server": "Server AksesBogor tidak bisa dihubungi. Coba lagi sebentar lagi."
+    },
+    "verifierTitle": "Meja verifikasi",
+    "verifierBody": "Antrean laporan warga yang menunggu diperiksa sebelum tayang.",
+    "verifierLink": "Buka meja verifikasi"
+  },
+  "LaporanSaya": {
+    "title": "Laporan saya",
+    "intro": "Status setiap laporan yang Anda kirim, terbaru di atas.",
+    "loading": "Memuat laporan…",
+    "emptyTitle": "Belum ada laporan",
+    "emptyBody": "Laporan yang Anda kirim muncul di sini bersama statusnya: menunggu verifikasi, perlu klarifikasi, diterbitkan, atau ditolak beserta alasannya.",
+    "emptyAction": "Laporkan tempat",
+    "unnamed": "Tempat tanpa nama",
+    "submitted": "Dikirim {date}",
+    "kind": {
+      "baru": "Tempat baru",
+      "perubahan": "Perubahan data",
+      "kekurangan": "Laporan kekurangan"
+    },
+    "status": {
+      "menunggu": "Menunggu verifikasi",
+      "klarifikasi": "Perlu klarifikasi",
+      "diterbitkan": "Diterbitkan",
+      "ditolak": "Ditolak"
+    },
+    "reasonLabel": "Alasan: {reason}",
+    "reason": {
+      "di_luar_kota_bogor": {
+        "label": "Di luar Kota Bogor",
+        "message": "Saat ini AksesBogor hanya mencakup Kota Bogor, jadi laporan ini belum bisa kami terbitkan. Terima kasih sudah berkontribusi."
+      },
+      "duplikat": {
+        "label": "Duplikat",
+        "message": "Tempat ini sudah ada di AksesBogor. Bila ada informasi baru, gunakan \"Laporkan kekurangan\" di halaman tempat tersebut."
+      },
+      "bukti_tidak_cukup": {
+        "label": "Bukti tidak cukup",
+        "message": "Kami belum bisa memastikan kondisi tempat ini dari foto yang ada. Anda bisa mengirim ulang dengan foto pintu masuk dan fasilitasnya."
+      },
+      "bukan_fasilitas_publik": {
+        "label": "Bukan fasilitas publik",
+        "message": "Untuk saat ini AksesBogor hanya mencatat kampus, masjid, halte, dan rumah sakit."
+      },
+      "konten_tidak_pantas": {
+        "label": "Konten tidak pantas",
+        "message": "Laporan ini tidak sesuai dengan ketentuan AksesBogor."
+      },
+      "tidak_ada_klarifikasi": {
+        "label": "Tidak ada klarifikasi",
+        "message": "Kami belum menerima jawaban atas pertanyaan kami, jadi laporan ini ditutup. Anda bisa mengirim laporan baru kapan saja."
+      }
+    },
+    "questionLabel": "Pertanyaan verifikator",
+    "questionDue": "Jawab paling lambat {date}.",
+    "viewPlace": "Lihat lokasi",
+    "answer": "Jawab pertanyaan"
+  },
+  "HapusAkun": {
+    "metaTitle": "Hapus akun",
+    "eyebrow": "Akun saya",
+    "title": "Hapus",
+    "accent": "akun.",
+    "intro": "Baca dulu apa yang dihapus dan apa yang tetap tayang.",
+    "loading": "Memuat data akun…",
+    "removedTitle": "Yang dihapus",
+    "removedProfile": "Nama tampilan dan email",
+    "removedConsent": "Waktu persetujuan Kebijakan Privasi",
+    "removedSessions": "Semua sesi masuk, di semua perangkat",
+    "removedReports": "Laporan yang belum terbit (menunggu verifikasi, perlu klarifikasi, atau ditolak) beserta fotonya",
+    "unpublishedCount": "{count, plural, =0 {Anda tidak punya laporan yang belum terbit.} other {# laporan Anda yang belum terbit ikut dihapus.}}",
+    "keptTitle": "Yang tetap tayang",
+    "keptPlaces": "Informasi tempat dan foto yang sudah diterbitkan, tanpa nama Anda",
+    "keptAudit": "Catatan perubahan data tempat, dengan pelapor ditulis \"akun dihapus\"",
+    "noteImmediate": "Penghapusan langsung berjalan dan tidak bisa dibatalkan.",
+    "noteEmail": "Kami mengirim satu email konfirmasi terakhir ke <email></email>.",
+    "noteBackup": "Salinan di cadangan database hilang paling lama 30 hari kemudian.",
+    "noteNewAccount": "Masuk lagi dengan email yang sama nanti membuat akun baru yang kosong.",
+    "confirmLabel": "Saya mengerti bahwa akun ini dan laporan yang belum terbit dihapus permanen.",
+    "submit": "Hapus akun saya",
+    "deleting": "Menghapus akun…",
+    "cancel": "Batal",
+    "galat": {
+      "belumCentang": "Centang kotak konfirmasi dulu untuk menghapus akun.",
+      "server": "Server AksesBogor tidak bisa dihubungi. Akun belum dihapus. Coba lagi sebentar lagi."
+    }
+  },
+  "AkunDihapus": {
+    "metaTitle": "Akun dihapus",
+    "eyebrow": "Akun dihapus",
+    "title": "Akun Anda sudah dihapus.",
+    "body": "Data pribadi dan laporan yang belum terbit sudah kami hapus, dan semua sesi sudah berakhir. Terima kasih sudah membantu memetakan aksesibilitas Kota Bogor.",
+    "home": "Ke Beranda",
+    "explore": "Jelajahi lokasi"
+  },
+  "Laporkan": {
+    "lokasi": {
+      "legend": "Lokasi",
+      "hint": "Arahkan pin ke pintu masuk yang paling mudah diakses, bukan ke tengah gedung atau jalan di depannya.",
+      "searchLabel": "Cari nama tempat atau alamat",
+      "searchHint": "Ketik minimal 3 huruf, lalu pilih hasil dengan tombol panah dan Enter.",
+      "searchButton": "Cari",
+      "searching": "Mencari…",
+      "results": "{count, plural, =0 {Tidak ada hasil untuk “{q}”. Coba nama lain, atau pakai lokasi Anda.} other {# hasil untuk “{q}”. Pilih dengan tombol panah atau ketuk hasilnya.}}",
+      "resultsLabel": "Hasil pencarian",
+      "existing": "Sudah ada di AksesBogor",
+      "existingOption": "{name}, {district} (sudah ada di AksesBogor)",
+      "useMyLocation": "Gunakan lokasi saya",
+      "locating": "Mencari lokasi perangkat…",
+      "located": "Lokasi perangkat ditemukan, akurasi sekitar {meters} m. Periksa titiknya, lalu tekan Pakai lokasi ini.",
+      "picked": "Titik dipindah ke {name}. Periksa titiknya, lalu tekan Pakai lokasi ini.",
+      "candidate": "Titik terpilih",
+      "candidateFrom": {
+        "cari": "Dari pencarian: {name}",
+        "gps": "Dari lokasi perangkat, akurasi sekitar {meters} m",
+        "peta": "Dari tengah peta",
+        "awal": "Lokasi saat ini"
+      },
+      "coordinates": "{lat}, {lng}",
+      "noCandidate": "Belum ada titik. Cari tempatnya, pakai lokasi Anda, atau geser peta.",
+      "existingPicked": "{name} sudah ada di AksesBogor. Bila ada informasi baru tentang tempat itu, laporkan kekurangannya saja.",
+      "reportGap": "Laporkan kekurangan di {name}",
+      "confirm": "Pakai lokasi ini",
+      "checking": "Memeriksa lokasi…",
+      "confirmed": "Lokasi dipakai: Kecamatan {district}.",
+      "confirmedTitle": "Lokasi dipakai",
+      "confirmedBody": "Kecamatan {district} · {coordinates}",
+      "change": "Ubah lokasi",
+      "moved": "Titik sudah berubah. Tekan Pakai lokasi ini untuk memakai titik yang baru.",
+      "nearbyTitle": "Mungkin tempat ini sudah ada",
+      "nearbyBody": "Kami menemukan tempat terdaftar dengan nama mirip di dekat titik ini. Bila sama, laporkan kekurangannya saja supaya tidak dobel.",
+      "nearbyItem": "{name}, {distance} m dari titik ini",
+      "nearbyDifferent": "Bukan, ini tempat lain",
+      "nearbyAcknowledged": "Baik, laporan ini dicatat sebagai tempat baru.",
+      "galat": {
+        "gpsDitolak": "Izin lokasi ditolak. Izinkan lokasi di pengaturan browser, atau cari tempatnya.",
+        "gpsTidakAda": "Lokasi perangkat tidak bisa dibaca. Coba lagi di luar ruangan, atau cari tempatnya.",
+        "gpsTidakDidukung": "Browser ini tidak bisa membaca lokasi perangkat. Cari tempatnya saja.",
+        "cari": "Pencarian sedang gangguan. Coba lagi, atau pakai lokasi Anda.",
+        "cek": "Lokasi belum bisa diperiksa. Periksa koneksi, lalu tekan Pakai lokasi ini lagi."
+      }
+    },
+    "metaTitle": "Laporkan tempat",
+    "eyebrow": "Laporkan",
+    "title": {
+      "baru": "Laporkan tempat",
+      "perubahan": "Edit lokasi",
+      "kekurangan": "Laporkan kekurangan"
+    },
+    "intro": {
+      "baru": "Tiga langkah: informasi dan lokasi, fasilitas, lalu foto. Isian tersimpan di perangkat ini sampai laporan dikirim.",
+      "perubahan": "Formulir sudah terisi data {name} saat ini. Ubah yang tidak sesuai; data lama tetap tayang sampai perubahan diverifikasi.",
+      "kekurangan": "Formulir sudah terisi data {name} saat ini. Ubah jawaban fasilitas, tambah foto, atau tulis catatan; data lama tetap tayang sampai laporan diverifikasi."
+    },
+    "loading": "Memuat formulir…",
+    "storageWarning": "Draf tidak bisa disimpan di perangkat ini, jadi isian hilang bila halaman ditutup. Kirim laporan sebelum keluar dari halaman ini.",
+    "restored": "Draf terakhir dipulihkan.",
+    "steps": {
+      "label": "Langkah laporan",
+      "1": "Informasi dan lokasi",
+      "2": "Fasilitas",
+      "3": "Foto dan deskripsi",
+      "ringkasan": "Ringkasan",
+      "heading": "Langkah {number} dari 3: {name}",
+      "current": "(langkah ini)",
+      "done": "(sudah diisi)"
+    },
+    "actions": {
+      "next": "Lanjut",
+      "back": "Kembali",
+      "toSummary": "Lihat ringkasan"
+    },
+    "errors": {
+      "title": "Periksa lagi isian berikut",
+      "namaKosong": "Isi nama tempat.",
+      "kategoriKosong": "Pilih satu kategori.",
+      "lokasiKosong": "Tentukan titik lokasi, lalu tekan Pakai lokasi ini.",
+      "lokasiMirip": "Jawab dulu peringatan tempat yang mungkin sudah ada.",
+      "terlaluPanjang": "Maksimal {max} karakter.",
+      "fotoTerlaluBanyak": "Maksimal {max} foto. Lepas sebagian foto.",
+      "tagKosong": "Pilih objek di foto {number}."
+    },
+    "info": {
+      "nameLabel": "Nama tempat",
+      "nameHint": "Nama yang tertulis di papan nama atau yang dikenal warga.",
+      "categoryLegend": "Kategori",
+      "categoryHint": "Pilih satu.",
+      "landmarkLabel": "Patokan (opsional)",
+      "landmarkHint": "Contoh: pintu samping dekat parkir motor.",
+      "fixedTitle": "Tempat yang dilaporkan",
+      "fixedBody": "Nama, kategori, dan lokasi tidak berubah di laporan kekurangan. Bila datanya salah, pakai Edit lokasi.",
+      "fixedEdit": "Edit lokasi {name}"
+    },
+    "counter": "{count} dari {max} karakter",
+    "fasilitas": {
+      "intro": "Jawab setiap fasilitas sesuai yang Anda lihat. Belum tahu juga jawaban yang baik; verifikator akan memeriksanya.",
+      "hint": {
+        "ramp": "Jalan tanpa tangga dari jalan atau parkir sampai pintu masuk. Bila pintu masuk sudah rata, jawab Tidak perlu.",
+        "toilet_difabel": "Toilet yang muat kursi roda dan punya pegangan. Bila tidak ada toilet umum sama sekali, jawab Tidak perlu.",
+        "guiding_block": "Ubin bertekstur untuk pengguna tongkat, dari jalan sampai pintu masuk.",
+        "lift": "Lift ke lantai lain. Bila semua layanan ada di lantai dasar, jawab Tidak perlu."
+      },
+      "answerLegend": "Jawaban untuk {facility}",
+      "answers": {
+        "tersedia": "Tersedia",
+        "tidak_tersedia": "Tidak tersedia",
+        "tidak_perlu": "Tidak perlu",
+        "belum_tahu": "Belum tahu"
+      },
+      "answerHint": {
+        "tersedia": "Ada dan bisa dipakai",
+        "tidak_tersedia": "Dibutuhkan, tetapi tidak ada atau tidak bisa dipakai",
+        "tidak_perlu": "Tidak dibutuhkan di tempat ini",
+        "belum_tahu": "Belum sempat memeriksa"
+      },
+      "reasonLegend": "Alasan tidak tersedia (opsional)",
+      "reasonSkip": "Lewati",
+      "reasonHint": {
+        "tidak_ada": "Belum pernah dibangun",
+        "rusak": "Ada tetapi rusak",
+        "terhalang": "Ada tetapi tertutup benda, mis. parkir motor",
+        "terbatas": "Ada tetapi tidak untuk umum",
+        "tidak_sesuai": "Ada tetapi terlalu curam, sempit, atau kecil"
+      },
+      "noteLabel": "Catatan untuk {facility} (opsional)",
+      "noteHint": "Contoh: kunci toilet di pos satpam. Jangan tulis nama atau nomor telepon orang."
+    },
+    "foto": {
+      "title": "Foto",
+      "intro": "Foto membantu verifikator memastikan jawaban Anda. Foto tidak wajib, hingga 10 foto. Hindari wajah orang dan pelat nomor.",
+      "count": "{count} dari {max} foto",
+      "suggestedTitle": "Foto yang membantu verifikasi",
+      "suggestedDone": "(sudah ada)",
+      "suggestedMissing": "(belum ada)",
+      "pick": "Pilih foto",
+      "pickHint": "JPEG, PNG, atau WebP, hingga 20 MB per foto. Foto diperkecil di perangkat ini sebelum dikirim, dan metadata lokasinya dibuang.",
+      "drop": "Atau letakkan foto di sini",
+      "processing": "Memproses {count, plural, other {# foto}}…",
+      "added": "{count, plural, other {# foto}} ditambahkan. Pilih objek di setiap foto.",
+      "removed": "Foto {number} dilepas.",
+      "full": "Sudah 10 foto. Lepas foto lain dulu untuk menambah.",
+      "problemsTitle": "Sebagian foto tidak bisa ditambahkan",
+      "problem": {
+        "jenis": "{name}: format tidak didukung. Pilih JPEG, PNG, atau WebP.",
+        "terlaluBesar": "{name}: lebih dari 20 MB.",
+        "tidakTerbaca": "{name}: tidak bisa dibaca di browser ini. Coba simpan ulang sebagai JPEG.",
+        "penuh": "{name}: tidak ditambahkan karena sudah 10 foto."
+      },
+      "item": "Foto {number}",
+      "preview": "Pratinjau foto {number}, {name}",
+      "size": "{width} × {height} px · {kb} KB",
+      "tagLabel": "Objek di foto {number}",
+      "tagPlaceholder": "Pilih objek",
+      "captionLabel": "Keterangan foto {number} (opsional)",
+      "remove": "Lepas foto {number}",
+      "tags": {
+        "pintu_masuk": "Pintu masuk dan ramp",
+        "toilet_difabel": "Toilet difabel",
+        "guiding_block": "Guiding block",
+        "lift": "Lift",
+        "lainnya": "Lainnya"
+      },
+      "descriptionLabel": "Deskripsi tambahan (opsional)",
+      "descriptionHint": "Hal lain yang perlu diketahui pengunjung, mis. jam buka toilet atau pintu mana yang dipakai. Jangan tulis nama atau nomor telepon orang."
+    },
+    "ringkasan": {
+      "intro": "Periksa lagi isian Anda sebelum dikirim. Laporan masuk antrean verifikasi dan baru tayang setelah diperiksa tim.",
+      "edit": "Ubah {section}",
+      "incomplete": "Langkah {step} belum lengkap.",
+      "incompleteAction": "Lengkapi langkah {step}",
+      "infoTitle": "Informasi dan lokasi",
+      "facilitiesTitle": "Fasilitas",
+      "photosTitle": "Foto dan deskripsi",
+      "name": "Nama tempat",
+      "category": "Kategori",
+      "location": "Lokasi",
+      "locationValue": "Kecamatan {district} · {coordinates}",
+      "noLocation": "Belum ditentukan",
+      "landmark": "Patokan",
+      "none": "Tidak diisi",
+      "answer": "{answer}",
+      "answerWithReason": "{answer} · {reason}",
+      "note": "Catatan: {note}",
+      "photoCount": "{count, plural, =0 {Tanpa foto} other {# foto}}",
+      "photoItem": "Foto {number}: {tag}",
+      "noTag": "objek belum dipilih",
+      "description": "Deskripsi tambahan",
+      "signInNotice": "Anda akan diminta masuk sebelum laporan dikirim. Isian dan foto tetap tersimpan di perangkat ini.",
+      "deleteDraft": "Hapus draf",
+      "deleteConfirm": "Hapus semua isian dan foto di draf ini? Tindakan ini tidak bisa dibatalkan.",
+      "deleteYes": "Ya, hapus draf",
+      "deleteNo": "Batal",
+      "deleted": "Draf dihapus. Formulir kembali kosong."
+    },
+    "kirim": {
+      "send": "Kirim laporan",
+      "sending": "Mengirim…",
+      "signIn": "Masuk lalu kirim",
+      "uploading": "Mengunggah foto {number} dari {total}…",
+      "submitting": "Mengirim laporan…",
+      "progressLabel": "Foto {number}",
+      "state": {
+        "menunggu": "Menunggu",
+        "mengunggah": "Mengunggah {percent} %",
+        "terunggah": "Terunggah",
+        "gagal": "Gagal"
+      },
+      "photoFailed": "Foto {number} gagal diunggah: {message} Tekan Kirim laporan untuk mencoba lagi, atau lepas foto ini.",
+      "removePhoto": "Lepas foto {number}",
+      "photosAgain": "Sebagian foto perlu diunggah ulang. Mencoba lagi…",
+      "locationProblem": "{message}",
+      "fixLocation": "Perbaiki lokasi",
+      "failed": "Laporan belum terkirim: {message} Isian tetap tersimpan di perangkat ini.",
+      "offline": "Server tidak bisa dihubungi. Periksa koneksi, lalu tekan Kirim laporan lagi. Isian tetap tersimpan di perangkat ini."
+    },
+    "terkirim": {
+      "metaTitle": "Laporan terkirim",
+      "eyebrow": "Laporan terkirim",
+      "title": "Terima kasih,",
+      "accent": "laporan Anda kami terima",
+      "intro": "Laporan masuk antrean verifikasi. Data di AksesBogor baru berubah setelah tim memeriksanya.",
+      "submitted": "Dikirim {date}",
+      "nextTitle": "Apa selanjutnya?",
+      "next": [
+        "Tim AksesBogor memeriksa isian dan foto, biasanya dalam 3 hari kerja.",
+        "Bila ada yang kurang jelas, kami meminta klarifikasi lewat email dan di Laporan saya.",
+        "Setelah diterbitkan, tempat ini tampil di Jelajahi dan Peta. Anda mendapat email saat laporan diterbitkan atau ditolak."
+      ],
+      "mine": "Lihat Laporan saya",
+      "another": "Laporkan tempat lain",
+      "loading": "Memuat laporan…"
+    },
+    "peta": {
+      "label": "Peta pemilih lokasi",
+      "hint": "Pin selalu di tengah peta. Geser peta dengan tombol arah di bawah, atau fokus ke peta lalu pakai tombol panah; tombol + dan − memperbesar atau memperkecil.",
+      "controls": "Kontrol peta",
+      "north": "Geser peta ke utara",
+      "south": "Geser peta ke selatan",
+      "west": "Geser peta ke barat",
+      "east": "Geser peta ke timur",
+      "zoomIn": "Perbesar peta",
+      "zoomOut": "Perkecil peta",
+      "loading": "Memuat peta…",
+      "unavailable": "Peta tidak bisa tampil. Pakai pencarian atau lokasi Anda untuk menentukan titik."
+    }
+  },
+  "Verifikasi": {
+    "metaTitle": "Meja verifikasi",
+    "eyebrow": "Khusus verifikator",
+    "title": "Meja",
+    "accent": "verifikasi.",
+    "intro": "Ambil laporan terlama lebih dulu. Targetnya keputusan dalam 3 hari kerja sejak laporan dikirim.",
+    "nav": {
+      "label": "Bagian meja verifikasi",
+      "antrean": "Antrean",
+      "jawaban": "Menunggu jawaban",
+      "cekUlang": "Perlu dicek ulang",
+      "tim": "Tim verifikator"
+    },
+    "noAccess": {
+      "title": "Halaman ini khusus verifikator",
+      "body": "Peran verifikator diberikan admin AksesBogor setelah pelatihan. Bila Anda seharusnya punya akses, hubungi admin tim.",
+      "back": "Kembali ke Akun saya"
+    },
+    "queue": {
+      "loading": "Memuat antrean…",
+      "heading": "{count, plural, =0 {Tidak ada laporan} other {# laporan}}",
+      "emptyTitle": "Antrean kosong",
+      "emptyBody": "Semua laporan sudah diperiksa. Laporan baru muncul di sini, terlama dulu.",
+      "waitingEmptyTitle": "Tidak ada yang menunggu jawaban",
+      "waitingEmptyBody": "Laporan yang Anda tanyakan ke pelapor muncul di sini sampai dijawab atau lewat 7 hari.",
+      "waited": "menunggu",
+      "overdue": "Lewat target 3 hari kerja",
+      "worsens": "Memperburuk data",
+      "answered": "Pelapor sudah menjawab",
+      "due": "Jawaban paling lambat {date}",
+      "reporter": "Dari {name}",
+      "photos": "{count, plural, =0 {Tanpa foto} other {# foto}}",
+      "kind": {
+        "baru": "Tempat baru",
+        "perubahan": "Edit lokasi",
+        "kekurangan": "Laporkan kekurangan"
+      },
+      "truncated": "Menampilkan 100 laporan terlama dari {total}.",
+      "galat": "Antrean gagal dimuat. Coba muat ulang halaman.",
+      "dayUnit": "hari menunggu",
+      "position": "Urutan {position}"
+    },
+    "recheck": {
+      "heading": "{count, plural, =0 {Tidak ada lokasi} other {# lokasi}}",
+      "intro": "Lokasi yang terakhir diverifikasi lebih dari 12 bulan lalu, terlama dulu. Cek ulang lewat Edit lokasi di halaman tempatnya.",
+      "emptyTitle": "Semua lokasi masih terbaru",
+      "emptyBody": "Tidak ada lokasi yang terakhir diverifikasi lebih dari 12 bulan lalu.",
+      "verified": "Terakhir diverifikasi {date}",
+      "ago": "{months, plural, other {# bulan lalu}}"
+    },
+    "tim": {
+      "heading": "{count, plural, other {# anggota tim}}",
+      "intro": "Beri peran verifikator hanya kepada akun yang sudah ikut pelatihan. Peran admin diatur lewat skrip di server.",
+      "adminOnly": "Halaman ini khusus admin. Minta admin tim untuk menambah atau mencabut verifikator.",
+      "role": {
+        "verifikator": "Verifikator",
+        "admin": "Admin"
+      },
+      "adminNote": "Peran admin hanya bisa diubah lewat skrip di server.",
+      "remove": "Cabut peran verifikator {name}",
+      "removed": "{name} sekarang pengguna biasa.",
+      "addTitle": "Tambah verifikator",
+      "email": "Email akun",
+      "emailHint": "Email yang dipakai orang itu untuk masuk ke AksesBogor. Akunnya harus sudah dilengkapi.",
+      "add": "Jadikan verifikator",
+      "adding": "Menyimpan…",
+      "added": "{name} sekarang verifikator.",
+      "emailEmpty": "Isi email akunnya dulu.",
+      "server": "Server AksesBogor tidak bisa dihubungi. Coba lagi sebentar lagi."
+    }
+  },
+  "Pemeriksaan": {
+    "metaTitle": "Periksa laporan",
+    "loading": "Memuat laporan…",
+    "back": "Kembali ke antrean",
+    "kind": {
+      "baru": "Tempat baru",
+      "perubahan": "Edit lokasi",
+      "kekurangan": "Laporkan kekurangan"
+    },
+    "meta": {
+      "submitted": "Dikirim {date}",
+      "waiting": "{days} hari menunggu",
+      "reporter": "Dari {name}",
+      "reporterDeleted": "Pelapor sudah menghapus akun"
+    },
+    "decided": {
+      "diterbitkan": "Laporan ini sudah diterbitkan.",
+      "ditolak": "Laporan ini sudah ditolak dengan alasan {reason}.",
+      "viewPlace": "Lihat lokasi"
+    },
+    "own": {
+      "title": "Ini laporan Anda sendiri",
+      "body": "Verifikator tidak memeriksa laporannya sendiri. Biarkan verifikator lain yang memeriksanya."
+    },
+    "index": "Bagian pemeriksaan",
+    "place": {
+      "title": "Tempat dan titik",
+      "name": "Nama tempat",
+      "category": "Kategori",
+      "district": "Kecamatan",
+      "landmark": "Patokan",
+      "point": "Titik",
+      "empty": "Tidak diisi",
+      "coordinates": "{lat}, {lng}",
+      "fixed": "Laporan kekurangan tidak mengubah nama, kategori, titik, dan patokan.",
+      "nearbyTitle": "Lokasi bernama mirip dalam 50 m",
+      "nearbyBody": "Periksa apakah laporan ini duplikat. Bila ya, tolak dengan alasan Duplikat.",
+      "distance": "{meters} m dari titik laporan"
+    },
+    "compare": {
+      "current": "Saat ini",
+      "reported": "Laporan",
+      "changed": "Berubah",
+      "same": "Sama"
+    },
+    "facilities": {
+      "title": "Fasilitas",
+      "intro": "Bandingkan jawaban pelapor dengan data saat ini dan foto. Jawaban tanpa bukti menjadi Belum diketahui."
+    },
+    "photos": {
+      "title": "Foto",
+      "count": "{count, plural, =0 {Tidak ada foto} other {# foto}}",
+      "none": "Laporan ini tanpa foto. Jawaban Tersedia atau Tidak perlu butuh bukti lain, misalnya konfirmasi pengelola.",
+      "fromAnswer": "Dari jawaban klarifikasi",
+      "hidden": "Disembunyikan",
+      "blurred": "{count, plural, other {# area dikaburkan}}",
+      "currentTitle": "Foto lokasi yang sudah tayang",
+      "open": "Buka foto {number} ukuran penuh"
+    },
+    "description": {
+      "title": "Deskripsi",
+      "empty": "Pelapor tidak menulis deskripsi."
+    },
+    "clarifications": {
+      "title": "Klarifikasi",
+      "question": "Pertanyaan verifikator",
+      "answer": "Jawaban pelapor",
+      "asked": "Ditanyakan {date}",
+      "answered": "Dijawab {date}",
+      "waiting": "Belum dijawab. Tenggat {date}."
+    },
+    "check": {
+      "evidenceLegend": "Bukti untuk {facility}",
+      "evidence": {
+        "terbukti": "Terbukti",
+        "tanpa_bukti": "Tanpa bukti"
+      },
+      "evidenceHint": {
+        "terbukti": "Terlihat di foto, kunjungan lapangan, atau konfirmasi pengelola.",
+        "tanpa_bukti": "Tayang sebagai Belum diketahui."
+      },
+      "answerLegend": "Jawaban yang tayang untuk {facility}",
+      "reasonLegend": "Alasan tidak tersedia untuk {facility}",
+      "noteLabel": "Catatan yang tayang untuk {facility}",
+      "noteHint": "Tampil di halaman tempat. Maksimal 200 karakter, tanpa data pribadi.",
+      "publishes": "Akan tayang"
+    },
+    "result": {
+      "title": "Keputusan",
+      "preview": "Pratinjau status",
+      "previewHint": "Dihitung dari jawaban yang akan tayang. Status akhir dihitung server saat terbit.",
+      "summary": "{available} dari {relevant} fasilitas tersedia",
+      "unknown": "{count} belum diketahui",
+      "progress": "{done} dari 4 jawaban diperiksa",
+      "problemsTitle": "Sebelum terbit",
+      "problems": {
+        "unchecked": "Tandai bukti untuk {facility}.",
+        "reason": "Pilih alasan Tidak tersedia untuk {facility}.",
+        "note": "Catatan {facility} paling banyak 200 karakter.",
+        "name": "Isi nama tempat, paling banyak 120 karakter.",
+        "landmark": "Patokan paling banyak 140 karakter.",
+        "description": "Deskripsi paling banyak 1.000 karakter."
+      },
+      "ready": "Semua jawaban sudah diperiksa."
+    },
+    "edit": {
+      "title": "Yang akan tayang",
+      "intro": "Perbaiki ejaan, kategori, atau pin bila perlu, dan hapus data pribadi dari patokan.",
+      "name": "Nama tempat",
+      "category": "Kategori",
+      "landmark": "Patokan",
+      "landmarkHint": "Opsional. Tanpa nomor telepon atau nama orang.",
+      "description": "Deskripsi yang tayang",
+      "descriptionHint": "Hapus data pribadi seperti nomor telepon atau nama orang sebelum terbit."
+    },
+    "actions": {
+      "legend": "Pilih keputusan",
+      "choice": {
+        "terbitkan": "Terbitkan",
+        "klarifikasi": "Minta klarifikasi",
+        "tolak": "Tolak"
+      },
+      "choiceHint": {
+        "terbitkan": "Jawaban yang diperiksa tayang dan status dihitung ulang.",
+        "klarifikasi": "Tanyakan satu hal ke pelapor. Ia punya 7 hari untuk menjawab.",
+        "tolak": "Pelapor menerima pesan baku sesuai alasannya."
+      },
+      "noteLabel": "Catatan untuk verifikator lain",
+      "noteHint": "Tidak dikirim ke pelapor dan tidak tayang, mis. “Ramp terlihat di foto 2”.",
+      "publish": "Terbitkan laporan",
+      "publishBlocked": "Lengkapi daftar Sebelum terbit dulu.",
+      "questionLabel": "Pertanyaan untuk pelapor",
+      "questionHint": "Satu hal yang kurang, ditulis sopan. Contoh: “Bisakah Anda menambahkan foto pintu masuk utama dari area parkir?”",
+      "questionEmpty": "Tulis pertanyaannya dulu.",
+      "clarifyOpen": "Laporan ini masih menunggu jawaban pelapor. Anda tetap bisa menerbitkan atau menolaknya.",
+      "clarify": "Kirim pertanyaan",
+      "reasonLegend": "Alasan penolakan",
+      "reasonEmpty": "Pilih alasan penolakan dulu.",
+      "messageFor": "Pesan untuk pelapor: {message}",
+      "reject": "Tolak laporan",
+      "pending": "Menyimpan keputusan…",
+      "done": {
+        "diterbitkan": {
+          "title": "Laporan diterbitkan",
+          "body": "Data tempat sudah diperbarui dan pelapor mendapat email."
+        },
+        "klarifikasi": {
+          "title": "Pertanyaan terkirim",
+          "body": "Pelapor mendapat email dan punya waktu sampai {date} untuk menjawab."
+        },
+        "ditolak": {
+          "title": "Laporan ditolak",
+          "body": "Pelapor mendapat email berisi alasannya. Foto laporan ini sudah dihapus."
+        }
+      },
+      "viewPlace": "Lihat halaman tempat",
+      "backToQueue": "Kembali ke antrean",
+      "reload": "Muat ulang laporan",
+      "galat": "Keputusan belum tersimpan. {message}",
+      "server": "Server AksesBogor tidak bisa dihubungi. Coba lagi sebentar lagi."
+    },
+    "moderation": {
+      "tag": "Tag foto {number}",
+      "caption": "Keterangan foto {number}",
+      "captionHint": "Tampil di bawah foto. Tanpa data pribadi.",
+      "saveCaption": "Simpan keterangan",
+      "hide": "Sembunyikan foto {number}",
+      "show": "Tampilkan lagi foto {number}",
+      "hiddenNote": "Foto yang disembunyikan dihapus saat laporan terbit.",
+      "saved": "Foto {number} tersimpan.",
+      "saving": "Menyimpan foto {number}…",
+      "galat": "Foto {number} belum tersimpan. {message}"
+    },
+    "blur": {
+      "open": "Kaburkan area foto {number}",
+      "title": "Kaburkan area foto {number}",
+      "instructions": "Tandai wajah, pelat nomor, atau tulisan yang terbaca. Seret di atas foto, atau tekan Tambah area lalu pilih areanya: tombol panah menggeser, Shift dan panah mengubah ukuran, Delete menghapus. Ukurannya juga bisa diketik di kolom angka.",
+      "photo": "Foto {number} dengan {count, plural, =0 {tanpa area} other {# area}} yang akan dikaburkan",
+      "area": "Area {number}: kiri {x}%, atas {y}%, lebar {w}%, tinggi {h}%",
+      "add": "Tambah area",
+      "limit": "Paling banyak 20 area per foto.",
+      "fields": "Ukuran area {number} dalam persen",
+      "x": "Kiri",
+      "y": "Atas",
+      "w": "Lebar",
+      "h": "Tinggi",
+      "remove": "Hapus area {number}",
+      "empty": "Belum ada area. Foto tayang apa adanya.",
+      "save": "Simpan area",
+      "cancel": "Batal",
+      "saving": "Menyimpan area…",
+      "result": "Area tersimpan. Pratinjau di halaman sudah memakai foto yang dikaburkan."
+    }
+  },
+  "JawabKlarifikasi": {
+    "metaTitle": "Jawab pertanyaan verifikator",
+    "eyebrow": "Laporan saya",
+    "title": "Pertanyaan",
+    "accent": "verifikator.",
+    "loading": "Memuat laporan…",
+    "back": "Kembali ke Laporan saya",
+    "about": "Tentang laporan Anda untuk {name}",
+    "due": "Jawab paling lambat {date}. Bila belum dijawab sampai batas itu, laporan ini ditutup.",
+    "closed": "Laporan ini tidak sedang menunggu jawaban Anda.",
+    "answerLabel": "Jawaban Anda",
+    "answerHint": "Jawab pertanyaan di atas sejelas mungkin. Tanpa nomor telepon atau data pribadi orang lain.",
+    "answerEmpty": "Tulis jawaban Anda dulu.",
+    "photosTitle": "Foto tambahan",
+    "photosHint": "Opsional. Masih bisa {count, plural, =0 {0 foto; laporan ini sudah berisi 10 foto} other {# foto}}.",
+    "add": "Tambah foto",
+    "uploading": "Mengunggah {name}…",
+    "uploaded": "{name} terunggah.",
+    "uploadFailed": "{name} gagal diunggah. {message}",
+    "photo": "Foto {number}",
+    "tag": "Isi foto {number}",
+    "tagEmpty": "Pilih isi foto",
+    "tagMissing": "Pilih isi untuk setiap foto.",
+    "caption": "Keterangan foto {number} (opsional)",
+    "remove": "Hapus foto {number}",
+    "send": "Kirim jawaban",
+    "sending": "Mengirim jawaban…",
+    "sentTitle": "Jawaban terkirim",
+    "sentBody": "Laporan Anda kembali ke antrean di posisi semula. Kami mengirim email setelah laporan diputuskan.",
+    "server": "Server AksesBogor tidak bisa dihubungi. Coba lagi sebentar lagi."
   }
 }

@@ -38,8 +38,7 @@ export function parseFilters(params: SearchParams): ExploreFilters {
   };
 }
 
-/** Alamat Jelajahi untuk filter yang sama, mis. untuk halaman berikutnya. */
-export function exploreHref(filters: ExploreFilters, page = 1) {
+function filterHref(path: "/jelajahi" | "/peta", filters: ExploreFilters, page = 1) {
   const query = new URLSearchParams();
   if (filters.q) query.set("q", filters.q);
   for (const key of ["category", "district", "facility", "status"] as const) {
@@ -47,8 +46,14 @@ export function exploreHref(filters: ExploreFilters, page = 1) {
   }
   if (page > 1) query.set("halaman", String(page));
   const search = query.toString();
-  return search ? `/jelajahi?${search}` : "/jelajahi";
+  return search ? `${path}?${search}` : path;
 }
+
+/** Alamat Jelajahi untuk filter yang sama, mis. untuk halaman berikutnya. */
+export const exploreHref = (filters: ExploreFilters, page = 1) => filterHref("/jelajahi", filters, page);
+
+/** Alamat Peta untuk filter yang sama. Peta tidak berhalaman, jadi nomor halaman dibuang (FR-05). */
+export const mapHref = (filters: ExploreFilters) => filterHref("/peta", filters);
 
 /** Jumlah filter di panel Filter (kecamatan, fasilitas, status), untuk label tombolnya. */
 export const panelFilterCount = (filters: ExploreFilters) =>

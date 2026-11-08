@@ -11,14 +11,14 @@ Keputusan produk dan teknis ada di [akses-bogor-docs](https://github.com/al-dioo
 | Framework | Next.js 16 (App Router), React 19, TypeScript |
 | Gaya | Tailwind CSS v4; token design system Figma sebagai CSS variables dan utility |
 | Bahasa | next-intl, satu locale `id` |
-| Tes dan lint | Playwright + axe-core, ESLint dengan `jsx-a11y` strict |
+| Tes dan lint | Vitest + Testing Library untuk komponen, Playwright + axe-core untuk halaman, ESLint dengan `jsx-a11y` strict |
 | Hosting | Vercel |
 
 Alasan pilihan ini ada di [ADR-0013](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0013-tech-stack-nextjs-fastify.md).
 
 ## Menjalankan di Lokal
 
-Butuh Node.js 22 atau lebih baru dan pnpm 12 (`corepack enable` memakai versi di `package.json`).
+Butuh Node.js 24 atau lebih baru dan pnpm 12 (`corepack enable` memakai versi di `package.json`).
 
 ```bash
 pnpm install
@@ -34,6 +34,7 @@ pnpm exec playwright install chromium     # sekali saja, untuk pnpm test:a11y
 | `pnpm build` | Build produksi |
 | `pnpm start` | Menjalankan hasil build |
 | `pnpm tokens` | Menulis ulang `src/app/tokens.css` dari ekspor variable Figma |
+| `pnpm test` | Tes Vitest untuk komponen klien dan fungsi kecil (`src/**/*.test.ts(x)`) di jsdom |
 | `pnpm test:a11y` | Build, lalu tes Playwright + axe-core di ponsel dan desktop, dengan data dari API tiruan di `e2e/mock-api` |
 
 ## Environment Variables
@@ -43,41 +44,41 @@ Contoh ada di [.env.example](.env.example); salin ke `.env.local`. Jangan commit
 | Variabel | Wajib | Keterangan |
 | --- | --- | --- |
 | `API_URL` | Ya | Alamat [akses-bogor-api](https://github.com/al-dioooo/akses-bogor-api), mis. `http://localhost:8080`. Hanya dibaca di server; browser tidak pernah memanggil API langsung |
+| `NEXT_PUBLIC_GOOGLE_CLIENT_ID` | Tidak | Client ID OAuth Google AksesBogor, sama dengan `GOOGLE_CLIENT_ID` di API. Bukan rahasia; dibaca saat build. Kosong berarti tombol "Masuk dengan Google" tidak tampil |
 | `ENABLE_EXPERIMENTAL_COREPACK` | Di Vercel | `1`, supaya Vercel memakai versi pnpm dari `packageManager` di `package.json` |
 | `WEB_SERVER_SECRET` | Di Vercel | Rahasia bersama dengan API, nilainya sama dengan `WEB_SERVER_SECRET` di API. Bila diisi, setiap panggilan API membawa IP pengunjung sehingga rate limit dihitung per pengunjung, bukan per IP Vercel |
 
-Token publik Mapbox ditambahkan bersama halaman Peta.
+Peta tidak butuh variabel Mapbox di web. Browser mengambil token Mapbox sementara dari `/peta/kunci`, yang meneruskannya dari `GET /map/token` di API ([ADR-0016](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0016-peta-dan-pencarian-mapbox.md)). Selama API belum diatur, halaman Peta menampilkan legenda dan daftar lokasi tanpa peta.
 
 ## Token Design System
 
-Warna, spasi, radius, blur, dan ukuran berasal dari variable di [halaman Design System Figma](https://www.figma.com/design/aTaMQUxVF2P1zQlJY3s4du/AksesBogor?node-id=1-2) ([ADR-0009](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0009-design-system-kaca-ungu-inklusi.md)). Nama CSS-nya sama dengan code syntax di Figma: `color/text/primary` menjadi `--color-text-primary`.
+Warna, spasi, radius, dan ukuran berasal dari variable design system ([ADR-0027](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0027-design-system-datar-dan-ilustrasi-3d.md)). Nama CSS-nya sama dengan code syntax di Figma: `color/text/primary` menjadi `--color-text-primary`. Snapshot versi 2 diubah langsung di repo ini; variable di [Figma](https://www.figma.com/design/aTaMQUxVF2P1zQlJY3s4du/AksesBogor?node-id=1-2) masih versi 1 dan diperbarui menyusul.
 
 | Berkas | Isi |
 | --- | --- |
-| [design-tokens/figma-variables.json](design-tokens/figma-variables.json) | Snapshot ekspor variable Figma, satu variable per baris |
+| [design-tokens/figma-variables.json](design-tokens/figma-variables.json) | Snapshot variable, satu variable per baris |
 | [src/app/tokens.css](src/app/tokens.css) | CSS hasil `pnpm tokens`; jangan diubah langsung |
 | [scripts/tokens.mjs](scripts/tokens.mjs) | Generator CSS |
 | [scripts/figma/export-variables.js](scripts/figma/export-variables.js) | Skrip ekspor yang dijalankan di file Figma |
+| [scripts/ilustrasi.mjs](scripts/ilustrasi.mjs) | Merender poster hero dan close-up dari adegan three.js ([catatan](src/assets/ilustrasi/README.md)) |
 
 Mode warna:
 
 | Mode | Aktif saat |
 | --- | --- |
-| Glass | Bawaan |
-| Solid | `prefers-reduced-transparency: reduce` |
-| Dark | `prefers-color-scheme: dark`; menang bila Solid juga diminta |
+| Terang | Bawaan |
+| Gelap | `prefers-color-scheme: dark` |
 
-`<html data-theme="glass|solid|dark">` mengalahkan preferensi sistem, untuk pengaturan tampilan di aplikasi nanti atau untuk pengujian.
+`<html data-theme="terang|gelap">` mengalahkan preferensi sistem; dipasang oleh pengaturan tampilan di header dan dipakai di pengujian.
 
-Token warna, radius, dan blur juga menjadi utility Tailwind dengan nama token, misalnya `bg-bg-canvas`, `bg-surface-glass`, `text-text-primary`, `border-border-subtle`, `rounded-lg`, dan `backdrop-blur-glass`. Palet, radius, dan blur bawaan Tailwind dimatikan supaya hanya token yang terpakai. Token lain dipakai lewat variable, misalnya `p-(--spacing-md)`, `gap-(--spacing-lg)`, `size-(--size-control-md)`, atau `border-(length:--border-width-focus)`. Spasi sengaja tidak dijadikan utility bernama (`p-md`), karena Tailwind juga membaca `--spacing-*` untuk `max-w-*` dan `w-*`, sehingga `--spacing-2xl` akan mengubah arti `max-w-2xl`.
+Token warna dan radius juga menjadi utility Tailwind dengan nama token, misalnya `bg-bg-canvas`, `bg-surface-raised`, `text-text-primary`, `border-border-subtle`, dan `rounded-lg`. Palet, radius, dan blur bawaan Tailwind dimatikan supaya hanya token yang terpakai. Token lain dipakai lewat variable, misalnya `p-(--spacing-md)`, `gap-(--spacing-lg)`, `size-(--size-control-md)`, atau `border-(length:--border-width-focus)`. Spasi sengaja tidak dijadikan utility bernama (`p-md`), karena Tailwind juga membaca `--spacing-*` untuk `max-w-*` dan `w-*`, sehingga `--spacing-2xl` akan mengubah arti `max-w-2xl`.
 
-Memperbarui token setelah variable di Figma berubah:
+Memperbarui token:
 
-1. Jalankan isi `scripts/figma/export-variables.js` di file Figma AksesBogor, lewat Figma MCP (`use_figma`) atau plugin pengembangan.
-2. Simpan JSON hasilnya ke `design-tokens/figma-variables.json`, dengan objek `source` yang lama dan tanggal `exportedAt` yang baru.
-3. Jalankan `pnpm tokens`, periksa diff kedua berkas, lalu commit. CI gagal bila `tokens.css` tidak sesuai snapshot.
+1. Ubah `design-tokens/figma-variables.json`. Setelah variable Figma diperbarui ke versi 2, snapshot kembali diambil dari Figma: jalankan isi `scripts/figma/export-variables.js` di file Figma AksesBogor lewat Figma MCP (`use_figma`) atau plugin pengembangan, lalu simpan JSON-nya dengan objek `source` yang lama dan tanggal `exportedAt` yang baru.
+2. Jalankan `pnpm tokens`, periksa diff kedua berkas, lalu commit. CI gagal bila `tokens.css` tidak sesuai snapshot.
 
-Text style dan effect style Figma (tipografi, bayangan kaca) belum diekspor karena bukan variable.
+Text style dan effect style Figma (tipografi, bayangan) belum diekspor karena bukan variable.
 
 ## Bahasa dan Teks
 
@@ -100,7 +101,7 @@ Proyek Vercel di akun pemilik repo ([ADR-0013](https://github.com/al-dioooo/akse
 | Framework Preset | Next.js, dengan perintah install, build, dan output bawaan |
 | Root Directory | `./` |
 | Production Branch | `release` (Settings → Environments → Production) |
-| Node.js Version | 22.x, sama dengan `.nvmrc` |
+| Node.js Version | 24.x, sama dengan `.nvmrc` |
 | Environment Variables | `API_URL` = `https://akses-bogor-api.yorhagarden.xyz` dan `ENABLE_EXPERIMENTAL_COREPACK` = `1`, untuk Production dan Preview |
 
 - Rilis berarti merge `main` ke `release` lewat PR, sama seperti API. Push ke branch lain, termasuk `main`, menjadi preview deployment.

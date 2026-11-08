@@ -1,9 +1,13 @@
 // API tiruan untuk tes Playwright, supaya CI tidak butuh akses-bogor-api dan database.
-// Datanya salinan respons API dari seed pengembangan (fixtures.json); filter meniru GET /places.
-// Pencarian "galat-tiruan" menjawab 500, untuk menguji keadaan galat di web.
+// Datanya salinan respons API dari seed pengembangan (fixtures.json); filter meniru GET /places dan GET /places/map.
+// Pencarian "galat-tiruan" menjawab 500, untuk menguji keadaan galat di web. Route akun ada di akun.mjs, route
+// Laporkan di laporkan.mjs, route panel verifikator di verifikasi.mjs.
 // GET /_tiruan/pengunjung?ip=... menjawab rahasia server web terakhir yang dikirim bersama IP pengunjung itu.
 import { readFileSync } from "node:fs";
 import { createServer } from "node:http";
+import { handleAkun } from "./akun.mjs";
+import { handleLaporkan } from "./laporkan.mjs";
+import { handleVerifikasi } from "./verifikasi.mjs";
 
 const { districts, places } = JSON.parse(readFileSync(new URL("./fixtures.json", import.meta.url), "utf8"));
 const port = Number(process.env.PORT ?? 3101);
@@ -59,6 +63,20 @@ function route(url) {
     const found = filterPlaces(searchParams);
     return [200, { total: found.length, limit, offset, items: found.slice(offset, offset + limit).map(listItem) }];
   }
+  // Token palsu: tes Playwright mencegat semua request ke Mapbox (e2e/mapbox.ts).
+  if (pathname === "/map/token") {
+    return [200, { token: "pk.tiruan", expiresAt: new Date(Date.now() + 55 * 60_000).toISOString() }];
+  }
+  if (pathname === "/places/map") {
+    if (searchParams.get("q") === "galat-tiruan") return [500, { galat: "galat_server", pesan: "Galat tiruan." }];
+    const features = filterPlaces(searchParams).map(({ id, name, category, status, location }) => ({
+      type: "Feature",
+      id,
+      geometry: { type: "Point", coordinates: [location.lng, location.lat] },
+      properties: { name, category, status },
+    }));
+    return [200, { type: "FeatureCollection", features }];
+  }
   const id = pathname.match(/^\/places\/([^/]+)$/)?.[1];
   if (id) {
     if (!UUID.test(id)) return [400, { galat: "permintaan_tidak_valid", pesan: "Id lokasi tidak valid." }];
@@ -68,10 +86,25 @@ function route(url) {
   return [404, { galat: "tidak_ditemukan", pesan: "Alamat tidak ditemukan." }];
 }
 
-createServer((request, response) => {
+createServer(async (request, response) => {
   const visitorIp = request.headers["x-visitor-ip"];
   if (visitorIp) secretsByVisitor.set(visitorIp, request.headers["x-web-server-secret"]);
-  const [status, body] = route(new URL(request.url ?? "/", `http://localhost:${port}`));
-  response.writeHead(status, { "content-type": "application/json; charset=utf-8" });
-  response.end(JSON.stringify(body));
+  const url = new URL(request.url ?? "/", `http://localhost:${port}`);
+  let payload;
+  if (request.method !== "GET") {
+    const chunks = [];
+    for await (const chunk of request) chunks.push(chunk);
+    const raw = Buffer.concat(chunks);
+    // Foto dikirim sebagai badan mentah, selebihnya JSON.
+    const json = (request.headers["content-type"] ?? "").startsWith("application/json");
+    payload = json ? (raw.length ? JSON.parse(raw.toString("utf8")) : undefined) : raw;
+  }
+  const [status, body, headers = {}] =
+    handleAkun(request.method, url.pathname, url.searchParams, request.headers, payload) ??
+    handleLaporkan(request.method, url.pathname, request.headers, payload, places) ??
+    handleVerifikasi(request.method, url, request.headers, payload, places) ??
+    route(url);
+  response.writeHead(status, { "content-type": "application/json; charset=utf-8", ...headers });
+  // Foto dikirim sebagai berkas biner, selebihnya JSON.
+  response.end(status === 204 ? undefined : Buffer.isBuffer(body) ? body : JSON.stringify(body));
 }).listen(port, () => console.log(`API tiruan di http://localhost:${port}`));

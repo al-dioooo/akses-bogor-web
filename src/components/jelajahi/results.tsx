@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { getPlaces } from "@/lib/api";
-import { PAGE_SIZE, exploreHref, hasFilters, type ExploreFilters } from "@/lib/filters";
+import { PAGE_SIZE, exploreHref, hasFilters, mapHref, type ExploreFilters } from "@/lib/filters";
 import { buttonClass } from "@/ui/button-styles";
 import { Icon } from "@/ui/icon";
-import { IconArrowLeft, IconArrowRight, IconSearch } from "@/ui/icons";
+import { IconArrowLeft, IconArrowRight, IconMap2, IconSearch } from "@/ui/icons";
 import { LocationCard } from "../location-card";
 
 /** Daftar Location card dengan jumlah hasil yang sesuai data yang tampil (FR-04). */
@@ -24,10 +24,16 @@ export async function Results({ filters }: { filters: ExploreFilters }) {
 
   return (
     <section aria-labelledby="jumlah-hasil" className="flex flex-col gap-5">
-      {/* Diumumkan pembaca layar setiap kali filter diterapkan. */}
-      <p id="jumlah-hasil" role="status" className="font-semibold">
-        {t("results.count", { total: items.length ? total : 0, from, to: from + items.length - 1 })}
-      </p>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        {/* Diumumkan pembaca layar setiap kali filter diterapkan. */}
+        <p id="jumlah-hasil" role="status" className="font-mono text-sm font-medium text-text-secondary">
+          {t("results.count", { total: items.length ? total : 0, from, to: from + items.length - 1 })}
+        </p>
+        <Link href={mapHref(filters)} className={buttonClass("outline", "sm")}>
+          <Icon icon={IconMap2} />
+          {t("results.onMap")}
+        </Link>
+      </div>
       {items.length > 0 ? (
         <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((place) => (
@@ -42,7 +48,7 @@ export async function Results({ filters }: { filters: ExploreFilters }) {
       {pages > 1 && (
         <nav aria-label={t("pagination.label")} className="flex flex-wrap items-center justify-between gap-3">
           {filters.page > 1 ? (
-            <Link href={exploreHref(filters, filters.page - 1)} className={buttonClass("glass", "md")}>
+            <Link href={exploreHref(filters, filters.page - 1)} className={buttonClass("outline", "md")}>
               <Icon icon={IconArrowLeft} />
               {t("pagination.previous")}
             </Link>
@@ -51,7 +57,7 @@ export async function Results({ filters }: { filters: ExploreFilters }) {
           )}
           <p className="text-sm text-text-secondary">{t("pagination.page", { page: filters.page, pages })}</p>
           {filters.page < pages ? (
-            <Link href={exploreHref(filters, filters.page + 1)} className={buttonClass("glass", "md")}>
+            <Link href={exploreHref(filters, filters.page + 1)} className={buttonClass("outline", "md")}>
               {t("pagination.next")}
               <Icon icon={IconArrowRight} />
             </Link>
@@ -68,16 +74,16 @@ export async function Results({ filters }: { filters: ExploreFilters }) {
 async function Empty({ filtered }: { filtered: boolean }) {
   const t = await getTranslations("Jelajahi");
   return (
-    <div className="flex flex-col items-start gap-4 rounded-2xl border-2 border-dashed border-border-subtle p-8">
-      <span className="grid size-12 place-items-center rounded-lg bg-surface-brand-subtle text-icon-brand">
+    <div className="flex flex-col items-start gap-4 rounded-3xl bg-bg-sunken p-8 sm:p-10">
+      <span className="grid size-12 place-items-center rounded-full bg-surface-raised text-icon-brand">
         <Icon icon={IconSearch} className="size-6" />
       </span>
       <div>
-        <h2 className="font-heading text-lg font-bold">{t(filtered ? "results.emptyTitle" : "results.noDataTitle")}</h2>
+        <h2 className="display text-2xl">{t(filtered ? "results.emptyTitle" : "results.noDataTitle")}</h2>
         <p className="text-text-secondary">{t(filtered ? "results.emptyBody" : "results.noDataBody")}</p>
       </div>
       {filtered && (
-        <Link href="/jelajahi" className={buttonClass("glass", "sm")}>
+        <Link href="/jelajahi" className={buttonClass("outline", "sm")}>
           {t("filters.reset")}
         </Link>
       )}
@@ -92,7 +98,7 @@ export function ResultsSkeleton({ label }: { label: string }) {
       <span aria-hidden="true" className="h-6 w-56 rounded-sm bg-surface-brand-subtle" />
       <div aria-hidden="true" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {[0, 1, 2, 3, 4, 5].map((key) => (
-          <div key={key} className="glass h-80 rounded-2xl" />
+          <div key={key} className="panel h-72 rounded-3xl" />
         ))}
       </div>
     </div>

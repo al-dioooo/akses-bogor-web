@@ -12,17 +12,22 @@ export type BottomNavLabels = NavLabels & {
   lainnya: string;
   lainnyaTitle: string;
   masuk: string;
+  akunSaya: string;
   tutup: string;
 };
 
 const TAB =
-  "flex min-h-14 flex-1 flex-col items-center justify-center gap-0.5 rounded-2xl text-xs font-semibold transition-colors duration-200";
+  "flex min-h-14 flex-1 flex-col items-center justify-center gap-0.5 rounded-2xl text-xs font-medium transition-colors duration-200";
 
 /** Bottom nav ponsel (Frame Mobile): menempel di bawah, di bawah lebar 1024 px. */
-export function BottomNav({ labels, pathname }: { labels: BottomNavLabels; pathname: string | null }) {
+export function BottomNav({ labels, pathname, signedIn }: { labels: BottomNavLabels; pathname: string | null; signedIn: boolean }) {
+  // Selama mengisi Laporkan, Form action bar menggantikan Bottom nav (Frame Mobile).
+  if (pathname === "/laporkan") return null;
+  // Di ponsel, Akun saya dibuka dari menu Lainnya (Frame Akun).
+  const account = signedIn ? { href: "/akun", label: labels.akunSaya } : { href: "/masuk", label: labels.masuk };
   return (
     <nav aria-label={labels.label} className="fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-40 lg:hidden">
-      <ul className="glass-strong flex gap-1 rounded-2xl p-1.5">
+      <ul className="panel-raised flex gap-1 rounded-3xl p-1.5">
         {BOTTOM_NAV.map((tab) => {
           const active = isActive(tab.href, pathname);
           return (
@@ -30,10 +35,10 @@ export function BottomNav({ labels, pathname }: { labels: BottomNavLabels; pathn
               <Link
                 href={tab.href}
                 aria-current={active ? "page" : undefined}
-                className={`${TAB} ${active ? "text-text-brand" : "text-text-secondary hover:text-text-primary"}`}
+                className={`${TAB} ${active ? "font-bold text-text-primary" : "text-text-secondary hover:text-text-primary"}`}
               >
                 <span
-                  className={`grid h-7 w-12 place-items-center rounded-full transition-colors duration-200 ${active ? "bg-surface-brand-subtle" : ""}`}
+                  className={`grid h-7 w-12 place-items-center rounded-full transition-colors duration-200 ${active ? "bg-text-primary text-bg-canvas" : ""}`}
                 >
                   <Icon icon={tab.icon} className="size-5.5" />
                 </span>
@@ -55,10 +60,10 @@ export function BottomNav({ labels, pathname }: { labels: BottomNavLabels; pathn
         id="menu-lainnya"
         popover="auto"
         aria-labelledby="menu-lainnya-judul"
-        className="glass-strong inset-x-3 top-auto bottom-24 m-0 w-auto rounded-2xl p-3 text-text-primary"
+        className="panel-raised inset-x-3 top-auto bottom-24 m-0 w-auto rounded-3xl p-3 text-text-primary"
       >
         <div className="flex items-center justify-between pb-1 pl-3">
-          <h2 id="menu-lainnya-judul" className="font-heading font-bold">
+          <h2 id="menu-lainnya-judul" className="font-heading text-lg font-bold">
             {labels.lainnyaTitle}
           </h2>
           <button
@@ -72,7 +77,7 @@ export function BottomNav({ labels, pathname }: { labels: BottomNavLabels; pathn
           </button>
         </div>
         <ul>
-          {[...MORE_NAV.map((item) => ({ href: item.href, label: labels[item.key] })), { href: "/masuk", label: labels.masuk }].map(
+          {[...MORE_NAV.map((item) => ({ href: item.href, label: labels[item.key] })), account].map(
             (item) => (
               <li key={item.href}>
                 <Link
@@ -80,7 +85,7 @@ export function BottomNav({ labels, pathname }: { labels: BottomNavLabels; pathn
                   // Navigasi di sisi klien tidak menutup popover dengan sendirinya.
                   onClick={(event) => event.currentTarget.closest<HTMLElement>("[popover]")?.hidePopover()}
                   aria-current={isActive(item.href, pathname) ? "page" : undefined}
-                  className="flex min-h-12 items-center justify-between rounded-xl px-3 font-medium hover:bg-surface-hover aria-[current=page]:text-text-brand"
+                  className="flex min-h-12 items-center justify-between rounded-2xl px-3 font-medium hover:bg-surface-hover aria-[current=page]:font-bold"
                 >
                   {item.label}
                   <Icon icon={IconChevronRight} className="size-5 text-text-secondary" />
@@ -94,6 +99,6 @@ export function BottomNav({ labels, pathname }: { labels: BottomNavLabels; pathn
   );
 }
 
-export function ActiveBottomNav({ labels }: { labels: BottomNavLabels }) {
-  return <BottomNav labels={labels} pathname={usePathname()} />;
+export function ActiveBottomNav({ labels, signedIn }: { labels: BottomNavLabels; signedIn: boolean }) {
+  return <BottomNav labels={labels} pathname={usePathname()} signedIn={signedIn} />;
 }
