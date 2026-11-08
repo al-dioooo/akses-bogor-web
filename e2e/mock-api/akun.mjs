@@ -13,7 +13,7 @@
 // - POST /_tiruan/cabut-sesi { email } mencabut semua sesi akun itu, seperti sesi yang berakhir.
 import { randomUUID } from "node:crypto";
 
-export const PRIVACY_POLICY_VERSION = "2026-11-09";
+export const PRIVACY_POLICY_VERSION = "2026-11-10";
 const users = new Map();
 const tokens = new Map();
 const lastCodeAt = new Map();
