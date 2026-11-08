@@ -31,7 +31,7 @@ function createUser(email, { completed = false, displayName = "" } = {}) {
 const publicUser = ({ id, displayName, email, role, completed, createdAt }) => ({ id, displayName, email, role, needsCompletion: !completed, createdAt });
 
 function signIn(email, defaults) {
-  const existing = email.startsWith("lama-") || email.startsWith("pelapor-");
+  const existing = ["lama-", "pelapor-", "verifikator", "admin"].some((prefix) => email.startsWith(prefix));
   const user = users.get(email) ?? createUser(email, existing ? { completed: true, displayName: "Sari" } : defaults);
   const token = `tiruan-${randomUUID()}`;
   tokens.set(token, email);

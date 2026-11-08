@@ -553,7 +553,10 @@
       "namaKosong": "Isi nama tampilan.",
       "namaPanjang": "Nama tampilan paling banyak 60 karakter.",
       "server": "Server AksesBogor tidak bisa dihubungi. Coba lagi sebentar lagi."
-    }
+    },
+    "verifierTitle": "Meja verifikasi",
+    "verifierBody": "Antrean laporan warga yang menunggu diperiksa sebelum tayang.",
+    "verifierLink": "Buka meja verifikasi"
   },
   "LaporanSaya": {
     "title": "Laporan saya",
@@ -892,6 +895,48 @@
       "zoomOut": "Perkecil peta",
       "loading": "Memuat peta…",
       "unavailable": "Peta tidak bisa tampil. Pakai pencarian atau lokasi Anda untuk menentukan titik."
+    }
+  },
+  "Verifikasi": {
+    "metaTitle": "Meja verifikasi",
+    "eyebrow": "Khusus verifikator",
+    "title": "Meja",
+    "accent": "verifikasi.",
+    "intro": "Ambil laporan terlama lebih dulu. Targetnya keputusan dalam 3 hari kerja sejak laporan dikirim.",
+    "nav": {
+      "label": "Bagian meja verifikasi",
+      "antrean": "Antrean",
+      "jawaban": "Menunggu jawaban",
+      "tim": "Tim verifikator"
+    },
+    "noAccess": {
+      "title": "Halaman ini khusus verifikator",
+      "body": "Peran verifikator diberikan admin AksesBogor setelah pelatihan. Bila Anda seharusnya punya akses, hubungi admin tim.",
+      "back": "Kembali ke Akun saya"
+    },
+    "queue": {
+      "loading": "Memuat antrean…",
+      "heading": "{count, plural, =0 {Tidak ada laporan} other {# laporan}}",
+      "emptyTitle": "Antrean kosong",
+      "emptyBody": "Semua laporan sudah diperiksa. Laporan baru muncul di sini, terlama dulu.",
+      "waitingEmptyTitle": "Tidak ada yang menunggu jawaban",
+      "waitingEmptyBody": "Laporan yang Anda tanyakan ke pelapor muncul di sini sampai dijawab atau lewat 7 hari.",
+      "waited": "menunggu",
+      "overdue": "Lewat target 3 hari kerja",
+      "worsens": "Memperburuk data",
+      "answered": "Pelapor sudah menjawab",
+      "due": "Jawaban paling lambat {date}",
+      "reporter": "Dari {name}",
+      "photos": "{count, plural, =0 {Tanpa foto} other {# foto}}",
+      "kind": {
+        "baru": "Tempat baru",
+        "perubahan": "Edit lokasi",
+        "kekurangan": "Laporkan kekurangan"
+      },
+      "truncated": "Menampilkan 100 laporan terlama dari {total}.",
+      "galat": "Antrean gagal dimuat. Coba muat ulang halaman.",
+      "dayUnit": "hari menunggu",
+      "position": "Urutan {position}"
     }
   }
 }
