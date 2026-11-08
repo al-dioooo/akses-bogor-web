@@ -54,7 +54,7 @@ export function StepFacilities({ draft, errors, update }: Props) {
               {t(`hint.${facility}`)}
             </p>
 
-            <fieldset aria-describedby={`petunjuk-${facility}`} className="flex flex-col gap-2">
+            <fieldset aria-describedby={`petunjuk-${facility}`} className="flex min-w-0 flex-col gap-2">
               <legend className="sr-only">{t("answerLegend", { facility: name })}</legend>
               <div className="grid gap-2 sm:grid-cols-2">
                 {ANSWERS.map((answer) => (
@@ -78,7 +78,7 @@ export function StepFacilities({ draft, errors, update }: Props) {
             </fieldset>
 
             {state.answer === "tidak_tersedia" && (
-              <fieldset className="flex flex-col gap-2 rounded-2xl bg-bg-sunken p-3">
+              <fieldset className="flex min-w-0 flex-col gap-2 rounded-2xl bg-bg-sunken p-3">
                 <legend className="mb-1 pt-1 font-semibold">{t("reasonLegend")}</legend>
                 <div className="grid gap-2 sm:grid-cols-2">
                   {REASONS.map((reason) => (

@@ -15,6 +15,9 @@ import { PlaceSearch, type SearchPick } from "./place-search";
 export type Candidate = { point: LatLng; source: "cari" | "gps" | "peta" | "awal"; name?: string; accuracy?: number; existingId?: string };
 
 /** Titik yang berbeda kurang dari ~1 m dianggap sama. */
+/** Tombol berlabel nama tempat boleh turun baris, supaya nama yang panjang tidak melebarkan halaman di layar 320 px. */
+const LONG_BUTTON = buttonClass("outline", "sm", "py-2 text-left").replace("whitespace-nowrap ", "");
+
 const samePoint = (a: LatLng, b: LatLng) => Math.abs(a.lat - b.lat) < 1e-5 && Math.abs(a.lng - b.lng) < 1e-5;
 
 type Props = {
@@ -135,7 +138,7 @@ export function LocationPicker({ confirmed, name, placeId, error, onConfirm, onN
   const describedBy = ["lokasi-petunjuk", error || problem ? "lokasi-galat" : ""].filter(Boolean).join(" ");
 
   return (
-    <fieldset id="lokasi" tabIndex={-1} aria-describedby={describedBy} className="flex flex-col gap-4 rounded-3xl border-2 border-border-subtle p-4 sm:p-5">
+    <fieldset id="lokasi" tabIndex={-1} aria-describedby={describedBy} className="flex min-w-0 flex-col gap-4 rounded-3xl border-2 border-border-subtle p-4 sm:p-5">
       <legend className="px-1 font-heading text-lg font-bold">{t("legend")}</legend>
       <p id="lokasi-petunjuk" className="text-text-secondary">
         {t("hint")}
@@ -177,7 +180,7 @@ export function LocationPicker({ confirmed, name, placeId, error, onConfirm, onN
           {candidate?.existingId && (
             <div className="flex flex-col items-start gap-3 rounded-2xl bg-status-partial-bg p-4 text-text-primary">
               <p>{t("existingPicked", { name: candidate.name ?? "" })}</p>
-              <Link href={`/laporkan?lokasi=${candidate.existingId}&jenis=kekurangan`} className={buttonClass("outline", "sm")}>
+              <Link href={`/laporkan?lokasi=${candidate.existingId}&jenis=kekurangan`} className={LONG_BUTTON}>
                 {t("reportGap", { name: candidate.name ?? "" })}
               </Link>
             </div>
@@ -205,7 +208,7 @@ export function LocationPicker({ confirmed, name, placeId, error, onConfirm, onN
             {nearby.map((place) => (
               <li key={place.id} className="flex flex-col items-start gap-2 rounded-2xl bg-bg-sunken p-3">
                 <span className="font-semibold">{t("nearbyItem", { name: place.name, distance: place.distanceMeters })}</span>
-                <Link href={`/laporkan?lokasi=${place.id}&jenis=kekurangan`} className={buttonClass("outline", "sm")}>
+                <Link href={`/laporkan?lokasi=${place.id}&jenis=kekurangan`} className={LONG_BUTTON}>
                   {t("reportGap", { name: place.name })}
                 </Link>
               </li>
