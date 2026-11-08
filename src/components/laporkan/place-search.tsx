@@ -30,6 +30,8 @@ export function PlaceSearch({ near, onPick }: { near: LatLng | null; onPick: (pi
   const [status, setStatus] = useState("");
   const [busy, setBusy] = useState(false);
   const latest = useRef(0);
+  // Nama hasil yang dipilih ditulis ke kolom; perubahan itu tidak memicu pencarian baru.
+  const chosen = useRef<string | null>(null);
   const nearRef = useRef(near);
   useEffect(() => {
     nearRef.current = near;
@@ -71,7 +73,7 @@ export function PlaceSearch({ near, onPick }: { near: LatLng | null; onPick: (pi
   // Mencari setelah pelapor berhenti mengetik, supaya tidak memanggil API di setiap huruf.
   useEffect(() => {
     const q = query.trim();
-    if (q.length < MIN_LETTERS) return;
+    if (q.length < MIN_LETTERS || query === chosen.current) return;
     const timer = setTimeout(() => void search(q), DEBOUNCE_MS);
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps -- `search` dibuat ulang setiap render; cukup bereaksi pada kata kunci.
@@ -82,6 +84,7 @@ export function PlaceSearch({ near, onPick }: { near: LatLng | null; onPick: (pi
     if (!pick) return;
     setOpen(false);
     setActive(-1);
+    chosen.current = pick.name;
     setQuery(pick.name);
     latest.current++;
     onPick(pick);
