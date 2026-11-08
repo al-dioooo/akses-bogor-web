@@ -193,6 +193,44 @@ test("fixes photo tags and captions and hides photos before deciding (FR-34)", a
   await expect(page.getByRole("region", { name: "Foto" }).getByLabel("Tag foto 2")).toHaveValue("lift");
 });
 
+test("marks blur areas with the keyboard or by dragging, and previews the result (FR-34)", async ({ page }) => {
+  await signIn(page, email("verifikator"));
+  await page.goto("/verifikasi/laporan/10000000-0000-4000-8000-000000000001");
+  await page.getByRole("button", { name: "Kaburkan area foto 1" }).click();
+  const editor = page.getByRole("dialog", { name: "Kaburkan area foto 1" });
+  await expect(editor).toBeVisible();
+
+  await editor.getByRole("button", { name: "Tambah area" }).click();
+  const first = editor.getByRole("button", { name: /^Area 1:/ });
+  await expect(first).toBeFocused();
+  await expect(first).toHaveAccessibleName("Area 1: kiri 40%, atas 40%, lebar 20%, tinggi 20%");
+  await page.keyboard.press("ArrowRight");
+  await page.keyboard.press("ArrowRight");
+  await page.keyboard.press("Shift+ArrowDown");
+  await expect(first).toHaveAccessibleName("Area 1: kiri 44%, atas 40%, lebar 20%, tinggi 22%");
+  await editor.getByRole("spinbutton", { name: "Lebar" }).fill("30");
+  await expect(first).toHaveAccessibleName("Area 1: kiri 44%, atas 40%, lebar 30%, tinggi 22%");
+  expect(await blockingViolations(page)).toEqual([]);
+
+  // Seret dari pojok kiri atas foto untuk area kedua, lalu hapus dengan Delete.
+  const image = editor.getByRole("img");
+  const box = (await image.boundingBox())!;
+  await page.mouse.move(box.x + box.width * 0.05, box.y + box.height * 0.05);
+  await page.mouse.down();
+  await page.mouse.move(box.x + box.width * 0.25, box.y + box.height * 0.3, { steps: 4 });
+  await page.mouse.up();
+  const second = editor.getByRole("button", { name: /^Area 2:/ });
+  await expect(second).toBeFocused();
+  await page.keyboard.press("Delete");
+  await expect(second).toHaveCount(0);
+
+  await editor.getByRole("button", { name: "Simpan area" }).click();
+  await expect(editor).toBeHidden();
+  const photos = page.getByRole("region", { name: "Foto" });
+  await expect(photos).toContainText("1 area dikaburkan");
+  await expect(photos.getByRole("img").first()).toHaveAttribute("src", /versi=kabur&v=1$/);
+});
+
 const REVIEW = "/verifikasi/laporan/10000000-0000-4000-8000-000000000001";
 
 for (const path of ["/verifikasi", "/verifikasi/jawaban", "/verifikasi/cek-ulang", REVIEW]) {

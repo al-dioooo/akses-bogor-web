@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { Review } from "@/lib/verifikasi";
 import { AnswerCheck } from "./answer-check";
+import { BlurEditor } from "./blur-editor";
 import { ClarificationThread } from "./clarification-thread";
 import { decisionProblems, initialDecision } from "./decision";
 import { DecisionActions } from "./decision-actions";
@@ -94,7 +95,15 @@ export function ReviewSheet({ review }: { review: Review }) {
             review={review}
             photos={photos}
             versions={versions}
-            controls={open ? (photo, index) => <PhotoModeration reportId={review.id} photo={photo} number={index + 1} onSaved={savePhoto} /> : undefined}
+            controls={
+              open
+                ? (photo, index) => (
+                    <PhotoModeration reportId={review.id} photo={photo} number={index + 1} onSaved={savePhoto}>
+                      <BlurEditor reportId={review.id} photo={photo} number={index + 1} onSaved={savePhoto} />
+                    </PhotoModeration>
+                  )
+                : undefined
+            }
           />
         </section>
         <section id="deskripsi" aria-labelledby="judul-deskripsi" className="flex scroll-mt-24 flex-col gap-5">
