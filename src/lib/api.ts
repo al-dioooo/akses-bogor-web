@@ -90,11 +90,6 @@ export class ApiError extends Error {
   }
 }
 
-/** Header untuk setiap panggilan API dari server web. */
-export async function apiHeaders(): Promise<Record<string, string>> {
-  return { accept: "application/json" };
-}
-
 export function apiUrl(path: string, query: Record<string, string | number | undefined> = {}) {
   const base = process.env.API_URL;
   if (!base) throw new ApiError(0, "api_belum_diatur", "API_URL belum diatur.");
@@ -103,6 +98,27 @@ export function apiUrl(path: string, query: Record<string, string | number | und
     if (value !== undefined && value !== "") url.searchParams.set(key, String(value));
   }
   return url;
+}
+
+/**
+ * Header untuk setiap panggilan API dari server web: halaman, route handler (foto, kirim laporan, cari tempat, cek
+ * lokasi, kunci peta, foto verifikator), dan server action (akun, verifikasi). Dengan `WEB_SERVER_SECRET`, panggilan
+ * ikut membawa IP pengunjung supaya rate limit API, termasuk batas kode masuk dan unggah foto, dihitung per pengunjung,
+ * bukan per IP server Vercel. Vercel menulis ulang `x-forwarded-for`, jadi isinya IP pengunjung yang asli.
+ */
+export async function apiHeaders(): Promise<Record<string, string>> {
+  const result: Record<string, string> = { accept: "application/json" };
+  const secret = process.env.WEB_SERVER_SECRET;
+  if (!secret) return result;
+  // Diimpor saat dipanggil: komponen klien ikut mengimpor konstanta dari modul ini, dan next/headers hanya boleh ada
+  // di sisi server.
+  const { headers } = await import("next/headers");
+  const visitorIp = (await headers()).get("x-forwarded-for")?.split(",")[0]?.trim();
+  if (visitorIp) {
+    result["x-web-server-secret"] = secret;
+    result["x-visitor-ip"] = visitorIp;
+  }
+  return result;
 }
 
 async function get<T>(path: string, query?: Record<string, string | number | undefined>): Promise<T> {

@@ -46,6 +46,7 @@ Contoh ada di [.env.example](.env.example); salin ke `.env.local`. Jangan commit
 | `API_URL` | Ya | Alamat [akses-bogor-api](https://github.com/al-dioooo/akses-bogor-api), mis. `http://localhost:8080`. Hanya dibaca di server; browser tidak pernah memanggil API langsung |
 | `NEXT_PUBLIC_GOOGLE_CLIENT_ID` | Tidak | Client ID OAuth Google AksesBogor, sama dengan `GOOGLE_CLIENT_ID` di API. Bukan rahasia; dibaca saat build. Kosong berarti tombol "Masuk dengan Google" tidak tampil |
 | `ENABLE_EXPERIMENTAL_COREPACK` | Di Vercel | `1`, supaya Vercel memakai versi pnpm dari `packageManager` di `package.json` |
+| `WEB_SERVER_SECRET` | Di Vercel | Rahasia bersama dengan API, nilainya sama dengan `WEB_SERVER_SECRET` di API. Bila diisi, setiap panggilan API membawa IP pengunjung sehingga rate limit dihitung per pengunjung, bukan per IP Vercel |
 
 Peta tidak butuh variabel Mapbox di web. Browser mengambil token Mapbox sementara dari `/peta/kunci`, yang meneruskannya dari `GET /map/token` di API ([ADR-0016](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0016-peta-dan-pencarian-mapbox.md)). Selama API belum diatur, halaman Peta menampilkan legenda dan daftar lokasi tanpa peta.
 
@@ -101,11 +102,12 @@ Proyek Vercel di akun pemilik repo ([ADR-0013](https://github.com/al-dioooo/akse
 | Root Directory | `./` |
 | Production Branch | `release` (Settings → Environments → Production) |
 | Node.js Version | 24.x, sama dengan `.nvmrc` |
-| Environment Variables | `API_URL` = `https://akses-bogor-api.yorhagarden.xyz` dan `ENABLE_EXPERIMENTAL_COREPACK` = `1`, untuk Production dan Preview |
+| Environment Variables | `API_URL` = `https://akses-bogor-api.yorhagarden.xyz`, `ENABLE_EXPERIMENTAL_COREPACK` = `1`, `NEXT_PUBLIC_GOOGLE_CLIENT_ID` (dibaca saat build, jadi deploy ulang setelah diisi), dan `WEB_SERVER_SECRET`, untuk Production dan Preview |
 
 - Rilis berarti merge `main` ke `release` lewat PR, sama seperti API. Push ke branch lain, termasuk `main`, menjadi preview deployment.
 - Preview deployment hanya bisa dibuka anggota proyek di Vercel. Tim membuka alamat produksi proyek (`*.vercel.app`, atau domain sendiri bila sudah dipasang).
 - Setiap alamat web baru juga ditambahkan ke `FRONTEND_ORIGINS` di API.
+- `WEB_SERVER_SECRET` diisi sendiri untuk Production dan Preview, bertipe Sensitive, dengan nilai yang sama seperti di `/etc/akses-bogor/api.env` di API.
 - Paket Hobby Vercel hanya membatasi author commit untuk repo privat. Repo ini publik, jadi tidak perlu commit kosong atas nama pemilik seperti di lokerin. Bila repo dijadikan privat, deploy dari commit anggota lain akan diblokir.
 
 ## Kontribusi

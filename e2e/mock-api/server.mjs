@@ -2,6 +2,8 @@
 // Datanya salinan respons API dari seed pengembangan (fixtures.json); filter meniru GET /places dan GET /places/map.
 // Pencarian "galat-tiruan" menjawab 500, untuk menguji keadaan galat di web. Route akun ada di akun.mjs, route
 // Laporkan di laporkan.mjs, route panel verifikator di verifikasi.mjs.
+// GET /_tiruan/pengunjung?ip=...&path=... menjawab rahasia server web terakhir yang dikirim bersama IP pengunjung itu,
+// untuk path API tertentu atau, tanpa path, untuk path mana pun.
 import { readFileSync } from "node:fs";
 import { createServer } from "node:http";
 import { handleAkun } from "./akun.mjs";
@@ -10,6 +12,7 @@ import { handleVerifikasi } from "./verifikasi.mjs";
 
 const { districts, places } = JSON.parse(readFileSync(new URL("./fixtures.json", import.meta.url), "utf8"));
 const port = Number(process.env.PORT ?? 3101);
+const secretsByVisitor = new Map();
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 const listItem = ({ id, name, category, district, status, summary, location, lastVerifiedAt, photos }) => ({
@@ -44,6 +47,10 @@ function filterPlaces(query) {
 function route(url) {
   const { pathname, searchParams } = url;
   if (pathname === "/healthz") return [200, { status: "ok" }];
+  if (pathname === "/_tiruan/pengunjung") {
+    const key = [searchParams.get("ip"), searchParams.get("path")].filter(Boolean).join(" ");
+    return [200, { secret: secretsByVisitor.get(key) ?? null }];
+  }
   if (pathname === "/districts") {
     return [200, districts.map((d) => ({ ...d, places: places.filter((p) => p.district.slug === d.slug).length }))];
   }
@@ -85,6 +92,11 @@ function route(url) {
 
 createServer(async (request, response) => {
   const url = new URL(request.url ?? "/", `http://localhost:${port}`);
+  const visitorIp = request.headers["x-visitor-ip"];
+  if (visitorIp) {
+    secretsByVisitor.set(visitorIp, request.headers["x-web-server-secret"]);
+    secretsByVisitor.set(`${visitorIp} ${url.pathname}`, request.headers["x-web-server-secret"]);
+  }
   let payload;
   if (request.method !== "GET") {
     const chunks = [];
