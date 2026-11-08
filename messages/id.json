@@ -832,6 +832,44 @@
       "deleteYes": "Ya, hapus draf",
       "deleteNo": "Batal",
       "deleted": "Draf dihapus. Formulir kembali kosong."
+    },
+    "kirim": {
+      "send": "Kirim laporan",
+      "sending": "Mengirim…",
+      "signIn": "Masuk lalu kirim",
+      "uploading": "Mengunggah foto {number} dari {total}…",
+      "submitting": "Mengirim laporan…",
+      "progressLabel": "Foto {number}",
+      "state": {
+        "menunggu": "Menunggu",
+        "mengunggah": "Mengunggah {percent} %",
+        "terunggah": "Terunggah",
+        "gagal": "Gagal"
+      },
+      "photoFailed": "Foto {number} gagal diunggah: {message} Tekan Kirim laporan untuk mencoba lagi, atau lepas foto ini.",
+      "removePhoto": "Lepas foto {number}",
+      "photosAgain": "Sebagian foto perlu diunggah ulang. Mencoba lagi…",
+      "locationProblem": "{message}",
+      "fixLocation": "Perbaiki lokasi",
+      "failed": "Laporan belum terkirim: {message} Isian tetap tersimpan di perangkat ini.",
+      "offline": "Server tidak bisa dihubungi. Periksa koneksi, lalu tekan Kirim laporan lagi. Isian tetap tersimpan di perangkat ini."
+    },
+    "terkirim": {
+      "metaTitle": "Laporan terkirim",
+      "eyebrow": "Laporan terkirim",
+      "title": "Terima kasih,",
+      "accent": "laporan Anda kami terima",
+      "intro": "Laporan masuk antrean verifikasi. Data di AksesBogor baru berubah setelah tim memeriksanya.",
+      "submitted": "Dikirim {date}",
+      "nextTitle": "Apa selanjutnya?",
+      "next": [
+        "Tim AksesBogor memeriksa isian dan foto, biasanya dalam 3 hari kerja.",
+        "Bila ada yang kurang jelas, kami meminta klarifikasi lewat email dan di Laporan saya.",
+        "Setelah diterbitkan, tempat ini tampil di Jelajahi dan Peta. Anda mendapat email saat laporan diterbitkan atau ditolak."
+      ],
+      "mine": "Lihat Laporan saya",
+      "another": "Laporkan tempat lain",
+      "loading": "Memuat laporan…"
     }
   }
 }
