@@ -64,3 +64,12 @@ test("the education pages link to each other", async ({ page }) => {
   await page.getByRole("link", { name: "Kebutuhan lain yang belum kami catat" }).click();
   await expect(page).toHaveURL(/\/disabilitas#kebutuhan$/);
 });
+
+test("the desktop header fits a 1280 px screen with the Disabilitas label", async ({ page, isMobile }) => {
+  test.skip(isMobile, "the main menu is only shown from 1024 px");
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("/disabilitas");
+  await expect(page.getByRole("navigation", { name: "Menu utama" }).getByRole("link", { name: "Disabilitas" })).toHaveAttribute("aria-current", "page");
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+  expect(overflow).toBeLessThanOrEqual(0);
+});
