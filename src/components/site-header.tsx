@@ -17,7 +17,7 @@ async function navLabels() {
     jelajahi: t("jelajahi"),
     peta: t("peta"),
     aksesibilitas: t("aksesibilitas"),
-    difabel: t("difabel"),
+    disabilitas: t("disabilitas"),
     tips: t("tips"),
     tentang: t("tentang"),
     laporkan: t("laporkan"),

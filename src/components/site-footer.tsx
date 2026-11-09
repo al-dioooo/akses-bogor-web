@@ -25,7 +25,7 @@ export async function SiteFooter() {
       title: t("informasi"),
       links: [
         { href: "/aksesibilitas", label: nav("aksesibilitas") },
-        { href: "/difabel", label: nav("difabel") },
+        { href: "/disabilitas", label: nav("disabilitas") },
         { href: "/tips", label: nav("tips") },
         { href: "/tentang", label: nav("tentang") },
       ],
