@@ -283,6 +283,12 @@
     "facilitiesTitle": "Fasilitas",
     "edit": "Edit lokasi",
     "report": "Laporkan kekurangan",
+    "share": {
+      "button": "Bagikan",
+      "copied": "Tautan lokasi ini sudah disalin.",
+      "failed": "Tautan tidak bisa disalin otomatis. Salin alamat di bawah ini.",
+      "urlLabel": "Alamat halaman lokasi"
+    },
     "descriptionTitle": "Tentang tempat ini",
     "photosTitle": "Foto",
     "noPhotos": "Belum ada foto yang tayang untuk tempat ini.",
