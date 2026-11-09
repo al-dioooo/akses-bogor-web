@@ -878,6 +878,75 @@
       }
     ]
   },
+  "Disabilitas": {
+    "metaTitle": "Mengenal disabilitas",
+    "title": "Mengenal",
+    "accent": "disabilitas.",
+    "related": "Arti penyandang disabilitas, hambatan di lingkungan, dan kata yang kami pakai.",
+    "intro": "Halaman ini menjelaskan arti penyandang disabilitas menurut undang-undang, mengapa AksesBogor menilai tempat dan bukan orang, dan kata-kata yang kami pakai.",
+    "meaning": {
+      "title": "Siapa penyandang disabilitas",
+      "lead": "Undang-Undang Nomor 8 Tahun 2016 tentang Penyandang Disabilitas memberi definisi berikut:",
+      "quote": "Penyandang Disabilitas adalah setiap orang yang mengalami keterbatasan fisik, intelektual, mental, dan/atau sensorik dalam jangka waktu lama yang dalam berinteraksi dengan lingkungan dapat mengalami hambatan dan kesulitan untuk berpartisipasi secara penuh dan efektif dengan warga negara lainnya berdasarkan kesamaan hak.",
+      "cite": "UU Nomor 8 Tahun 2016, Pasal 1 angka 1",
+      "after": "Perhatikan bagian \"dalam berinteraksi dengan lingkungan\". Hambatan muncul ketika lingkungan tidak menyediakan jalan lain."
+    },
+    "barriers": {
+      "title": "Yang kami nilai adalah tempatnya",
+      "paragraphs": [
+        "Seorang pengguna kursi roda bisa masuk ke gedung yang punya ramp, tetapi tertahan di depan gedung yang hanya punya tangga. Orangnya sama; yang berbeda adalah pintu masuknya.",
+        "Cara pandang ini sering disebut model sosial disabilitas: hambatan ada di lingkungan, dan lingkungan bisa diubah. Karena itu AksesBogor mencatat keadaan tempat, bukan keadaan pengunjungnya, dan alasan status selalu menyebut hambatan pada tempat, misalnya \"Ramp / Jalur Landai tidak tersedia\"."
+      ]
+    },
+    "needs": {
+      "title": "Kebutuhan yang berbeda-beda",
+      "paragraphs": [
+        "Undang-undang yang sama menyebut empat ragam penyandang disabilitas: fisik, intelektual, mental, dan sensorik (Pasal 4 ayat (1)). Seseorang bisa mengalami satu ragam saja, atau beberapa sekaligus (Pasal 4 ayat (2)).",
+        "Kebutuhan setiap orang berbeda, bahkan dalam ragam yang sama. Empat fasilitas yang kami catat paling banyak membantu pengguna kursi roda dan alat bantu jalan, serta tunanetra dan low vision.",
+        "Kebutuhan lain belum kami catat, misalnya informasi dalam huruf Braille, juru bahasa isyarat, petunjuk yang mudah dipahami, atau ruang yang tenang. Bila sebuah tempat menyediakannya, Anda bisa menulisnya di deskripsi saat melapor."
+      ],
+      "link": "Penjelasan empat fasilitas yang kami catat"
+    },
+    "words": {
+      "title": "Kata yang kami pakai",
+      "items": [
+        {
+          "term": "Penyandang disabilitas",
+          "body": "Istilah dalam Undang-Undang Nomor 8 Tahun 2016. Kami memakainya untuk menyebut orang."
+        },
+        {
+          "term": "Sebutan menurut kebutuhan",
+          "body": "Bila lebih jelas, kami menyebut kebutuhannya, misalnya \"pengguna kursi roda\" atau \"tunanetra dan low vision\"."
+        },
+        {
+          "term": "Difabel",
+          "body": "Anda mungkin juga mendengar kata ini. Di AksesBogor, kata ini hanya muncul di nama fasilitas Toilet Difabel."
+        },
+        {
+          "term": "Kata yang kami hindari",
+          "body": "Kami tidak memakai \"cacat\" atau \"penderita\", dan tidak menyebut orang tanpa disabilitas sebagai \"normal\". Undang-Undang Nomor 8 Tahun 2016 menggantikan Undang-Undang Nomor 4 Tahun 1997 tentang Penyandang Cacat, yang dinilai \"sudah tidak sesuai lagi dengan paradigma kebutuhan penyandang disabilitas\"."
+        }
+      ],
+      "ask": "Setiap orang boleh memilih sebutan untuk dirinya sendiri. Bila ragu, tanyakan."
+    },
+    "community": {
+      "title": "Ikut memeriksa dan meninjau",
+      "body": "Kami ingin penyandang disabilitas ikut memeriksa laporan sebagai verifikator mitra, dan ikut meninjau halaman edukasi ini. Bila Anda bagian dari organisasi atau komunitas penyandang disabilitas di Bogor dan ingin terlibat, hubungi kami.",
+      "link": "Kontak Tim AksesBogor"
+    },
+    "sources": [
+      {
+        "text": "Undang-Undang Nomor 8 Tahun 2016 tentang Penyandang Disabilitas, Pasal 1 angka 1, Pasal 4 ayat (1) dan (2), dan bagian Menimbang huruf d.",
+        "link": "Teks UU Nomor 8 Tahun 2016 di peraturan.go.id (PDF)",
+        "href": "https://peraturan.go.id/files/uu8-2016bt.pdf"
+      },
+      {
+        "text": "Keputusan AksesBogor tentang halaman ini dan istilahnya: ADR-0041.",
+        "link": "Catatan keputusan AksesBogor di GitHub",
+        "href": "https://github.com/al-dioooo/akses-bogor-docs/tree/main/decisions"
+      }
+    ]
+  },
   "AkunSaya": {
     "metaTitle": "Akun saya",
     "eyebrow": "Akun",
