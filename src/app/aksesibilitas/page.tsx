@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { EduPage } from "@/components/edukasi/edu-page";
+import { EDU_LINK, EduPage } from "@/components/edukasi/edu-page";
 import { ROUTE } from "@/components/rute";
 import type { Answer, Reason, Status } from "@/lib/api";
 import { Icon } from "@/ui/icon";
+import { IconArrowRight } from "@/ui/icons";
 import { ANSWER_ICON, ANSWER_TONE } from "@/ui/place-icons";
 import { PageRow } from "@/ui/page-row";
 import { StatusBadge } from "@/ui/status-badge";
@@ -118,6 +120,12 @@ export default async function Aksesibilitas() {
             <li key={item}>{item}</li>
           ))}
         </ul>
+        <p>
+          <Link href="/disabilitas#kebutuhan" className={EDU_LINK}>
+            {t("limits.needsLink")}
+            <Icon icon={IconArrowRight} className="size-4" />
+          </Link>
+        </p>
       </PageRow>
     </EduPage>
   );
