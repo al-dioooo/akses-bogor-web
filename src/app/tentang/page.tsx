@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import type { ReactNode } from "react";
 import { PRIVACY_POLICY_PATH, TERMS_PATH } from "@/lib/kebijakan";
 import { buttonClass } from "@/ui/button-styles";
 import { Icon } from "@/ui/icon";
 import { IconAccessible, IconArrowRight, IconBuilding, IconCirclePlus, IconInfoCircle, IconMapPin, type Glyph } from "@/ui/icons";
+import { PageRow } from "@/ui/page-row";
 
 type Fact = { value: string; label: string; detail: string };
 type Step = { title: string; body: string };
@@ -48,10 +48,10 @@ export default async function Tentang() {
       </ul>
 
       <div className="mt-6">
-        <Row id="untuk-siapa" title={t("forWhom.title")}>
+        <PageRow id="untuk-siapa" title={t("forWhom.title")}>
           <p>{t("forWhom.body")}</p>
-        </Row>
-        <Row id="cara-kerja" title={t("process.title")}>
+        </PageRow>
+        <PageRow id="cara-kerja" title={t("process.title")}>
           <ol className="flex flex-col gap-5">
             {steps.map((step, index) => (
               <li key={step.title} className="grid grid-cols-[auto_minmax(0,1fr)] gap-4">
@@ -69,29 +69,29 @@ export default async function Tentang() {
             ))}
           </ol>
           <p>{t("process.after")}</p>
-        </Row>
-        <Row id="batas" title={t("limits.title")}>
+        </PageRow>
+        <PageRow id="batas" title={t("limits.title")}>
           <ul className="flex list-disc flex-col gap-2 pl-6">
             {(t.raw("limits.items") as string[]).map((item) => (
               <li key={item}>{item}</li>
             ))}
           </ul>
-        </Row>
-        <Row id="tim" title={t("team.title")}>
+        </PageRow>
+        <PageRow id="tim" title={t("team.title")}>
           <p>{t("team.body")}</p>
           <p className="text-text-secondary">{t("team.pending")}</p>
-        </Row>
-        <Row id="sumber-data" title={t("sources.title")}>
+        </PageRow>
+        <PageRow id="sumber-data" title={t("sources.title")}>
           <ul className="flex list-disc flex-col gap-2 pl-6">
             {(t.raw("sources.items") as string[]).map((item) => (
               <li key={item}>{item}</li>
             ))}
           </ul>
-        </Row>
-        <Row id="aksesibilitas" title={t("accessibility.title")}>
+        </PageRow>
+        <PageRow id="aksesibilitas" title={t("accessibility.title")}>
           <p>{t("accessibility.body")}</p>
-        </Row>
-        <Row id="kontak" title={t("contact.title")}>
+        </PageRow>
+        <PageRow id="kontak" title={t("contact.title")}>
           <p>{t("contact.pending")}</p>
           <div>
             <h3 className="lbl mb-1">{t("contact.readAlso")}</h3>
@@ -108,7 +108,7 @@ export default async function Tentang() {
               </li>
             </ul>
           </div>
-        </Row>
+        </PageRow>
       </div>
 
       <section aria-labelledby="ajakan" className="mt-6 flex flex-col items-start gap-5 rounded-[2rem] bg-surface-brand-subtle p-6 sm:p-10">
@@ -128,17 +128,5 @@ export default async function Tentang() {
         </div>
       </section>
     </main>
-  );
-}
-
-/** Satu bagian: judul di kiri dan isi di kanan mulai layar sedang, bertumpuk di ponsel. */
-function Row({ id, title, children }: { id: string; title: string; children: ReactNode }) {
-  return (
-    <section aria-labelledby={id} className="grid gap-4 border-t border-border-subtle py-10 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] md:gap-10">
-      <h2 id={id} className="font-heading text-2xl font-bold md:text-3xl">
-        {title}
-      </h2>
-      <div className="flex max-w-[65ch] flex-col gap-4 text-lg">{children}</div>
-    </section>
   );
 }
