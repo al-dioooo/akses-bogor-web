@@ -19,14 +19,14 @@ export type BottomNavLabels = NavLabels & {
 const TAB =
   "flex min-h-14 flex-1 flex-col items-center justify-center gap-0.5 rounded-2xl text-xs font-medium transition-colors duration-200";
 
-/** Bottom nav ponsel (Frame Mobile): menempel di bawah, di bawah lebar 1024 px. */
+/** Bottom nav (Frame Mobile): menempel di bawah layar yang lebih sempit dari 1280 px, selama menu desktop belum muat. */
 export function BottomNav({ labels, pathname, signedIn }: { labels: BottomNavLabels; pathname: string | null; signedIn: boolean }) {
   // Selama mengisi Laporkan, Form action bar menggantikan Bottom nav (Frame Mobile).
   if (pathname === "/laporkan") return null;
   // Di ponsel, Akun saya dibuka dari menu Lainnya (Frame Akun).
   const account = signedIn ? { href: "/akun", label: labels.akunSaya } : { href: "/masuk", label: labels.masuk };
   return (
-    <nav aria-label={labels.label} className="fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-40 lg:hidden">
+    <nav aria-label={labels.label} className="fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-40 xl:hidden">
       <ul className="panel-raised flex gap-1 rounded-3xl p-1.5">
         {BOTTOM_NAV.map((tab) => {
           const active = isActive(tab.href, pathname);
