@@ -1,16 +1,9 @@
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import type { Answer, PlaceDetail } from "@/lib/api";
+import type { PlaceDetail } from "@/lib/api";
 import { Icon } from "@/ui/icon";
-import { ANSWER_ICON } from "@/ui/place-icons";
+import { ANSWER_ICON, ANSWER_TONE } from "@/ui/place-icons";
 import { ROUTE, routeNumber } from "../rute";
-
-const ANSWER_TONE: Record<Answer, string> = {
-  tersedia: "bg-status-accessible-bg text-status-accessible-fg",
-  tidak_tersedia: "bg-status-inaccessible-bg text-status-inaccessible-fg",
-  tidak_perlu: "bg-surface-brand-subtle text-text-secondary",
-  belum_tahu: "bg-status-unknown-bg text-status-unknown-fg",
-};
 
 /**
  * Fasilitas sebagai rute ke pintu (ADR-0027): close-up yang sama dengan Beranda, jawaban tempat ini, lalu

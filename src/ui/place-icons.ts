@@ -59,3 +59,11 @@ export const ANSWER_ICON: Record<Answer, Glyph> = {
   tidak_perlu: IconCircleMinus,
   belum_tahu: IconHelpCircle,
 };
+
+/** Warna jawaban fasilitas, selalu bersama ikon dan teks jawabannya (ADR-0017). */
+export const ANSWER_TONE: Record<Answer, string> = {
+  tersedia: "bg-status-accessible-bg text-status-accessible-fg",
+  tidak_tersedia: "bg-status-inaccessible-bg text-status-inaccessible-fg",
+  tidak_perlu: "bg-surface-brand-subtle text-text-secondary",
+  belum_tahu: "bg-status-unknown-bg text-status-unknown-fg",
+};
