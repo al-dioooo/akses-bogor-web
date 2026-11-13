@@ -18,7 +18,7 @@ export function MainNavList({ labels, pathname }: { labels: NavLabels; pathname:
             <Link
               href={item.href}
               aria-current={active ? "page" : undefined}
-              className={`inline-flex min-h-11 items-center rounded-full px-3.5 text-[0.9375rem] font-semibold transition-colors duration-200 ${
+              className={`inline-flex min-h-11 items-center rounded-full px-3 text-[0.9375rem] font-semibold transition-colors duration-200 ${
                 active ? "bg-text-primary text-bg-canvas" : "text-text-primary hover:bg-surface-hover"
               }`}
             >

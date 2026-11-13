@@ -2,7 +2,10 @@ import { expect, test } from "@playwright/test";
 
 // FR-51 (ADR-0041): halaman edukasi bisa dibuka dari footer, terbaca di layar 320 px, punya satu h1, menampilkan tanda
 // draf, dan menutup dengan daftar sumber serta tautan ke Jelajahi dan Laporkan.
-const PAGES = [{ link: "Aksesibilitas", path: "/aksesibilitas", heading: "Mengenal aksesibilitas." }];
+const PAGES = [
+  { link: "Aksesibilitas", path: "/aksesibilitas", heading: "Mengenal aksesibilitas." },
+  { link: "Disabilitas", path: "/disabilitas", heading: "Mengenal disabilitas." },
+];
 
 for (const { link, path, heading } of PAGES) {
   test(`the footer links to ${path}`, async ({ page }) => {
@@ -41,4 +44,32 @@ test("Aksesibilitas explains the four facilities, the four answers, and the stat
   await expect(rules).toHaveCount(4);
   await expect(rules.first()).toContainText("Tidak aksesibel");
   await expect(rules.last()).toContainText("Sebagian");
+});
+
+test("Disabilitas quotes the definition from UU No. 8 Tahun 2016 and lists the words we use", async ({ page }) => {
+  await page.goto("/disabilitas");
+  const meaning = page.getByRole("region", { name: "Siapa penyandang disabilitas" });
+  await expect(meaning.getByRole("blockquote")).toContainText("dalam berinteraksi dengan lingkungan dapat mengalami hambatan");
+  await expect(meaning.getByText("UU Nomor 8 Tahun 2016, Pasal 1 angka 1")).toBeVisible();
+  const words = page.getByRole("region", { name: "Kata yang kami pakai" });
+  await expect(words.getByRole("term")).toHaveText(["Penyandang disabilitas", "Sebutan menurut kebutuhan", "Difabel", "Kata yang kami hindari"]);
+});
+
+test("the education pages link to each other", async ({ page }) => {
+  await page.goto("/aksesibilitas");
+  await page.getByRole("region", { name: "Baca juga" }).getByRole("link", { name: "Mengenal disabilitas" }).click();
+  await expect(page).toHaveURL(/\/disabilitas$/);
+  await page.getByRole("region", { name: "Baca juga" }).getByRole("link", { name: "Mengenal aksesibilitas" }).click();
+  await expect(page).toHaveURL(/\/aksesibilitas$/);
+  await page.getByRole("link", { name: "Kebutuhan lain yang belum kami catat" }).click();
+  await expect(page).toHaveURL(/\/disabilitas#kebutuhan$/);
+});
+
+test("the desktop header fits a 1280 px screen with the Disabilitas label", async ({ page, isMobile }) => {
+  test.skip(isMobile, "the main menu is only shown from 1024 px");
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("/disabilitas");
+  await expect(page.getByRole("navigation", { name: "Menu utama" }).getByRole("link", { name: "Disabilitas" })).toHaveAttribute("aria-current", "page");
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+  expect(overflow).toBeLessThanOrEqual(0);
 });
