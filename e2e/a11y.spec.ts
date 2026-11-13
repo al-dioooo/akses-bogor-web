@@ -20,6 +20,7 @@ const PAGES = [
   "/kebijakan-privasi",
   "/syarat",
   "/tentang",
+  "/aksesibilitas",
   "/laporkan",
   "/laporkan?lokasi=4037ba19-b366-45bc-aceb-270944fe9372&jenis=kekurangan",
 ];

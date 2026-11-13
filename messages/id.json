@@ -766,6 +766,118 @@
       "explore": "Jelajahi lokasi"
     }
   },
+  "Edukasi": {
+    "eyebrow": "Edukasi",
+    "draft": "Draf. Isi halaman ini masih menunggu tinjauan organisasi atau komunitas penyandang disabilitas di Bogor, dan bisa berubah.",
+    "sourcesTitle": "Sumber",
+    "relatedTitle": "Baca juga",
+    "cta": {
+      "title": "Cek tempatnya sebelum berangkat.",
+      "body": "Cari kampus, masjid, halte, atau rumah sakit di Kota Bogor dan baca statusnya. Kenal tempat yang belum tercatat? Laporkan dari ponsel, langsung di lokasi.",
+      "explore": "Jelajahi lokasi",
+      "report": "Laporkan tempat"
+    }
+  },
+  "Aksesibilitas": {
+    "metaTitle": "Mengenal aksesibilitas",
+    "title": "Mengenal",
+    "accent": "aksesibilitas.",
+    "related": "Empat fasilitas, empat jawaban, dan cara status dihitung.",
+    "intro": "Aksesibilitas adalah kemudahan yang disediakan supaya penyandang disabilitas punya kesempatan yang sama. Halaman ini menjelaskan cara AksesBogor menilainya di sebuah tempat: fasilitas apa yang dicatat, apa arti setiap jawaban, dan bagaimana status dihitung.",
+    "meaning": {
+      "title": "Arti aksesibilitas",
+      "paragraphs": [
+        "Undang-Undang Nomor 8 Tahun 2016 tentang Penyandang Disabilitas mengartikan aksesibilitas sebagai \"kemudahan yang disediakan untuk Penyandang Disabilitas guna mewujudkan Kesamaan Kesempatan\" (Pasal 1 angka 8).",
+        "Undang-undang yang sama menyebut hak penyandang disabilitas untuk mendapatkan aksesibilitas agar bisa memanfaatkan fasilitas publik (Pasal 18). Pemerintah dan pemerintah daerah wajib menjamin infrastruktur yang mudah diakses, termasuk bangunan gedung dan jalan (Pasal 97).",
+        "Bagi pengunjung, pertanyaannya sederhana: bisakah saya sampai ke pintu, masuk, dan memakai layanan di dalamnya? AksesBogor mencatat jawabannya untuk kampus, masjid, halte, dan rumah sakit di Kota Bogor."
+      ]
+    },
+    "facilities": {
+      "title": "Empat fasilitas yang kami catat",
+      "intro": "Setiap tempat dicatat dengan empat fasilitas yang sama, diurutkan seperti saat Anda datang: dari trotoar sampai lantai atas.",
+      "whoLabel": "Paling membantu:",
+      "items": {
+        "guiding_block": {
+          "what": "Ubin bertekstur yang bisa dirasakan dengan tongkat atau telapak kaki: bergaris untuk arah, berbintik untuk peringatan. Jalurnya tersambung dari trotoar atau gerbang sampai pintu masuk atau layanan utama.",
+          "who": "tunanetra dan low vision."
+        },
+        "ramp": {
+          "what": "Jalan masuk tanpa anak tangga dari jalan atau tempat parkir sampai pintu masuk utama. Cukup lebar untuk kursi roda, tidak terlalu curam, dan permukaannya tidak licin.",
+          "who": "pengguna kursi roda dan alat bantu jalan."
+        },
+        "toilet_difabel": {
+          "what": "Toilet umum yang muat kursi roda dan punya ruang untuk berputar, dengan pintu lebar, kloset duduk, pegangan di samping kloset, dan tanpa undakan di depannya.",
+          "who": "pengguna kursi roda dan orang yang butuh pegangan untuk duduk dan berdiri."
+        },
+        "lift": {
+          "what": "Lift yang boleh dipakai pengunjung, menjangkau semua lantai yang punya layanan publik, dan tombolnya terjangkau dari kursi roda.",
+          "who": "pengguna kursi roda dan siapa pun yang sulit naik tangga."
+        }
+      }
+    },
+    "answers": {
+      "title": "Empat jawaban untuk setiap fasilitas",
+      "intro": "Setiap fasilitas punya satu dari empat jawaban. Di halaman lokasi, jawaban selalu ditulis dengan teks dan ikon, tidak dengan warna saja.",
+      "items": {
+        "tersedia": "Fasilitas ada dan bisa dipakai oleh orang yang membutuhkannya saat diperiksa.",
+        "tidak_tersedia": "Fasilitas dibutuhkan, tetapi tidak ada atau tidak bisa dipakai.",
+        "tidak_perlu": "Fasilitas tidak dibutuhkan di tempat itu, misalnya lift di gedung yang semua layanannya ada di lantai dasar, atau ramp di pintu masuk yang sudah rata.",
+        "belum_tahu": "Belum bisa dipastikan, misalnya karena foto belum memperlihatkan fasilitas itu. Ini bukan berarti fasilitasnya tidak ada."
+      }
+    },
+    "usable": {
+      "title": "Tersedia berarti bisa dipakai",
+      "intro": "Bagi pengguna kursi roda, lift yang rusak sama saja dengan tidak ada lift hari itu. Karena itu, fasilitas yang ada tetapi tidak bisa dipakai dijawab Tidak tersedia, dengan salah satu alasan berikut.",
+      "reasonsLabel": "Alasan untuk Tidak tersedia",
+      "reasons": {
+        "tidak_ada": "Belum pernah dibangun, misalnya pintu masuk bertangga tanpa ramp.",
+        "rusak": "Ada, tetapi rusak, misalnya lift yang mati.",
+        "terhalang": "Ada, tetapi tertutup benda, misalnya ramp tertutup parkir motor atau guiding block tertutup lapak.",
+        "terbatas": "Ada, tetapi tidak untuk umum, misalnya lift khusus staf.",
+        "tidak_sesuai": "Ada, tetapi tidak bisa dipakai sebagaimana mestinya, misalnya ramp terlalu curam atau toilet tidak muat kursi roda."
+      },
+      "note": "Setiap jawaban juga boleh diberi catatan singkat, misalnya \"Kunci toilet di pos satpam\". Catatan tampil di halaman lokasi."
+    },
+    "status": {
+      "title": "Status dimulai dari pintu masuk",
+      "intro": "Status sebuah tempat dihitung otomatis dari jawaban yang sudah diverifikasi. Pintu masuk diperiksa lebih dulu, karena bila Anda tidak bisa masuk, fasilitas lain tidak membantu.",
+      "rulesTitle": "Aturannya, diperiksa dari atas",
+      "rulesHint": "Aturan pertama yang cocok menentukan status.",
+      "rules": {
+        "tidak_aksesibel": "Ramp / Jalur Landai di pintu masuk Tidak tersedia.",
+        "belum_diketahui": "Pintu masuk belum diketahui, atau setidaknya separuh fasilitas yang relevan belum diketahui.",
+        "aksesibel": "Semua fasilitas yang relevan Tersedia.",
+        "sebagian": "Selain itu: pintu masuk bisa dilewati, tetapi tidak semua fasilitas yang relevan tersedia."
+      },
+      "relevant": "Fasilitas relevan adalah fasilitas yang jawabannya bukan Tidak perlu. Jadi halte tanpa toilet umum tidak dianggap kurang aksesibel karena toiletnya.",
+      "summary": "Di halaman lokasi, status selalu disertai ringkasan \"X dari Y fasilitas tersedia\" dan satu kalimat alasan, misalnya \"Sebagian: Lift / Elevator tidak tersedia (rusak)\". Kami tidak memakai skor 0–100, karena satu angka menyembunyikan kebutuhan yang berbeda.",
+      "unknown": "Status Belum diketahui berarti belum dipastikan, bukan berarti tidak aksesibel."
+    },
+    "limits": {
+      "title": "Yang tidak kami nilai",
+      "items": [
+        "Status AksesBogor bukan penilaian resmi, dan AksesBogor tidak berafiliasi dengan pengelola tempat.",
+        "Kami tidak mengukur kemiringan ramp, lebar pintu, atau ukuran lain. Ketentuan teknis resmi untuk bangunan gedung ada di Peraturan Menteri PUPR Nomor 14/PRT/M/2017 tentang Persyaratan Kemudahan Bangunan Gedung.",
+        "Empat fasilitas ini belum mencakup semua kebutuhan penyandang disabilitas.",
+        "Keadaan tempat bisa berubah setelah diperiksa. Lihat tanggal \"Terakhir diverifikasi\" di halaman lokasi."
+      ]
+    },
+    "sources": [
+      {
+        "text": "Undang-Undang Nomor 8 Tahun 2016 tentang Penyandang Disabilitas, Pasal 1 angka 8, Pasal 18, dan Pasal 97.",
+        "link": "Teks UU Nomor 8 Tahun 2016 di peraturan.go.id (PDF)",
+        "href": "https://peraturan.go.id/files/uu8-2016bt.pdf"
+      },
+      {
+        "text": "Peraturan Menteri PUPR Nomor 14/PRT/M/2017 tentang Persyaratan Kemudahan Bangunan Gedung."
+      },
+      {
+        "text": "Aturan AksesBogor tentang fasilitas, jawaban, dan status: ADR-0017, ADR-0018, dan ADR-0022.",
+        "link": "Catatan keputusan AksesBogor di GitHub",
+        "href": "https://github.com/al-dioooo/akses-bogor-docs/tree/main/decisions"
+      }
+    ]
+  },
   "AkunSaya": {
     "metaTitle": "Akun saya",
     "eyebrow": "Akun",
