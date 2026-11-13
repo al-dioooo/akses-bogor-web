@@ -150,7 +150,9 @@ test("retries a failed photo and keeps the form when the session has expired", a
   await main(page).getByRole("combobox", { name: "Objek di foto 1" }).selectOption("pintu_masuk");
   await page.getByRole("button", { name: "Lihat ringkasan" }).click();
 
-  await page.request.post(`${mockApi()}/_tiruan/foto-gagal`, { data: { kali: 1 } });
+  // Hanya unggahan akun ini yang gagal, jadi tes lain yang berjalan bersamaan tidak memakai galatnya.
+  const failing = await page.request.post(`${mockApi()}/_tiruan/foto-gagal`, { data: { email: address, kali: 1 } });
+  expect(failing.ok()).toBe(true);
   await page.getByRole("button", { name: "Kirim laporan" }).click();
   await expect(main(page).getByRole("alert")).toContainText("Foto 1 gagal diunggah");
 
