@@ -67,7 +67,7 @@ test("the education pages link to each other", async ({ page }) => {
 });
 
 test("the desktop header fits a 1280 px screen with the Disabilitas label", async ({ page, isMobile }) => {
-  test.skip(isMobile, "the main menu is only shown from 1024 px");
+  test.skip(isMobile, "the main menu is only shown from 1280 px");
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto("/disabilitas");
   await expect(page.getByRole("navigation", { name: "Menu utama" }).getByRole("link", { name: "Disabilitas" })).toHaveAttribute("aria-current", "page");

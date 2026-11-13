@@ -70,7 +70,8 @@ export function DisplaySettings({ labels }: { labels: DisplayLabels }) {
         className={buttonClass("ghost", "sm", "min-w-11 px-3")}
       >
         <Icon icon={IconSunMoon} />
-        <span className="sr-only xl:not-sr-only">{labels.open}</span>
+        {/* Label hanya untuk pembaca layar: dengan label terlihat dan "Akun saya", header lebih lebar dari kolom halaman. */}
+        <span className="sr-only">{labels.open}</span>
       </button>
       <dialog
         ref={dialog}
