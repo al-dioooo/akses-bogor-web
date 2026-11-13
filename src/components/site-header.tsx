@@ -17,7 +17,7 @@ async function navLabels() {
     jelajahi: t("jelajahi"),
     peta: t("peta"),
     aksesibilitas: t("aksesibilitas"),
-    difabel: t("difabel"),
+    disabilitas: t("disabilitas"),
     tips: t("tips"),
     tentang: t("tentang"),
     laporkan: t("laporkan"),
@@ -36,7 +36,8 @@ export async function SiteHeader() {
         <Link href="/" aria-label={tl("home")} className="rounded-xl py-1">
           <Logo />
         </Link>
-        <nav aria-label={t("label")} className="hidden lg:block">
+        {/* Tujuh menu dan tombol kanan baru muat di kolom halaman mulai 1280 px; di bawahnya menu ada di Bottom nav. */}
+        <nav aria-label={t("label")} className="hidden xl:block">
           <Suspense fallback={<MainNavList labels={labels} pathname={null} />}>
             <ActiveMainNavList labels={labels} />
           </Suspense>
@@ -59,7 +60,7 @@ export async function SiteHeader() {
           <Suspense fallback={<AccountLink signedIn={false} label={t("masuk")} />}>
             <HeaderAccountLink labels={{ masuk: t("masuk"), akunSaya: t("akunSaya") }} />
           </Suspense>
-          <Link href="/laporkan" className={buttonClass("primary", "sm", "max-lg:hidden")}>
+          <Link href="/laporkan" className={buttonClass("primary", "sm", "max-xl:hidden")}>
             <Icon icon={IconCirclePlus} />
             {t("laporkanTempat")}
           </Link>
@@ -73,7 +74,7 @@ export async function SiteHeader() {
 function AccountLink({ signedIn, label }: { signedIn: boolean; label: string }) {
   return (
     <Link href={signedIn ? "/akun" : "/masuk"} className={buttonClass("ghost", "sm")}>
-      <Icon icon={IconUser} className="size-5 lg:hidden" />
+      <Icon icon={IconUser} className="size-5 xl:hidden" />
       {/* Di layar 320 px label disembunyikan secara visual, tetap menjadi nama tombol. */}
       <span className="max-[24rem]:sr-only">{label}</span>
     </Link>

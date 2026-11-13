@@ -1,8 +1,8 @@
 import { IconCirclePlus, IconCompass, IconHome, IconMap2, type Glyph } from "@/ui/icons";
 
-// Menu dari nav bar desain (Referensi Figma, Frame DS v1). Halaman yang belum dibuat menampilkan halaman
-// tidak ditemukan sampai halamannya ada.
-export type NavKey = "beranda" | "jelajahi" | "peta" | "aksesibilitas" | "difabel" | "tips" | "tentang" | "laporkan";
+// Menu dari nav bar desain (Referensi Figma, Frame DS v1). Semua tujuannya sudah ada. Label "Difabel" di Figma
+// menjadi "Disabilitas" (/disabilitas), sesuai istilah UU No. 8 Tahun 2016 (ADR-0041).
+export type NavKey = "beranda" | "jelajahi" | "peta" | "aksesibilitas" | "disabilitas" | "tips" | "tentang" | "laporkan";
 
 export type NavItem = { key: NavKey; href: string };
 
@@ -11,7 +11,7 @@ export const MAIN_NAV: NavItem[] = [
   { key: "jelajahi", href: "/jelajahi" },
   { key: "peta", href: "/peta" },
   { key: "aksesibilitas", href: "/aksesibilitas" },
-  { key: "difabel", href: "/difabel" },
+  { key: "disabilitas", href: "/disabilitas" },
   { key: "tips", href: "/tips" },
   { key: "tentang", href: "/tentang" },
 ];

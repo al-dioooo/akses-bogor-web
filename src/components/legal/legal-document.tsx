@@ -1,6 +1,5 @@
 import { getFormatter, getTranslations } from "next-intl/server";
-import { Icon } from "@/ui/icon";
-import { IconInfoCircle } from "@/ui/icons";
+import { DraftNotice } from "@/ui/draft-notice";
 
 export type LegalSection = {
   id: string;
@@ -29,10 +28,7 @@ export async function LegalDocument({ namespace, version }: { namespace: "Kebija
           <span className="accent"> {t("accent")}</span>
         </h1>
         <p className="font-mono text-sm text-text-secondary">{t("version", { date })}</p>
-        <p className="flex items-start gap-2 rounded-2xl bg-status-partial-bg p-4 font-semibold text-status-partial-fg">
-          <Icon icon={IconInfoCircle} className="mt-0.5 size-5" />
-          {t("draft")}
-        </p>
+        <DraftNotice>{t("draft")}</DraftNotice>
       </div>
       <div className="grid gap-10 lg:grid-cols-[16rem_1fr]">
         <nav aria-labelledby="isi-halaman" className="lg:sticky lg:top-24 lg:self-start">
