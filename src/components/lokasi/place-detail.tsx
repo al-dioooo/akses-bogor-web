@@ -9,6 +9,7 @@ import { IconAlertTriangle, IconMessageReport, IconPencil, IconPhotoOff } from "
 import { STATUS_ICON, STATUS_TONE } from "@/ui/place-icons";
 import { StatusBadge } from "@/ui/status-badge";
 import { FacilityList } from "./facility-list";
+import { ShareButton } from "./share-button";
 
 /** Detail lokasi (FR-06, FR-07, FR-38): status dengan alasannya, ringkasan X dari Y, fasilitas, foto, dan verifikasi. */
 export async function PlaceDetail({ place }: { place: Place }) {
@@ -43,6 +44,7 @@ export async function PlaceDetail({ place }: { place: Place }) {
               <span className="font-semibold text-text-primary">{t("landmark")}:</span> {place.landmark}
             </p>
           )}
+          <ShareButton id={place.id} title={place.name} />
         </div>
         <section aria-labelledby="judul-ringkasan" className={`flex flex-col items-start gap-4 rounded-[1.75rem] p-6 sm:p-7 ${STATUS_TONE[place.status]}`}>
           <h2 id="judul-ringkasan" className="sr-only">

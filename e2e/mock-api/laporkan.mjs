@@ -5,7 +5,8 @@
 //   dari lokasi contoh terdekat.
 // - Pencarian "galat-tiruan" menjawab 502. Hasil Mapbox tiruan: Masjid Raya Bogor, Stasiun Bogor, dan Kampus IPB
 //   Dramaga (di luar Kota Bogor).
-// - POST /_tiruan/foto-gagal { "kali": n } membuat n unggahan foto berikutnya gagal 502.
+// - POST /_tiruan/foto-gagal { "email": "...", "kali": n } membuat n unggahan foto berikutnya dari akun itu gagal 502.
+//   Penghitungnya per akun karena tes Playwright berjalan paralel: unggahan dari tes lain tidak boleh memakai galatnya.
 import { randomUUID } from "node:crypto";
 import { userFromToken } from "./akun.mjs";
 
@@ -16,7 +17,7 @@ const MAPBOX = [
   { name: "Kampus IPB Dramaga", address: "Dramaga, Kabupaten Bogor", location: { lat: -6.5579, lng: 106.7268 }, kind: "poi" },
 ];
 const uploads = new Map();
-let failingUploads = 0;
+const failingUploads = new Map();
 
 const error = (status, galat, pesan) => [status, { galat, pesan }];
 const inside = ({ lat, lng }) => lng >= BOX.west && lng <= BOX.east && lat >= BOX.south && lat <= BOX.north;
@@ -37,7 +38,8 @@ function districtOf(places, point) {
 /** Menjawab route Laporkan, atau `null` bila bukan route Laporkan. */
 export function handleLaporkan(method, pathname, headers, body, places) {
   if (method === "POST" && pathname === "/_tiruan/foto-gagal") {
-    failingUploads = Number(body?.kali ?? 1);
+    if (typeof body?.email !== "string") return error(400, "input_tidak_valid", "Sertakan email akun yang unggahannya dibuat gagal.");
+    failingUploads.set(body.email, Number(body.kali ?? 1));
     return [200, { ok: true }];
   }
 
@@ -72,8 +74,9 @@ export function handleLaporkan(method, pathname, headers, body, places) {
   if (!user.completed) return error(403, "akun_belum_lengkap", "Lengkapi akun dulu sebelum mengirim laporan.");
 
   if (method === "POST" && pathname === "/reports/photos") {
-    if (failingUploads > 0) {
-      failingUploads -= 1;
+    const failing = failingUploads.get(user.email) ?? 0;
+    if (failing > 0) {
+      failingUploads.set(user.email, failing - 1);
       return error(502, "foto_gagal_disimpan", "Foto gagal disimpan. Coba unggah lagi.");
     }
     if (!body?.length) return error(400, "foto_tidak_valid", "Berkas ini tidak bisa dibaca sebagai foto. Pilih foto JPEG, PNG, atau WebP lain.");

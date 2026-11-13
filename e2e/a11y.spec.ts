@@ -22,6 +22,7 @@ const PAGES = [
   "/tentang",
   "/aksesibilitas",
   "/disabilitas",
+  "/tips",
   "/laporkan",
   "/laporkan?lokasi=4037ba19-b366-45bc-aceb-270944fe9372&jenis=kekurangan",
 ];

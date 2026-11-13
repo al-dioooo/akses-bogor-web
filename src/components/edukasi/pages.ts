@@ -5,6 +5,7 @@
 export const EDU_PAGES = [
   { href: "/aksesibilitas", namespace: "Aksesibilitas" },
   { href: "/disabilitas", namespace: "Disabilitas" },
+  { href: "/tips", namespace: "Tips" },
 ] as const;
 
 export type EduNamespace = (typeof EDU_PAGES)[number]["namespace"];

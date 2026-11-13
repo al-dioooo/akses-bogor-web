@@ -5,6 +5,7 @@ import { expect, test } from "@playwright/test";
 const PAGES = [
   { link: "Aksesibilitas", path: "/aksesibilitas", heading: "Mengenal aksesibilitas." },
   { link: "Disabilitas", path: "/disabilitas", heading: "Mengenal disabilitas." },
+  { link: "Tips", path: "/tips", heading: "Tips berkunjung dan melapor." },
 ];
 
 for (const { link, path, heading } of PAGES) {
@@ -72,4 +73,30 @@ test("the desktop header fits a 1280 px screen with the Disabilitas label", asyn
   await expect(page.getByRole("navigation", { name: "Menu utama" }).getByRole("link", { name: "Disabilitas" })).toHaveAttribute("aria-current", "page");
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   expect(overflow).toBeLessThanOrEqual(0);
+});
+
+test("Tips covers visiting, reporting, photos without faces or number plates, and what happens next", async ({ page }) => {
+  await page.goto("/tips");
+  const main = page.getByRole("main");
+  await expect(main.getByRole("region", { name: "Sebelum berangkat" }).getByRole("listitem")).toHaveCount(6);
+  const photos = main.getByRole("region", { name: "Foto yang membantu verifikasi" });
+  await expect(photos.getByRole("term")).toHaveText(["Pintu masuk dan ramp", "Toilet difabel", "Guiding block", "Lift"]);
+  await expect(photos.getByRole("heading", { name: "Jaga privasi orang lain" })).toBeVisible();
+  await expect(photos).toContainText("wajah orang dan pelat nomor");
+  await expect(main.getByRole("region", { name: "Setelah mengirim" })).toContainText("7 hari");
+});
+
+test("the main menu and the Lainnya menu reach every education page", async ({ page, isMobile }) => {
+  await page.goto("/");
+  for (const [name, path] of [
+    ["Aksesibilitas", "/aksesibilitas"],
+    ["Disabilitas", "/disabilitas"],
+    ["Tips", "/tips"],
+  ]) {
+    if (isMobile) await page.getByRole("button", { name: "Lainnya" }).click();
+    const menu = isMobile ? page.locator("#menu-lainnya") : page.getByRole("navigation", { name: "Menu utama" });
+    await menu.getByRole("link", { name, exact: true }).click();
+    await expect(page).toHaveURL(new RegExp(`${path}$`));
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  }
 });
