@@ -34,6 +34,10 @@ export const IconMap2: Glyph = ["M12 18.5l-3 -1.5l-6 3v-13l6 -3l6 3l6 -3v7.5", "
 export const IconCirclePlus: Glyph = ["M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0", "M9 12h6", "M12 9v6"];
 export const IconDots: Glyph = ["M4 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0", "M11 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0", "M18 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"];
 export const IconUser: Glyph = ["M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0", "M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"];
+export const IconList: Glyph = ["M9 6l11 0", "M9 12l11 0", "M9 18l11 0", "M5 6l0 .01", "M5 12l0 .01", "M5 18l0 .01"];
+export const IconPlus: Glyph = ["M12 5l0 14", "M5 12l14 0"];
+export const IconMinus: Glyph = ["M5 12l14 0"];
+export const IconFocusCentered: Glyph = ["M10 12a2 2 0 1 0 4 0a2 2 0 1 0 -4 0", "M4 8v-2a2 2 0 0 1 2 -2h2", "M4 16v2a2 2 0 0 0 2 2h2", "M16 4h2a2 2 0 0 1 2 2v2", "M16 20h2a2 2 0 0 0 2 -2v-2"];
 export const IconSearch: Glyph = ["M3 10a7 7 0 1 0 14 0a7 7 0 1 0 -14 0", "M21 21l-6 -6"];
 export const IconAdjustmentsHorizontal: Glyph = ["M12 6a2 2 0 1 0 4 0a2 2 0 1 0 -4 0", "M4 6l8 0", "M16 6l4 0", "M6 12a2 2 0 1 0 4 0a2 2 0 1 0 -4 0", "M4 12l2 0", "M10 12l10 0", "M15 18a2 2 0 1 0 4 0a2 2 0 1 0 -4 0", "M4 18l11 0", "M19 18l1 0"];
 export const IconX: Glyph = ["M18 6l-12 12", "M6 6l12 12"];
@@ -45,6 +49,8 @@ export const IconArrowRight: Glyph = ["M5 12l14 0", "M13 18l6 -6", "M13 6l6 6"];
 export const IconArrowUp: Glyph = ["M12 5l0 14", "M18 11l-6 -6", "M6 11l6 -6"];
 export const IconArrowUpRight: Glyph = ["M17 7l-10 10", "M8 7l9 0l0 9"];
 export const IconSunMoon: Glyph = ["M9.173 14.83a4 4 0 1 1 5.657 -5.657", "M11.294 12.707l.174 .247a7.5 7.5 0 0 0 8.845 2.492a9 9 0 0 1 -14.671 2.914", "M3 12h1", "M12 3v1", "M5.6 5.6l.7 .7", "M3 21l18 -18"];
+export const IconPlayerPause: Glyph = ["M6 6a1 1 0 0 1 1 -1h2a1 1 0 0 1 1 1v12a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1z", "M14 6a1 1 0 0 1 1 -1h2a1 1 0 0 1 1 1v12a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1z"];
+export const IconPlayerPlay: Glyph = ["M7 4v16l13 -8z"];
 
 // Konten
 export const IconMapPin: Glyph = ["M9 11a3 3 0 1 0 6 0a3 3 0 0 0 -6 0", "M17.657 16.657l-4.243 4.243a2 2 0 0 1 -2.827 0l-4.244 -4.243a8 8 0 1 1 11.314 0"];
@@ -55,4 +61,23 @@ export const IconPhotoOff: Glyph = ["M15 8h.01", "M7 3h11a3 3 0 0 1 3 3v11m-.856
 export const IconUsers: Glyph = ["M5 7a4 4 0 1 0 8 0a4 4 0 1 0 -8 0", "M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2", "M16 3.13a4 4 0 0 1 0 7.75", "M21 21v-2a4 4 0 0 0 -3 -3.85"];
 export const IconBuilding: Glyph = ["M3 21l18 0", "M9 8l1 0", "M9 12l1 0", "M9 16l1 0", "M14 8l1 0", "M14 12l1 0", "M14 16l1 0", "M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16"];
 export const IconPencil: Glyph = ["M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4", "M13.5 6.5l4 4"];
+export const IconSend: Glyph = ["M10 14l11 -11", "M21 3l-6.5 18a.55 .55 0 0 1 -1 0l-3.5 -7l-7 -3.5a.55 .55 0 0 1 0 -1l18 -6.5"];
 export const IconMessageReport: Glyph = ["M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12", "M12 8v3", "M12 14v.01"];
+
+// Akun
+export const IconMail: Glyph = ["M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10z", "M3 7l9 6l9 -6"];
+export const IconClock: Glyph = ["M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0", "M12 7v5l3 3"];
+export const IconLogout: Glyph = ["M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2", "M9 12h12l-3 -3", "M18 15l3 -3"];
+export const IconTrash: Glyph = ["M4 7l16 0", "M10 11l0 6", "M14 11l0 6", "M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12", "M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"];
+export const IconExternalLink: Glyph = ["M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6", "M11 13l9 -9", "M15 4h5v5"];
+
+// Verifikasi (ADR-0035 sampai ADR-0037)
+export const IconClipboardCheck: Glyph = ["M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2", "M9 5a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2", "M9 14l2 2l4 -4"];
+export const IconTrendingDown: Glyph = ["M3 7l6 6l4 -4l8 8", "M21 10l0 7l-7 0"];
+export const IconMessage: Glyph = ["M8 9h8", "M8 13h6", "M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12"];
+export const IconPhoto: Glyph = ["M15 8h.01", "M3 6a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v12a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3v-12", "M3 16l5 -5c.928 -.893 2.072 -.893 3 0l5 5", "M14 14l1 -1c.928 -.893 2.072 -.893 3 0l3 3"];
+export const IconRefresh: Glyph = ["M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4", "M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4"];
+export const IconEye: Glyph = ["M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0", "M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6"];
+export const IconEyeOff: Glyph = ["M10.585 10.587a2 2 0 0 0 2.829 2.828", "M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87", "M3 3l18 18"];
+export const IconBlur: Glyph = ["M12 21a9.01 9.01 0 0 0 2.32 -.302a9.004 9.004 0 0 0 1.74 -16.733a9 9 0 1 0 -4.06 17.035", "M12 3v17", "M12 12h9", "M12 9h8", "M12 6h6", "M12 18h6", "M12 15h8"];
+export const IconShieldCheck: Glyph = ["M11.46 20.846a12 12 0 0 1 -7.96 -14.846a12 12 0 0 0 8.5 -3a12 12 0 0 0 8.5 3a12 12 0 0 1 -.09 7.06", "M15 19l2 2l4 -4"];

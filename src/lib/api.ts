@@ -51,6 +51,19 @@ export type Stats = {
   contributors: number;
 };
 
+/** Satu titik di peta: GeoJSON Feature dari `GET /places/map`, koordinat `[lng, lat]`. */
+export type MapFeature = {
+  type: "Feature";
+  id: string;
+  geometry: { type: "Point"; coordinates: [number, number] };
+  properties: { name: string; category: Category; status: Status };
+};
+
+export type PlaceMap = { type: "FeatureCollection"; features: MapFeature[] };
+
+/** Token Mapbox sementara dari API (ADR-0016). */
+export type MapToken = { token: string; expiresAt: string };
+
 export type PlaceFilters = {
   q?: string;
   category?: Category[];
@@ -61,19 +74,23 @@ export type PlaceFilters = {
   offset?: number;
 };
 
-/** Galat dari API dalam bentuk `{ galat, pesan }`, atau galat jaringan dengan kode `api_tidak_terhubung`. */
+/**
+ * Galat dari API dalam bentuk `{ galat, pesan }`, atau galat jaringan dengan kode `api_tidak_terhubung`. `pesan` dari
+ * API sudah berbahasa Indonesia untuk pengguna. `retryAfterSeconds` diisi dari header `retry-after` pada 429.
+ */
 export class ApiError extends Error {
   constructor(
     readonly status: number,
     readonly galat: string,
     message: string,
+    readonly retryAfterSeconds?: number,
   ) {
     super(message);
     this.name = "ApiError";
   }
 }
 
-function apiUrl(path: string, query: Record<string, string | number | undefined> = {}) {
+export function apiUrl(path: string, query: Record<string, string | number | undefined> = {}) {
   const base = process.env.API_URL;
   if (!base) throw new ApiError(0, "api_belum_diatur", "API_URL belum diatur.");
   const url = new URL(path, base);
@@ -83,12 +100,33 @@ function apiUrl(path: string, query: Record<string, string | number | undefined>
   return url;
 }
 
+/**
+ * Header untuk setiap panggilan API dari server web: halaman, route handler (foto, kirim laporan, cari tempat, cek
+ * lokasi, kunci peta, foto verifikator), dan server action (akun, verifikasi). Dengan `WEB_SERVER_SECRET`, panggilan
+ * ikut membawa IP pengunjung supaya rate limit API, termasuk batas kode masuk dan unggah foto, dihitung per pengunjung,
+ * bukan per IP server Vercel. Vercel menulis ulang `x-forwarded-for`, jadi isinya IP pengunjung yang asli.
+ */
+export async function apiHeaders(): Promise<Record<string, string>> {
+  const result: Record<string, string> = { accept: "application/json" };
+  const secret = process.env.WEB_SERVER_SECRET;
+  if (!secret) return result;
+  // Diimpor saat dipanggil: komponen klien ikut mengimpor konstanta dari modul ini, dan next/headers hanya boleh ada
+  // di sisi server.
+  const { headers } = await import("next/headers");
+  const visitorIp = (await headers()).get("x-forwarded-for")?.split(",")[0]?.trim();
+  if (visitorIp) {
+    result["x-web-server-secret"] = secret;
+    result["x-visitor-ip"] = visitorIp;
+  }
+  return result;
+}
+
 async function get<T>(path: string, query?: Record<string, string | number | undefined>): Promise<T> {
   // Data lokasi selalu diambil saat request, tidak saat build, jadi build tidak butuh API.
   await connection();
   let response: Response;
   try {
-    response = await fetch(apiUrl(path, query), { headers: { accept: "application/json" } });
+    response = await fetch(apiUrl(path, query), { headers: await apiHeaders() });
   } catch {
     throw new ApiError(0, "api_tidak_terhubung", "API tidak bisa dihubungi.");
   }
@@ -105,16 +143,23 @@ export const getStats = () => get<Stats>("/places/stats");
 
 export const getDistricts = () => get<District[]>("/districts");
 
+const filterQuery = (filters: PlaceFilters) => ({
+  q: filters.q,
+  category: list(filters.category),
+  district: list(filters.district),
+  facility: list(filters.facility),
+  status: list(filters.status),
+});
+
 export const getPlaces = (filters: PlaceFilters = {}) =>
-  get<PlaceList>("/places", {
-    q: filters.q,
-    category: list(filters.category),
-    district: list(filters.district),
-    facility: list(filters.facility),
-    status: list(filters.status),
-    limit: filters.limit,
-    offset: filters.offset,
-  });
+  get<PlaceList>("/places", { ...filterQuery(filters), limit: filters.limit, offset: filters.offset });
+
+/** Semua titik yang cocok dengan filter, paling banyak 2000 (FR-05). */
+export const getMapPlaces = (filters: Omit<PlaceFilters, "limit" | "offset"> = {}) =>
+  get<PlaceMap>("/places/map", filterQuery(filters));
+
+/** Token peta untuk browser. API menjawab 503 `peta_belum_diatur` bila Mapbox belum diatur di server. */
+export const getMapToken = () => get<MapToken>("/map/token");
 
 /** `null` bila lokasi tidak ada atau id-nya tidak valid. */
 export async function getPlace(id: string): Promise<PlaceDetail | null> {

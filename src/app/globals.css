@@ -3,9 +3,22 @@
 
 @theme inline {
   --font-sans: var(--font-inter);
-  --font-heading: var(--font-plus-jakarta-sans);
+  --font-heading: var(--font-bricolage);
+  --font-mono: var(--font-plex-mono);
+  --font-accent: var(--font-instrument-serif);
   /* Kurva gerak keluarga produk (aksesin, lokerin): keluar cepat, berhenti lembut. */
   --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/*
+ * Kolom yang mendapat fokus tidak tertutup header yang menempel di atas, atau Bottom nav dan Form action bar di bawah
+ * layar ponsel (WCAG 2.4.11).
+ */
+html {
+  scroll-padding-top: 6rem;
+  @media (width < 64rem) {
+    scroll-padding-bottom: 7.5rem;
+  }
 }
 
 body {
@@ -13,84 +26,60 @@ body {
   color: var(--color-text-primary);
 }
 
-/* Cincin fokus dari Focus/Ring (ADR-0009). Outline, bukan box-shadow, supaya tetap terlihat di mode kontras tinggi. */
+/* Cincin fokus dari Focus/Ring (ADR-0027). Outline, bukan box-shadow, supaya tetap terlihat di mode kontras tinggi. */
 :focus-visible {
   outline: var(--border-width-focus) solid var(--color-focus-ring);
   outline-offset: 2px;
 }
 
-/* Lebar konten: 16 px di tepi ponsel (ADR-0012), 32 px di layar lebar, paling lebar 75rem. */
+/* Lebar konten: 16 px di tepi ponsel (ADR-0012), 40 px di layar lebar, paling lebar 77.5rem. */
 @utility page-width {
-  width: min(75rem, 100% - 2rem);
+  width: min(77.5rem, 100% - 2rem);
   margin-inline: auto;
   @media (width >= 48rem) {
-    width: min(75rem, 100% - 4rem);
+    width: min(77.5rem, 100% - 5rem);
   }
 }
 
-/* Glass/Regular dan Glass/Strong. Di mode Solid tokennya opak, jadi blur tidak terlihat. */
-@utility glass {
-  background-color: var(--color-surface-glass);
-  border: var(--border-width-default) solid var(--color-border-glass);
-  backdrop-filter: blur(var(--blur-glass)) saturate(1.4);
-  box-shadow:
-    inset 0 1px 0 var(--color-shadow-highlight),
-    0 8px 32px var(--color-shadow-glass);
+/* Panel datar (ADR-0027): permukaan putih dengan garis tipis. panel-raised untuk yang mengambang di atas konten. */
+@utility panel {
+  background-color: var(--color-surface-raised);
+  border: var(--border-width-default) solid var(--color-border-subtle);
 }
 
-@utility glass-strong {
-  background-color: var(--color-surface-glass-strong);
-  border: var(--border-width-default) solid var(--color-border-glass);
-  backdrop-filter: blur(var(--blur-glass-strong)) saturate(1.4);
-  box-shadow:
-    inset 0 1px 0 var(--color-shadow-highlight),
-    0 12px 40px var(--color-shadow-glass);
+@utility panel-raised {
+  background-color: var(--color-surface-raised);
+  border: var(--border-width-default) solid var(--color-border-subtle);
+  box-shadow: 0 12px 32px -16px var(--color-shadow-soft);
 }
 
-/* Tombol Primary berkilap dengan Glow/Brand. Titik paling terang tetap 4.5:1 terhadap teks putih. */
-@utility btn-gloss {
-  background-color: var(--color-brand-fill);
-  background-image: linear-gradient(
-    180deg,
-    color-mix(in oklab, var(--color-brand-fill) 88%, white),
-    var(--color-brand-fill) 55%,
-    var(--color-brand-fill-hover)
-  );
-  box-shadow:
-    inset 0 1px 1px color-mix(in oklab, white 55%, transparent),
-    inset 0 -2px 4px color-mix(in oklab, var(--color-brand-fill-pressed) 45%, transparent),
-    0 8px 24px -4px var(--color-brand-glow);
-  &:hover {
-    background-image: linear-gradient(
-      180deg,
-      var(--color-brand-fill),
-      var(--color-brand-fill-hover) 60%,
-      var(--color-brand-fill-pressed)
-    );
-  }
-}
-
-/* Label kecil di atas judul bagian, dengan titik dekoratif. Maknanya ada di teks. */
-@utility eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  border-radius: var(--radius-full);
-  padding: 0.375rem 0.875rem;
+/* Label bernomor di atas judul bagian, mis. "01 / Kategori". */
+@utility lbl {
+  font-family: var(--font-mono);
   font-size: 0.75rem;
   line-height: 1rem;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--color-text-brand);
-  &::before {
-    content: "";
-    width: 0.375rem;
-    height: 0.375rem;
-    border-radius: var(--radius-full);
-    background: var(--color-brand-fill);
-    box-shadow: 0 0 0 3px var(--color-surface-brand-subtle);
-  }
+}
+
+/* Satu kata aksen di akhir judul, miring dan berwarna brand. */
+@utility accent {
+  font-family: var(--font-accent);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.06em;
+  letter-spacing: -0.01em;
+  color: var(--color-text-brand);
+}
+
+/* Judul besar: Bricolage ExtraBold dengan spasi huruf rapat. */
+@utility display {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
 }
 
 /* Kartu terangkat 2 px saat disorot, hanya untuk perangkat dengan kursor. */
@@ -101,9 +90,7 @@ body {
   @media (hover: hover) and (pointer: fine) {
     &:hover {
       transform: translateY(-2px);
-      box-shadow:
-        inset 0 1px 0 var(--color-shadow-highlight),
-        0 16px 40px var(--color-shadow-glass);
+      box-shadow: 0 16px 32px -16px var(--color-shadow-soft);
     }
   }
 }
@@ -127,54 +114,6 @@ body {
   }
 }
 
-/* Latar aurora: gumpalan Inklusi, Hujan, dan Kebun Raya (ADR-0009) yang bergeser pelan. Di mode Solid
-   warnanya sama dengan latar, jadi tidak terlihat. */
-@keyframes aurora-geser {
-  to {
-    transform: translate3d(6vmax, 4vmax, 0) scale(1.1);
-  }
-}
-
-.aurora {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.aurora > span {
-  position: absolute;
-  border-radius: var(--radius-full);
-  animation: aurora-geser 32s ease-in-out infinite alternate;
-}
-
-.aurora > span:nth-child(1) {
-  width: 70vmax;
-  height: 70vmax;
-  top: -30vmax;
-  left: -20vmax;
-  background: radial-gradient(closest-side, var(--color-bg-aurora-inclusion), transparent);
-}
-
-.aurora > span:nth-child(2) {
-  width: 60vmax;
-  height: 60vmax;
-  top: 5vmax;
-  right: -25vmax;
-  background: radial-gradient(closest-side, var(--color-bg-aurora-rain), transparent);
-  animation-delay: -11s;
-}
-
-.aurora > span:nth-child(3) {
-  width: 55vmax;
-  height: 55vmax;
-  bottom: -25vmax;
-  left: 15vmax;
-  background: radial-gradient(closest-side, var(--color-bg-aurora-garden), transparent);
-  animation-delay: -21s;
-}
-
 /* Pengaturan tampilan: "Kurangi gerakan" mematikan semua animasi, sama seperti preferensi perangkat. */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -194,4 +133,251 @@ body {
   animation-iteration-count: 1 !important;
   transition-duration: 0.01ms !important;
   scroll-behavior: auto !important;
+}
+
+/* Hero Beranda (ADR-0028): poster 2:1 di bawah teks pada layar lebar, 4:3 di bawah teks pada ponsel. Pin tampil
+   setelah posisinya dihitung; kanvas three.js menutup poster pada bingkai yang sama setelah adegan siap. */
+.hero-stage {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  margin-top: var(--spacing-xl);
+  overflow: hidden;
+  container-type: size;
+  @media (width >= 64rem) {
+    position: absolute;
+    inset: auto 0 0;
+    height: 50vw;
+    aspect-ratio: auto;
+    margin: 0;
+  }
+}
+
+.hero-still,
+.hero-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 86% 70%;
+  @media (width >= 64rem) {
+    object-position: 100% 60%;
+  }
+}
+
+/* Poster versi malam hanya tampil di mode Gelap; selektornya sama dengan tokens.css. */
+.hero-still[data-mode="gelap"] {
+  display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .hero-still[data-mode="terang"] {
+    display: none;
+  }
+  :root:not([data-theme]) .hero-still[data-mode="gelap"] {
+    display: block;
+  }
+}
+
+:root[data-theme="gelap"] .hero-still[data-mode="terang"] {
+  display: none;
+}
+
+:root[data-theme="gelap"] .hero-still[data-mode="gelap"] {
+  display: block;
+}
+
+.hero-canvas {
+  opacity: 0;
+  transition: opacity 600ms var(--ease-out-expo);
+}
+
+.hero-stage[data-live] .hero-canvas,
+.hero-stage[data-ready] .hero-pin {
+  opacity: 1;
+}
+
+/* Langit gambar menyatu dengan latar halaman; di layar lebar sisi kiri dibuat tenang untuk teks. */
+.hero-veil {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, var(--color-bg-canvas), color-mix(in oklab, var(--color-bg-canvas) 70%, transparent) 8%, color-mix(in oklab, var(--color-bg-canvas) 30%, transparent) 18%, transparent 30%);
+  @media (width >= 64rem) {
+    background:
+      linear-gradient(180deg, var(--color-bg-canvas), color-mix(in oklab, var(--color-bg-canvas) 70%, transparent) 8%, color-mix(in oklab, var(--color-bg-canvas) 30%, transparent) 18%, transparent 30%),
+      linear-gradient(90deg, var(--color-bg-canvas), color-mix(in oklab, var(--color-bg-canvas) 80%, transparent) 26%, transparent 46%);
+  }
+}
+
+.hero-pin {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  transition: opacity 400ms var(--ease-out-expo);
+  pointer-events: none;
+}
+
+.hero-pin > span {
+  display: block;
+  transform: translate(-50%, -100%);
+  &::after {
+    content: "";
+    display: block;
+    width: 2px;
+    height: 2.25rem;
+    margin-inline: auto;
+    background: repeating-linear-gradient(var(--color-brand-fill) 0 4px, transparent 4px 8px);
+  }
+}
+
+.hero-pin b {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 3px solid var(--color-brand-fill);
+  border-radius: var(--radius-full);
+  background: var(--color-surface-raised);
+  color: var(--color-text-brand);
+  font: 600 0.8125rem/1 var(--font-mono);
+  box-shadow: 0 10px 24px -10px var(--color-shadow-soft);
+  @media (width >= 64rem) {
+    width: 2.75rem;
+    height: 2.75rem;
+    font-size: 0.9375rem;
+  }
+}
+
+/* Pin naik turun pelan hanya selama gerak berjalan. */
+@keyframes pin-naik {
+  50% {
+    transform: translate(-50%, calc(-100% - 6px));
+  }
+}
+
+.hero-stage[data-moving] .hero-pin > span {
+  animation: pin-naik 3.2s ease-in-out infinite;
+}
+
+.hero-stage[data-moving] .hero-pin:nth-child(5) > span {
+  animation-delay: -0.8s;
+}
+
+.hero-stage[data-moving] .hero-pin:nth-child(6) > span {
+  animation-delay: -1.6s;
+}
+
+.hero-stage[data-moving] .hero-pin:nth-child(7) > span {
+  animation-delay: -2.4s;
+}
+
+.hero-toggle {
+  position: absolute;
+  right: var(--spacing-md);
+  bottom: var(--spacing-md);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  min-height: 2.75rem;
+  padding-inline: var(--spacing-md);
+  border: var(--border-width-default) solid var(--color-border-subtle);
+  border-radius: var(--radius-full);
+  background: var(--color-surface-raised);
+  color: var(--color-text-primary);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+/* "Rute ke pintu" (ADR-0028): di layar lebar dengan adegan hidup, kanvas lengket di kiri dan teks di kanan; selain
+   itu close-up diam di tiap baris. */
+.route-stage {
+  display: grid;
+}
+
+.route-view {
+  display: none;
+}
+
+@media (width >= 64rem) {
+  .route-stage[data-live] {
+    grid-template-columns: 1fr 1fr;
+    column-gap: var(--spacing-3xl);
+    align-items: start;
+  }
+
+  .route-stage[data-live] .route-view {
+    display: block;
+    position: sticky;
+    top: max(5rem, calc(50vh - 18vw));
+    aspect-ratio: 5 / 4;
+    overflow: hidden;
+    border-radius: 2rem;
+    & canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  .route-stage[data-live] .route-list {
+    gap: 0;
+  }
+
+  .route-stage[data-live] .route-stop {
+    grid-template-columns: 1fr;
+    min-height: 60vh;
+  }
+
+  .route-stage[data-live] .route-still {
+    display: none;
+  }
+}
+
+/* Garis putus-putus di tengah pita jalan, seperti marka jalan di ilustrasi. */
+.road-band {
+  position: relative;
+  @media (width >= 64rem) {
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 50% 0 auto;
+      height: 4px;
+      background: repeating-linear-gradient(90deg, var(--color-text-on-inverse-secondary) 0 44px, transparent 44px 92px);
+      opacity: 0.6;
+    }
+  }
+}
+
+/* Ruas "belum diketahui" di FacilityMeter: bergaris supaya beda dari ruas kosong tanpa bergantung warna. */
+@utility meter-unknown {
+  background: repeating-linear-gradient(
+    135deg,
+    var(--color-bg-sunken) 0 3px,
+    var(--color-status-unknown-solid) 3px 5px
+  );
+}
+
+/* Peta (FR-05): bingkai memotong isi yang meluber, jadi cincin fokus kanvas Mapbox digambar di sisi dalam. */
+.peta-frame .mapboxgl-canvas:focus-visible {
+  outline-offset: -4px;
+}
+
+/* Logo dan atribusi Mapbox digeser dari sudut bingkai yang membulat. Di ponsel atribusi turun ke dua baris di samping
+   logo, supaya keduanya tetap terbaca (ADR-0016). */
+.peta-frame .mapboxgl-ctrl-bottom-left {
+  bottom: 0.5rem;
+  left: 0.75rem;
+}
+
+.peta-frame .mapboxgl-ctrl-bottom-right {
+  bottom: 0.5rem;
+  right: 0.75rem;
+  max-width: calc(100% - 7.5rem);
+  text-align: right;
+}
+
+.peta-frame .mapboxgl-ctrl-attrib {
+  border-radius: 0.5rem;
 }

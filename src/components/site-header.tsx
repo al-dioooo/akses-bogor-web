@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
+import { hasSession } from "@/lib/sesi";
 import { buttonClass } from "@/ui/button-styles";
 import { Icon } from "@/ui/icon";
 import { IconCirclePlus, IconUser } from "@/ui/icons";
@@ -31,8 +32,8 @@ export async function SiteHeader() {
   const td = await getTranslations("Tampilan");
   return (
     <StickyHeader>
-      <div className="page-width flex min-h-16 items-center justify-between gap-3">
-        <Link href="/" aria-label={tl("home")} className="rounded-xl">
+      <div className="page-width flex min-h-19 items-center justify-between gap-3">
+        <Link href="/" aria-label={tl("home")} className="rounded-xl py-1">
           <Logo />
         </Link>
         <nav aria-label={t("label")} className="hidden lg:block">
@@ -47,17 +48,17 @@ export async function SiteHeader() {
               title: td("title"),
               mode: td("mode"),
               modeHint: td("modeHint"),
-              theme: { perangkat: td("theme.perangkat"), glass: td("theme.glass"), solid: td("theme.solid"), dark: td("theme.dark") },
+              theme: { perangkat: td("theme.perangkat"), terang: td("theme.terang"), gelap: td("theme.gelap") },
               motion: td("motion"),
               motionHint: td("motionHint"),
               motionOption: { perangkat: td("motionOption.perangkat"), off: td("motionOption.off") },
               done: td("done"),
             }}
           />
-          <Link href="/masuk" className={buttonClass("ghost", "sm")}>
-            <Icon icon={IconUser} className="size-5 lg:hidden" />
-            {t("masuk")}
-          </Link>
+          {/* Cookie sesi dibaca saat request, jadi tautan akun dialirkan setelah kerangka halaman (Cache Components). */}
+          <Suspense fallback={<AccountLink signedIn={false} label={t("masuk")} />}>
+            <HeaderAccountLink labels={{ masuk: t("masuk"), akunSaya: t("akunSaya") }} />
+          </Suspense>
           <Link href="/laporkan" className={buttonClass("primary", "sm", "max-lg:hidden")}>
             <Icon icon={IconCirclePlus} />
             {t("laporkanTempat")}
@@ -68,6 +69,26 @@ export async function SiteHeader() {
   );
 }
 
+/** "Masuk" sebelum login, "Akun saya" sesudahnya (Frame Akun). Hanya memeriksa ada tidaknya cookie sesi, tanpa API. */
+function AccountLink({ signedIn, label }: { signedIn: boolean; label: string }) {
+  return (
+    <Link href={signedIn ? "/akun" : "/masuk"} className={buttonClass("ghost", "sm")}>
+      <Icon icon={IconUser} className="size-5 lg:hidden" />
+      {/* Di layar 320 px label disembunyikan secara visual, tetap menjadi nama tombol. */}
+      <span className="max-[24rem]:sr-only">{label}</span>
+    </Link>
+  );
+}
+
+async function HeaderAccountLink({ labels }: { labels: { masuk: string; akunSaya: string } }) {
+  const signedIn = await hasSession();
+  return <AccountLink signedIn={signedIn} label={signedIn ? labels.akunSaya : labels.masuk} />;
+}
+
+async function SignedInBottomNav({ labels }: { labels: BottomNavLabels }) {
+  return <ActiveBottomNav labels={labels} signedIn={await hasSession()} />;
+}
+
 export async function SiteBottomNav() {
   const { t, labels } = await navLabels();
   const bottomLabels: BottomNavLabels = {
@@ -76,11 +97,12 @@ export async function SiteBottomNav() {
     lainnya: t("lainnya"),
     lainnyaTitle: t("lainnyaTitle"),
     masuk: t("masuk"),
+    akunSaya: t("akunSaya"),
     tutup: t("tutup"),
   };
   return (
-    <Suspense fallback={<BottomNav labels={bottomLabels} pathname={null} />}>
-      <ActiveBottomNav labels={bottomLabels} />
+    <Suspense fallback={<BottomNav labels={bottomLabels} pathname={null} signedIn={false} />}>
+      <SignedInBottomNav labels={bottomLabels} />
     </Suspense>
   );
 }

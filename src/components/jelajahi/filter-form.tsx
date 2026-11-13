@@ -12,12 +12,15 @@ import { CATEGORY_ICON, FACILITY_ICON, STATUS_ICON } from "@/ui/place-icons";
 // Kotak centang tak terlihat menutupi seluruh chip, supaya sentuhan dan pembaca layar di ponsel mengenai
 // kontrolnya sendiri. Cincin fokus dan tanda centang digambar di label.
 const CHOICE =
-  "relative inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-full border border-border-subtle px-4 text-sm font-medium " +
-  "transition-colors duration-200 hover:bg-surface-hover has-checked:border-border-focus has-checked:bg-surface-brand-subtle " +
-  "has-checked:text-text-brand has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-focus-ring";
+  "relative inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-full border-2 border-border-subtle bg-surface-raised px-4 text-sm font-semibold " +
+  "transition-colors duration-200 hover:border-border-strong has-checked:border-border-strong has-checked:bg-text-primary " +
+  "has-checked:text-bg-canvas has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-focus-ring";
 
-/** Formulir GET untuk pencarian dan filter (FR-02, FR-03). Bekerja tanpa JavaScript; hasilnya tersimpan di URL. */
-export async function FilterForm({ filters }: { filters: ExploreFilters }) {
+/**
+ * Formulir GET untuk pencarian dan filter (FR-02, FR-03). Bekerja tanpa JavaScript; hasilnya tersimpan di URL.
+ * Jelajahi dan Peta memakai formulir yang sama, jadi filternya bisa dibawa dari satu tampilan ke tampilan lain.
+ */
+export async function FilterForm({ filters, action = "/jelajahi" }: { filters: ExploreFilters; action?: "/jelajahi" | "/peta" }) {
   const [t, tk, tf, ts] = await Promise.all([
     getTranslations("Jelajahi"),
     getTranslations("Kategori"),
@@ -27,8 +30,8 @@ export async function FilterForm({ filters }: { filters: ExploreFilters }) {
   const districts: District[] = await getDistricts().catch(() => []);
   const active = panelFilterCount(filters);
   return (
-    <Form action="/jelajahi" role="search" className="flex flex-col gap-4">
-      <div className="glass-strong flex items-center gap-2 rounded-full p-1.5 pl-5 has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-2 has-[input:focus-visible]:outline-focus-ring">
+    <Form action={action} role="search" className="flex flex-col gap-4">
+      <div className="flex items-center gap-2 rounded-full border-2 border-border-strong bg-surface-raised p-1.5 pl-5 has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-2 has-[input:focus-visible]:outline-focus-ring">
         <label htmlFor="cari-jelajahi" className="sr-only">
           {t("search.label")}
         </label>
@@ -40,9 +43,9 @@ export async function FilterForm({ filters }: { filters: ExploreFilters }) {
           maxLength={80}
           defaultValue={filters.q}
           placeholder={t("search.placeholder")}
-          className="min-h-12 min-w-0 flex-1 bg-transparent text-text-primary placeholder:text-text-secondary focus-visible:outline-none"
+          className="min-h-11 min-w-0 flex-1 bg-transparent text-text-primary placeholder:text-text-secondary focus-visible:outline-none"
         />
-        <button className={buttonClass("primary", "md")}>{t("search.button")}</button>
+        <button className={buttonClass("ink", "sm")}>{t("search.button")}</button>
       </div>
 
       {/* min-w-0: fieldset bawaan melebar mengikuti isinya, sehingga chip tidak bisa digulir. */}
@@ -58,18 +61,18 @@ export async function FilterForm({ filters }: { filters: ExploreFilters }) {
         </div>
       </fieldset>
 
-      <details open={active > 0} className="group glass rounded-2xl">
-        <summary className="flex min-h-12 cursor-pointer list-none items-center gap-2 rounded-2xl px-5 font-semibold [&::-webkit-details-marker]:hidden">
+      <details open={active > 0} className="group rounded-3xl bg-bg-sunken">
+        <summary className="flex min-h-14 cursor-pointer list-none items-center gap-2.5 rounded-3xl px-6 font-bold [&::-webkit-details-marker]:hidden">
           <Icon icon={IconAdjustmentsHorizontal} />
           {t("filters.toggle")}
           {active > 0 && (
-            <span className="rounded-full bg-surface-brand-subtle px-2.5 py-0.5 text-sm text-text-brand">
+            <span className="rounded-full bg-text-primary px-2.5 py-0.5 text-sm text-bg-canvas">
               {t("filters.active", { count: active })}
             </span>
           )}
           <Icon icon={IconChevronRight} className="ml-auto size-5 transition-transform duration-200 group-open:rotate-90" />
         </summary>
-        <div className="grid gap-6 border-t border-border-glass p-5 lg:grid-cols-3">
+        <div className="grid gap-6 border-t border-border-subtle p-6 lg:grid-cols-3">
           {districts.length > 0 && (
             <div className="flex flex-col gap-2">
               <label htmlFor="kecamatan" className="font-semibold">
@@ -79,7 +82,7 @@ export async function FilterForm({ filters }: { filters: ExploreFilters }) {
                 id="kecamatan"
                 name="district"
                 defaultValue={filters.district[0] ?? ""}
-                className="min-h-12 rounded-xl border border-border-field bg-surface-field px-4 text-text-primary"
+                className="min-h-12 rounded-2xl border border-border-field bg-surface-field px-4 text-text-primary"
               >
                 <option value="">{t("filters.allDistricts")}</option>
                 {districts.map((district) => (
@@ -117,7 +120,7 @@ export async function FilterForm({ filters }: { filters: ExploreFilters }) {
           </fieldset>
           <div className="flex flex-wrap gap-3 lg:col-span-3">
             <button className={buttonClass("primary", "md")}>{t("filters.apply")}</button>
-            <Link href="/jelajahi" className={buttonClass("ghost", "md")}>
+            <Link href={action} className={buttonClass("outline", "md")}>
               {t("filters.reset")}
             </Link>
           </div>
