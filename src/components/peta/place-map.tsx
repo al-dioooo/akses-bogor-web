@@ -60,6 +60,10 @@ function measure(main: HTMLElement): { top: number; insets: Insets; covers: Rect
   return { top, insets, covers, camera: side ? insets : { ...insets, top: Math.max(insets.top, top) } };
 }
 
+/** Elemen bisa menerima fokus: tidak di bagian yang inert dan tidak dikeluarkan dari urutan Tab (marker yang tertutup). */
+const canFocus = (element: HTMLElement | null | undefined): element is HTMLElement =>
+  !!element && element.isConnected && !element.closest("[inert]") && element.tabIndex >= 0 && element.getAttribute("aria-hidden") !== "true";
+
 const NARROW = "(width < 48rem)";
 const subscribeNarrow = (onChange: () => void) => {
   const query = matchMedia(NARROW);
@@ -310,13 +314,22 @@ export function PlaceMap({
   const status = places.length === 0 ? empty : followsView ? t("list.count", { shown: shown.length, total: places.length }) : t("count", { total: places.length });
   const layerShown = priority && (layer === "nyala" || layer === "galat");
 
-  /** Menutup ringkasan, lalu fokus kembali ke marker atau ke tombol daftar yang membukanya. */
+  /**
+   * Menutup ringkasan, lalu fokus kembali ke marker atau ke tombol daftar yang membukanya. Bila marker itu tidak bisa
+   * difokus lagi (mis. lembar di ponsel landscape menutup peta dan membuatnya inert), fokus pindah ke tombol daftar lokasi
+   * itu, atau ke judul daftar.
+   */
   function closeSummary() {
     if (!chosen) return;
     const { id, from } = chosen;
     setSelected(null);
-    if (from === "peta") return map?.markers.get(id)?.focus();
-    requestAnimationFrame(() => document.querySelector<HTMLButtonElement>(`[data-tunjukkan="${id}"]`)?.focus());
+    requestAnimationFrame(() => {
+      const marker = map?.markers.get(id);
+      if (from === "peta" && canFocus(marker)) return marker.focus();
+      const show = document.querySelector<HTMLButtonElement>(`[data-tunjukkan="${id}"]`);
+      if (canFocus(show)) return show.focus();
+      listHeading.current?.focus();
+    });
   }
 
   function showOnMap(id: string) {
