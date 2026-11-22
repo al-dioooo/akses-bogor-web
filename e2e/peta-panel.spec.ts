@@ -331,7 +331,8 @@ for (const viewport of [
     await expect.poll(() => status.evaluate(uncovered)).toBe(true);
     await expect(page.getByText(/dari 0 lokasi|Tidak ada lokasi yang cocok/)).toHaveCount(0);
     await openList(page);
-    const body = page.getByText("Lokasi tampil di sini setelah laporan warga diperiksa tim.");
+    // Kandidat "Belum ada data" tetap ada (ADR-0049), jadi panel menjelaskan lingkaran abu-abu di peta.
+    const body = page.getByText(/^Lingkaran abu-abu adalah tempat dari OpenStreetMap/);
     await expect.poll(() => body.evaluate(uncovered)).toBe(true);
     // Dengan filter: pesan "tidak ada yang cocok" dan jalan untuk menghapus filter.
     await page.goto("/peta?q=tidak-ada");

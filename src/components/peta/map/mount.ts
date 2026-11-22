@@ -2,7 +2,7 @@ import mapboxgl, { type GeoJSONSource, type LngLatBoundsLike } from "mapbox-gl";
 import type { DistrictBoundaries, MapToken, PriorityLevel } from "@/lib/api";
 import { LEVEL_COLOR, LEVELS } from "@/components/prioritas/levels";
 import { motionReduced } from "@/lib/preferences";
-import type { MapPlace } from "../places";
+import type { MapCandidate, MapPlace } from "../places";
 import { NO_INSETS, cameraPadding, isVisible, visibleRect, type Insets, type Rect } from "./area";
 
 /** Tampilan awal: seluruh Kota Bogor (ADR-0010). */
@@ -44,6 +44,12 @@ export type MapHandle = {
   setInsets(insets: Insets, covers?: Rect[], camera?: Insets): void;
   setSelected(id: string | null): void;
   setNight(night: boolean): void;
+  /**
+   * Kandidat "Belum ada data" (ADR-0049) sebagai satu lapisan GL di bawah marker, dengan atribusi OSM untuk kontrol
+   * atribusi, atau null untuk menyembunyikannya. Kandidat tidak bisa difokus di peta; daftar di panel adalah gantinya.
+   * Kandidat dipilih lewat `onSelect` dengan id-nya, dan `show`, `reveal`, serta `setSelected` menerima id itu juga.
+   */
+  setCandidates(candidates: { items: MapCandidate[]; attribution: string } | null): void;
   /** Lapisan prioritas kecamatan: batas dengan tingkatnya, atau null untuk menyembunyikannya. */
   setPriority(districts: { boundaries: DistrictBoundaries; levels: Record<string, PriorityLevel> } | null): void;
   destroy(): void;
@@ -239,6 +245,92 @@ export function mountMap(options: Options): MapHandle {
   };
   map.on("style.load", drawPriority);
 
+  // Kandidat: lingkaran abu-abu berlubang, lebih kecil dari marker dan tanpa warna status. Gaya baru menghapus lapisan,
+  // jadi lapisan digambar ulang setiap kali gaya selesai dimuat; selama gaya belum siap, gambar menunggu peta diam.
+  let candidates: Parameters<MapHandle["setCandidates"]>[0] = null;
+  let candidateById = new Map<string, MapCandidate>();
+  let selected: string | null = null;
+  let waiting = false;
+  const drawCandidates = () => {
+    if (!map.isStyleLoaded()) {
+      if (!waiting) {
+        waiting = true;
+        map.once("idle", () => {
+          waiting = false;
+          drawCandidates();
+        });
+      }
+      return;
+    }
+    if (!candidates) {
+      for (const id of ["kandidat-pilih", "kandidat"]) if (map.getLayer(id)) map.removeLayer(id);
+      if (map.getSource("kandidat")) map.removeSource("kandidat");
+      return;
+    }
+    const data = {
+      type: "FeatureCollection" as const,
+      features: candidates.items.map((c) => ({ type: "Feature" as const, geometry: { type: "Point" as const, coordinates: [c.lng, c.lat] }, properties: { id: c.id } })),
+    };
+    const source = map.getSource("kandidat") as GeoJSONSource | undefined;
+    if (source) source.setData(data);
+    else {
+      const css = getComputedStyle(document.documentElement);
+      const color = (name: string) => css.getPropertyValue(name).trim();
+      map.addSource("kandidat", { type: "geojson", data, attribution: candidates.attribution });
+      map.addLayer({
+        id: "kandidat",
+        type: "circle",
+        source: "kandidat",
+        paint: {
+          "circle-radius": ["interpolate", ["linear"], ["zoom"], 10, 3.5, 15, 6],
+          "circle-color": color("--color-bg-canvas"),
+          "circle-stroke-color": color("--color-icon-secondary"),
+          "circle-stroke-width": 2.5,
+        },
+      });
+      map.addLayer({
+        id: "kandidat-pilih",
+        type: "circle",
+        source: "kandidat",
+        paint: { "circle-radius": 9, "circle-color": color("--color-bg-canvas"), "circle-stroke-color": color("--color-text-primary"), "circle-stroke-width": 4 },
+      });
+    }
+    map.setFilter("kandidat-pilih", ["==", ["get", "id"], selected ?? ""]);
+  };
+  map.on("style.load", drawCandidates);
+
+  // Lingkaran kandidat kecil, jadi sentuhan atau klik dalam 12 px dari titiknya ikut memilihnya (target 24 × 24 px);
+  // yang terdekat menang.
+  const candidateAt = (point: mapboxgl.Point) => {
+    if (!candidates || !map.getLayer("kandidat")) return null;
+    const hits = map.queryRenderedFeatures(
+      [
+        [point.x - 12, point.y - 12],
+        [point.x + 12, point.y + 12],
+      ],
+      { layers: ["kandidat"] },
+    );
+    let nearest: string | null = null;
+    let distance = Infinity;
+    for (const hit of hits) {
+      const candidate = candidateById.get(String((hit as { properties?: { id?: unknown } }).properties?.id));
+      if (!candidate) continue;
+      const { x, y } = map.project([candidate.lng, candidate.lat]);
+      const d = Math.hypot(x - point.x, y - point.y);
+      if (d < distance) [nearest, distance] = [candidate.id, d];
+    }
+    return nearest;
+  };
+  map.on("click", (event) => {
+    // Klik pada marker lokasi (tombol HTML di atas kanvas) bukan klik kandidat.
+    if (event.originalEvent.target instanceof Element && event.originalEvent.target.closest(".mapboxgl-marker")) return;
+    const id = candidateAt(event.point);
+    if (id) options.onSelect(id);
+  });
+  map.on("mousemove", (event) => {
+    map.getCanvas().style.cursor = candidateAt(event.point) ? "pointer" : "";
+  });
+
   let timer: number | undefined;
   const schedule = (delay: number) => {
     timer = window.setTimeout(renew, Math.max(delay, 1000));
@@ -260,12 +352,12 @@ export function mountMap(options: Options): MapHandle {
     zoomOut: () => map.zoomOut(),
     reset: () => map.fitBounds(KOTA_BOGOR, { padding: padding() }),
     show(id) {
-      const place = byId.get(id);
+      const place = byId.get(id) ?? candidateById.get(id);
       // Padding tidak disimpan sebagai padding peta, supaya perpindahan berikutnya tidak ikut bergeser.
       if (place) map.flyTo({ center: [place.lng, place.lat], zoom: Math.max(map.getZoom(), 15), padding: focusPadding(), retainPadding: false });
     },
     reveal(id) {
-      const place = byId.get(id);
+      const place = byId.get(id) ?? candidateById.get(id);
       if (!place) return;
       const container = map.getContainer();
       const rect = visibleRect(container.clientWidth, container.clientHeight, insets);
@@ -305,6 +397,13 @@ export function mountMap(options: Options): MapHandle {
         button.setAttribute("aria-expanded", String(placeId === id));
         button.style.zIndex = placeId === id ? "1" : "";
       }
+      selected = id;
+      if (map.getLayer("kandidat-pilih")) map.setFilter("kandidat-pilih", ["==", ["get", "id"], id ?? ""]);
+    },
+    setCandidates(value) {
+      candidates = value;
+      candidateById = new Map(value?.items.map((c) => [c.id, c]));
+      drawCandidates();
     },
     setNight(value) {
       if (value === night) return;
