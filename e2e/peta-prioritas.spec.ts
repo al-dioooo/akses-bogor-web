@@ -14,9 +14,8 @@ test("shows the priority layer with a text legend, the ranked table, the caveat 
   await expect(toggle(page)).toHaveAttribute("aria-pressed", "false");
   await toggle(page).click();
   await expect(toggle(page)).toHaveAttribute("aria-pressed", "true");
-  await expect(main(page).getByRole("status").filter({ hasText: "Lapisan prioritas kecamatan tampil di peta" })).toBeVisible();
-
-  await expect(main(page).getByRole("heading", { level: 2, name: "Prioritas kecamatan 2025" })).toBeVisible();
+  await expect(main(page).getByRole("status").filter({ hasText: "Lapisan prioritas kecamatan tampil di peta" })).toBeAttached();
+  await expect(main(page).getByRole("heading", { level: 3, name: "Prioritas kecamatan 2025" })).toBeVisible();
   const legend = main(page).getByRole("list", { name: "Legenda prioritas" });
   await expect(legend.getByRole("listitem")).toHaveText(["Rendah", "Sedang", "Tinggi", "Sangat tinggi"]);
   const rows = main(page).getByRole("table").getByRole("row");

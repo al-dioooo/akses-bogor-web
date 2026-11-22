@@ -6,20 +6,24 @@ import { SearchBar } from "@/components/peta/search-bar";
 import { getDistricts } from "@/lib/api";
 import { parseFilters } from "@/lib/filters";
 import { LoadErrorBoundary } from "@/ui/load-error";
-import { SectionHeading } from "@/ui/section-heading";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Peta");
   return { title: t("metaTitle") };
 }
 
-/** Peta (FR-05): filter sama dengan Jelajahi dan dibaca dari URL saat request. */
+/**
+ * Peta (FR-05) layar penuh: peta di bawah, pencarian, kontrol, dan panel daftar mengambang di atasnya sebagai item grid
+ * `main.peta-app` (globals.css). Filter sama dengan Jelajahi dan dibaca dari URL saat request.
+ */
 export default async function Peta({ searchParams }: PageProps<"/peta">) {
   const t = await getTranslations("Peta");
   return (
-    <main id="konten" className="page-width flex flex-1 flex-col gap-6 pt-8 sm:pt-12">
-      <SectionHeading id="judul-peta" level={1} label={t("eyebrow")} title={t("title")} accent={t("accent")} />
-      <Suspense fallback={<MapResultsSkeleton label={t("loading")} />}>
+    <main id="konten" className="peta-app" data-tinggi="kecil">
+      <h1 className="sr-only">
+        {t("title")} {t("accent")}
+      </h1>
+      <Suspense fallback={<MapResultsSkeleton label={t("loading")} search />}>
         <MapContent searchParams={searchParams} loading={t("loading")} />
       </Suspense>
     </main>
@@ -36,11 +40,14 @@ async function MapContent({ searchParams, loading }: { searchParams: PageProps<"
   return (
     <>
       <SearchBar filters={filters} districts={districts} />
-      <LoadErrorBoundary>
-        <Suspense fallback={<MapResultsSkeleton label={loading} />}>
-          <MapResults filters={filters} />
-        </Suspense>
-      </LoadErrorBoundary>
+      {/* display: contents, supaya isi peta tetap item grid main; pesan galat tampil di atas peta. */}
+      <div className="peta-isi contents">
+        <LoadErrorBoundary>
+          <Suspense fallback={<MapResultsSkeleton label={loading} />}>
+            <MapResults filters={filters} />
+          </Suspense>
+        </LoadErrorBoundary>
+      </div>
     </>
   );
 }

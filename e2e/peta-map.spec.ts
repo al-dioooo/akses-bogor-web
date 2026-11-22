@@ -4,7 +4,8 @@ import { expect, test } from "./mapbox";
 
 // Peta Mapbox dengan gaya tiruan (e2e/mapbox.ts) dan 7 lokasi dari API tiruan. Gerak dikurangi supaya perpindahan
 // peta selesai seketika.
-const count = (page: Page) => page.getByRole("status").filter({ hasText: /ada di tampilan peta$/ });
+const count = (page: Page) => page.getByRole("status").filter({ hasText: /^\d+ dari \d+ lokasi$/ });
+const placeList = (page: Page, name: string) => page.getByRole("list", { name });
 
 const hasWebGL = (page: Page) => page.evaluate(() => !!document.createElement("canvas").getContext("webgl"));
 
@@ -19,7 +20,7 @@ test.describe("with WebGL", () => {
   test("starts on Kota Bogor with one marker per place, named with its status", async ({ page }) => {
     await expect(page.locator(".mapboxgl-marker")).toHaveCount(7);
     await expect(page.getByRole("button", { name: "Halte contoh, Halte, Sebagian" })).toBeVisible();
-    await expect(count(page)).toHaveText("7 dari 7 lokasi ada di tampilan peta");
+    await expect(count(page)).toHaveText("7 dari 7 lokasi");
   });
 
   test("a marker opens a summary that links to the place and closes with Escape", async ({ page }) => {
@@ -45,26 +46,26 @@ test.describe("with WebGL", () => {
     await page.keyboard.press("Tab");
     await expect(page.getByRole("button", { name: "Kampus contoh A, Kampus, Aksesibel" })).toBeFocused();
     await page.keyboard.press("Enter");
-    await expect(page.getByRole("heading", { name: "Kampus contoh A", level: 2 })).toBeFocused();
+    await expect(page.getByRole("heading", { name: "Kampus contoh A", level: 3 })).toBeFocused();
   });
 
   test("the list follows the view, and the reset button returns to Kota Bogor", async ({ page }) => {
     await page.getByRole("button", { name: "Tunjukkan di peta: Halte contoh", exact: true }).click();
-    await expect(page.getByRole("heading", { name: "Halte contoh", level: 2 })).toBeFocused();
-    await expect(count(page)).toHaveText("1 dari 7 lokasi ada di tampilan peta");
+    await expect(page.getByRole("heading", { name: "Halte contoh", level: 3 })).toBeFocused();
+    await expect(count(page)).toHaveText("1 dari 7 lokasi");
     // Marker di luar tampilan tidak bisa dicapai dengan Tab.
     await expect(page.getByRole("button", { name: /^Masjid contoh B,/ })).toHaveCount(0);
     await page.getByRole("button", { name: "Tampilkan seluruh Kota Bogor" }).click();
-    await expect(count(page)).toHaveText("7 dari 7 lokasi ada di tampilan peta");
+    await expect(count(page)).toHaveText("7 dari 7 lokasi");
   });
 
   test("zoom buttons change the zoom", async ({ page }) => {
     await page.getByRole("button", { name: "Perbesar peta" }).click();
     await page.getByRole("button", { name: "Perbesar peta" }).click();
     await page.getByRole("button", { name: "Perbesar peta" }).click();
-    await expect(count(page)).not.toHaveText("7 dari 7 lokasi ada di tampilan peta");
+    await expect(count(page)).not.toHaveText("7 dari 7 lokasi");
     for (let i = 0; i < 3; i++) await page.getByRole("button", { name: "Perkecil peta" }).click();
-    await expect(count(page)).toHaveText("7 dari 7 lokasi ada di tampilan peta");
+    await expect(count(page)).toHaveText("7 dari 7 lokasi");
   });
 
   test("changing filters keeps the same map and swaps its markers", async ({ page }) => {
@@ -73,7 +74,7 @@ test.describe("with WebGL", () => {
     });
     await page.getByRole("checkbox", { name: "Masjid" }).check();
     await expect(page.locator(".mapboxgl-marker")).toHaveCount(2);
-    await expect(count(page)).toHaveText("2 dari 2 lokasi ada di tampilan peta");
+    await expect(count(page)).toHaveText("2 dari 2 lokasi");
     await expect(page.locator(".mapboxgl-canvas")).toHaveAttribute("data-tanda", "peta-awal");
     await page.getByRole("checkbox", { name: "Masjid" }).uncheck();
     await expect(page.locator(".mapboxgl-marker")).toHaveCount(7);
@@ -85,7 +86,7 @@ test.describe("with WebGL", () => {
     test(`the map with an open summary has no serious WCAG 2.2 AA violations (${colorScheme})`, async ({ page }) => {
       await page.emulateMedia({ colorScheme });
       await page.getByRole("button", { name: "Halte contoh, Halte, Sebagian" }).click();
-      await expect(page.getByRole("heading", { name: "Halte contoh", level: 2 })).toBeFocused();
+      await expect(page.getByRole("heading", { name: "Halte contoh", level: 3 })).toBeFocused();
       expect(await blockingViolations(page)).toEqual([]);
     });
   }
@@ -106,7 +107,7 @@ test("without WebGL the page points to the list and keeps every place", async ({
     "href",
     "/jelajahi?category=masjid",
   );
-  await expect(page.getByRole("region", { name: "Daftar lokasi" }).getByRole("listitem")).toHaveCount(2);
+  await expect(placeList(page, "Daftar lokasi").getByRole("listitem")).toHaveCount(2);
 });
 
 test("when the map token is missing the page offers a retry and keeps the list", async ({ page }) => {
@@ -115,5 +116,5 @@ test("when the map token is missing the page offers a retry and keeps the list",
   test.skip(!(await hasWebGL(page)), "WebGL tidak tersedia di browser ini");
   await expect(page.getByRole("alert").filter({ hasText: "Peta belum bisa dimuat" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Coba lagi" })).toBeVisible();
-  await expect(page.getByRole("region", { name: "Daftar lokasi" }).getByRole("listitem")).toHaveCount(7);
+  await expect(placeList(page, "Daftar lokasi").getByRole("listitem")).toHaveCount(7);
 });
