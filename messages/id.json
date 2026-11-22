@@ -1238,6 +1238,37 @@
         "oldestVerified": "Terlama diverifikasi {date}",
         "recheckEmpty": "Semua lokasi diverifikasi dalam 12 bulan terakhir."
       },
+      "rute": {
+        "eyebrow": "Rute pertama Anda",
+        "title": "Dari akun baru ke",
+        "accent": "tempat pertama.",
+        "intro": "Empat halte dari akun ini sampai tempat yang Anda laporkan tayang di AksesBogor.",
+        "state": {
+          "done": "Selesai",
+          "current": "Berikutnya",
+          "next": "Nanti"
+        },
+        "stops": {
+          "akun": {
+            "title": "Akun siap",
+            "body": "Nama tampilan dan persetujuan Anda sudah tersimpan."
+          },
+          "datang": {
+            "title": "Datangi satu tempat",
+            "body": "Kampus, masjid, halte, atau rumah sakit di Kota Bogor yang sering Anda kunjungi."
+          },
+          "isi": {
+            "title": "Isi fasilitas dan foto",
+            "body": "Ramp, toilet difabel, guiding block, dan lift. Isian tersimpan di perangkat sampai Anda kirim."
+          },
+          "periksa": {
+            "title": "Verifikator memeriksa",
+            "body": "Targetnya 3 hari kerja. Statusnya muncul di sini, dan tempatnya tayang setelah terbit."
+          }
+        },
+        "report": "Laporkan tempat pertama",
+        "agent": "Cari tempat dengan agen"
+      },
       "tim": {
         "title": "Tim verifikator",
         "loading": "Memuat tim…",
