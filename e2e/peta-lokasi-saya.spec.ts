@@ -30,6 +30,11 @@ test("explains the location permission first and closes with Cancel or Escape", 
 });
 
 test("says so when the browser refuses the location", async ({ page }) => {
+  // Penolakan dibuat pasti: tanpa ini, lama browser tanpa layar menolak izin bergantung pada beban mesin.
+  await page.addInitScript(() => {
+    navigator.geolocation.getCurrentPosition = (_success, failure) =>
+      failure?.({ code: 1, message: "ditolak", PERMISSION_DENIED: 1, POSITION_UNAVAILABLE: 2, TIMEOUT: 3 } as GeolocationPositionError);
+  });
   await openMap(page);
   await button(page).click();
   await page.getByRole("button", { name: "Izinkan lokasi" }).click();
