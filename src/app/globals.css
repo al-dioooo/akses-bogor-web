@@ -410,9 +410,8 @@ body:has(> .peta-app) {
   /* Bagian atas yang terpakai pencarian dan kontrol; diukur ulang oleh komponen peta. */
   --peta-atas: 9rem;
   --peta-durasi: 320ms;
-  /* Tinggi panel daftar di ponsel, juga jarak atribusi Mapbox dari bawah peta supaya tidak pernah tertutup. Paling tinggi
-     sampai di bawah kontrol, dengan ruang untuk atribusi Mapbox di antaranya. */
-  --peta-bawah: calc(var(--peta-nav) + clamp(var(--peta-kepala) + 6rem, 45%, 100% - var(--peta-atas) - var(--peta-nav) - 3.25rem));
+  /* Tinggi panel daftar di ponsel, juga jarak atribusi Mapbox dari bawah peta supaya tidak pernah tertutup. */
+  --peta-bawah: calc(var(--peta-nav) + var(--peta-kepala));
   position: relative;
   display: grid;
   flex: 1;
@@ -423,12 +422,19 @@ body:has(> .peta-app) {
   padding: 0.75rem;
   overflow: hidden;
   isolation: isolate;
+  &[data-tinggi="setengah"] {
+    /* Paling tinggi sampai di bawah kontrol, dengan ruang untuk atribusi Mapbox di antaranya. */
+    --peta-bawah: calc(var(--peta-nav) + clamp(var(--peta-kepala) + 6rem, 45%, 100% - var(--peta-atas) - var(--peta-nav) - 3.25rem));
+  }
   @media (width >= 48rem) {
     --peta-bawah: var(--peta-nav);
     grid-template-columns: 24rem minmax(0, 1fr) auto;
     grid-template-rows: auto minmax(0, 1fr);
     gap: 0.75rem;
     padding: 1rem 1rem max(1rem, var(--peta-nav));
+    &[data-tinggi] {
+      --peta-bawah: var(--peta-nav);
+    }
   }
   @media (width >= 80rem) {
     --peta-nav: 0px;
@@ -518,11 +524,15 @@ body:has(> .peta-app) {
     inset: auto;
     grid-column: 1;
     grid-row: 2;
-    align-self: stretch;
+    align-self: start;
     height: auto;
+    max-height: 100%;
     border-bottom: var(--border-width-default) solid var(--color-border-subtle);
     border-radius: var(--radius-3xl);
     box-shadow: 0 12px 32px -16px var(--color-shadow-soft);
+    .peta-app[data-tinggi="setengah"] & {
+      align-self: stretch;
+    }
   }
 }
 
@@ -532,8 +542,19 @@ body:has(> .peta-app) {
   overflow-y: auto;
   overscroll-behavior: contain;
   padding-bottom: var(--peta-nav);
+  /* Saat panel membesar, isinya langsung terlihat dan bisa difokus. Tanpa ini, aturan "kurangi gerakan" (durasi 0.01 ms
+     untuk semua properti) membuat isi masih tersembunyi tepat saat ringkasan lokasi menerima fokus. */
+  transition-property: none;
+  /* Isi panel kecil tidak terlihat dan tidak bisa difokus, setelah panel selesai mengecil. */
+  .peta-app[data-tinggi="kecil"] & {
+    visibility: hidden;
+    transition: visibility 0s linear var(--peta-durasi);
+  }
   @media (width >= 48rem) {
     padding-bottom: 0;
+    .peta-app[data-tinggi="kecil"] & {
+      display: none;
+    }
   }
 }
 
@@ -557,6 +578,37 @@ body:has(> .peta-app) {
   }
   @media (width >= 48rem) {
     inset: 1rem 1rem var(--peta-bawah) 25.75rem;
+  }
+}
+
+/* Petunjuk keyboard peta: hanya untuk pembaca layar, dan tampil di atas peta selama kanvasnya difokus. */
+.peta-petunjuk {
+  position: absolute;
+  top: calc(var(--peta-atas) + 0.5rem);
+  left: 50%;
+  z-index: 3;
+  width: min(28rem, calc(100% - 1.5rem));
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-inverse);
+  color: var(--color-text-on-inverse);
+  font-size: 0.875rem;
+  line-height: 1.4;
+  translate: -50% 0;
+  pointer-events: none;
+  @media (width >= 48rem) {
+    top: 1rem;
+    left: calc(25.75rem + (100% - 25.75rem) / 2);
+    width: min(28rem, calc(100% - 28rem));
+  }
+  .peta-peta:not(:has(.mapboxgl-canvas:focus-visible)) & {
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 }
 
@@ -639,3 +691,13 @@ body:has(> .peta-app) {
   background: var(--color-brand-fill);
 }
 
+/* Pesan galat memuat lokasi (LoadErrorBoundary) tampil di tengah bagian peta yang terlihat. */
+.peta-isi > [role="alert"] {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 3;
+  width: min(32rem, calc(100% - 1.5rem));
+  translate: -50% -50%;
+  box-shadow: 0 12px 32px -16px var(--color-shadow-soft);
+}

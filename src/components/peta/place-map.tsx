@@ -3,7 +3,7 @@
 import "mapbox-gl/dist/mapbox-gl.css";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { useEffect, useRef, useState, type MouseEvent } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type MouseEvent } from "react";
 import { createPortal } from "react-dom";
 import type { DistrictBoundaries, DistrictPriority, MapToken } from "@/lib/api";
 import { hasWebGL, readTheme, watchPreferences } from "@/lib/preferences";
@@ -15,6 +15,7 @@ import { MapLegend } from "./legend";
 import type { Insets } from "./map/area";
 import type { MapHandle } from "./map/mount";
 import { PlaceList } from "./place-list";
+import { PlaceSheet, type SheetHeight } from "./place-sheet";
 import { PlaceSummary } from "./place-summary";
 import { PriorityLegend } from "./priority-legend";
 import type { MapPlace } from "./places";
@@ -28,7 +29,7 @@ async function fetchToken(): Promise<MapToken> {
 }
 
 /**
- * Bagian atas main yang terpakai pencarian dan kontrol (batas tinggi panel di ponsel), dan bagian peta yang tertutup
+ * Bagian atas main yang terpakai pencarian dan kontrol (batas tinggi panel setengah), dan bagian peta yang tertutup
  * panel daftar: panel samping (mulai 768 px) menutup sisi kiri, lembar bawah menutup bagian bawah dan pencarian bagian
  * atas. Bottom nav di layar lebar menutup bagian bawah, selebar padding bawah main.
  */
@@ -77,8 +78,13 @@ export function PlaceMap({
   const frame = useRef<HTMLDivElement>(null);
   const container = useRef<HTMLDivElement>(null);
   const listHeading = useRef<HTMLHeadingElement>(null);
-  const panel = useRef<HTMLElement>(null);
   const summaryHeading = useRef<HTMLHeadingElement>(null);
+  const toggle = useRef<HTMLButtonElement>(null);
+  // Perpindahan peta ke lokasi yang dipilih menunggu panel selesai berganti tinggi, supaya lokasinya tidak jatuh di balik
+  // panel: "show" memperbesar (dari daftar), "reveal" hanya menggeser bila perlu (dari marker).
+  const pendingMove = useRef<{ id: string; mode: "show" | "reveal" } | null>(null);
+  const moveTimer = useRef<number | undefined>(undefined);
+  const mapRef = useRef<MapHandle | null>(null);
   const [map, setMap] = useState<MapHandle | null>(null);
   // Salinan marker dari peta, diperbarui setiap kali lokasinya berganti, supaya portal isi marker ikut digambar ulang.
   const [markers, setMarkers] = useState<ReadonlyMap<string, HTMLButtonElement>>(new Map());
@@ -86,18 +92,39 @@ export function PlaceMap({
   const [attempt, setAttempt] = useState(0);
   const [inView, setInView] = useState<Set<string> | null>(null);
   const [chosen, setSelected] = useState<{ id: string; from: "peta" | "daftar" } | null>(null);
+  const [height, setHeight] = useState<SheetHeight>("kecil");
   const [layer, setLayer] = useState<"mati" | "memuat" | "nyala" | "galat">("mati");
   const [boundaries, setBoundaries] = useState<DistrictBoundaries | null>(null);
   // Lokasi yang dipilih lalu hilang karena filter berganti tidak lagi dianggap terpilih.
   const place = chosen ? places.find((p) => p.id === chosen.id) : undefined;
   const selected = place ? place.id : null;
 
+  const flushMove = useCallback(() => {
+    const move = pendingMove.current;
+    pendingMove.current = null;
+    window.clearTimeout(moveTimer.current);
+    if (move) mapRef.current?.[move.mode](move.id);
+  }, []);
+
+  // Bila tinggi panel tidak berubah, pengukuran tidak terjadi; perpindahan tetap dijalankan setelah jeda singkat.
+  const queueMove = useCallback(
+    (id: string, mode: "show" | "reveal") => {
+      pendingMove.current = { id, mode };
+      window.clearTimeout(moveTimer.current);
+      moveTimer.current = window.setTimeout(flushMove, 500);
+    },
+    [flushMove],
+  );
 
   useEffect(() => {
     let cancelled = false;
     let mounted: MapHandle | undefined;
     (async () => {
-      if (!hasWebGL()) return setState("tanpa-webgl");
+      // Tanpa peta, daftar dibuka supaya langsung terlihat.
+      if (!hasWebGL()) {
+        setHeight("setengah");
+        return setState("tanpa-webgl");
+      }
       setState("memuat");
       try {
         const [{ mountMap }, token] = await Promise.all([import("./map/mount"), fetchToken()]);
@@ -105,7 +132,6 @@ export function PlaceMap({
         if (cancelled || !container.current || !main) return;
         mounted = mountMap({
           container: container.current,
-          // Tampilan awal Kota Bogor di bagian peta yang tidak tertutup panel.
           insets: measure(main).insets,
           token,
           renewToken: fetchToken,
@@ -125,14 +151,25 @@ export function PlaceMap({
           describedBy: "petunjuk-peta",
           markerLabel: (p) => t("marker", { name: p.name, category: tk(p.category), status: ts(p.status) }),
           onReady: () => setState("siap"),
-          onFail: () => setState("galat"),
+          onFail: () => {
+            setState("galat");
+            setHeight("setengah");
+          },
           onView: (ids) => setInView(new Set(ids)),
-          onSelect: (id) => setSelected({ id, from: "peta" }),
+          onSelect: (id) => {
+            setSelected({ id, from: "peta" });
+            setHeight("setengah");
+            queueMove(id, "reveal");
+          },
           onMarkers: setMarkers,
         });
+        mapRef.current = mounted;
         setMap(mounted);
       } catch {
-        if (!cancelled) setState("galat");
+        if (!cancelled) {
+          setState("galat");
+          setHeight("setengah");
+        }
       }
     })();
     const unwatch = watchPreferences(() => mounted?.setNight(readTheme().night));
@@ -140,16 +177,22 @@ export function PlaceMap({
       cancelled = true;
       unwatch();
       mounted?.destroy();
+      mapRef.current = null;
       setMap(null);
     };
-  }, [attempt, t, tk, ts]);
+  }, [attempt, t, tk, ts, queueMove]);
 
   useEffect(() => {
     map?.setPlaces(places);
   }, [map, places]);
 
-  // Ukuran diukur ulang setelah berhenti berubah (mis. layar diputar): bagian atas untuk tinggi panel, dan bagian peta
-  // yang tertutup untuk daftar "di tampilan peta" dan perpindahan peta.
+  // Tinggi panel ditulis di main, karena panel, atribusi Mapbox, dan pesan di atas peta memakai ukuran yang sama.
+  useLayoutEffect(() => {
+    const main = frame.current?.closest("main");
+    if (main) main.dataset.tinggi = height;
+  }, [height]);
+
+  // Ukuran diukur ulang setelah berhenti berubah (mis. selesai animasi panel), lalu perpindahan yang menunggu dijalankan.
   useEffect(() => {
     const main = frame.current?.closest("main");
     if (!main) return;
@@ -158,6 +201,7 @@ export function PlaceMap({
       const { top, insets } = measure(main);
       main.style.setProperty("--peta-atas", `${top}px`);
       map?.setInsets(insets);
+      flushMove();
     };
     const schedule = () => {
       window.clearTimeout(timer);
@@ -174,20 +218,7 @@ export function PlaceMap({
       observer.disconnect();
       window.clearTimeout(timer);
     };
-  }, [map, state, priority]);
-
-  // Escape di panel menutup ringkasan, lalu fokus kembali ke marker atau tombol daftar yang membukanya.
-  useEffect(() => {
-    const element = panel.current;
-    if (!element || !chosen) return;
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key !== "Escape" || event.defaultPrevented) return;
-      event.preventDefault();
-      closeSummary();
-    };
-    element.addEventListener("keydown", onKey);
-    return () => element.removeEventListener("keydown", onKey);
-  });
+  }, [map, state, priority, flushMove]);
 
   // Ringkasan menerima fokus setiap kali lokasi dipilih, supaya pembaca layar langsung membacanya.
   useEffect(() => {
@@ -243,11 +274,13 @@ export function PlaceMap({
 
   function showOnMap(id: string) {
     setSelected({ id, from: "daftar" });
-    map?.show(id);
+    setHeight("setengah");
+    queueMove(id, "show");
   }
 
   function skipToList(event: MouseEvent<HTMLAnchorElement>) {
     event.preventDefault();
+    if (height === "kecil") setHeight("setengah");
     listHeading.current?.focus();
   }
 
@@ -291,7 +324,7 @@ export function PlaceMap({
         {/* Mapbox memberi kontainer peta position: relative, jadi ukurannya diambil dari bingkai lewat size-full. */}
         <div ref={container} className="size-full" />
         {ready && (
-          <p id="petunjuk-peta" className="sr-only">
+          <p id="petunjuk-peta" className="peta-petunjuk">
             {t("map.hint")}
           </p>
         )}
@@ -322,9 +355,9 @@ export function PlaceMap({
             </div>
           )}
           {(state === "siap" || state === "awal") && places.length === 0 && (
-            // Ringkas, supaya muat di atas panel daftar; penjelasannya ada di panel.
-            <div className="panel-raised flex flex-wrap items-center justify-center gap-x-3 gap-y-2 rounded-3xl p-2 pl-5">
-              <p className="font-heading font-bold">{tj(filtered ? "results.emptyTitle" : "results.noDataTitle")}</p>
+            <div className="panel-raised flex max-w-md flex-col items-start gap-3 rounded-3xl p-6">
+              <p className="font-heading text-xl font-bold">{tj(filtered ? "results.emptyTitle" : "results.noDataTitle")}</p>
+              <p className="text-text-secondary">{tj(filtered ? "results.emptyBody" : "results.noDataBody")}</p>
               {filtered && (
                 <Link href="/peta" className={buttonClass("outline", "sm")}>
                   {tj("filters.reset")}
@@ -333,17 +366,25 @@ export function PlaceMap({
             </div>
           )}
         </div>
+        <noscript>
+          {/* Tanpa JavaScript panel daftar tidak bisa dibuka, jadi dibuka penuh dari awal. */}
+          <style>{".peta-app{--peta-bawah:100%!important}.peta-lembar{align-self:stretch!important}.peta-lembar-isi{visibility:visible!important;display:block!important}"}</style>
+        </noscript>
       </div>
-      <section ref={panel} aria-labelledby="judul-daftar-peta" className="peta-lembar">
-        <div className="flex min-h-(--peta-kepala) shrink-0 flex-col justify-center px-5 py-2">
-          <h2 id="judul-daftar-peta" ref={listHeading} tabIndex={-1} className="font-heading text-lg leading-tight font-bold">
-            {t(ready ? "list.inView" : "list.title")}
-          </h2>
-          <p role="status" className="text-sm text-text-secondary">
-            {ready ? t("list.count", { shown: shown.length, total: places.length }) : t("count", { total: places.length })}
-          </p>
-        </div>
-        <div className="peta-lembar-isi">
+      <PlaceSheet
+        height={height}
+        onHeight={setHeight}
+        onEscape={() => {
+          if (chosen) return closeSummary();
+          if (height === "kecil") return;
+          setHeight("kecil");
+          toggle.current?.focus();
+        }}
+        title={t(ready ? "list.inView" : "list.title")}
+        status={ready ? t("list.count", { shown: shown.length, total: places.length }) : t("count", { total: places.length })}
+        headingRef={listHeading}
+        toggleRef={toggle}
+      >
         {place ? (
           <PlaceSummary place={place} headingRef={summaryHeading} onClose={closeSummary} />
         ) : (
@@ -363,10 +404,7 @@ export function PlaceMap({
                 <p className="rounded-2xl bg-bg-sunken p-4 text-text-secondary">{t("list.none")}</p>
               ))}
             {places.length === 0 && (
-              <div className="flex flex-col gap-1 rounded-2xl bg-bg-sunken p-4">
-                <p className="font-bold">{tj(filtered ? "results.emptyTitle" : "results.noDataTitle")}</p>
-                <p className="text-text-secondary">{tj(filtered ? "results.emptyBody" : "results.noDataBody")}</p>
-              </div>
+              <p className="rounded-2xl bg-bg-sunken p-4 text-text-secondary">{tj(filtered ? "results.emptyTitle" : "results.noDataTitle")}</p>
             )}
             {layerShown && (
               <>
@@ -380,8 +418,7 @@ export function PlaceMap({
             )}
           </div>
         )}
-        </div>
-      </section>
+      </PlaceSheet>
       {map &&
         places.map((p) => {
           const element = markers.get(p.id);

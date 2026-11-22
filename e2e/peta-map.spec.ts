@@ -50,6 +50,7 @@ test.describe("with WebGL", () => {
   });
 
   test("the list follows the view, and the reset button returns to Kota Bogor", async ({ page }) => {
+    await page.getByRole("button", { name: "Tampilkan daftar" }).click();
     await page.getByRole("button", { name: "Tunjukkan di peta: Halte contoh", exact: true }).click();
     await expect(page.getByRole("heading", { name: "Halte contoh", level: 3 })).toBeFocused();
     await expect(count(page)).toHaveText("1 dari 7 lokasi");
