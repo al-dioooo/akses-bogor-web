@@ -233,7 +233,7 @@
     "title": "Lokasi di",
     "accent": "peta.",
     "loading": "Memuat peta…",
-    "count": "{total, plural, =0 {Tidak ada lokasi yang cocok} other {Menampilkan # lokasi}}",
+    "count": "Menampilkan {total} lokasi",
     "asList": "Lihat sebagai daftar",
     "legend": "Legenda status",
     "cari": {
@@ -313,11 +313,10 @@
       "title": "Prioritas kecamatan",
       "intro": "Warna kecamatan menunjukkan seberapa perlu fasilitasnya didata, dari penyandang disabilitas terdaftar, fasilitas tanpa data, dan lokasi yang sudah diverifikasi.",
       "legend": "Legenda prioritas",
-      "boundaries": "Batas kecamatan: {attribution}.",
+      "boundaries": "Batas kecamatan: <credit>{attribution}</credit>.",
       "table": "Tabel",
       "showTable": "Tabel prioritas kecamatan",
-      "source": "Sumber: {publisher}.",
-      "notes": "Catatan data dan sumber"
+      "source": "Sumber: {publisher}."
     }
   },
   "Detail": {

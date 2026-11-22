@@ -19,7 +19,7 @@ export function generateMetadata(): Promise<Metadata> {
 export default async function Peta({ searchParams }: PageProps<"/peta">) {
   const t = await getTranslations("Peta");
   return (
-    <main id="konten" className="peta-app" data-tinggi="kecil">
+    <main id="konten" className="peta-app" data-tinggi="awal">
       <h1 className="sr-only">
         {t("title")} {t("accent")}
       </h1>

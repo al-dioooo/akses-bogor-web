@@ -14,8 +14,31 @@ export function PriorityLegend({ priority, attribution }: { priority: DistrictPr
     <div id="tabel-prioritas" tabIndex={-1} className="flex scroll-mt-4 flex-col gap-4 border-t border-border-subtle pt-5">
       <PriorityTable data={priority}>
         <p className="text-text-secondary">{t("intro")}</p>
-        {attribution && <p className="text-sm text-text-secondary">{t("boundaries", { attribution })}</p>}
+        {attribution && (
+          <p className="text-sm text-text-secondary">
+            <BoundariesCredit attribution={attribution} />
+          </p>
+        )}
       </PriorityTable>
     </div>
   );
+}
+
+/**
+ * Kredit batas kecamatan dari API (ADR-0034). Atribusi OpenStreetMap menaut ke halaman hak cipta dan lisensinya, sesuai
+ * syarat ODbL.
+ */
+export function BoundariesCredit({ attribution }: { attribution: string }) {
+  const t = useTranslations("Peta.prioritas");
+  return t.rich("boundaries", {
+    attribution,
+    credit: (chunks) =>
+      attribution.includes("OpenStreetMap") ? (
+        <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer" className="font-semibold text-text-brand underline underline-offset-2">
+          {chunks}
+        </a>
+      ) : (
+        chunks
+      ),
+  });
 }

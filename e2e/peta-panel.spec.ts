@@ -1,11 +1,25 @@
 import type { Page } from "@playwright/test";
 import { blockingViolations } from "./axe";
-import { expect, test } from "./mapbox";
+import { expect, openList, stubMapbox, test } from "./mapbox";
 
 // Peta layar penuh: panel daftar (lembar bawah di ponsel, panel samping mulai 768 px), dengan API dan Mapbox tiruan.
 const handle = (page: Page) => page.getByRole("slider", { name: "Tinggi panel daftar" });
 const placeList = (page: Page) => page.getByRole("list", { name: /^(Daftar lokasi|Lokasi di tampilan peta)$/ });
 const isMobile = (page: Page) => (page.viewportSize()?.width ?? 0) < 768;
+
+/** IP pengunjung yang mendapat data kosong dari API tiruan, seperti production sebelum ada lokasi. */
+const NO_PLACES_IP = "203.0.113.249";
+
+/**
+ * Elemen digulir ke tampilan di panel, lalu harus terlihat di layar dan tidak tertutup elemen lain (panel, Bottom nav)
+ * di titik tengahnya.
+ */
+const uncovered = (element: Element) => {
+  element.scrollIntoView({ block: "nearest" });
+  const box = element.getBoundingClientRect();
+  const hit = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
+  return box.top >= 0 && box.bottom <= window.innerHeight && !!hit && (hit === element || element.contains(hit));
+};
 
 async function openMap(page: Page, path = "/peta") {
   await page.emulateMedia({ reducedMotion: "reduce" });
@@ -40,7 +54,7 @@ for (const width of [320, 360, 1024, 1280]) {
   test(`at ${width} px nothing scrolls sideways and the panel clears the bottom nav`, async ({ page }) => {
     await page.setViewportSize({ width, height: 760 });
     await openMap(page);
-    await page.getByRole("button", { name: "Tampilkan daftar" }).click();
+    await openList(page);
     await expect(placeList(page)).toBeVisible();
     const sizes = await page.evaluate(() => {
       const nav = [...document.querySelectorAll("nav")].find((element) => getComputedStyle(element).position === "fixed");
@@ -64,14 +78,26 @@ for (const width of [320, 360, 1024, 1280]) {
 
 test("the panel opens with its button and closes with Escape, returning focus to the button", async ({ page }) => {
   await openMap(page);
-  const toggle = page.getByRole("button", { name: "Tampilkan daftar" });
-  await expect(placeList(page)).toBeHidden();
-  await toggle.click();
+  await openList(page);
   await expect(placeList(page).getByRole("listitem")).toHaveCount(7);
   await placeList(page).getByRole("link").first().focus();
   await page.keyboard.press("Escape");
   await expect(placeList(page)).toBeHidden();
-  await expect(page.getByRole("button", { name: "Tampilkan daftar" })).toBeFocused();
+  const toggle = page.getByRole("button", { name: "Tampilkan daftar" });
+  await expect(toggle).toBeFocused();
+  await expect(toggle).toHaveAttribute("aria-expanded", "false");
+  await toggle.click();
+  await expect(placeList(page)).toBeVisible();
+});
+
+test("on a wide screen the side panel starts open without moving once the page has loaded", async ({ page }) => {
+  test.skip((page.viewportSize()?.width ?? 0) < 768, "Panel samping mulai 768 px");
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/peta");
+  const before = await page.locator(".peta-lembar").boundingBox();
+  await expect(placeList(page)).toBeVisible();
+  await expect(page.getByRole("button", { name: "Tampilkan peta" })).toHaveAttribute("aria-expanded", "true");
+  expect(await page.locator(".peta-lembar").boundingBox()).toEqual(before);
 });
 
 test("on a phone the handle is a slider that changes the sheet height without dragging", async ({ page }) => {
@@ -93,6 +119,43 @@ test("on a phone the handle is a slider that changes the sheet height without dr
   await expect(handle(page)).toHaveAttribute("aria-valuetext", "penuh");
   await page.getByRole("button", { name: "Tampilkan peta" }).click();
   await expect(handle(page)).toHaveAttribute("aria-valuetext", "kecil");
+});
+
+test("on a phone the handle shows its own focus ring, inside the sheet", async ({ page }) => {
+  test.skip(!isMobile(page), "Pegangan hanya ada di lembar bawah ponsel");
+  await openMap(page);
+  await handle(page).focus();
+  const ring = await handle(page).evaluate((element) => {
+    const style = getComputedStyle(element);
+    const grow = Number.parseFloat(style.outlineOffset) + Number.parseFloat(style.outlineWidth);
+    const box = element.getBoundingClientRect();
+    const sheet = element.closest(".peta-lembar")!.getBoundingClientRect();
+    return {
+      shown: element.matches(":focus-visible") && style.outlineStyle !== "none",
+      // Lembar memotong isinya (overflow: hidden), jadi cincinnya harus seluruhnya di dalam lembar.
+      inside: box.top - grow >= sheet.top && box.left - grow >= sheet.left && box.right + grow <= sheet.right,
+    };
+  });
+  expect(ring).toEqual({ shown: true, inside: true });
+});
+
+test("a full sheet lists every place, not only those in the map view it covers", async ({ page }) => {
+  test.skip(!isMobile(page), "Lembar penuh hanya ada di ponsel");
+  await openMap(page);
+  await expect(page.getByRole("group", { name: "Kontrol peta" })).toBeVisible({ timeout: 15_000 });
+  const status = page.locator("#judul-daftar-peta + [role=status]");
+  await openList(page);
+  await page.getByRole("button", { name: "Tunjukkan di peta: Halte contoh", exact: true }).click();
+  await expect(page.getByRole("heading", { level: 3, name: "Halte contoh" })).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(status).toHaveText(/^[1-6] dari 7 lokasi$/);
+  await handle(page).press("End");
+  await expect(handle(page)).toHaveAttribute("aria-valuetext", "penuh");
+  await expect(page.getByRole("heading", { level: 2, name: "Daftar lokasi" })).toBeVisible();
+  await expect(status).toHaveText("Menampilkan 7 lokasi");
+  await expect(placeList(page).getByRole("listitem")).toHaveCount(7);
+  await handle(page).press("ArrowDown");
+  await expect(status).toHaveText(/^[1-6] dari 7 lokasi$/);
 });
 
 test("on a phone the sheet follows a drag and settles on the nearest height", async ({ page }) => {
@@ -167,7 +230,7 @@ for (const colorScheme of ["light", "dark"] as const) {
   test(`the open panel has no serious WCAG 2.2 AA violations (${colorScheme})`, async ({ page }) => {
     await page.emulateMedia({ colorScheme, reducedMotion: "reduce" });
     await page.goto("/peta");
-    await page.getByRole("button", { name: "Tampilkan daftar" }).click();
+    await openList(page);
     await expect(placeList(page)).toBeVisible();
     expect(await blockingViolations(page)).toEqual([]);
     if (isMobile(page)) {
@@ -175,5 +238,36 @@ for (const colorScheme of ["light", "dark"] as const) {
       await expect(handle(page)).toHaveAttribute("aria-valuetext", "penuh");
       expect(await blockingViolations(page)).toEqual([]);
     }
+  });
+}
+
+for (const viewport of [
+  { width: 320, height: 568 },
+  { width: 667, height: 375 },
+  { width: 915, height: 412 },
+]) {
+  test(`with no places at all the panel says so where it can be seen (${viewport.width}×${viewport.height})`, async ({ browser }, testInfo) => {
+    test.skip(testInfo.project.name !== "ponsel", "Ukuran layar ditentukan tes ini sendiri");
+    const context = await browser.newContext({ viewport, reducedMotion: "reduce", extraHTTPHeaders: { "x-forwarded-for": NO_PLACES_IP } });
+    const page = await context.newPage();
+    await stubMapbox(page);
+    await page.goto("/peta");
+    // Tanpa filter: "belum ada lokasi", bukan "tidak ada yang cocok" atau "0 dari 0", sebelum dan sesudah peta dimuat.
+    const status = page.locator("#judul-daftar-peta + [role=status]");
+    await expect(status).toHaveText("Belum ada lokasi");
+    await expect(page.getByText("Memuat peta…")).toHaveCount(0);
+    await expect(status).toHaveText("Belum ada lokasi");
+    await expect.poll(() => status.evaluate(uncovered)).toBe(true);
+    await expect(page.getByText(/dari 0 lokasi|Tidak ada lokasi yang cocok/)).toHaveCount(0);
+    await openList(page);
+    const body = page.getByText("Lokasi tampil di sini setelah laporan warga diperiksa tim.");
+    await expect.poll(() => body.evaluate(uncovered)).toBe(true);
+    // Dengan filter: pesan "tidak ada yang cocok" dan jalan untuk menghapus filter.
+    await page.goto("/peta?q=tidak-ada");
+    await expect(status).toHaveText("Tidak ada lokasi yang cocok");
+    await openList(page);
+    const reset = page.getByRole("main").getByRole("link", { name: "Hapus filter" });
+    await expect.poll(() => reset.evaluate(uncovered)).toBe(true);
+    await context.close();
   });
 }

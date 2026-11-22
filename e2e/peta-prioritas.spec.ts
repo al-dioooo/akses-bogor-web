@@ -1,12 +1,14 @@
 import type { Page } from "@playwright/test";
 import { blockingViolations } from "./axe";
-import { expect, stubMapbox, test } from "./mapbox";
+import { expect, openList, stubMapbox, test } from "./mapbox";
 
 // Lapisan prioritas kecamatan di Peta (ADR-0043) dengan API tiruan (e2e/mock-api/prioritas.mjs) dan Mapbox tiruan.
 /** IP pengunjung yang membuat API tiruan menjawab data_disabilitas_belum_aktif. */
 const PRIORITY_OFF_IP = "203.0.113.251";
 const main = (page: Page) => page.getByRole("main");
 const toggle = (page: Page) => main(page).getByRole("button", { name: "Lapisan prioritas kecamatan" });
+/** Kunci yang mengambang di atas peta (judulnya sama dengan tabel di panel daftar). */
+const floatingKey = (page: Page) => main(page).locator("section.peta-kunci");
 
 test("shows a floating key with the levels as text, the caveat and the source while the layer is on", async ({ page }) => {
   await page.goto("/peta");
@@ -17,20 +19,15 @@ test("shows a floating key with the levels as text, the caveat and the source wh
   await expect(main(page).getByRole("status").filter({ hasText: "Lapisan prioritas kecamatan tampil di peta" })).toBeAttached();
 
   // Kunci mengambang di atas peta, tanpa membuka panel daftar.
-  const key = main(page).getByRole("region", { name: "Prioritas kecamatan 2025" });
+  const key = floatingKey(page);
   await expect(key.getByRole("list", { name: "Legenda prioritas" }).getByRole("listitem")).toHaveText(["Rendah", "Sedang", "Tinggi", "Sangat tinggi"]);
   await expect(key.getByText(/bukan jumlah seluruh penduduk; lonjakan antartahun besar/)).toBeVisible();
   await expect(key.getByText(/Sumber: Open Data Kota Bogor, Dinas Sosial\. Batas kecamatan: © kontributor OpenStreetMap\./)).toBeVisible();
+  // Kredit OSM menaut ke halaman hak cipta dan lisensinya (ODbL).
+  await expect(key.getByRole("link", { name: "© kontributor OpenStreetMap" })).toHaveAttribute("href", "https://www.openstreetmap.org/copyright");
   await expect(key.getByRole("link", { name: "Bantu memetakan" })).toHaveAttribute("href", "/laporkan/bantu-memetakan");
-  // Catatan dan sumber boleh dilipat supaya peta terlihat di layar kecil; legenda tetap tampil.
-  const notes = key.getByRole("button", { name: "Catatan data dan sumber" });
-  await expect(notes).toHaveAttribute("aria-expanded", "true");
-  await notes.click();
-  await expect(notes).toHaveAttribute("aria-expanded", "false");
-  await expect(key.getByText(/bukan jumlah seluruh penduduk/)).toBeHidden();
-  await expect(key.getByRole("list", { name: "Legenda prioritas" })).toBeVisible();
-  await notes.click();
-  await expect(key.getByText(/bukan jumlah seluruh penduduk/)).toBeVisible();
+  // Catatan batas data dan sumber selalu tampil bersama warnanya; tidak ada yang bisa dilipat.
+  await expect(key.getByRole("button", { name: "Catatan data dan sumber" })).toHaveCount(0);
   expect(await main(page).textContent()).not.toMatch(/cacat/i);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 
@@ -39,6 +36,50 @@ test("shows a floating key with the levels as text, the caveat and the source wh
   await expect(key).toHaveCount(0);
   await expect(main(page).getByRole("table")).toHaveCount(0);
 });
+
+for (const viewport of [
+  { width: 320, height: 568 },
+  { width: 360, height: 740 },
+  { width: 1024, height: 600 },
+]) {
+  test(`the key never slips under the list panel, and markers under it cannot take focus (${viewport.width}×${viewport.height})`, async ({ page }) => {
+    await page.setViewportSize(viewport);
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/peta");
+    await expect(main(page).getByRole("group", { name: "Kontrol peta" })).toBeVisible({ timeout: 15_000 });
+    await toggle(page).click();
+    const key = floatingKey(page);
+    // Kunci berhenti di atas lembar bawah (ponsel) atau Bottom nav (layar lebar); isi yang tidak muat digulir di dalamnya.
+    for (const part of [
+      key.getByText(/bukan jumlah seluruh penduduk/),
+      key.getByRole("link", { name: "© kontributor OpenStreetMap" }),
+      key.getByRole("link", { name: "Bantu memetakan" }),
+    ]) {
+      await expect
+        .poll(() =>
+          part.evaluate((element) => {
+            element.scrollIntoView({ block: "nearest" });
+            // Baris pertama saja: tautan di dalam kalimat bisa terbagi dua baris.
+            const box = element.getClientRects()[0];
+            const hit = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
+            return !!hit && (hit === element || element.contains(hit));
+          }),
+        )
+        .toBe(true);
+    }
+    const covered = await page.evaluate(() =>
+      [...document.querySelectorAll<HTMLElement>(".mapboxgl-marker")]
+        .filter((element) => element.tabIndex === 0)
+        .filter((element) => {
+          const box = element.getBoundingClientRect();
+          const hit = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
+          return !hit || !(hit === element || element.contains(hit));
+        })
+        .map((element) => element.getAttribute("aria-label")),
+    );
+    expect(covered).toEqual([]);
+  });
+}
 
 test("the table button opens the list panel at the ranked table with its source", async ({ page }) => {
   await page.goto("/peta");
@@ -80,7 +121,7 @@ for (const colorScheme of ["light", "dark"] as const) {
     await page.emulateMedia({ colorScheme, reducedMotion: "reduce" });
     await page.goto("/peta");
     await toggle(page).click();
-    await main(page).getByRole("button", { name: "Tampilkan daftar" }).click();
+    await openList(page);
     await expect(main(page).getByRole("table")).toBeVisible();
     expect(await blockingViolations(page)).toEqual([]);
   });
