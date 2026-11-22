@@ -43,6 +43,8 @@ type Options = {
   token: MapToken;
   renewToken: () => Promise<MapToken>;
   places: MapPlace[];
+  /** Bagian peta yang sudah tertutup panel saat peta dibuat, supaya tampilan awal Kota Bogor tidak di baliknya. */
+  insets?: Insets;
   night: boolean;
   /** Satu jari dan roda tetikus menggulir halaman, bukan peta, selama peta ada di tengah halaman. */
   cooperative?: boolean;
@@ -69,7 +71,7 @@ function withToken(url: string, token: string) {
 /** Peta Mapbox GL JS untuk halaman Peta (ADR-0016): marker HTML berupa tombol, tanpa rotasi dan kemiringan. */
 export function mountMap(options: Options): MapHandle {
   let places = options.places;
-  let insets = NO_INSETS;
+  let insets = options.insets ?? NO_INSETS;
   let token = options.token;
   let night = options.night;
   let ready = false;
@@ -79,7 +81,7 @@ export function mountMap(options: Options): MapHandle {
     container: options.container,
     style: night ? STYLE.gelap : STYLE.terang,
     bounds: KOTA_BOGOR,
-    fitBoundsOptions: { padding: 16 },
+    fitBoundsOptions: { padding: cameraPadding(options.container.clientWidth, options.container.clientHeight, insets) },
     maxBounds: AREA,
     minZoom: 10,
     maxZoom: 18,
