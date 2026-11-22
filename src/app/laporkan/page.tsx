@@ -1,11 +1,16 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { ReportForm } from "@/components/laporkan/report-form";
+import { agentEnabled } from "@/lib/agen-rute";
 import { getPlace } from "@/lib/api";
 import type { ReportKind } from "@/lib/laporan";
 import { hasSession } from "@/lib/sesi";
+import { buttonClass } from "@/ui/button-styles";
+import { Icon } from "@/ui/icon";
+import { IconCompass } from "@/ui/icons";
 import { LoadErrorBoundary } from "@/ui/load-error";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -44,6 +49,8 @@ async function Report({ searchParams }: { searchParams: PageProps<"/laporkan">["
   const place = placeId ? await getPlace(placeId) : null;
   if (placeId && !place) notFound();
   const kind: ReportKind = place ? (params.jenis === "kekurangan" ? "kekurangan" : "perubahan") : "baru";
+  // Bantu memetakan hanya ditawarkan untuk laporan baru, kepada akun yang sudah masuk, selama API membuka agen.
+  const helper = kind === "baru" && signedIn && (await agentEnabled());
   return (
     <>
       <div className="flex flex-col items-start gap-3">
@@ -54,7 +61,25 @@ async function Report({ searchParams }: { searchParams: PageProps<"/laporkan">["
         </h1>
         <p className="text-lg text-text-secondary">{t(`intro.${kind}`, { name: place?.name ?? "" })}</p>
       </div>
+      {helper && <MappingHelper />}
       <ReportForm kind={kind} place={place} signedIn={signedIn} />
     </>
+  );
+}
+
+/** Jalan ke Bantu memetakan (ADR-0043) untuk pelapor yang belum tahu tempat mana yang perlu didata. */
+async function MappingHelper() {
+  const t = await getTranslations("BantuMemetakan.entry");
+  return (
+    <aside aria-labelledby="bantu-memetakan-judul" className="flex flex-col items-start gap-3 rounded-3xl bg-surface-brand-subtle p-5">
+      <h2 id="bantu-memetakan-judul" className="flex items-start gap-2 font-heading text-lg font-bold">
+        <Icon icon={IconCompass} className="mt-0.5 size-5 shrink-0 text-icon-brand" />
+        {t("title")}
+      </h2>
+      <p>{t("body")}</p>
+      <Link href="/laporkan/bantu-memetakan" className={buttonClass("outline", "sm")}>
+        {t("link")}
+      </Link>
+    </aside>
   );
 }
