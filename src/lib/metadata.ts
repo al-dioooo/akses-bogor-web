@@ -78,16 +78,13 @@ export async function placeMetadata(place: PlaceDetail): Promise<Metadata> {
     getTranslations("Metadata"),
     getFormatter(),
   ]);
-  const { available, relevant, unknown } = place.summary;
-  const summary = [card("summary", { available, relevant }), unknown > 0 ? card("unknown", { count: unknown }) : null]
-    .filter(Boolean)
-    .join(", ");
+  const { summary, date } = placeFacts(place, card, format);
   const description = t("metaDescription", {
     category: category(place.category),
     district: place.district.name,
     status: status(place.status),
     summary,
-    date: format.dateTime(new Date(place.lastVerifiedAt), { dateStyle: "long" }),
+    date,
   });
   return publicMetadata({
     title: t("metaTitle", { name: place.name, district: place.district.name }),
@@ -97,3 +94,18 @@ export async function placeMetadata(place: PlaceDetail): Promise<Metadata> {
   });
 }
 
+/**
+ * Ringkasan fasilitas ("2 dari 3 fasilitas tersedia, 1 belum diketahui") dan tanggal verifikasi dalam teks, sama
+ * dengan yang tampil di halaman lokasi. Dipakai untuk deskripsi dan gambar berbagi Detail lokasi.
+ */
+export function placeFacts(
+  place: Pick<PlaceDetail, "summary" | "lastVerifiedAt">,
+  card: Awaited<ReturnType<typeof getTranslations<"Lokasi">>>,
+  format: Awaited<ReturnType<typeof getFormatter>>,
+) {
+  const { available, relevant, unknown } = place.summary;
+  return {
+    summary: [card("summary", { available, relevant }), unknown > 0 ? card("unknown", { count: unknown }) : null].filter(Boolean).join(", "),
+    date: format.dateTime(new Date(place.lastVerifiedAt), { dateStyle: "long" }),
+  };
+}
