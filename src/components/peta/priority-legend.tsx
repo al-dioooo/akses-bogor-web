@@ -2,34 +2,19 @@
 
 import { useTranslations } from "next-intl";
 import type { DistrictPriority } from "@/lib/api";
-import { LEVEL_COLOR, LEVELS } from "@/components/prioritas/levels";
 import { PriorityTable } from "@/components/prioritas/priority-table";
 
 /**
- * Legenda dan tabel lapisan prioritas kecamatan di Peta (ADR-0043). Setiap tingkat ditulis sebagai teks di samping
- * warnanya, dan tabel berisi data yang sama dengan lapisan peta untuk yang tidak bisa melihat atau memakai peta.
+ * Tabel lapisan prioritas kecamatan di panel daftar Peta (ADR-0043): data yang sama dengan lapisan peta, dengan tingkat
+ * sebagai teks, untuk yang tidak bisa melihat atau memakai peta. Kunci warnanya mengambang di atas peta (PriorityKey).
  */
 export function PriorityLegend({ priority, attribution }: { priority: DistrictPriority; attribution: string | null }) {
   const t = useTranslations("Peta.prioritas");
-  const tl = useTranslations("PrioritasKecamatan.tingkat");
   return (
-    <div className="flex flex-col gap-4 border-t border-border-subtle pt-5">
+    <div id="tabel-prioritas" tabIndex={-1} className="flex scroll-mt-4 flex-col gap-4 border-t border-border-subtle pt-5">
       <PriorityTable data={priority}>
         <p className="text-text-secondary">{t("intro")}</p>
-        <div className="flex flex-col gap-2">
-          <p id="legenda-prioritas" className="text-sm font-semibold">
-            {t("legend")}
-          </p>
-          <ul aria-labelledby="legenda-prioritas" className="flex flex-wrap gap-x-5 gap-y-2">
-            {LEVELS.map((level) => (
-              <li key={level} className="inline-flex items-center gap-2 text-sm">
-                <span aria-hidden="true" className="size-5 shrink-0 rounded-md border border-border-strong" style={{ background: `var(${LEVEL_COLOR[level]})` }} />
-                {tl(level)}
-              </li>
-            ))}
-          </ul>
-          {attribution && <p className="text-sm text-text-secondary">{t("boundaries", { attribution })}</p>}
-        </div>
+        {attribution && <p className="text-sm text-text-secondary">{t("boundaries", { attribution })}</p>}
       </PriorityTable>
     </div>
   );

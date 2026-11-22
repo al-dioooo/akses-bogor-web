@@ -17,6 +17,7 @@ import type { MapHandle } from "./map/mount";
 import { PlaceList } from "./place-list";
 import { PlaceSheet, type SheetHeight } from "./place-sheet";
 import { PlaceSummary } from "./place-summary";
+import { PriorityKey } from "./priority-key";
 import { PriorityLegend } from "./priority-legend";
 import type { MapPlace } from "./places";
 
@@ -39,7 +40,8 @@ function measure(main: HTMLElement): { top: number; insets: Insets } {
     const element = main.querySelector(selector);
     return element ? element.getBoundingClientRect().bottom - box.top : 0;
   };
-  const top = Math.ceil(Math.max(below(".peta-cari"), below(".peta-kontrol"), below(".peta-lapisan")));
+  // Kunci prioritas mengambang selebar layar di ponsel, di bawah tombol lapisannya.
+  const top = Math.ceil(Math.max(below(".peta-cari"), below(".peta-kontrol"), below(".peta-lapisan"), below(".peta-kunci")));
   const panel = main.querySelector(".peta-lembar")?.getBoundingClientRect();
   if (!panel) return { top, insets: { top: 0, right: 0, bottom: 0, left: 0 } };
   const side = panel.width < box.width * 0.75;
@@ -48,7 +50,7 @@ function measure(main: HTMLElement): { top: number; insets: Insets } {
     insets: side
       ? { top: 0, right: 0, bottom: Number.parseFloat(getComputedStyle(main).paddingBottom) || 0, left: panel.right - box.left }
       : // Atribusi Mapbox duduk di atas lembar, jadi ikut dihitung sebagai bagian yang tertutup.
-        { top: below(".peta-cari"), right: 0, bottom: box.bottom - panel.top + 44, left: 0 },
+        { top: Math.max(below(".peta-cari"), below(".peta-kunci")), right: 0, bottom: box.bottom - panel.top + 44, left: 0 },
   };
 }
 
@@ -224,7 +226,7 @@ export function PlaceMap({
       timer = window.setTimeout(update, 120);
     };
     const observer = new ResizeObserver(schedule);
-    for (const selector of [".peta-lembar", ".peta-cari", ".peta-kontrol", ".peta-lapisan"]) {
+    for (const selector of [".peta-lembar", ".peta-cari", ".peta-kontrol", ".peta-lapisan", ".peta-kunci"]) {
       const element = main.querySelector(selector);
       if (element) observer.observe(element);
     }
@@ -234,7 +236,7 @@ export function PlaceMap({
       observer.disconnect();
       window.clearTimeout(timer);
     };
-  }, [map, state, priority, flushMove]);
+  }, [map, state, priority, layer, flushMove]);
 
   // Ringkasan menerima fokus setiap kali lokasi dipilih, supaya pembaca layar langsung membacanya.
   useEffect(() => {
@@ -294,6 +296,13 @@ export function PlaceMap({
     queueMove(id, "show");
   }
 
+  /** Membuka panel daftar di tabel prioritas, lalu memindahkan fokus ke sana. */
+  function showTable() {
+    setSelected(null);
+    setHeight(narrow ? "penuh" : "setengah");
+    requestAnimationFrame(() => requestAnimationFrame(() => document.getElementById("tabel-prioritas")?.focus()));
+  }
+
   function skipToList(event: MouseEvent<HTMLAnchorElement>) {
     event.preventDefault();
     if (height === "kecil") setHeight("setengah");
@@ -320,6 +329,7 @@ export function PlaceMap({
           <p role="status" className="sr-only">
             {layer === "memuat" ? t("prioritas.loading") : layer === "nyala" ? t("prioritas.on") : ""}
           </p>
+          {layerShown && <PriorityKey priority={priority} failed={layer === "galat"} attribution={boundaries?.attribution ?? null} onShowTable={showTable} />}
         </div>
       )}
       <a
@@ -422,16 +432,7 @@ export function PlaceMap({
             {places.length === 0 && (
               <p className="rounded-2xl bg-bg-sunken p-4 text-text-secondary">{tj(filtered ? "results.emptyTitle" : "results.noDataTitle")}</p>
             )}
-            {layerShown && (
-              <>
-                {layer === "galat" && (
-                  <p role="alert" className="rounded-2xl bg-status-partial-bg p-4 text-text-primary">
-                    {t("prioritas.failed")}
-                  </p>
-                )}
-                <PriorityLegend priority={priority} attribution={boundaries?.attribution ?? null} />
-              </>
-            )}
+            {layerShown && <PriorityLegend priority={priority} attribution={boundaries?.attribution ?? null} />}
           </div>
         )}
       </PlaceSheet>

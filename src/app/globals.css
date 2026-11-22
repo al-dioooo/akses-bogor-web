@@ -487,6 +487,19 @@ body:has(> .peta-app) {
   align-self: start;
 }
 
+/* Kunci lapisan prioritas: di ponsel selebar layar di bawah tombol lapisan, di layar lebar kartu di bawah tombolnya. */
+.peta-kunci {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  width: calc(100vw - 1.5rem);
+  @media (width >= 48rem) {
+    position: static;
+    width: 21rem;
+    margin-top: 0.5rem;
+  }
+}
+
 @media (width >= 48rem) {
   .peta-cari {
     grid-column: 1;
@@ -498,9 +511,10 @@ body:has(> .peta-app) {
       padding-inline: 0;
     }
   }
+  /* Kunci prioritas yang terbuka tidak boleh memanjangkan baris pertama (dan menggeser panel ke bawah). */
   .peta-lapisan {
     grid-column: 2;
-    grid-row: 1;
+    grid-row: 1 / -1;
   }
   .peta-kontrol {
     grid-column: 3;
