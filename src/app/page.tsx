@@ -1,8 +1,14 @@
+import type { Metadata } from "next";
 import { Hero } from "@/components/beranda/hero";
 import { RoadStats } from "@/components/beranda/road-stats";
 import { Route } from "@/components/beranda/route";
 import { Statuses } from "@/components/beranda/statuses";
 import { Steps } from "@/components/beranda/steps";
+import { pageMetadata } from "@/lib/metadata";
+
+export function generateMetadata(): Promise<Metadata> {
+  return pageMetadata("Beranda", "/");
+}
 
 /** Beranda (ADR-0027): hero "Halte ke pintu", pita angka, rute empat fasilitas, arti status, dan alur data. */
 export default function Beranda() {
