@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/metadata";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { MapResults, MapResultsSkeleton } from "@/components/peta/results";
@@ -7,9 +8,8 @@ import { getDistricts } from "@/lib/api";
 import { parseFilters } from "@/lib/filters";
 import { LoadErrorBoundary } from "@/ui/load-error";
 
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("Peta");
-  return { title: t("metaTitle") };
+export function generateMetadata(): Promise<Metadata> {
+  return pageMetadata("Peta", "/peta");
 }
 
 /**

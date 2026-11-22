@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { PRIVACY_POLICY_PATH, TERMS_PATH } from "@/lib/kebijakan";
+import { pageMetadata } from "@/lib/metadata";
 import { buttonClass } from "@/ui/button-styles";
 import { Icon } from "@/ui/icon";
 import { IconAccessible, IconArrowRight, IconBuilding, IconCirclePlus, IconInfoCircle, IconMapPin, type Glyph } from "@/ui/icons";
@@ -13,9 +14,8 @@ type Step = { title: string; body: string };
 const FACT_ICONS: Glyph[] = [IconMapPin, IconBuilding, IconAccessible];
 const LINK = "inline-flex min-h-11 items-center gap-1.5 font-semibold text-text-brand underline underline-offset-2";
 
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("Tentang");
-  return { title: t("metaTitle") };
+export function generateMetadata(): Promise<Metadata> {
+  return pageMetadata("Tentang", "/tentang");
 }
 
 /** Tentang (FR-50): apa itu AksesBogor, cara datanya dikumpulkan, batasnya, sumber data, dan kontak. Halaman statis. */

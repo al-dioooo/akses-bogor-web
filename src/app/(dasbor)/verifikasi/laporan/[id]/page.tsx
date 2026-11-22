@@ -18,11 +18,11 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function Periksa({ params }: PageProps<"/verifikasi/laporan/[id]">) {
   const t = await getTranslations("Pemeriksaan");
   return (
-    <main id="konten" className="page-width flex flex-1 flex-col gap-10 py-10 sm:py-16">
-      <Suspense fallback={<p role="status">{t("loading")}</p>}>
+    <Suspense fallback={<p role="status">{t("loading")}</p>}>
+      <div className="flex flex-col gap-10">
         <Sheet params={params} />
-      </Suspense>
-    </main>
+      </div>
+    </Suspense>
   );
 }
 

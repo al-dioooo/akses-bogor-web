@@ -8,6 +8,8 @@
     "home": "AksesBogor, ke Beranda"
   },
   "Beranda": {
+    "metaTitle": "AksesBogor: info aksesibilitas tempat umum di Kota Bogor",
+    "metaDescription": "Cek ramp, toilet difabel, guiding block, dan lift di kampus, masjid, halte, dan rumah sakit Kota Bogor sebelum berangkat, dari laporan warga yang diperiksa tim.",
     "eyebrow": "Peta aksesibilitas Kota Bogor",
     "titleLead": "Cek aksesnya dulu. Berangkat lebih",
     "titleAccent": "tenang.",
@@ -186,6 +188,7 @@
   },
   "Jelajahi": {
     "metaTitle": "Jelajahi Lokasi",
+    "metaDescription": "Cari kampus, masjid, halte, dan rumah sakit di Kota Bogor, lalu saring menurut kecamatan, fasilitas, dan status aksesibilitas.",
     "eyebrow": "Jelajahi",
     "title": "Semua",
     "accent": "lokasi.",
@@ -225,6 +228,7 @@
   },
   "Peta": {
     "metaTitle": "Peta Lokasi",
+    "metaDescription": "Lihat status aksesibilitas kampus, masjid, halte, dan rumah sakit di Kota Bogor pada peta, lalu saring menurut kecamatan dan fasilitas.",
     "eyebrow": "Peta",
     "title": "Lokasi di",
     "accent": "peta.",
@@ -295,6 +299,9 @@
   "Detail": {
     "back": "Kembali ke Jelajahi",
     "loading": "Memuat lokasi…",
+    "metaTitle": "{name}, {district}",
+    "metaDescription": "{category} di Kecamatan {district}, Kota Bogor. Status aksesibilitas: {status}. {summary}. Terakhir diverifikasi {date}.",
+    "metaRecheck": "Data ini perlu dicek ulang.",
     "landmark": "Patokan",
     "summaryTitle": "Ringkasan fasilitas",
     "ofRelevant": "dari {relevant} fasilitas tersedia",
@@ -323,6 +330,11 @@
       "body": "Mungkin lokasinya sudah tidak tayang, atau tautannya salah.",
       "explore": "Jelajahi lokasi lain"
     }
+  },
+  "Berbagi": {
+    "siteAlt": "AksesBogor, peta aksesibilitas Kota Bogor: cek aksesnya dulu, berangkat lebih tenang. Ramp, toilet difabel, guiding block, dan lift.",
+    "placeAlt": "Kartu lokasi AksesBogor: nama tempat, kategori, kecamatan, status aksesibilitas, ringkasan fasilitas, dan tanggal verifikasi.",
+    "place": "{category} · Kecamatan {district}"
   },
   "Masuk": {
     "metaTitle": "Masuk",
@@ -398,6 +410,7 @@
   },
   "KebijakanPrivasi": {
     "metaTitle": "Kebijakan Privasi",
+    "metaDescription": "Draf kebijakan privasi AksesBogor: data yang kami kumpulkan, untuk apa dipakai, siapa yang bisa melihatnya, berapa lama disimpan, dan hak Anda.",
     "eyebrow": "Kebijakan",
     "title": "Kebijakan",
     "accent": "Privasi.",
@@ -575,6 +588,7 @@
   },
   "SyaratLayanan": {
     "metaTitle": "Syarat Layanan",
+    "metaDescription": "Draf syarat layanan AksesBogor: memakai situs dengan atau tanpa akun, aturan melapor, hak atas laporan dan foto, dan batas tanggung jawab.",
     "eyebrow": "Kebijakan",
     "title": "Syarat",
     "accent": "Layanan.",
@@ -712,6 +726,7 @@
   },
   "Tentang": {
     "metaTitle": "Tentang AksesBogor",
+    "metaDescription": "Apa itu AksesBogor, cara data aksesibilitas tempat umum di Kota Bogor dikumpulkan dan diperiksa, batasnya, dan cara menghubungi kami.",
     "eyebrow": "Tentang",
     "title": "Tentang",
     "accent": "AksesBogor.",
@@ -810,6 +825,7 @@
   },
   "Aksesibilitas": {
     "metaTitle": "Mengenal aksesibilitas",
+    "metaDescription": "Draf: cara AksesBogor menilai sebuah tempat, yaitu fasilitas yang dicatat, arti setiap jawaban, dan cara status dihitung.",
     "title": "Mengenal",
     "accent": "aksesibilitas.",
     "related": "Empat fasilitas, empat jawaban, dan cara status dihitung.",
@@ -911,6 +927,7 @@
   },
   "Disabilitas": {
     "metaTitle": "Mengenal disabilitas",
+    "metaDescription": "Draf: arti penyandang disabilitas menurut UU No. 8 Tahun 2016, mengapa AksesBogor menilai tempat dan bukan orang, dan kata yang kami pakai.",
     "title": "Mengenal",
     "accent": "disabilitas.",
     "related": "Arti penyandang disabilitas, hambatan di lingkungan, dan kata yang kami pakai.",
@@ -980,6 +997,7 @@
   },
   "Tips": {
     "metaTitle": "Tips berkunjung dan melapor",
+    "metaDescription": "Draf: cara membaca halaman lokasi sebelum berangkat, dan cara melapor supaya laporan Anda mudah diperiksa dan cepat tayang.",
     "title": "Tips berkunjung dan",
     "accent": "melapor.",
     "related": "Yang perlu dicek sebelum berangkat, dan cara melapor supaya cepat diverifikasi.",
@@ -1064,10 +1082,6 @@
     ]
   },
   "AkunSaya": {
-    "metaTitle": "Akun saya",
-    "eyebrow": "Akun",
-    "title": "Akun",
-    "accent": "saya.",
     "loading": "Memuat akun…",
     "dataTitle": "Data akun",
     "email": "Email",
@@ -1083,7 +1097,6 @@
     "save": "Simpan nama",
     "saving": "Menyimpan…",
     "renamed": "Nama tampilan sudah diubah.",
-    "signOut": "Keluar",
     "deleteTitle": "Hapus akun",
     "deleteBody": "Data pribadi dan laporan yang belum terbit akan dihapus. Informasi tempat yang sudah terbit tetap tayang tanpa nama Anda.",
     "deleteLink": "Lihat apa yang dihapus",
@@ -1091,14 +1104,20 @@
       "namaKosong": "Isi nama tampilan.",
       "namaPanjang": "Nama tampilan paling banyak 60 karakter.",
       "server": "Server AksesBogor tidak bisa dihubungi. Coba lagi sebentar lagi."
-    },
-    "verifierTitle": "Meja verifikasi",
-    "verifierBody": "Antrean laporan warga yang menunggu diperiksa sebelum tayang.",
-    "verifierLink": "Buka meja verifikasi"
+    }
   },
   "LaporanSaya": {
     "title": "Laporan saya",
+    "eyebrow": "Kontribusi",
+    "heading": "Laporan",
+    "accent": "saya.",
     "intro": "Status setiap laporan yang Anda kirim, terbaru di atas.",
+    "filter": {
+      "label": "Saring menurut status",
+      "all": "Semua",
+      "empty": "Tidak ada laporan dengan status ini."
+    },
+    "shown": "{count, plural, =0 {Tidak ada laporan} other {# laporan}}",
     "loading": "Memuat laporan…",
     "emptyTitle": "Belum ada laporan",
     "emptyBody": "Laporan yang Anda kirim muncul di sini bersama statusnya: menunggu verifikasi, perlu klarifikasi, diterbitkan, atau ditolak beserta alasannya.",
@@ -1184,6 +1203,140 @@
     "body": "Data pribadi dan laporan yang belum terbit sudah kami hapus, dan semua sesi sudah berakhir. Terima kasih sudah membantu memetakan aksesibilitas Kota Bogor.",
     "home": "Ke Beranda",
     "explore": "Jelajahi lokasi"
+  },
+  "Dasbor": {
+    "nav": {
+      "label": "Menu dasbor",
+      "menu": "Menu",
+      "menuTitle": "Menu dasbor",
+      "close": "Tutup menu",
+      "groups": {
+        "kontribusi": "Kontribusi",
+        "verifikasi": "Verifikasi",
+        "admin": "Admin",
+        "akun": "Akun"
+      },
+      "items": {
+        "ringkasan": "Ringkasan",
+        "laporan": "Laporan saya",
+        "bantu": "Bantu memetakan",
+        "antrean": "Antrean",
+        "jawaban": "Menunggu jawaban",
+        "cekUlang": "Perlu dicek ulang",
+        "tim": "Tim verifikator",
+        "pengaturan": "Pengaturan akun"
+      },
+      "signOut": "Keluar",
+      "report": "Laporkan tempat"
+    },
+    "ringkasan": {
+      "metaTitle": "Akun saya",
+      "loading": "Memuat ringkasan…",
+      "greeting": "Halo,",
+      "intro": {
+        "pengguna": "Laporan Anda dan yang perlu dikerjakan berikutnya.",
+        "verifikator": "Yang menunggu Anda, keadaan meja verifikasi, dan laporan Anda sendiri.",
+        "admin": "Yang menunggu Anda, keadaan meja verifikasi, tim, dan laporan Anda sendiri."
+      },
+      "agenda": {
+        "title": "Yang menunggu Anda",
+        "loading": "Memuat yang menunggu Anda…",
+        "clarify": "Jawab pertanyaan verifikator",
+        "unnamed": "Tempat tanpa nama",
+        "daysLeft": "{days, plural, =0 {Hari ini} =1 {Besok} other {# hari lagi}}",
+        "due": "tenggat {date}",
+        "emptyTitle": "Tidak ada yang menunggu Anda",
+        "emptyBody": "Pertanyaan verifikator untuk laporan Anda muncul di sini bersama tenggatnya.",
+        "emptyBodyDesk": "Antrean verifikasi kosong, dan tidak ada pertanyaan verifikator untuk laporan Anda.",
+        "queue": "{count, plural, other {# laporan di antrean}}",
+        "overdue": "{count, plural, other {# laporan lewat target {target} hari kerja}}",
+        "oldest": "Terlama: {name}, {days, plural, =0 {dikirim hari ini} other {menunggu # hari kerja}}",
+        "answered": "{count, plural, other {# pelapor sudah menjawab pertanyaan}}",
+        "answeredDetail": "Laporannya kembali ke antrean di posisi semula."
+      },
+      "meja": {
+        "title": "Meja verifikasi",
+        "loading": "Memuat meja verifikasi…",
+        "open": "Buka meja",
+        "queue": "Antrean",
+        "oldest": "{days, plural, =0 {Terlama dikirim hari ini} other {Terlama menunggu # hari kerja}}",
+        "queueEmpty": "Semua laporan sudah diperiksa.",
+        "overdue": "{count, plural, other {# lewat target {target} hari kerja}}",
+        "waiting": "Menunggu jawaban",
+        "nextDue": "Tenggat terdekat {date}",
+        "waitingEmpty": "Tidak ada pertanyaan yang terbuka.",
+        "recheck": "Perlu dicek ulang",
+        "oldestVerified": "Terlama diverifikasi {date}",
+        "recheckEmpty": "Semua lokasi diverifikasi dalam 12 bulan terakhir."
+      },
+      "petakan": {
+        "title": "Petakan berikutnya",
+        "loading": "Memuat prioritas kecamatan…",
+        "intro": "Kecamatan yang paling perlu data, menurut prioritas kecamatan {year}.",
+        "level": "Prioritas {level}",
+        "withoutData": "{count, plural, other {# tempat belum punya data AksesBogor}}",
+        "source": "Sumber: {publisher}; jumlah tempat dari OpenStreetMap, {osm}.",
+        "sourceDinsos": "Sumber: {publisher}.",
+        "fallback": "Mulai dari tempat umum yang sering Anda datangi: kampus, masjid, halte, atau rumah sakit di Kota Bogor.",
+        "agent": "Cari tempat dengan agen",
+        "report": "Laporkan tempat",
+        "map": "Lihat di peta"
+      },
+      "rute": {
+        "eyebrow": "Rute pertama Anda",
+        "title": "Dari akun baru ke",
+        "accent": "tempat pertama.",
+        "intro": "Empat halte dari akun ini sampai tempat yang Anda laporkan tayang di AksesBogor.",
+        "state": {
+          "done": "Selesai",
+          "current": "Berikutnya",
+          "next": "Nanti"
+        },
+        "stops": {
+          "akun": {
+            "title": "Akun siap",
+            "body": "Nama tampilan dan persetujuan Anda sudah tersimpan."
+          },
+          "datang": {
+            "title": "Datangi satu tempat",
+            "body": "Kampus, masjid, halte, atau rumah sakit di Kota Bogor yang sering Anda kunjungi."
+          },
+          "isi": {
+            "title": "Isi fasilitas dan foto",
+            "body": "Ramp, toilet difabel, guiding block, dan lift. Isian tersimpan di perangkat sampai Anda kirim."
+          },
+          "periksa": {
+            "title": "Verifikator memeriksa",
+            "body": "Targetnya 3 hari kerja. Statusnya muncul di sini, dan tempatnya tayang setelah terbit."
+          }
+        },
+        "report": "Laporkan tempat pertama",
+        "agent": "Cari tempat dengan agen"
+      },
+      "tim": {
+        "title": "Tim verifikator",
+        "loading": "Memuat tim…",
+        "manage": "Kelola tim",
+        "counts": "{verifiers, plural, other {# verifikator}} dan {admins, plural, other {# admin}}",
+        "empty": "Belum ada verifikator. Tambahkan dengan email akun yang sudah dilengkapi.",
+        "add": "Tambah verifikator",
+        "more": "{count, plural, other {dan # lainnya}}"
+      },
+      "reports": {
+        "title": "Laporan saya",
+        "loading": "Memuat laporan…",
+        "all": "Semua laporan",
+        "counts": "Jumlah laporan per status",
+        "recent": "Terbaru",
+        "limit": "Dihitung dari 100 laporan terbaru."
+      }
+    },
+    "pengaturan": {
+      "metaTitle": "Pengaturan akun",
+      "eyebrow": "Akun",
+      "title": "Pengaturan",
+      "accent": "akun."
+    }
   },
   "Laporkan": {
     "lokasi": {
@@ -1776,7 +1929,6 @@
   },
   "BantuMemetakan": {
     "metaTitle": "Bantu memetakan",
-    "back": "Kembali ke Laporkan",
     "loading": "Memuat…",
     "eyebrow": "Bantu memetakan",
     "title": "Cari tempat yang",
