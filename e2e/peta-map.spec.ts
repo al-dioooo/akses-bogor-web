@@ -34,6 +34,13 @@ test.describe("with WebGL", () => {
       "href",
       "/lokasi/4037ba19-b366-45bc-aceb-270944fe9372",
     );
+    // Kecamatan dan ringkasan fasilitas dimuat sesudah lokasi dipilih (ADR-0018).
+    await expect(summary.getByText("· Bogor Tengah")).toBeVisible();
+    await expect(summary.getByText("2 dari 3 fasilitas tersedia")).toBeVisible();
+    await expect(summary.getByRole("link", { name: "Laporkan kekurangan" })).toHaveAttribute(
+      "href",
+      "/laporkan?lokasi=4037ba19-b366-45bc-aceb-270944fe9372&jenis=kekurangan",
+    );
     await page.keyboard.press("Escape");
     await expect(summary).toHaveCount(0);
     await expect(marker).toBeFocused();
@@ -109,6 +116,18 @@ test.describe("with WebGL", () => {
     await expect(count(page)).not.toHaveText("7 dari 7 lokasi");
     for (let i = 0; i < 3; i++) await page.getByRole("button", { name: "Perkecil peta" }).click();
     await expect(count(page)).toHaveText("7 dari 7 lokasi");
+  });
+
+  test("the place card still shows the status and links when its summary cannot load", async ({ page }) => {
+    await page.route("**/peta/lokasi/**", (route) => route.fulfill({ status: 503, json: { galat: "galat_api" } }));
+    await page.getByRole("button", { name: "Masjid contoh B, Masjid, Tidak aksesibel" }).click();
+    const summary = page.getByRole("region", { name: "Masjid contoh B" });
+    // Hanya bagian ringkasan fasilitas yang ditandai sedang dimuat, bukan seluruh kartu yang judulnya menerima fokus.
+    await expect(summary).not.toHaveAttribute("aria-busy", /.*/);
+    await expect(summary.locator("[aria-busy]")).toHaveAttribute("aria-busy", "false");
+    await expect(summary.getByText("Tidak aksesibel", { exact: true })).toBeVisible();
+    await expect(summary.getByText(/fasilitas tersedia/)).toHaveCount(0);
+    await expect(summary.getByRole("link", { name: "Laporkan kekurangan" })).toBeVisible();
   });
 
   test("changing filters keeps the same map and swaps its markers", async ({ page }) => {
