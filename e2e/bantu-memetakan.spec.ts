@@ -52,6 +52,52 @@ test("signed-in contributors reach Bantu memetakan from Laporkan and get an answ
   await page.context().close();
 });
 
+test("shows the cards after the answer: priority, places without data, and a route the web asks for itself", async ({ browser }) => {
+  const page = await openSignedIn(browser, PAGE, { geolocation: { latitude: -6.5965, longitude: 106.7972 } });
+  await ask(page, "Masjid mana di Bogor Barat yang belum punya data?");
+  const cards = main(page).getByRole("list", { name: "Kartu dari jawaban agen" });
+  const rows = cards.getByRole("table").getByRole("row");
+  await expect(rows.nth(1)).toContainText("Bogor Barat");
+  await expect(rows.nth(1)).toContainText("Sangat tinggi");
+  await expect(cards.getByText(/bukan jumlah seluruh penduduk/)).toBeVisible();
+  await expect(cards.getByText(/Open Data Kota Bogor, Dinas Sosial/)).toBeVisible();
+  // Tabel lebar digeser di dalam kartunya sendiri; halaman tidak boleh melebar melewati layar (WCAG 1.4.10).
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  const osm = cards.getByRole("article", { name: "Masjid Al-Hidayah" });
+  await expect(osm.getByText("Belum ada data AksesBogor")).toBeVisible();
+  await expect(osm.getByRole("link", { name: "Lihat di OpenStreetMap" })).toHaveAttribute("href", "https://www.openstreetmap.org/node/9001");
+  await expect(cards.getByRole("article", { name: "Halte contoh" }).getByText("Sebagian")).toBeVisible();
+
+  const route = cards.getByRole("region", { name: "Rute jalan kaki ke Masjid Al-Hidayah" });
+  await expect(route.getByText(/tidak pernah dikirim ke agen AI/)).toBeVisible();
+  await route.getByRole("button", { name: "Pakai lokasi saya" }).click();
+  await expect(route.getByText(/menit jalan kaki/)).toBeFocused();
+  await expect(route.getByText("Belum tentu bisa dilewati kursi roda")).toBeVisible();
+  await expect(route.getByRole("region", { name: "Langkah" }).getByRole("listitem")).toHaveCount(3);
+  const obstacles = route.getByRole("region", { name: "Hambatan yang tercatat di OpenStreetMap" });
+  await expect(obstacles.getByRole("listitem")).toHaveCount(2);
+  await expect(obstacles.getByText(/bukan berarti jalannya bebas hambatan/)).toBeVisible();
+  await expect(obstacles.getByRole("link", { name: "Lihat di OpenStreetMap (Tangga, 4 anak tangga, tanpa ramp)" })).toHaveAttribute("href", "https://www.openstreetmap.org/way/1");
+  await expect(route.getByRole("link", { name: "© Mapbox" })).toHaveAttribute("href", "https://www.mapbox.com/about/maps/");
+  await expect(route.getByRole("link", { name: "© kontributor OpenStreetMap" })).toHaveAttribute("href", "https://www.openstreetmap.org/copyright");
+  await expect(route.locator("canvas")).toHaveAttribute("aria-label", "Peta rute jalan kaki ke Masjid Al-Hidayah");
+  await page.context().close();
+});
+
+test("lets the user pick the start point on the map when the location is denied", async ({ browser }) => {
+  const page = await openSignedIn(browser, PAGE);
+  await page.context().clearPermissions();
+  await ask(page, "Masjid mana yang belum punya data?");
+  const route = main(page).getByRole("region", { name: "Rute jalan kaki ke Masjid Al-Hidayah" });
+  await route.getByRole("button", { name: "Pakai lokasi saya" }).click();
+  await expect(route.getByRole("alert")).toHaveText("Izin lokasi ditolak. Pilih titik awal di peta.");
+  await expect(route.getByRole("heading", { name: "Pilih titik awal di peta" })).toBeFocused();
+  await route.getByRole("button", { name: "Geser peta ke utara" }).click();
+  await route.getByRole("button", { name: "Pakai titik ini" }).click();
+  await expect(route.getByText(/menit jalan kaki/)).toBeFocused();
+  await page.context().close();
+});
+
 test("keeps the question and says the agent is busy", async ({ browser }) => {
   const page = await openSignedIn(browser, PAGE);
   await ask(page, "sibuk-tiruan, masjid mana yang belum didata?");
@@ -83,11 +129,15 @@ test("is not offered to signed-out visitors, and the page sends them to Masuk", 
 
 for (const colorScheme of ["light", "dark"] as const) {
   test(`Bantu memetakan has no serious or critical WCAG 2.2 AA violations (${colorScheme})`, async ({ browser }) => {
-    const page = await openSignedIn(browser, PAGE);
+    const page = await openSignedIn(browser, PAGE, { geolocation: { latitude: -6.5965, longitude: 106.7972 } });
     await page.emulateMedia({ colorScheme, reducedMotion: "reduce" });
     expect(await blockingViolations(page)).toEqual([]);
     await ask(page, "Kecamatan mana yang paling perlu didata?");
     await expect(main(page).getByRole("list", { name: "Percakapan dengan agen" })).toContainText("Bogor Barat");
+    expect(await blockingViolations(page)).toEqual([]);
+    const route = main(page).getByRole("region", { name: "Rute jalan kaki ke Masjid Al-Hidayah" });
+    await route.getByRole("button", { name: "Pakai lokasi saya" }).click();
+    await expect(route.getByRole("region", { name: "Hambatan yang tercatat di OpenStreetMap" }).getByRole("listitem")).toHaveCount(2);
     expect(await blockingViolations(page)).toEqual([]);
     await ask(page, "sibuk-tiruan");
     await expect(main(page).getByRole("alert")).toBeVisible();
