@@ -1070,7 +1070,6 @@
     "save": "Simpan nama",
     "saving": "Menyimpan…",
     "renamed": "Nama tampilan sudah diubah.",
-    "signOut": "Keluar",
     "deleteTitle": "Hapus akun",
     "deleteBody": "Data pribadi dan laporan yang belum terbit akan dihapus. Informasi tempat yang sudah terbit tetap tayang tanpa nama Anda.",
     "deleteLink": "Lihat apa yang dihapus",
@@ -1078,10 +1077,7 @@
       "namaKosong": "Isi nama tampilan.",
       "namaPanjang": "Nama tampilan paling banyak 60 karakter.",
       "server": "Server AksesBogor tidak bisa dihubungi. Coba lagi sebentar lagi."
-    },
-    "verifierTitle": "Meja verifikasi",
-    "verifierBody": "Antrean laporan warga yang menunggu diperiksa sebelum tayang.",
-    "verifierLink": "Buka meja verifikasi"
+    }
   },
   "LaporanSaya": {
     "title": "Laporan saya",
