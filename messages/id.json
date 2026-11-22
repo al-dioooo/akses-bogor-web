@@ -266,6 +266,17 @@
       "none": "Tidak ada lokasi di bagian peta ini. Geser atau perkecil peta, atau tampilkan seluruh Kota Bogor.",
       "show": "Tunjukkan di peta",
       "showPlace": "Tunjukkan di peta: {name}"
+    },
+    "prioritas": {
+      "toggle": "Lapisan prioritas kecamatan",
+      "loading": "Memuat batas kecamatan…",
+      "failed": "Batas kecamatan tidak bisa dimuat, jadi lapisan tidak tampil di peta. Tabel di bawah berisi data yang sama.",
+      "on": "Lapisan prioritas kecamatan tampil di peta. Legenda dan tabelnya ada di bawah peta.",
+      "off": "Lapisan prioritas kecamatan disembunyikan.",
+      "title": "Prioritas kecamatan",
+      "intro": "Warna kecamatan menunjukkan seberapa perlu fasilitasnya didata, dari penyandang disabilitas terdaftar, fasilitas tanpa data, dan lokasi yang sudah diverifikasi.",
+      "legend": "Legenda prioritas",
+      "boundaries": "Batas kecamatan: {attribution}."
     }
   },
   "Detail": {

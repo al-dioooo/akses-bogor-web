@@ -1,7 +1,7 @@
 "use client";
 
 import { useFormatter, useTranslations } from "next-intl";
-import { useId } from "react";
+import { useId, type ReactNode } from "react";
 import type { DistrictPriority } from "@/lib/agen-rute";
 import { Icon } from "@/ui/icon";
 import { IconInfoCircle } from "@/ui/icons";
@@ -14,7 +14,7 @@ const linkClass = "font-semibold text-text-brand underline underline-offset-2";
  * sebagai teks dan warna, catatan batas datanya, dan kredit sumber. Dipakai di kartu agen dan sebagai pengganti lapisan
  * peta di halaman Peta.
  */
-export function PriorityTable({ data, headingLevel = 3 }: { data: DistrictPriority; headingLevel?: 2 | 3 }) {
+export function PriorityTable({ data, headingLevel = 3, children }: { data: DistrictPriority; headingLevel?: 2 | 3; /** Isi di antara judul dan tabel, mis. legenda peta. */ children?: ReactNode }) {
   const t = useTranslations("PrioritasKecamatan");
   const format = useFormatter();
   const titleId = useId();
@@ -26,6 +26,7 @@ export function PriorityTable({ data, headingLevel = 3 }: { data: DistrictPriori
       <Heading id={titleId} className="font-heading text-xl font-bold">
         {t("title", { year: data.year })}
       </Heading>
+      {children}
       {/* Tabel lebar bisa digeser di layar sempit; wilayahnya bisa difokus supaya bisa digeser dengan keyboard (WCAG 2.1.1). */}
       {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- wilayah gulir harus bisa difokus keyboard. */}
       <div role="region" aria-label={t("region")} tabIndex={0} className="overflow-x-auto rounded-2xl border border-border-subtle">
