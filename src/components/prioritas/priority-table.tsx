@@ -66,6 +66,7 @@ export function PriorityTable({ data, headingLevel = 3 }: { data: DistrictPriori
         <Icon icon={IconInfoCircle} className="mt-0.5 size-4 shrink-0" />
         {data.caveat}
       </p>
+      {data.formula && <p className="text-sm text-text-secondary">{t("formula", { formula: data.formula })}</p>}
       <p className="text-sm text-text-secondary">
         {t.rich("source", {
           title: data.source.title,
@@ -79,6 +80,13 @@ export function PriorityTable({ data, headingLevel = 3 }: { data: DistrictPriori
           ),
         })}
       </p>
+      {data.facilitiesSource && (
+        <p className="text-sm text-text-secondary">
+          {data.facilitiesSource.retrievedAt
+            ? t("facilitiesDated", { attribution: data.facilitiesSource.attribution, date: format.dateTime(new Date(data.facilitiesSource.retrievedAt), { dateStyle: "long" }) })
+            : t("facilities", { attribution: data.facilitiesSource.attribution })}
+        </p>
+      )}
     </section>
   );
 }

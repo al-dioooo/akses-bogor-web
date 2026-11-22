@@ -13,6 +13,8 @@ const CARDS: AgentCard[] = [
       { slug: "bogor-tengah", name: "Bogor Tengah", registered: 450, verifiedPlaces: 1, facilitiesWithoutData: 9, score: 18, rank: 2, level: "rendah" },
       { slug: "bogor-barat", name: "Bogor Barat", registered: 1240, verifiedPlaces: 1, facilitiesWithoutData: 38, score: 92, rank: 1, level: "sangat_tinggi" },
     ],
+    formula: "Skor naik bila penyandang disabilitas terdaftar banyak.",
+    facilitiesSource: { retrievedAt: null, attribution: "© kontributor OpenStreetMap" },
     caveat: "Angka ini jumlah penyandang disabilitas yang terdaftar di Dinas Sosial, bukan jumlah seluruh penduduk; lonjakan antartahun besar.",
     source: { title: "Jumlah Penyandang Disabilitas", url: "https://opendata.kotabogor.go.id/", publisher: "Open Data Kota Bogor, Dinas Sosial", retrievedAt: "2026-11-22T00:00:00.000Z", terms: "Data terbuka." },
   },
@@ -31,6 +33,8 @@ describe("AgentCards", () => {
     expect(screen.getByText(/bukan jumlah seluruh penduduk/)).toBeTruthy();
     expect(screen.getByRole("link", { name: "Jumlah Penyandang Disabilitas" }).getAttribute("href")).toBe("https://opendata.kotabogor.go.id/");
     expect(screen.getByText(/Open Data Kota Bogor, Dinas Sosial/)).toBeTruthy();
+    expect(screen.getByText("Cara menghitung skor: Skor naik bila penyandang disabilitas terdaftar banyak.")).toBeTruthy();
+    expect(screen.getByText("Jumlah fasilitas tanpa data dihitung dari data OpenStreetMap, © kontributor OpenStreetMap.")).toBeTruthy();
     expect(document.body.textContent).not.toMatch(/cacat/i);
   });
 

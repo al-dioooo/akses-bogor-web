@@ -1820,6 +1820,9 @@
       "tinggi": "Tinggi",
       "sangat_tinggi": "Sangat tinggi"
     },
-    "source": "Sumber: <link>{title}</link>, {publisher}, diambil {date}. {terms}"
+    "source": "Sumber: <link>{title}</link>, {publisher}, diambil {date}. {terms}",
+    "formula": "Cara menghitung skor: {formula}",
+    "facilities": "Jumlah fasilitas tanpa data dihitung dari data OpenStreetMap, {attribution}.",
+    "facilitiesDated": "Jumlah fasilitas tanpa data dihitung dari data OpenStreetMap, {attribution}, diambil {date}."
   }
 }
