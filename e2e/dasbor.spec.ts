@@ -79,14 +79,20 @@ test.describe("menu on phones", () => {
   });
 });
 
+// Halaman paling lebar di dasbor: meja, pemeriksaan laporan dengan foto dan pembanding, dan percakapan agen.
+const WIDE_PAGES = ["/akun", "/verifikasi", "/verifikasi/laporan/10000000-0000-4000-8000-000000000002", "/laporkan/bantu-memetakan"];
+
 test("has no horizontal scroll from 320 px up", async ({ page }) => {
   await signIn(page, email("admin"));
   const widths = isPhone() ? [320, 360, 412] : [1024, 1152, 1280, 1440];
   for (const width of widths) {
     await page.setViewportSize({ width, height: 800 });
-    await page.goto("/akun");
-    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-    expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
+    for (const path of WIDE_PAGES) {
+      await page.goto(path);
+      await expect(page.getByRole("heading", { level: 1 }).first()).toBeVisible();
+      const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+      expect(overflow, `${path} at ${width} px`).toBe(0);
+    }
   }
 });
 
