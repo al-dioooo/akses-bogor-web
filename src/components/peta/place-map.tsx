@@ -12,7 +12,7 @@ import { Icon } from "@/ui/icon";
 import { IconFocusCentered, IconList, IconMap2, IconMinus, IconPlus, IconUsers, type Glyph } from "@/ui/icons";
 import { StatusPin } from "@/ui/status-pin";
 import { MapLegend } from "./legend";
-import type { Insets } from "./map/area";
+import type { Insets, Rect } from "./map/area";
 import type { MapHandle } from "./map/mount";
 import { PlaceList } from "./place-list";
 import { PlaceSheet, type SheetHeight } from "./place-sheet";
@@ -28,20 +28,29 @@ async function fetchToken(): Promise<MapToken> {
   return (await response.json()) as MapToken;
 }
 
+/** Elemen yang mengambang di atas peta. Marker di bawahnya tidak terlihat, jadi tidak boleh bisa difokus (WCAG 2.4.11). */
+const OVERLAYS = ".peta-cari, .peta-lapisan, .peta-kontrol";
+
 /**
- * Bagian atas main yang terpakai pencarian dan kontrol (batas tinggi panel setengah), dan bagian peta yang tertutup
- * panel daftar: panel samping (mulai 768 px) menutup sisi kiri, lembar bawah menutup bagian bawah dan pencarian bagian
- * atas. Bottom nav di layar lebar menutup bagian bawah, selebar padding bawah main.
+ * Bagian atas main yang terpakai pencarian dan kontrol (batas tinggi panel setengah), bagian peta yang tertutup panel
+ * daftar, dan persegi setiap elemen yang mengambang di atas peta. Panel samping (mulai 768 px) menutup sisi kiri, lembar
+ * bawah menutup bagian bawah dan pencarian bagian atas. Bottom nav di layar lebar menutup bagian bawah, selebar padding
+ * bawah main.
  */
-function measure(main: HTMLElement): { top: number; insets: Insets } {
+function measure(main: HTMLElement): { top: number; insets: Insets; covers: Rect[] } {
   const box = main.getBoundingClientRect();
+  const rectOf = (element: Element): Rect => {
+    const rect = element.getBoundingClientRect();
+    return { left: rect.left - box.left, top: rect.top - box.top, right: rect.right - box.left, bottom: rect.bottom - box.top };
+  };
   const below = (selector: string) => {
     const element = main.querySelector(selector);
-    return element ? element.getBoundingClientRect().bottom - box.top : 0;
+    return element ? rectOf(element).bottom : 0;
   };
+  const covers = [...main.querySelectorAll(OVERLAYS)].map(rectOf).filter((rect) => rect.right > rect.left && rect.bottom > rect.top);
   const top = Math.ceil(Math.max(below(".peta-cari"), below(".peta-kontrol"), below(".peta-lapisan")));
   const panel = main.querySelector(".peta-lembar")?.getBoundingClientRect();
-  if (!panel) return { top, insets: { top: 0, right: 0, bottom: 0, left: 0 } };
+  if (!panel) return { top, insets: { top: 0, right: 0, bottom: 0, left: 0 }, covers };
   const side = panel.width < box.width * 0.75;
   return {
     top,
@@ -49,6 +58,7 @@ function measure(main: HTMLElement): { top: number; insets: Insets } {
       ? { top: 0, right: 0, bottom: Number.parseFloat(getComputedStyle(main).paddingBottom) || 0, left: panel.right - box.left }
       : // Atribusi Mapbox duduk di atas lembar, jadi ikut dihitung sebagai bagian yang tertutup.
         { top: below(".peta-cari"), right: 0, bottom: box.bottom - panel.top + 44, left: 0 },
+    covers,
   };
 }
 
@@ -99,10 +109,13 @@ export function PlaceMap({
   const [attempt, setAttempt] = useState(0);
   const [inView, setInView] = useState<Set<string> | null>(null);
   const [chosen, setSelected] = useState<{ id: string; from: "peta" | "daftar" } | null>(null);
-  const [height, setHeight] = useState<SheetHeight>("kecil");
+  // Tinggi panel yang dipilih pengguna. Sebelum itu ("awal") lembar ponsel kecil dan panel samping terbuka, langsung dari
+  // CSS, jadi tidak ada lompatan saat halaman selesai dimuat.
+  const [chosenHeight, setHeight] = useState<SheetHeight | null>(null);
+  const narrow = useSyncExternalStore(subscribeNarrow, () => matchMedia(NARROW).matches, () => true);
+  const height: SheetHeight = chosenHeight ?? (narrow ? "kecil" : "setengah");
   const [layer, setLayer] = useState<"mati" | "memuat" | "nyala" | "galat">("mati");
   const [boundaries, setBoundaries] = useState<DistrictBoundaries | null>(null);
-  const narrow = useSyncExternalStore(subscribeNarrow, () => matchMedia(NARROW).matches, () => false);
   // Lokasi yang dipilih lalu hilang karena filter berganti tidak lagi dianggap terpilih.
   const place = chosen ? places.find((p) => p.id === chosen.id) : undefined;
   const selected = place ? place.id : null;
@@ -163,7 +176,7 @@ export function PlaceMap({
             setState("galat");
             setHeight("setengah");
           },
-          onView: (ids) => setInView(new Set(ids)),
+          onView: (ids) => setInView(ids && new Set(ids)),
           onSelect: (id) => {
             setSelected({ id, from: "peta" });
             setHeight("setengah");
@@ -197,8 +210,8 @@ export function PlaceMap({
   // Tinggi panel ditulis di main, karena panel, atribusi Mapbox, dan pesan di atas peta memakai ukuran yang sama.
   useLayoutEffect(() => {
     const main = frame.current?.closest("main");
-    if (main) main.dataset.tinggi = height;
-  }, [height]);
+    if (main) main.dataset.tinggi = chosenHeight ?? "awal";
+  }, [chosenHeight]);
 
   // Lembar penuh di ponsel menutup pencarian, kontrol, dan peta: bagian itu dibuat inert supaya fokus tidak masuk ke
   // sesuatu yang tidak terlihat (WCAG 2.4.11).
@@ -214,9 +227,9 @@ export function PlaceMap({
     if (!main) return;
     let timer: number | undefined;
     const update = () => {
-      const { top, insets } = measure(main);
+      const { top, insets, covers } = measure(main);
       main.style.setProperty("--peta-atas", `${top}px`);
-      map?.setInsets(insets);
+      map?.setInsets(insets, covers);
       flushMove();
     };
     const schedule = () => {
@@ -276,7 +289,14 @@ export function PlaceMap({
   }
 
   const ready = state === "siap";
-  const shown = ready && inView ? places.filter((p) => inView.has(p.id)) : places;
+  // Daftar mengikuti bagian peta yang terlihat. Sebelum peta siap, tanpa peta, atau saat panel menutup seluruh peta (lembar
+  // penuh), daftar berisi semua lokasi.
+  const followsView = ready && inView !== null;
+  const shown = followsView ? places.filter((p) => inView.has(p.id)) : places;
+  // Tanpa lokasi sama sekali, kepala panel (yang selalu terlihat) membawa pesannya: belum ada data, atau filter terlalu
+  // sempit.
+  const empty = tj(filtered ? "results.emptyTitle" : "results.noDataTitle");
+  const status = places.length === 0 ? empty : followsView ? t("list.count", { shown: shown.length, total: places.length }) : t("count", { total: places.length });
   const layerShown = priority && (layer === "nyala" || layer === "galat");
 
   /** Menutup ringkasan, lalu fokus kembali ke marker atau ke tombol daftar yang membukanya. */
@@ -350,37 +370,6 @@ export function PlaceMap({
               {t("map.loading")}
             </p>
           )}
-          {(state === "tanpa-webgl" || state === "galat") && (
-            <div role="alert" className="panel-raised flex max-w-md flex-col items-start gap-3 rounded-3xl p-6">
-              <span className="grid size-12 place-items-center rounded-full bg-surface-brand-subtle text-icon-brand">
-                <Icon icon={IconMap2} className="size-6" />
-              </span>
-              <p className="font-heading text-xl font-bold">{t(state === "galat" ? "map.failedTitle" : "map.noWebglTitle")}</p>
-              <p className="text-text-secondary">{t("map.fallbackBody")}</p>
-              <div className="flex flex-wrap gap-3">
-                {state === "galat" && (
-                  <button type="button" onClick={() => setAttempt(attempt + 1)} className={buttonClass("outline", "sm")}>
-                    {t("map.retry")}
-                  </button>
-                )}
-                <Link href={listHref} className={buttonClass("outline", "sm")}>
-                  <Icon icon={IconList} />
-                  {t("asList")}
-                </Link>
-              </div>
-            </div>
-          )}
-          {(state === "siap" || state === "awal") && places.length === 0 && (
-            <div className="panel-raised flex max-w-md flex-col items-start gap-3 rounded-3xl p-6">
-              <p className="font-heading text-xl font-bold">{tj(filtered ? "results.emptyTitle" : "results.noDataTitle")}</p>
-              <p className="text-text-secondary">{tj(filtered ? "results.emptyBody" : "results.noDataBody")}</p>
-              {filtered && (
-                <Link href="/peta" className={buttonClass("outline", "sm")}>
-                  {tj("filters.reset")}
-                </Link>
-              )}
-            </div>
-          )}
         </div>
         <noscript>
           {/* Tanpa JavaScript panel daftar tidak bisa dibuka, jadi dibuka penuh dari awal. */}
@@ -396,8 +385,8 @@ export function PlaceMap({
           setHeight("kecil");
           toggle.current?.focus();
         }}
-        title={t(ready ? "list.inView" : "list.title")}
-        status={ready ? t("list.count", { shown: shown.length, total: places.length }) : t("count", { total: places.length })}
+        title={t(followsView ? "list.inView" : "list.title")}
+        status={status}
         headingRef={listHeading}
         toggleRef={toggle}
       >
@@ -405,6 +394,39 @@ export function PlaceMap({
           <PlaceSummary place={place} headingRef={summaryHeading} onClose={closeSummary} />
         ) : (
           <div className="flex flex-col gap-5 px-5 pb-5">
+            {/* Pesan peta yang gagal ada di panel, bukan di atas peta, supaya tidak pernah tertutup panel di layar pendek. */}
+            {(state === "tanpa-webgl" || state === "galat") && (
+              <div role="alert" className="flex flex-col items-start gap-3 rounded-2xl bg-surface-brand-subtle p-4">
+                <p className="inline-flex items-center gap-2 font-heading text-lg font-bold">
+                  <Icon icon={IconMap2} className="size-5 text-icon-brand" />
+                  {t(state === "galat" ? "map.failedTitle" : "map.noWebglTitle")}
+                </p>
+                <p>{t("map.fallbackBody")}</p>
+                <div className="flex flex-wrap gap-3">
+                  {state === "galat" && (
+                    <button type="button" onClick={() => setAttempt(attempt + 1)} className={buttonClass("outline", "sm")}>
+                      {t("map.retry")}
+                    </button>
+                  )}
+                  <Link href={listHref} className={buttonClass("outline", "sm")}>
+                    <Icon icon={IconList} />
+                    {t("asList")}
+                  </Link>
+                </div>
+              </div>
+            )}
+            {/* Tanpa lokasi, penjelasannya di bagian paling atas panel. */}
+            {places.length === 0 && (
+              <div className="flex flex-col items-start gap-2 rounded-2xl bg-bg-sunken p-4">
+                <p className="font-bold">{empty}</p>
+                <p className="text-text-secondary">{tj(filtered ? "results.emptyBody" : "results.noDataBody")}</p>
+                {filtered && (
+                  <Link href="/peta" className={buttonClass("outline", "sm", "mt-1")}>
+                    {tj("filters.reset")}
+                  </Link>
+                )}
+              </div>
+            )}
             <noscript>
               <p className="rounded-2xl bg-surface-brand-subtle p-4 font-semibold">{t("map.noscript")}</p>
             </noscript>
@@ -419,9 +441,6 @@ export function PlaceMap({
               ) : (
                 <p className="rounded-2xl bg-bg-sunken p-4 text-text-secondary">{t("list.none")}</p>
               ))}
-            {places.length === 0 && (
-              <p className="rounded-2xl bg-bg-sunken p-4 text-text-secondary">{tj(filtered ? "results.emptyTitle" : "results.noDataTitle")}</p>
-            )}
             {layerShown && (
               <>
                 {layer === "galat" && (

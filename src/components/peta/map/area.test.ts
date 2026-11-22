@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { NO_INSETS, cameraPadding, visibleRect } from "./area";
+import { NO_INSETS, cameraPadding, isVisible, visibleRect } from "./area";
 
 describe("visibleRect", () => {
   it("returns the whole canvas without insets", () => {
@@ -28,5 +28,25 @@ describe("cameraPadding", () => {
 
   it("falls back to the margin when too little of the map is left", () => {
     expect(cameraPadding(400, 800, { top: 400, right: 0, bottom: 350, left: 0 })).toEqual({ top: 16, right: 16, bottom: 16, left: 16 });
+  });
+});
+
+describe("isVisible", () => {
+  const rect = { left: 0, top: 100, right: 400, bottom: 500 };
+
+  it("accepts a point inside the uncovered part of the map", () => {
+    expect(isVisible({ x: 200, y: 300 }, rect)).toBe(true);
+  });
+
+  it("rejects a point behind a panel or outside the canvas", () => {
+    expect(isVisible({ x: 200, y: 50 }, rect)).toBe(false);
+    expect(isVisible({ x: 200, y: 600 }, rect)).toBe(false);
+    expect(isVisible({ x: 200, y: 300 }, null)).toBe(false);
+  });
+
+  it("rejects a point under a floating control", () => {
+    const controls = { left: 300, top: 100, right: 400, bottom: 150 };
+    expect(isVisible({ x: 350, y: 120 }, rect, [controls])).toBe(false);
+    expect(isVisible({ x: 250, y: 120 }, rect, [controls])).toBe(true);
   });
 });
