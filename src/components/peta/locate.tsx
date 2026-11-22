@@ -101,6 +101,23 @@ export function LocatePanel({ locate, buttonRef }: { locate: ReturnType<typeof u
     };
   }, [phase, close, buttonRef]);
 
+  // Pesan hasil ditutup begitu fokus atau sentuhan pindah ke luar kontrol peta, seperti notifikasi singkat; isinya sudah
+  // diumumkan lewat role="status". Di ponsel landscape kartunya menutupi kepala panel daftar, jadi tidak boleh tertinggal.
+  const showsMessage = phase !== "awal" && phase !== "tanya" && phase !== "ketemu";
+  useEffect(() => {
+    if (!showsMessage) return;
+    const controls = buttonRef.current?.closest(".peta-kontrol");
+    const onOutside = (event: Event) => {
+      if (event.target instanceof Node && !controls?.contains(event.target)) close();
+    };
+    document.addEventListener("focusin", onOutside);
+    document.addEventListener("pointerdown", onOutside);
+    return () => {
+      document.removeEventListener("focusin", onOutside);
+      document.removeEventListener("pointerdown", onOutside);
+    };
+  }, [showsMessage, close, buttonRef]);
+
   if (phase === "tanya") {
     return (
       <div ref={dialog} role="dialog" aria-labelledby="judul-lokasi-saya" aria-describedby="isi-lokasi-saya" className="peta-lokasi panel-raised flex flex-col gap-3 rounded-2xl p-4">

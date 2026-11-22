@@ -518,7 +518,8 @@ body:has(> .peta-app) {
   top: calc(var(--peta-atas) + 0.5rem);
   right: 0.75rem;
   left: 0.75rem;
-  max-height: calc(100% - var(--peta-atas) - 0.5rem - var(--peta-nav));
+  /* Paling pendek setinggi satu baris pesan dengan tombol tutupnya, juga di ponsel landscape yang sangat pendek. */
+  max-height: max(3.75rem, calc(100% - var(--peta-atas) - 0.5rem - var(--peta-nav)));
   overflow-y: auto;
   overscroll-behavior: contain;
   &[role="dialog"] {
@@ -542,6 +543,12 @@ body:has(> .peta-app) {
   z-index: 3;
   .peta-app[data-tinggi="penuh"] & {
     z-index: 1;
+  }
+  /* Di ponsel landscape lembar yang dibuka setinggi layar. */
+  @media (width < 48rem) and (height < 32rem) {
+    .peta-app[data-tinggi="setengah"] & {
+      z-index: 1;
+    }
   }
 }
 

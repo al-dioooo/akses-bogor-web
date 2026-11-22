@@ -91,6 +91,41 @@ for (const viewport of [
   });
 }
 
+for (const viewport of [
+  { width: 667, height: 375 },
+  { width: 568, height: 320 },
+]) {
+  test(`on a landscape phone a refused message keeps its close button and goes away when focus leaves the controls (${viewport.width}×${viewport.height})`, async ({ page }) => {
+    await page.addInitScript(() => {
+      navigator.geolocation.getCurrentPosition = (_success, failure) =>
+        failure?.({ code: 1, message: "ditolak", PERMISSION_DENIED: 1, POSITION_UNAVAILABLE: 2, TIMEOUT: 3 } as GeolocationPositionError);
+    });
+    await page.setViewportSize(viewport);
+    await openMap(page);
+    await button(page).click();
+    await page.getByRole("button", { name: "Izinkan lokasi" }).click();
+    const close = page.getByRole("button", { name: "Tutup pesan lokasi" });
+    await expect(close).toBeVisible();
+    // Tombol tutup tidak terpotong oleh kartunya sendiri dan tidak tertutup elemen lain.
+    expect(
+      await close.evaluate((element) => {
+        const box = element.getBoundingClientRect();
+        const card = element.closest(".peta-lokasi")!.getBoundingClientRect();
+        const hit = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
+        return box.top >= card.top && box.bottom <= card.bottom + 0.5 && !!hit && (hit === element || element.contains(hit));
+      }),
+    ).toBe(true);
+    // Pesan tidak tertinggal: fokus ke tombol tutupnya membiarkannya, fokus yang pindah ke luar kontrol peta menutupnya.
+    await expect(button(page)).toBeFocused();
+    await page.keyboard.press("Tab");
+    await expect(close).toBeFocused();
+    await page.keyboard.press("Tab");
+    await expect(close).toHaveCount(0);
+    await page.getByRole("button", { name: "Tampilkan daftar" }).click();
+    await expect(page.getByRole("button", { name: "Tampilkan peta" })).toBeVisible();
+  });
+}
+
 test("says so when the browser refuses the location", async ({ page }) => {
   // Penolakan dibuat pasti: tanpa ini, lama browser tanpa layar menolak izin bergantung pada beban mesin.
   await page.addInitScript(() => {
