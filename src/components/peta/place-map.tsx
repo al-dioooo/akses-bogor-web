@@ -12,7 +12,7 @@ import { Icon } from "@/ui/icon";
 import { IconFocusCentered, IconList, IconMap2, IconMinus, IconPlus, IconUsers, type Glyph } from "@/ui/icons";
 import { StatusPin } from "@/ui/status-pin";
 import { MapLegend } from "./legend";
-import type { Insets, Rect } from "./map/area";
+import { NO_INSETS, type Insets, type Rect } from "./map/area";
 import type { MapHandle } from "./map/mount";
 import { PlaceList } from "./place-list";
 import { PlaceSheet, type SheetHeight } from "./place-sheet";
@@ -37,7 +37,7 @@ const OVERLAYS = ".peta-cari, .peta-lapisan, .peta-kontrol";
  * bawah menutup bagian bawah dan pencarian bagian atas. Bottom nav di layar lebar menutup bagian bawah, selebar padding
  * bawah main.
  */
-function measure(main: HTMLElement): { top: number; insets: Insets; covers: Rect[] } {
+function measure(main: HTMLElement): { top: number; insets: Insets; covers: Rect[]; camera: Insets } {
   const box = main.getBoundingClientRect();
   const rectOf = (element: Element): Rect => {
     const rect = element.getBoundingClientRect();
@@ -50,21 +50,28 @@ function measure(main: HTMLElement): { top: number; insets: Insets; covers: Rect
   const covers = [...main.querySelectorAll(OVERLAYS)].map(rectOf).filter((rect) => rect.right > rect.left && rect.bottom > rect.top);
   const top = Math.ceil(Math.max(below(".peta-cari"), below(".peta-kontrol"), below(".peta-lapisan")));
   const panel = main.querySelector(".peta-lembar")?.getBoundingClientRect();
-  if (!panel) return { top, insets: { top: 0, right: 0, bottom: 0, left: 0 }, covers };
+  if (!panel) return { top, insets: NO_INSETS, covers, camera: NO_INSETS };
   const side = panel.width < box.width * 0.75;
-  return {
-    top,
-    insets: side
-      ? { top: 0, right: 0, bottom: Number.parseFloat(getComputedStyle(main).paddingBottom) || 0, left: panel.right - box.left }
-      : // Atribusi Mapbox duduk di atas lembar, jadi ikut dihitung sebagai bagian yang tertutup.
-        { top: below(".peta-cari"), right: 0, bottom: box.bottom - panel.top + 44, left: 0 },
-    covers,
-  };
+  const insets = side
+    ? { top: 0, right: 0, bottom: Number.parseFloat(getComputedStyle(main).paddingBottom) || 0, left: panel.right - box.left }
+    : // Atribusi Mapbox duduk di atas lembar, jadi ikut dihitung sebagai bagian yang tertutup.
+      { top: below(".peta-cari"), right: 0, bottom: box.bottom - panel.top + 44, left: 0 };
+  // Perpindahan peta di ponsel menghindari seluruh pita atas, juga celah di antara tombol lapisan dan kontrol.
+  return { top, insets, covers, camera: side ? insets : { ...insets, top: Math.max(insets.top, top) } };
 }
 
 const NARROW = "(width < 48rem)";
 const subscribeNarrow = (onChange: () => void) => {
   const query = matchMedia(NARROW);
+  query.addEventListener("change", onChange);
+  return () => query.removeEventListener("change", onChange);
+};
+
+// Ponsel landscape: panel yang dibuka langsung setinggi layar (globals.css), karena setengah layar hanya menyisakan
+// beberapa piksel isi.
+const SHORT = "(height < 32rem)";
+const subscribeShort = (onChange: () => void) => {
+  const query = matchMedia(SHORT);
   query.addEventListener("change", onChange);
   return () => query.removeEventListener("change", onChange);
 };
@@ -113,6 +120,7 @@ export function PlaceMap({
   // CSS, jadi tidak ada lompatan saat halaman selesai dimuat.
   const [chosenHeight, setHeight] = useState<SheetHeight | null>(null);
   const narrow = useSyncExternalStore(subscribeNarrow, () => matchMedia(NARROW).matches, () => true);
+  const short = useSyncExternalStore(subscribeShort, () => matchMedia(SHORT).matches, () => false);
   const height: SheetHeight = chosenHeight ?? (narrow ? "kecil" : "setengah");
   const [layer, setLayer] = useState<"mati" | "memuat" | "nyala" | "galat">("mati");
   const [boundaries, setBoundaries] = useState<DistrictBoundaries | null>(null);
@@ -151,9 +159,12 @@ export function PlaceMap({
         const [{ mountMap }, token] = await Promise.all([import("./map/mount"), fetchToken()]);
         const main = container.current?.closest("main");
         if (cancelled || !container.current || !main) return;
+        const area = measure(main);
         mounted = mountMap({
           container: container.current,
-          insets: measure(main).insets,
+          // Tampilan awal Kota Bogor di bagian peta yang tidak tertutup panel.
+          insets: area.insets,
+          camera: area.camera,
           token,
           renewToken: fetchToken,
           // Lokasi dikirim lewat setPlaces di bawah, juga setiap kali filter berubah, tanpa membuat peta baru.
@@ -213,13 +224,13 @@ export function PlaceMap({
     if (main) main.dataset.tinggi = chosenHeight ?? "awal";
   }, [chosenHeight]);
 
-  // Lembar penuh di ponsel menutup pencarian, kontrol, dan peta: bagian itu dibuat inert supaya fokus tidak masuk ke
-  // sesuatu yang tidak terlihat (WCAG 2.4.11).
+  // Lembar penuh di ponsel (juga lembar yang dibuka di ponsel landscape) menutup pencarian, kontrol, dan peta: bagian itu
+  // dibuat inert supaya fokus tidak masuk ke sesuatu yang tidak terlihat (WCAG 2.4.11).
   useLayoutEffect(() => {
     const main = frame.current?.closest("main");
-    const covered = height === "penuh" && narrow;
+    const covered = narrow && (height === "penuh" || (height === "setengah" && short));
     for (const element of main?.querySelectorAll<HTMLElement>(".peta-cari, .peta-lapisan, .peta-kontrol, .peta-peta") ?? []) element.inert = covered;
-  }, [height, narrow, state, priority]);
+  }, [height, narrow, short, state, priority]);
 
   // Ukuran diukur ulang setelah berhenti berubah (mis. selesai animasi panel), lalu perpindahan yang menunggu dijalankan.
   useEffect(() => {
@@ -227,9 +238,9 @@ export function PlaceMap({
     if (!main) return;
     let timer: number | undefined;
     const update = () => {
-      const { top, insets, covers } = measure(main);
+      const { top, insets, covers, camera } = measure(main);
       main.style.setProperty("--peta-atas", `${top}px`);
-      map?.setInsets(insets, covers);
+      map?.setInsets(insets, covers, camera);
       flushMove();
     };
     const schedule = () => {
@@ -333,9 +344,9 @@ export function PlaceMap({
             className={buttonClass(layerShown ? "ink" : "outline", "sm", `shadow-[0_8px_20px_-10px_var(--color-shadow-soft)] disabled:opacity-70 ${layerShown ? "" : "bg-surface-raised"}`)}
           >
             <Icon icon={IconUsers} />
-            {/* Di ponsel label pendek, supaya tombol dan kontrol peta muat dalam satu baris. */}
-            <span className="sm:hidden">{t("prioritas.short")}</span>
-            <span className="max-sm:hidden">{t("prioritas.toggle")}</span>
+            {/* Di ponsel label pendek, supaya tombol dan kontrol peta muat dalam satu baris (di landscape juga bersama pencarian). */}
+            <span className="md:hidden">{t("prioritas.short")}</span>
+            <span className="max-md:hidden">{t("prioritas.toggle")}</span>
           </button>
           <p role="status" className="sr-only">
             {layer === "memuat" ? t("prioritas.loading") : layer === "nyala" ? t("prioritas.on") : ""}
