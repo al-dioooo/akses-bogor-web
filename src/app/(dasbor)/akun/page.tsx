@@ -40,7 +40,7 @@ async function Home() {
         intro={t(`intro.${user.role}`)}
       />
       <Part label={t("agenda.loading")} rows={1}>
-        <Agenda token={token} now={now} />
+        <Agenda token={token} role={user.role} now={now} />
       </Part>
       <Part label={t("reports.loading")} rows={2}>
         <ReportSummary token={token} />

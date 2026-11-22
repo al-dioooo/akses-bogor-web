@@ -1215,7 +1215,37 @@
         "daysLeft": "{days, plural, =0 {Hari ini} =1 {Besok} other {# hari lagi}}",
         "due": "tenggat {date}",
         "emptyTitle": "Tidak ada yang menunggu Anda",
-        "emptyBody": "Pertanyaan verifikator untuk laporan Anda muncul di sini bersama tenggatnya."
+        "emptyBody": "Pertanyaan verifikator untuk laporan Anda muncul di sini bersama tenggatnya.",
+        "emptyBodyDesk": "Antrean verifikasi kosong, dan tidak ada pertanyaan verifikator untuk laporan Anda.",
+        "queue": "{count, plural, other {# laporan di antrean}}",
+        "overdue": "{count, plural, other {# laporan lewat target {target} hari kerja}}",
+        "oldest": "Terlama: {name}, {days, plural, =0 {dikirim hari ini} other {menunggu # hari kerja}}",
+        "answered": "{count, plural, other {# pelapor sudah menjawab pertanyaan}}",
+        "answeredDetail": "Laporannya kembali ke antrean di posisi semula."
+      },
+      "meja": {
+        "title": "Meja verifikasi",
+        "loading": "Memuat meja verifikasi…",
+        "open": "Buka meja",
+        "queue": "Antrean",
+        "oldest": "{days, plural, =0 {Terlama dikirim hari ini} other {Terlama menunggu # hari kerja}}",
+        "queueEmpty": "Semua laporan sudah diperiksa.",
+        "overdue": "{count, plural, other {# lewat target {target} hari kerja}}",
+        "waiting": "Menunggu jawaban",
+        "nextDue": "Tenggat terdekat {date}",
+        "waitingEmpty": "Tidak ada pertanyaan yang terbuka.",
+        "recheck": "Perlu dicek ulang",
+        "oldestVerified": "Terlama diverifikasi {date}",
+        "recheckEmpty": "Semua lokasi diverifikasi dalam 12 bulan terakhir."
+      },
+      "tim": {
+        "title": "Tim verifikator",
+        "loading": "Memuat tim…",
+        "manage": "Kelola tim",
+        "counts": "{verifiers, plural, other {# verifikator}} dan {admins, plural, other {# admin}}",
+        "empty": "Belum ada verifikator. Tambahkan dengan email akun yang sudah dilengkapi.",
+        "add": "Tambah verifikator",
+        "more": "{count, plural, other {dan # lainnya}}"
       },
       "reports": {
         "title": "Laporan saya",
