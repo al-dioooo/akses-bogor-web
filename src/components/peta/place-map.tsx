@@ -3,18 +3,22 @@
 import "mapbox-gl/dist/mapbox-gl.css";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type MouseEvent, type Ref } from "react";
 import { createPortal } from "react-dom";
 import type { DistrictBoundaries, DistrictPriority, MapToken } from "@/lib/api";
 import { hasWebGL, readTheme, watchPreferences } from "@/lib/preferences";
 import { buttonClass } from "@/ui/button-styles";
 import { Icon } from "@/ui/icon";
-import { IconArrowRight, IconFocusCentered, IconList, IconMap2, IconMinus, IconPlus, IconUsers, IconX, type Glyph } from "@/ui/icons";
-import { CATEGORY_ICON } from "@/ui/place-icons";
-import { StatusBadge } from "@/ui/status-badge";
+import { IconCurrentLocation, IconFocusCentered, IconList, IconMap2, IconMinus, IconPlus, IconUsers, type Glyph } from "@/ui/icons";
 import { StatusPin } from "@/ui/status-pin";
+import { MapLegend } from "./legend";
+import { LocatePanel, useLocate } from "./locate";
+import { NO_INSETS, type Insets, type Rect } from "./map/area";
 import type { MapHandle } from "./map/mount";
 import { PlaceList } from "./place-list";
+import { PlaceSheet, type SheetHeight } from "./place-sheet";
+import { PlaceSummary } from "./place-summary";
+import { PriorityKey } from "./priority-key";
 import { PriorityLegend } from "./priority-legend";
 import type { MapPlace } from "./places";
 
@@ -26,52 +30,170 @@ async function fetchToken(): Promise<MapToken> {
   return (await response.json()) as MapToken;
 }
 
+/** Elemen yang mengambang di atas peta. Marker di bawahnya tidak terlihat, jadi tidak boleh bisa difokus (WCAG 2.4.11). */
+const OVERLAYS = ".peta-cari, .peta-lapisan, .peta-kontrol, .peta-kunci, .peta-lokasi";
+/** Tinggi satu baris kunci prioritas yang ringkas (tombol 44 px dan bingkainya). */
+const KEY_LINE = 56;
+
 /**
- * Peta Kota Bogor (FR-05, ADR-0016) dengan marker per status, kontrol zoom, ringkasan lokasi yang dipilih, dan daftar
- * lokasi di tampilan peta sebagai alternatif untuk pembaca layar. Mapbox GL JS dimuat hanya bila WebGL ada; tanpa
+ * Bagian atas main yang terpakai pencarian dan kontrol (batas tinggi panel setengah), bagian peta yang tertutup panel
+ * daftar, persegi setiap elemen yang mengambang di atas peta, dan tinggi terbesar kunci prioritas supaya tidak masuk ke
+ * balik panel atau Bottom nav. Panel samping (mulai 768 px) menutup sisi kiri, lembar bawah menutup bagian bawah dan
+ * pencarian bagian atas. Bottom nav di layar lebar menutup bagian bawah, selebar padding bawah main.
+ */
+function measure(main: HTMLElement): { top: number; insets: Insets; covers: Rect[]; camera: Insets; keyRoom: number | null; keyHidden: boolean } {
+  const box = main.getBoundingClientRect();
+  const rectOf = (element: Element): Rect => {
+    const rect = element.getBoundingClientRect();
+    return { left: rect.left - box.left, top: rect.top - box.top, right: rect.right - box.left, bottom: rect.bottom - box.top };
+  };
+  const below = (selector: string) => {
+    const element = main.querySelector(selector);
+    return element ? rectOf(element).bottom : 0;
+  };
+  // Kunci prioritas tidak ikut dihitung: tingginya sendiri dibatasi oleh panel (keyRoom).
+  const top = Math.ceil(Math.max(below(".peta-cari"), below(".peta-kontrol"), below(".peta-lapisan")));
+  const panel = main.querySelector(".peta-lembar")?.getBoundingClientRect();
+  const paddingBottom = Number.parseFloat(getComputedStyle(main).paddingBottom) || 0;
+  const side = !!panel && panel.width < box.width * 0.75;
+  const key = main.querySelector(".peta-kunci")?.getBoundingClientRect();
+  // Kunci berhenti 8 px di atas lembar bawah, atau di atas padding bawah main (Bottom nav) di layar lebar. Bila satu
+  // baris kunci pun tidak muat (lembar setengah di ponsel pendek), kunci disembunyikan, supaya tidak ada tombol atau
+  // tautan yang terpotong tetapi masih bisa difokus.
+  const keyRoom = key ? Math.max(0, Math.floor((side || !panel ? box.bottom - paddingBottom : panel.top) - key.top - 8)) : null;
+  const keyHidden = keyRoom !== null && keyRoom < KEY_LINE;
+  const covers = [...main.querySelectorAll(OVERLAYS)]
+    .filter((element) => !(keyHidden && element.matches(".peta-kunci")))
+    .map(rectOf)
+    .filter((rect) => rect.right > rect.left && rect.bottom > rect.top);
+  if (!panel) return { top, insets: NO_INSETS, covers, camera: NO_INSETS, keyRoom, keyHidden };
+  const insets = side
+    ? { top: 0, right: 0, bottom: paddingBottom, left: panel.right - box.left }
+    : // Atribusi Mapbox duduk di atas lembar, jadi ikut dihitung sebagai bagian yang tertutup. Kunci prioritas
+      // mengambang selebar layar di ponsel, di bawah tombol lapisannya.
+      { top: Math.max(below(".peta-cari"), keyHidden ? 0 : below(".peta-kunci")), right: 0, bottom: box.bottom - panel.top + 44, left: 0 };
+  // Perpindahan peta di ponsel menghindari seluruh pita atas, juga celah di antara tombol lapisan dan kontrol.
+  return { top, insets, covers, camera: side ? insets : { ...insets, top: Math.max(insets.top, top) }, keyRoom, keyHidden };
+}
+
+/** Elemen bisa menerima fokus: tidak di bagian yang inert dan tidak dikeluarkan dari urutan Tab (marker yang tertutup). */
+const canFocus = (element: HTMLElement | null | undefined): element is HTMLElement =>
+  !!element && element.isConnected && !element.closest("[inert]") && element.tabIndex >= 0 && element.getAttribute("aria-hidden") !== "true";
+
+const NARROW = "(width < 48rem)";
+const subscribeNarrow = (onChange: () => void) => {
+  const query = matchMedia(NARROW);
+  query.addEventListener("change", onChange);
+  return () => query.removeEventListener("change", onChange);
+};
+
+// Ponsel landscape: panel yang dibuka langsung setinggi layar (globals.css), karena setengah layar hanya menyisakan
+// beberapa piksel isi.
+const SHORT = "(height < 32rem)";
+const subscribeShort = (onChange: () => void) => {
+  const query = matchMedia(SHORT);
+  query.addEventListener("change", onChange);
+  return () => query.removeEventListener("change", onChange);
+};
+
+/**
+ * Peta Kota Bogor layar penuh (FR-05, ADR-0016) dengan marker per status, kontrol zoom, dan panel daftar yang berisi
+ * ringkasan lokasi yang dipilih, legenda, dan daftar lokasi di bagian peta yang terlihat sebagai alternatif untuk
+ * pembaca layar. Semua bagiannya item grid `main.peta-app`. Mapbox GL JS dimuat sekali, hanya bila WebGL ada; tanpa
  * JavaScript, WebGL, atau token, daftar tetap berisi semua lokasi.
  */
 export function PlaceMap({
   places,
   listHref,
-  legend,
+  filtered,
   priority = null,
 }: {
   places: MapPlace[];
   listHref: string;
-  legend: ReactNode;
+  /** Ada pencarian atau filter, untuk pesan saat tidak ada lokasi. */
+  filtered: boolean;
   /** Prioritas kecamatan; null selama API belum membukanya, dan tombol lapisannya tidak tampil. */
   priority?: DistrictPriority | null;
 }) {
   const t = useTranslations("Peta");
+  const tj = useTranslations("Jelajahi");
   const tk = useTranslations("Kategori");
   const ts = useTranslations("Status");
   const frame = useRef<HTMLDivElement>(null);
   const container = useRef<HTMLDivElement>(null);
+  const listHeading = useRef<HTMLHeadingElement>(null);
   const summaryHeading = useRef<HTMLHeadingElement>(null);
+  const toggle = useRef<HTMLButtonElement>(null);
+  // Perpindahan peta ke lokasi yang dipilih menunggu panel selesai berganti tinggi, supaya lokasinya tidak jatuh di balik
+  // panel: "show" memperbesar (dari daftar), "reveal" hanya menggeser bila perlu (dari marker).
+  const pendingMove = useRef<{ id: string; mode: "show" | "reveal" } | null>(null);
+  const moveTimer = useRef<number | undefined>(undefined);
+  const mapRef = useRef<MapHandle | null>(null);
   const [map, setMap] = useState<MapHandle | null>(null);
+  // Salinan marker dari peta, diperbarui setiap kali lokasinya berganti, supaya portal isi marker ikut digambar ulang.
+  const [markers, setMarkers] = useState<ReadonlyMap<string, HTMLButtonElement>>(new Map());
   const [state, setState] = useState<MapState>("awal");
   const [attempt, setAttempt] = useState(0);
   const [inView, setInView] = useState<Set<string> | null>(null);
-  const [selected, setSelected] = useState<string | null>(null);
+  const [chosen, setSelected] = useState<{ id: string; from: "peta" | "daftar" } | null>(null);
+  // Tinggi panel yang dipilih pengguna. Sebelum itu ("awal") lembar ponsel kecil dan panel samping terbuka, langsung dari
+  // CSS, jadi tidak ada lompatan saat halaman selesai dimuat.
+  const [chosenHeight, setHeight] = useState<SheetHeight | null>(null);
+  const narrow = useSyncExternalStore(subscribeNarrow, () => matchMedia(NARROW).matches, () => true);
+  const short = useSyncExternalStore(subscribeShort, () => matchMedia(SHORT).matches, () => false);
+  const height: SheetHeight = chosenHeight ?? (narrow ? "kecil" : "setengah");
   const [layer, setLayer] = useState<"mati" | "memuat" | "nyala" | "galat">("mati");
   const [boundaries, setBoundaries] = useState<DistrictBoundaries | null>(null);
+  const locateButton = useRef<HTMLButtonElement>(null);
+  const locate = useLocate(map);
+  // Lokasi yang dipilih lalu hilang karena filter berganti tidak lagi dianggap terpilih.
+  const place = chosen ? places.find((p) => p.id === chosen.id) : undefined;
+  const selected = place ? place.id : null;
+
+  const flushMove = useCallback(() => {
+    const move = pendingMove.current;
+    pendingMove.current = null;
+    window.clearTimeout(moveTimer.current);
+    if (move) mapRef.current?.[move.mode](move.id);
+  }, []);
+
+  // Bila tinggi panel tidak berubah, pengukuran tidak terjadi; perpindahan tetap dijalankan setelah jeda singkat.
+  const queueMove = useCallback(
+    (id: string, mode: "show" | "reveal") => {
+      pendingMove.current = { id, mode };
+      window.clearTimeout(moveTimer.current);
+      moveTimer.current = window.setTimeout(flushMove, 500);
+    },
+    [flushMove],
+  );
 
   useEffect(() => {
     let cancelled = false;
     let mounted: MapHandle | undefined;
     (async () => {
-      if (!hasWebGL()) return setState("tanpa-webgl");
+      // Tanpa peta, daftar dibuka supaya langsung terlihat.
+      if (!hasWebGL()) {
+        setHeight("setengah");
+        return setState("tanpa-webgl");
+      }
       setState("memuat");
       try {
         const [{ mountMap }, token] = await Promise.all([import("./map/mount"), fetchToken()]);
-        if (cancelled || !container.current) return;
+        const main = container.current?.closest("main");
+        if (cancelled || !container.current || !main) return;
+        const area = measure(main);
         mounted = mountMap({
           container: container.current,
+          // Tampilan awal Kota Bogor di bagian peta yang tidak tertutup panel.
+          insets: area.insets,
+          camera: area.camera,
           token,
           renewToken: fetchToken,
-          places,
+          // Lokasi dikirim lewat setPlaces di bawah, juga setiap kali filter berubah, tanpa membuat peta baru.
+          places: [],
           night: readTheme().night,
+          // Peta memenuhi layar dan halaman tidak digulir, jadi satu jari dan roda tetikus langsung menggerakkan peta.
+          cooperative: false,
           locale: {
             "Map.Title": t("map.title"),
             "AttributionControl.ToggleAttribution": t("map.attribution"),
@@ -81,15 +203,27 @@ export function PlaceMap({
             "TouchPanBlocker.Message": t("map.twoFingers"),
           },
           describedBy: "petunjuk-peta",
-          markerLabel: (place) => t("marker", { name: place.name, category: tk(place.category), status: ts(place.status) }),
+          markerLabel: (p) => t("marker", { name: p.name, category: tk(p.category), status: ts(p.status) }),
           onReady: () => setState("siap"),
-          onFail: () => setState("galat"),
-          onView: (ids) => setInView(new Set(ids)),
-          onSelect: setSelected,
+          onFail: () => {
+            setState("galat");
+            setHeight("setengah");
+          },
+          onView: (ids) => setInView(ids && new Set(ids)),
+          onSelect: (id) => {
+            setSelected({ id, from: "peta" });
+            setHeight("setengah");
+            queueMove(id, "reveal");
+          },
+          onMarkers: setMarkers,
         });
+        mapRef.current = mounted;
         setMap(mounted);
       } catch {
-        if (!cancelled) setState("galat");
+        if (!cancelled) {
+          setState("galat");
+          setHeight("setengah");
+        }
       }
     })();
     const unwatch = watchPreferences(() => mounted?.setNight(readTheme().night));
@@ -97,9 +231,60 @@ export function PlaceMap({
       cancelled = true;
       unwatch();
       mounted?.destroy();
+      mapRef.current = null;
       setMap(null);
     };
-  }, [places, attempt, t, tk, ts]);
+  }, [attempt, t, tk, ts, queueMove]);
+
+  useEffect(() => {
+    map?.setPlaces(places);
+  }, [map, places]);
+
+  // Tinggi panel ditulis di main, karena panel, atribusi Mapbox, dan pesan di atas peta memakai ukuran yang sama.
+  useLayoutEffect(() => {
+    const main = frame.current?.closest("main");
+    if (main) main.dataset.tinggi = chosenHeight ?? "awal";
+  }, [chosenHeight]);
+
+  // Lembar penuh di ponsel (juga lembar yang dibuka di ponsel landscape) menutup pencarian, kontrol, dan peta: bagian itu
+  // dibuat inert supaya fokus tidak masuk ke sesuatu yang tidak terlihat (WCAG 2.4.11).
+  useLayoutEffect(() => {
+    const main = frame.current?.closest("main");
+    const covered = narrow && (height === "penuh" || (height === "setengah" && short));
+    for (const element of main?.querySelectorAll<HTMLElement>(".peta-cari, .peta-lapisan, .peta-kontrol, .peta-peta") ?? []) element.inert = covered;
+  }, [height, narrow, short, state, priority]);
+
+  // Ukuran diukur ulang setelah berhenti berubah (mis. selesai animasi panel), lalu perpindahan yang menunggu dijalankan.
+  useEffect(() => {
+    const main = frame.current?.closest("main");
+    if (!main) return;
+    let timer: number | undefined;
+    const update = () => {
+      const { top, insets, covers, camera, keyRoom, keyHidden } = measure(main);
+      main.style.setProperty("--peta-atas", `${top}px`);
+      if (keyRoom === null) main.style.removeProperty("--peta-kunci-maks");
+      else main.style.setProperty("--peta-kunci-maks", `${keyRoom}px`);
+      main.toggleAttribute("data-kunci-tersembunyi", keyHidden);
+      map?.setInsets(insets, covers, camera);
+      flushMove();
+    };
+    const schedule = () => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(update, 120);
+    };
+    const observer = new ResizeObserver(schedule);
+    for (const selector of [".peta-lembar", ".peta-cari", ".peta-kontrol", ".peta-lapisan", ".peta-kunci", ".peta-lokasi"]) {
+      const element = main.querySelector(selector);
+      if (element) observer.observe(element);
+    }
+    observer.observe(main);
+    update();
+    return () => {
+      observer.disconnect();
+      window.clearTimeout(timer);
+    };
+    // Kunci prioritas dan kartu Lokasi saya muncul dan hilang, jadi pengamatnya dipasang ulang.
+  }, [map, state, priority, layer, locate.phase, flushMove]);
 
   // Ringkasan menerima fokus setiap kali lokasi dipilih, supaya pembaca layar langsung membacanya.
   useEffect(() => {
@@ -110,15 +295,15 @@ export function PlaceMap({
   // Escape menutup ringkasan selama fokus ada di peta, lalu fokus kembali ke marker lokasi itu.
   useEffect(() => {
     const element = frame.current;
-    if (!selected || !element) return;
+    if (!chosen || !element) return;
     const onKey = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
       setSelected(null);
-      map?.markers.get(selected)?.focus();
+      if (chosen.from === "peta") map?.markers.get(chosen.id)?.focus();
     };
     element.addEventListener("keydown", onKey);
     return () => element.removeEventListener("keydown", onKey);
-  }, [map, selected]);
+  }, [map, chosen]);
 
   // Lapisan prioritas mengikuti peta: digambar ulang bila peta dibuat ulang (mis. setelah Coba lagi).
   useEffect(() => {
@@ -141,165 +326,202 @@ export function PlaceMap({
   }
 
   const ready = state === "siap";
-  const place = selected ? places.find((p) => p.id === selected) : undefined;
-  const shown = ready && inView ? places.filter((p) => inView.has(p.id)) : places;
+  // Daftar mengikuti bagian peta yang terlihat. Sebelum peta siap, tanpa peta, atau saat panel menutup seluruh peta (lembar
+  // penuh), daftar berisi semua lokasi.
+  const followsView = ready && inView !== null;
+  const shown = followsView ? places.filter((p) => inView.has(p.id)) : places;
+  // Tanpa lokasi sama sekali, kepala panel (yang selalu terlihat) membawa pesannya: belum ada data, atau filter terlalu
+  // sempit.
+  const empty = tj(filtered ? "results.emptyTitle" : "results.noDataTitle");
+  const status = places.length === 0 ? empty : followsView ? t("list.count", { shown: shown.length, total: places.length }) : t("count", { total: places.length });
+  const layerShown = priority && (layer === "nyala" || layer === "galat");
 
-  const close = () => {
-    const marker = selected ? map?.markers.get(selected) : undefined;
+  /**
+   * Menutup ringkasan, lalu fokus kembali ke marker atau ke tombol daftar yang membukanya. Bila marker itu tidak bisa
+   * difokus lagi (mis. lembar di ponsel landscape menutup peta dan membuatnya inert), fokus pindah ke tombol daftar lokasi
+   * itu, atau ke judul daftar.
+   */
+  function closeSummary() {
+    if (!chosen) return;
+    const { id, from } = chosen;
     setSelected(null);
-    marker?.focus();
-  };
-  const showOnMap = (id: string) => {
-    map?.show(id);
-    setSelected(id);
-  };
+    requestAnimationFrame(() => {
+      const marker = map?.markers.get(id);
+      if (from === "peta" && canFocus(marker)) return marker.focus();
+      const show = document.querySelector<HTMLButtonElement>(`[data-tunjukkan="${id}"]`);
+      if (canFocus(show)) return show.focus();
+      listHeading.current?.focus();
+    });
+  }
+
+  function showOnMap(id: string) {
+    setSelected({ id, from: "daftar" });
+    setHeight("setengah");
+    queueMove(id, "show");
+  }
+
+  /** Membuka panel daftar di tabel prioritas, lalu memindahkan fokus ke sana. */
+  function showTable() {
+    setSelected(null);
+    setHeight(narrow ? "penuh" : "setengah");
+    requestAnimationFrame(() => requestAnimationFrame(() => document.getElementById("tabel-prioritas")?.focus()));
+  }
+
+  function skipToList(event: MouseEvent<HTMLAnchorElement>) {
+    event.preventDefault();
+    if (height === "kecil") setHeight("setengah");
+    listHeading.current?.focus();
+  }
 
   return (
     <>
-      <a
-        href="#judul-daftar-peta"
-        className="sr-only focus:not-sr-only focus:inline-flex focus:min-h-11 focus:items-center focus:self-start focus:rounded-full focus:bg-surface-inverse focus:px-4 focus:text-text-on-inverse"
-      >
-        {t("map.skip")}
-      </a>
       {priority && (
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="peta-lapisan">
           <button
             type="button"
+            aria-label={t("prioritas.toggle")}
             aria-pressed={layer === "nyala" || layer === "galat"}
             disabled={layer === "memuat"}
             onClick={toggleLayer}
-            className={buttonClass(layer === "nyala" || layer === "galat" ? "primary" : "outline", "sm", "disabled:opacity-70")}
+            className={buttonClass(layerShown ? "ink" : "outline", "sm", `shadow-[0_8px_20px_-10px_var(--color-shadow-soft)] disabled:opacity-70 ${layerShown ? "" : "bg-surface-raised"}`)}
           >
             <Icon icon={IconUsers} />
-            {t("prioritas.toggle")}
+            {/* Di ponsel label pendek, supaya tombol dan kontrol peta muat dalam satu baris (di landscape juga bersama pencarian). */}
+            <span className="max-[22rem]:sr-only md:hidden">{t("prioritas.short")}</span>
+            <span className="max-md:hidden">{t("prioritas.toggle")}</span>
           </button>
-          <p role="status" className="text-sm text-text-secondary">
+          <p role="status" className="sr-only">
             {layer === "memuat" ? t("prioritas.loading") : layer === "nyala" ? t("prioritas.on") : ""}
           </p>
+          {layerShown && (
+            <PriorityKey priority={priority} failed={layer === "galat"} attribution={boundaries?.attribution ?? null} compact={narrow} onShowTable={showTable} />
+          )}
         </div>
       )}
-      <div ref={frame} className="peta-frame relative h-[clamp(22rem,62svh,44rem)] overflow-hidden rounded-3xl border border-border-subtle bg-bg-sunken">
-        {ready && (
-          <div
-            role="group"
-            aria-label={t("controls.label")}
-            className="panel-raised absolute top-3 right-3 z-10 flex flex-col overflow-hidden rounded-2xl"
-          >
+      <a
+        href="#judul-daftar-peta"
+        onClick={skipToList}
+        className="sr-only z-30 focus:not-sr-only focus:absolute focus:top-3 focus:left-1/2 focus:inline-flex focus:min-h-11 focus:-translate-x-1/2 focus:items-center focus:rounded-full focus:bg-surface-inverse focus:px-4 focus:text-text-on-inverse"
+      >
+        {t("map.skip")}
+      </a>
+      {ready && (
+        <div className="peta-kontrol">
+          <div role="group" aria-label={t("controls.label")} className="panel-raised flex overflow-hidden rounded-2xl md:flex-col">
             <ControlButton label={t("controls.zoomIn")} icon={IconPlus} onClick={() => map?.zoomIn()} />
             <ControlButton label={t("controls.zoomOut")} icon={IconMinus} onClick={() => map?.zoomOut()} />
             <ControlButton label={t("controls.reset")} icon={IconFocusCentered} onClick={() => map?.reset()} />
+            <ControlButton ref={locateButton} label={t("lokasiSaya.button")} icon={IconCurrentLocation} onClick={locate.start} />
           </div>
-        )}
+          <LocatePanel locate={locate} buttonRef={locateButton} />
+        </div>
+      )}
+      <div ref={frame} className="peta-peta">
         {/* Mapbox memberi kontainer peta position: relative, jadi ukurannya diambil dari bingkai lewat size-full. */}
         <div ref={container} className="size-full" />
-        {state === "memuat" && (
-          <p role="status" className="absolute inset-0 grid place-items-center font-semibold text-text-secondary">
-            {t("map.loading")}
+        {ready && (
+          <p id="petunjuk-peta" className="peta-petunjuk">
+            {t("map.hint")}
           </p>
         )}
-        {(state === "tanpa-webgl" || state === "galat") && (
-          <div role="alert" className="absolute inset-0 flex flex-col items-start justify-center gap-3 p-6 sm:p-10">
-            <span className="grid size-12 place-items-center rounded-full bg-surface-raised text-icon-brand">
-              <Icon icon={IconMap2} className="size-6" />
-            </span>
-            <p className="font-heading text-xl font-bold">{t(state === "galat" ? "map.failedTitle" : "map.noWebglTitle")}</p>
-            <p className="text-text-secondary">{t("map.fallbackBody")}</p>
-            <div className="flex flex-wrap gap-3">
-              {state === "galat" && (
-                <button type="button" onClick={() => setAttempt(attempt + 1)} className={buttonClass("outline", "sm")}>
-                  {t("map.retry")}
-                </button>
-              )}
-              <Link href={listHref} className={buttonClass("outline", "sm")}>
-                <Icon icon={IconList} />
-                {t("asList")}
-              </Link>
-            </div>
+        <div className="peta-pesan">
+          {state === "memuat" && (
+            <p role="status" className="panel-raised rounded-full px-5 py-3 font-semibold">
+              {t("map.loading")}
+            </p>
+          )}
+        </div>
+        <noscript>
+          {/* Tanpa JavaScript panel daftar tidak bisa dibuka, jadi dibuka penuh dari awal. */}
+          <style>{".peta-app{--peta-bawah:100%!important}.peta-lembar{align-self:stretch!important}.peta-lembar-isi{visibility:visible!important;display:block!important}"}</style>
+        </noscript>
+      </div>
+      <PlaceSheet
+        height={height}
+        onHeight={setHeight}
+        onEscape={() => {
+          if (chosen) return closeSummary();
+          if (height === "kecil") return;
+          setHeight("kecil");
+          toggle.current?.focus();
+        }}
+        title={t(followsView && places.length > 0 ? "list.inView" : "list.title")}
+        status={status}
+        headingRef={listHeading}
+        toggleRef={toggle}
+      >
+        {place ? (
+          <PlaceSummary place={place} headingRef={summaryHeading} onClose={closeSummary} />
+        ) : (
+          <div className="flex flex-col gap-5 px-5 pb-5">
+            {/* Pesan peta yang gagal ada di panel, bukan di atas peta, supaya tidak pernah tertutup panel di layar pendek. */}
+            {(state === "tanpa-webgl" || state === "galat") && (
+              <div role="alert" className="flex flex-col items-start gap-3 rounded-2xl bg-surface-brand-subtle p-4">
+                <p className="inline-flex items-center gap-2 font-heading text-lg font-bold">
+                  <Icon icon={IconMap2} className="size-5 text-icon-brand" />
+                  {t(state === "galat" ? "map.failedTitle" : "map.noWebglTitle")}
+                </p>
+                <p>{t("map.fallbackBody")}</p>
+                <div className="flex flex-wrap gap-3">
+                  {state === "galat" && (
+                    <button type="button" onClick={() => setAttempt(attempt + 1)} className={buttonClass("outline", "sm")}>
+                      {t("map.retry")}
+                    </button>
+                  )}
+                  <Link href={listHref} className={buttonClass("outline", "sm")}>
+                    <Icon icon={IconList} />
+                    {t("asList")}
+                  </Link>
+                </div>
+              </div>
+            )}
+            {/* Tanpa lokasi, penjelasannya di bagian paling atas panel. */}
+            {places.length === 0 && (
+              <div className="flex flex-col items-start gap-2 rounded-2xl bg-bg-sunken p-4">
+                <p className="font-bold">{empty}</p>
+                <p className="text-text-secondary">{tj(filtered ? "results.emptyBody" : "results.noDataBody")}</p>
+                {filtered && (
+                  <Link href="/peta" className={buttonClass("outline", "sm", "mt-1")}>
+                    {tj("filters.reset")}
+                  </Link>
+                )}
+              </div>
+            )}
+            <noscript>
+              <p className="rounded-2xl bg-surface-brand-subtle p-4 font-semibold">{t("map.noscript")}</p>
+            </noscript>
+            <Link href={listHref} className={buttonClass("outline", "sm", "self-start")}>
+              <Icon icon={IconList} />
+              {t("asList")}
+            </Link>
+            <MapLegend />
+            {places.length > 0 &&
+              (shown.length > 0 ? (
+                <PlaceList places={shown} labelledBy="judul-daftar-peta" onShow={ready ? showOnMap : undefined} />
+              ) : (
+                <p className="rounded-2xl bg-bg-sunken p-4 text-text-secondary">{t("list.none")}</p>
+              ))}
+            {layerShown && <PriorityLegend priority={priority} attribution={boundaries?.attribution ?? null} />}
           </div>
         )}
-        <noscript>
-          <p className="absolute inset-0 grid place-items-center p-6 text-center font-semibold">{t("map.noscript")}</p>
-        </noscript>
-        {place && (
-          <section
-            aria-labelledby="judul-ringkasan"
-            className="panel-raised absolute inset-x-3 bottom-16 z-20 flex flex-col items-start gap-3 rounded-2xl p-5 pr-14 sm:inset-x-auto sm:top-3 sm:bottom-auto sm:left-3 sm:w-80"
-          >
-            <p className="inline-flex items-center gap-1.5 text-sm font-semibold">
-              <Icon icon={CATEGORY_ICON[place.category]} className="size-4.5 text-icon-brand" />
-              {tk(place.category)}
-            </p>
-            <h2 id="judul-ringkasan" ref={summaryHeading} tabIndex={-1} className="font-heading text-xl leading-tight font-bold">
-              {place.name}
-            </h2>
-            <StatusBadge status={place.status} size="sm" />
-            <Link href={`/lokasi/${place.id}`} className={buttonClass("primary", "sm")}>
-              {t("summary.detail")}
-              <Icon icon={IconArrowRight} />
-            </Link>
-            <button
-              type="button"
-              onClick={close}
-              aria-label={t("summary.close")}
-              className="absolute top-2 right-2 grid size-11 place-items-center rounded-full hover:bg-surface-hover"
-            >
-              <Icon icon={IconX} />
-            </button>
-          </section>
-        )}
-      </div>
-      {ready && (
-        <p id="petunjuk-peta" className="-mt-2 text-sm text-text-secondary">
-          {t("map.hint")}
-        </p>
-      )}
+      </PlaceSheet>
       {map &&
         places.map((p) => {
-          const element = map.markers.get(p.id);
+          const element = markers.get(p.id);
           return element ? createPortal(<MarkerFace place={p} selected={p.id === selected} />, element, p.id) : null;
         })}
-      {legend}
-      {priority && (layer === "nyala" || layer === "galat") && (
-        <>
-          {layer === "galat" && (
-            <p role="alert" className="rounded-2xl bg-status-partial-bg p-4 text-text-primary">
-              {t("prioritas.failed")}
-            </p>
-          )}
-          <PriorityLegend priority={priority} attribution={boundaries?.attribution ?? null} />
-        </>
-      )}
-      {places.length > 0 && (
-        <section aria-labelledby="judul-daftar-peta" className="flex flex-col gap-4">
-          <div className="flex flex-col gap-1">
-            <h2 id="judul-daftar-peta" tabIndex={-1} className="font-heading text-lg font-bold">
-              {t(ready ? "list.inView" : "list.title")}
-            </h2>
-            {ready && (
-              <p role="status" className="text-sm text-text-secondary">
-                {t("list.count", { shown: shown.length, total: places.length })}
-              </p>
-            )}
-          </div>
-          {shown.length > 0 ? (
-            <PlaceList places={shown} onShow={ready ? showOnMap : undefined} />
-          ) : (
-            <p className="rounded-2xl bg-bg-sunken p-5 text-text-secondary">{t("list.none")}</p>
-          )}
-        </section>
-      )}
     </>
   );
 }
 
-function ControlButton({ label, icon, onClick }: { label: string; icon: Glyph; onClick: () => void }) {
+function ControlButton({ label, icon, onClick, ref }: { label: string; icon: Glyph; onClick: () => void; ref?: Ref<HTMLButtonElement> }) {
   return (
     <button
+      ref={ref}
       type="button"
       aria-label={label}
       onClick={onClick}
-      className="grid size-11 place-items-center text-text-primary not-last:border-b not-last:border-border-subtle hover:bg-surface-hover"
+      className="grid size-11 place-items-center text-text-primary not-last:border-r not-last:border-border-subtle hover:bg-surface-hover md:not-last:border-r-0 md:not-last:border-b"
     >
       <Icon icon={icon} />
     </button>

@@ -3,6 +3,7 @@ import type { DistrictBoundaries, MapToken, PriorityLevel } from "@/lib/api";
 import { LEVEL_COLOR, LEVELS } from "@/components/prioritas/levels";
 import { motionReduced } from "@/lib/preferences";
 import type { MapPlace } from "../places";
+import { NO_INSETS, cameraPadding, isVisible, visibleRect, type Insets, type Rect } from "./area";
 
 /** Tampilan awal: seluruh Kota Bogor (ADR-0010). */
 const KOTA_BOGOR: LngLatBoundsLike = [
@@ -20,12 +21,27 @@ const RENEW_BEFORE_MS = 5 * 60_000;
 const RETRY_MS = 60_000;
 
 export type MapHandle = {
-  /** Tombol marker per id lokasi; isinya digambar komponen React lewat portal. */
+  /** Tombol marker per id lokasi; isinya digambar komponen React lewat portal. Isinya berganti lewat setPlaces. */
   markers: Map<string, HTMLButtonElement>;
   zoomIn(): void;
   zoomOut(): void;
   reset(): void;
   show(id: string): void;
+  /** Menggeser peta ke lokasi tanpa mengubah zoom, hanya bila lokasinya tidak terlihat atau di balik panel. */
+  reveal(id: string): void;
+  /**
+   * Menandai posisi pengguna dengan titik (bukan tombol) dan menggeser peta ke sana. Posisi hanya dipakai di browser.
+   * Mengembalikan false tanpa menggeser bila posisinya di luar wilayah yang bisa ditampilkan peta.
+   */
+  showUser(point: { lng: number; lat: number }): boolean;
+  /** Mengganti lokasi di peta (mis. setelah filter berubah) tanpa membuat peta baru. */
+  setPlaces(places: MapPlace[]): void;
+  /**
+   * Bagian peta yang tertutup panel (perpindahan peta menghindarinya) dan persegi elemen lain yang mengambang di atasnya.
+   * Lokasi di balik keduanya tidak dihitung "di tampilan", dan markernya keluar dari urutan Tab. `camera` (bawaan:
+   * `insets`) adalah bagian yang dihindari saat peta dipindah, mis. seluruh pita pencarian dan kontrol di atas.
+   */
+  setInsets(insets: Insets, covers?: Rect[], camera?: Insets): void;
   setSelected(id: string | null): void;
   setNight(night: boolean): void;
   /** Lapisan prioritas kecamatan: batas dengan tingkatnya, atau null untuk menyembunyikannya. */
@@ -38,15 +54,24 @@ type Options = {
   token: MapToken;
   renewToken: () => Promise<MapToken>;
   places: MapPlace[];
+  /** Bagian peta yang sudah tertutup panel saat peta dibuat, supaya tampilan awal Kota Bogor tidak di baliknya. */
+  insets?: Insets;
+  /** Bagian yang dihindari tampilan awal Kota Bogor; bawaan: `insets`. */
+  camera?: Insets;
   night: boolean;
+  /** Satu jari dan roda tetikus menggulir halaman, bukan peta, selama peta ada di tengah halaman. */
+  cooperative?: boolean;
   locale: Record<string, string>;
   /** Id teks petunjuk keyboard untuk kanvas peta. */
   describedBy: string;
   markerLabel: (place: MapPlace) => string;
   onReady: () => void;
   onFail: () => void;
-  onView: (ids: string[]) => void;
+  /** Lokasi di bagian peta yang terlihat, atau null bila panel menutup seluruh peta (mis. lembar penuh di ponsel). */
+  onView: (ids: string[] | null) => void;
   onSelect: (id: string) => void;
+  /** Dipanggil dengan salinan marker setiap kali lokasi di peta berganti. */
+  onMarkers: (markers: ReadonlyMap<string, HTMLButtonElement>) => void;
 };
 
 /** Mengganti token di URL Mapbox dengan token terbaru, termasuk URL tile dari TileJSON yang membawa token lama. */
@@ -59,7 +84,10 @@ function withToken(url: string, token: string) {
 
 /** Peta Mapbox GL JS untuk halaman Peta (ADR-0016): marker HTML berupa tombol, tanpa rotasi dan kemiringan. */
 export function mountMap(options: Options): MapHandle {
-  const { places } = options;
+  let places = options.places;
+  let insets = options.insets ?? NO_INSETS;
+  let camera = options.camera ?? insets;
+  let covers: Rect[] = [];
   let token = options.token;
   let night = options.night;
   let ready = false;
@@ -69,15 +97,16 @@ export function mountMap(options: Options): MapHandle {
     container: options.container,
     style: night ? STYLE.gelap : STYLE.terang,
     bounds: KOTA_BOGOR,
-    fitBoundsOptions: { padding: 16 },
+    fitBoundsOptions: { padding: cameraPadding(options.container.clientWidth, options.container.clientHeight, [camera, insets]) },
     maxBounds: AREA,
-    minZoom: 10,
+    // Zoom 9 (dengan batas AREA) supaya seluruh kota muat di bagian peta yang sempit di atas lembar ponsel; di zoom 10
+    // kota setinggi kira-kira 280 px.
+    minZoom: 9,
     maxZoom: 18,
     dragRotate: false,
     pitchWithRotate: false,
     touchPitch: false,
-    // Peta ada di tengah halaman: satu jari dan roda tetikus tetap menggulir halaman.
-    cooperativeGestures: true,
+    cooperativeGestures: options.cooperative ?? true,
     locale: options.locale,
     // Atribusi selalu tampil penuh, juga di ponsel yang biasanya hanya mendapat tombol "i" (ADR-0016).
     attributionControl: false,
@@ -91,25 +120,54 @@ export function mountMap(options: Options): MapHandle {
   map.getCanvas().setAttribute("aria-describedby", options.describedBy);
 
   const markers = new Map<string, HTMLButtonElement>();
-  for (const place of places) {
-    const button = document.createElement("button");
-    button.type = "button";
-    // role ditulis eksplisit karena Mapbox memberi role="img" pada marker yang belum punya role.
-    button.setAttribute("role", "button");
-    button.setAttribute("aria-label", options.markerLabel(place));
-    button.setAttribute("aria-expanded", "false");
-    button.className = "grid size-11 cursor-pointer place-items-center rounded-full";
-    button.addEventListener("click", () => options.onSelect(place.id));
-    new mapboxgl.Marker({ element: button }).setLngLat([place.lng, place.lat]).addTo(map);
-    markers.set(place.id, button);
-  }
+  const pins = new Map<string, mapboxgl.Marker>();
+  let user: mapboxgl.Marker | undefined;
+  let byId = new Map<string, MapPlace>();
+  const placeMarkers = (next: MapPlace[]) => {
+    places = next;
+    byId = new Map(places.map((place) => [place.id, place]));
+    for (const [id, pin] of pins) {
+      if (byId.has(id)) continue;
+      pin.remove();
+      pins.delete(id);
+      markers.delete(id);
+    }
+    for (const place of places) {
+      const pin = pins.get(place.id);
+      if (pin) {
+        pin.setLngLat([place.lng, place.lat]);
+        markers.get(place.id)!.setAttribute("aria-label", options.markerLabel(place));
+        continue;
+      }
+      const button = document.createElement("button");
+      button.type = "button";
+      // role ditulis eksplisit karena Mapbox memberi role="img" pada marker yang belum punya role.
+      button.setAttribute("role", "button");
+      button.setAttribute("aria-label", options.markerLabel(place));
+      button.setAttribute("aria-expanded", "false");
+      button.className = "grid size-11 cursor-pointer place-items-center rounded-full";
+      button.addEventListener("click", () => options.onSelect(place.id));
+      pins.set(place.id, new mapboxgl.Marker({ element: button }).setLngLat([place.lng, place.lat]).addTo(map));
+      markers.set(place.id, button);
+    }
+    // Urutan Tab di antara marker mengikuti urutan lokasi (utara ke selatan), juga setelah marker baru ditambahkan.
+    const order = places.map((place) => markers.get(place.id)!);
+    const layer = map.getCanvasContainer();
+    const current = [...layer.children].filter((element) => order.includes(element as HTMLButtonElement));
+    if (order.some((element, index) => current[index] !== element)) for (const element of order) layer.appendChild(element);
+    options.onMarkers(new Map(markers));
+  };
+  placeMarkers(places);
 
-  // Marker di luar tampilan keluar dari urutan Tab dan disembunyikan dari pembaca layar; daftar ikut tampilan.
+  // Marker di luar bagian peta yang terlihat (di luar layar, di balik panel, atau di bawah pencarian dan kontrol) keluar
+  // dari urutan Tab dan disembunyikan dari pembaca layar, supaya fokus tidak pernah tertutup (WCAG 2.4.11); daftar ikut
+  // bagian yang terlihat.
   const updateView = () => {
-    const bounds = map.getBounds();
+    const container = map.getContainer();
+    const rect = visibleRect(container.clientWidth, container.clientHeight, insets);
     const ids: string[] = [];
     for (const place of places) {
-      const inside = bounds?.contains([place.lng, place.lat]) ?? false;
+      const inside = isVisible(map.project([place.lng, place.lat]), rect, covers);
       const button = markers.get(place.id)!;
       button.tabIndex = inside ? 0 : -1;
       if (inside) {
@@ -119,7 +177,18 @@ export function mountMap(options: Options): MapHandle {
         button.setAttribute("aria-hidden", "true");
       }
     }
-    options.onView(ids);
+    options.onView(rect ? ids : null);
+  };
+  const padding = () => {
+    const container = map.getContainer();
+    return cameraPadding(container.clientWidth, container.clientHeight, [camera, insets]);
+  };
+  // Untuk memusatkan satu titik: tepat bagian yang terlihat, tanpa jarak tambahan. Di ponsel pendek bagian itu bisa lebih
+  // sempit dari padding biasa, dan tanpa ini titiknya dipusatkan di seluruh kanvas, di balik panel.
+  const focusPadding = () => {
+    const container = map.getContainer();
+    const rect = visibleRect(container.clientWidth, container.clientHeight, insets);
+    return rect ? { top: rect.top, right: container.clientWidth - rect.right, bottom: container.clientHeight - rect.bottom, left: rect.left } : padding();
   };
   map.on("load", () => {
     ready = true;
@@ -127,6 +196,7 @@ export function mountMap(options: Options): MapHandle {
     options.onReady();
   });
   map.on("moveend", updateView);
+  map.on("resize", () => ready && updateView());
   // Galat sebelum gaya peta termuat (mis. token ditolak) berarti peta gagal; galat satu tile sesudahnya diabaikan.
   map.on("error", () => {
     if (!ready && !map.isStyleLoaded()) options.onFail();
@@ -184,15 +254,51 @@ export function mountMap(options: Options): MapHandle {
   };
   schedule(Date.parse(token.expiresAt) - Date.now() - RENEW_BEFORE_MS);
 
-  const byId = new Map(places.map((place) => [place.id, place]));
   return {
     markers,
     zoomIn: () => map.zoomIn(),
     zoomOut: () => map.zoomOut(),
-    reset: () => map.fitBounds(KOTA_BOGOR, { padding: 16 }),
+    reset: () => map.fitBounds(KOTA_BOGOR, { padding: padding() }),
     show(id) {
       const place = byId.get(id);
-      if (place) map.easeTo({ center: [place.lng, place.lat], zoom: Math.max(map.getZoom(), 15) });
+      // Padding tidak disimpan sebagai padding peta, supaya perpindahan berikutnya tidak ikut bergeser.
+      if (place) map.flyTo({ center: [place.lng, place.lat], zoom: Math.max(map.getZoom(), 15), padding: focusPadding(), retainPadding: false });
+    },
+    reveal(id) {
+      const place = byId.get(id);
+      if (!place) return;
+      const container = map.getContainer();
+      const rect = visibleRect(container.clientWidth, container.clientHeight, insets);
+      const { x, y } = map.project([place.lng, place.lat]);
+      // Titik yang sudah terlihat, tidak terlalu dekat ke tepi, tidak digeser.
+      const margin = rect ? Math.min(56, (rect.bottom - rect.top) / 4, (rect.right - rect.left) / 4) : 0;
+      if (rect && x >= rect.left + margin && x <= rect.right - margin && y >= rect.top + margin && y <= rect.bottom - margin) return;
+      map.easeTo({ center: [place.lng, place.lat], padding: focusPadding(), retainPadding: false });
+    },
+    showUser({ lng, lat }) {
+      const [[west, south], [east, north]] = AREA as [[number, number], [number, number]];
+      if (lng < west || lng > east || lat < south || lat > north) return false;
+      if (!user) {
+        const dot = document.createElement("span");
+        dot.className = "peta-saya";
+        dot.setAttribute("aria-hidden", "true");
+        user = new mapboxgl.Marker({ element: dot }).setLngLat([lng, lat]).addTo(map);
+      } else {
+        user.setLngLat([lng, lat]);
+      }
+      map.flyTo({ center: [lng, lat], zoom: Math.max(map.getZoom(), 15), padding: focusPadding(), retainPadding: false });
+      return true;
+    },
+    setPlaces(next) {
+      placeMarkers(next);
+      if (ready) updateView();
+    },
+    setInsets(next, nextCovers = [], nextCamera = next) {
+      camera = nextCamera;
+      if (JSON.stringify([next, nextCovers]) === JSON.stringify([insets, covers])) return;
+      insets = next;
+      covers = nextCovers;
+      if (ready) updateView();
     },
     setSelected(id) {
       for (const [placeId, button] of markers) {

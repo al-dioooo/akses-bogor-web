@@ -1,6 +1,6 @@
 // Peta memuat gaya dan tile dari Mapbox. Supaya tes tidak bergantung pada internet dan akun Mapbox, semua request ke
 // *.mapbox.com dicegat: gaya peta diganti latar polos dan request lain dijawab kosong. Token dari API tiruan palsu.
-import { test as base, type Page } from "@playwright/test";
+import { expect, test as base, type Page } from "@playwright/test";
 
 const STYLE = {
   version: 8,
@@ -25,4 +25,14 @@ export const test = base.extend({
   },
 });
 
-export { expect } from "@playwright/test";
+/**
+ * Membuka panel daftar Peta. Di ponsel lembar bawah mulai kecil dan dibuka dengan tombol Daftar; mulai 768 px panel
+ * samping sudah terbuka dari awal.
+ */
+export async function openList(page: Page) {
+  const toggle = page.getByRole("main").getByRole("button", { name: /^Tampilkan (daftar|peta)$/ });
+  if ((page.viewportSize()?.width ?? 0) < 768) await page.getByRole("button", { name: "Tampilkan daftar" }).click();
+  await expect(toggle).toHaveAttribute("aria-expanded", "true");
+}
+
+export { expect };

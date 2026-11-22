@@ -233,18 +233,24 @@
     "title": "Lokasi di",
     "accent": "peta.",
     "loading": "Memuat peta…",
-    "count": "{total, plural, =0 {Tidak ada lokasi yang cocok} other {Menampilkan # lokasi}}",
+    "count": "Menampilkan {total} lokasi",
     "asList": "Lihat sebagai daftar",
     "legend": "Legenda status",
+    "cari": {
+      "placeholder": "Cari nama tempat",
+      "filterTitle": "Filter lokasi",
+      "close": "Tutup filter",
+      "loading": "Memuat lokasi…"
+    },
     "map": {
       "title": "Peta lokasi Kota Bogor",
-      "hint": "Di peta, tombol panah menggeser peta, tombol + dan − memperbesar atau memperkecil, dan Tab berpindah ke lokasi berikutnya. Daftar di bawah berisi lokasi yang sedang tampil.",
+      "hint": "Tombol panah menggeser peta, tombol + dan − memperbesar atau memperkecil, dan Tab berpindah ke lokasi berikutnya. Panel daftar berisi lokasi yang sedang tampil.",
       "skip": "Lewati peta ke daftar lokasi",
       "loading": "Memuat peta…",
-      "noscript": "Peta butuh JavaScript. Semua lokasi yang sama ada di daftar di bawah.",
+      "noscript": "Peta butuh JavaScript. Semua lokasi yang sama ada di daftar.",
       "noWebglTitle": "Peta tidak bisa tampil di browser ini",
       "failedTitle": "Peta belum bisa dimuat",
-      "fallbackBody": "Semua lokasi yang sama ada di daftar di bawah.",
+      "fallbackBody": "Semua lokasi yang sama ada di daftar.",
       "retry": "Coba lagi",
       "attribution": "Tampilkan atribusi peta",
       "logo": "Situs Mapbox",
@@ -258,6 +264,20 @@
       "zoomOut": "Perkecil peta",
       "reset": "Tampilkan seluruh Kota Bogor"
     },
+    "lokasiSaya": {
+      "button": "Tampilkan lokasi saya",
+      "title": "Tampilkan lokasi Anda di peta?",
+      "body": "Browser akan meminta izin lokasi. Lokasi Anda hanya dipakai di browser ini untuk menggeser peta, tidak dikirim ke AksesBogor, dan tidak disimpan. Seperti setiap tampilan peta, Mapbox menerima area peta yang dimuat.",
+      "allow": "Izinkan lokasi",
+      "cancel": "Batal",
+      "locating": "Mencari lokasi Anda…",
+      "found": "Peta digeser ke lokasi Anda.",
+      "denied": "Izin lokasi ditolak. Anda bisa mengizinkannya lagi di pengaturan browser.",
+      "unavailable": "Lokasi Anda tidak bisa ditemukan. Coba lagi sebentar lagi.",
+      "outside": "Lokasi Anda di luar Kota Bogor, jadi peta tidak digeser.",
+      "unsupported": "Browser ini tidak bisa memberi lokasi.",
+      "close": "Tutup pesan lokasi"
+    },
     "marker": "{name}, {category}, {status}",
     "summary": {
       "detail": "Lihat detail lokasi",
@@ -266,21 +286,43 @@
     "list": {
       "title": "Daftar lokasi",
       "inView": "Lokasi di tampilan peta",
-      "count": "{shown} dari {total} lokasi ada di tampilan peta",
+      "count": "{shown} dari {total} lokasi",
       "none": "Tidak ada lokasi di bagian peta ini. Geser atau perkecil peta, atau tampilkan seluruh Kota Bogor.",
       "show": "Tunjukkan di peta",
       "showPlace": "Tunjukkan di peta: {name}"
     },
+    "lembar": {
+      "handle": "Tinggi panel daftar",
+      "tinggi": {
+        "kecil": "kecil",
+        "setengah": "setengah layar",
+        "penuh": "penuh"
+      },
+      "showList": "Tampilkan daftar",
+      "showMap": "Tampilkan peta",
+      "list": "Daftar",
+      "map": "Peta"
+    },
     "prioritas": {
       "toggle": "Lapisan prioritas kecamatan",
+      "short": "Prioritas",
       "loading": "Memuat batas kecamatan…",
-      "failed": "Batas kecamatan tidak bisa dimuat, jadi lapisan tidak tampil di peta. Tabel di bawah berisi data yang sama.",
-      "on": "Lapisan prioritas kecamatan tampil di peta. Legenda dan tabelnya ada di bawah peta.",
+      "failed": "Batas kecamatan tidak bisa dimuat, jadi lapisan tidak tampil di peta. Tabel di panel daftar berisi data yang sama.",
+      "on": "Lapisan prioritas kecamatan tampil di peta, dengan kuncinya di atas peta. Tabelnya ada di panel daftar.",
       "off": "Lapisan prioritas kecamatan disembunyikan.",
       "title": "Prioritas kecamatan",
       "intro": "Warna kecamatan menunjukkan seberapa perlu fasilitasnya didata, dari penyandang disabilitas terdaftar, fasilitas tanpa data, dan lokasi yang sudah diverifikasi.",
       "legend": "Legenda prioritas",
-      "boundaries": "Batas kecamatan: {attribution}."
+      "boundaries": "Batas kecamatan: <credit>{attribution}</credit>.",
+      "table": "Tabel",
+      "keyShort": "Prioritas {year}",
+      "more": "Catatan",
+      "moreLabel": "Catatan, sumber, dan legenda prioritas kecamatan",
+      "less": "Ringkas kunci prioritas",
+      "caveatLabel": "Catatan:",
+      "newTab": "(tab baru)",
+      "showTable": "Tabel prioritas kecamatan",
+      "source": "Sumber: {publisher}."
     }
   },
   "Detail": {

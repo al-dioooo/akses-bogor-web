@@ -1,6 +1,8 @@
 // API tiruan untuk tes Playwright, supaya CI tidak butuh akses-bogor-api dan database.
 // Datanya salinan respons API dari seed pengembangan (fixtures.json); filter meniru GET /places dan GET /places/map.
-// Pencarian "galat-tiruan" menjawab 500, untuk menguji keadaan galat di web. Route akun ada di akun.mjs, route
+// Pencarian "galat-tiruan" menjawab 500, untuk menguji keadaan galat di web. Pengunjung dengan IP 203.0.113.249 melihat
+// data kosong di GET /places dan GET /places/map, seperti production sebelum ada lokasi. IP 203.0.113.248 mendapat
+// GET /districts yang lambat. Route akun ada di akun.mjs, route
 // Laporkan di laporkan.mjs, route panel verifikator di verifikasi.mjs, route agen rute di agen-rute.mjs, dan prioritas
 // kecamatan di prioritas.mjs.
 // GET /_tiruan/pengunjung?ip=...&path=... menjawab rahasia server web terakhir yang dikirim bersama IP pengunjung itu,
@@ -16,6 +18,9 @@ import { handleVerifikasi } from "./verifikasi.mjs";
 const { districts, places } = JSON.parse(readFileSync(new URL("./fixtures.json", import.meta.url), "utf8"));
 const port = Number(process.env.PORT ?? 3101);
 const secretsByVisitor = new Map();
+const NO_PLACES_IP = "203.0.113.249";
+// Untuk IP ini GET /districts menjawab setelah 2 detik, supaya kerangka Peta (pencarian pengganti) bisa diukur.
+const SLOW_DISTRICTS_IP = "203.0.113.248";
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 const listItem = ({ id, name, category, district, status, summary, location, lastVerifiedAt, photos }) => ({
@@ -33,7 +38,8 @@ const listItem = ({ id, name, category, district, status, summary, location, las
 const answer = (place, facility) => place.facilities.find((f) => f.facility === facility)?.answer;
 const csv = (value) => (value ? value.split(",").filter(Boolean) : []);
 
-function filterPlaces(query) {
+function filterPlaces(query, headers) {
+  if (headers["x-visitor-ip"] === NO_PLACES_IP) return [];
   const q = query.get("q")?.toLowerCase();
   const [category, district, facility, status] = ["category", "district", "facility", "status"].map((key) =>
     csv(query.get(key)),
@@ -47,7 +53,7 @@ function filterPlaces(query) {
     .sort((a, b) => a.name.localeCompare(b.name, "id"));
 }
 
-function route(url) {
+function route(url, headers) {
   const { pathname, searchParams } = url;
   if (pathname === "/healthz") return [200, { status: "ok" }];
   if (pathname === "/_tiruan/pengunjung") {
@@ -67,7 +73,7 @@ function route(url) {
     if (searchParams.get("q") === "galat-tiruan") return [500, { galat: "galat_server", pesan: "Galat tiruan." }];
     const limit = Number(searchParams.get("limit") ?? 20);
     const offset = Number(searchParams.get("offset") ?? 0);
-    const found = filterPlaces(searchParams);
+    const found = filterPlaces(searchParams, headers);
     return [200, { total: found.length, limit, offset, items: found.slice(offset, offset + limit).map(listItem) }];
   }
   // Token palsu: tes Playwright mencegat semua request ke Mapbox (e2e/mapbox.ts).
@@ -76,7 +82,7 @@ function route(url) {
   }
   if (pathname === "/places/map") {
     if (searchParams.get("q") === "galat-tiruan") return [500, { galat: "galat_server", pesan: "Galat tiruan." }];
-    const features = filterPlaces(searchParams).map(({ id, name, category, status, location }) => ({
+    const features = filterPlaces(searchParams, headers).map(({ id, name, category, status, location }) => ({
       type: "Feature",
       id,
       geometry: { type: "Point", coordinates: [location.lng, location.lat] },
@@ -96,6 +102,7 @@ function route(url) {
 createServer(async (request, response) => {
   const url = new URL(request.url ?? "/", `http://localhost:${port}`);
   const visitorIp = request.headers["x-visitor-ip"];
+  if (url.pathname === "/districts" && visitorIp === SLOW_DISTRICTS_IP) await new Promise((resolve) => setTimeout(resolve, 2000));
   if (visitorIp) {
     secretsByVisitor.set(visitorIp, request.headers["x-web-server-secret"]);
     secretsByVisitor.set(`${visitorIp} ${url.pathname}`, request.headers["x-web-server-secret"]);
@@ -115,7 +122,7 @@ createServer(async (request, response) => {
     handleVerifikasi(request.method, url, request.headers, payload, places) ??
     handleAgenRute(request.method, url, request.headers, payload, places) ??
     handlePrioritas(request.method, url.pathname, request.headers) ??
-    route(url);
+    route(url, request.headers);
   response.writeHead(status, { "content-type": "application/json; charset=utf-8", ...headers });
   // Foto dikirim sebagai berkas biner, selebihnya JSON.
   response.end(status === 204 ? undefined : Buffer.isBuffer(body) ? body : JSON.stringify(body));
