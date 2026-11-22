@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/metadata";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { FilterForm } from "@/components/jelajahi/filter-form";
@@ -7,9 +8,8 @@ import { mapHref, parseFilters } from "@/lib/filters";
 import { LoadErrorBoundary } from "@/ui/load-error";
 import { SectionHeading } from "@/ui/section-heading";
 
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("Peta");
-  return { title: t("metaTitle") };
+export function generateMetadata(): Promise<Metadata> {
+  return pageMetadata("Peta", "/peta");
 }
 
 /** Peta (FR-05): filter sama dengan Jelajahi dan dibaca dari URL saat request. */

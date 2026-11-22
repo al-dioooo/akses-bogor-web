@@ -1,0 +1,41 @@
+# Web AksesBogor di Evergarden (ADR-0048). Pasang ke /etc/systemd/system/, lihat README bagian Deployment.
+[Unit]
+Description=AksesBogor Web (Next.js)
+Documentation=https://github.com/al-dioooo/akses-bogor-web#deployment
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=aksesbogor-web
+Group=aksesbogor-web
+# Tautan ke rilis aktif. deploy.sh memindahkannya, lalu akses-bogor-web-deploy.service me-restart service ini.
+WorkingDirectory=/srv/akses-bogor-web/current
+# PORT dibaca dari sini. Alamatnya dikunci ke 127.0.0.1: web hanya dibuka lewat Cloudflare Tunnel.
+EnvironmentFile=/etc/akses-bogor/web.env
+# keepAliveTimeout lebih lama dari batas koneksi idle cloudflared (90 detik), supaya Next.js tidak menutup koneksi
+# yang sedang dipakai ulang tunnel.
+ExecStart=/usr/bin/node node_modules/next/dist/bin/next start --hostname 127.0.0.1 --keepAliveTimeout 95000
+Restart=always
+RestartSec=3
+# Next.js keluar dengan 143 saat dihentikan SIGTERM; itu berhenti normal, bukan gagal.
+SuccessExitStatus=143
+# Evergarden dipakai bersama layanan lain dan tidak punya swap.
+MemoryMax=1G
+
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+# Cache Next.js (gambar, halaman) ditulis di .next/cache rilis aktif.
+ReadWritePaths=/srv/akses-bogor-web
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces=true
+LockPersonality=true
+
+[Install]
+WantedBy=multi-user.target

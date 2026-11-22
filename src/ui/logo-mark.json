@@ -1,0 +1,9 @@
+{
+  "viewBox": 512,
+  "cornerRadius": 112,
+  "pin": "M139.6 287.8 A140 140 0 1 1 372.4 287.8 L265.3 448.1 Q256 466 246.7 448.1 Z",
+  "door": "M196 292 V184 A60 60 0 0 1 316 184 V292 Z",
+  "leaf": "M316 158 L256 182 V310 L316 292 Z",
+  "favicon": { "cornerRadius": 64, "transform": "translate(256 256) scale(1.08) translate(-256 -266)" },
+  "maskableTransform": "translate(256 256) scale(0.88) translate(-256 -268)"
+}

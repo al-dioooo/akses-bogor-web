@@ -93,7 +93,7 @@ export function ClarificationAnswer({ reportId, remaining }: { reportId: string;
           {t("sentTitle")}
         </h2>
         <p className="text-text-primary">{t("sentBody")}</p>
-        <Link href="/akun" className={buttonClass("outline", "sm")}>
+        <Link href="/akun/laporan" className={buttonClass("outline", "sm")}>
           {t("back")}
         </Link>
       </div>

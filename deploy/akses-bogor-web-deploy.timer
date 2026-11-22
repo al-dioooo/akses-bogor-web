@@ -1,0 +1,10 @@
+# Memeriksa branch release web setiap 5 menit (ADR-0048).
+[Unit]
+Description=Periksa branch release AksesBogor Web
+
+[Timer]
+OnCalendar=*:0/5
+RandomizedDelaySec=30
+
+[Install]
+WantedBy=timers.target

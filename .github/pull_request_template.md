@@ -21,7 +21,7 @@ Contoh:   feat(peta): show markers by status (#14)
 
 ## Deployment Prerequisite / Breaking Changes
 
-<!-- Environment variable baru di Vercel, perubahan URL, perubahan yang butuh API versi tertentu. Tulis "Tidak ada" bila tidak ada. -->
+<!-- Environment variable baru di /etc/akses-bogor/web.env, perubahan URL, perubahan yang butuh API versi tertentu. Tulis "Tidak ada" bila tidak ada. -->
 
 ## Notes
 
