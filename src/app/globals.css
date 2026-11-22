@@ -386,8 +386,10 @@ body {
  * Peta layar penuh (FR-05). Halaman tidak digulir: header lebih ramping dan berlatar, footer disembunyikan, dan main
  * mengisi sisa layar. Peta ada di lapisan paling bawah; pencarian, lapisan prioritas, kontrol, dan panel daftar
  * mengambang di atasnya sebagai item grid. Semua permukaan opak (ADR-0027), jadi kontras teks tidak bergantung pada tile.
+ * Rute Peta yang ditinggalkan tetap terpasang tetapi tersembunyi dan diberi data-rute-tersembunyi (RouteHiddenMarker),
+ * supaya halaman berikutnya tidak ikut terkunci.
  */
-body:has(> .peta-app) {
+body:has(> .peta-app:not([data-rute-tersembunyi])) {
   height: 100dvh;
   padding-bottom: 0;
   overflow: hidden;

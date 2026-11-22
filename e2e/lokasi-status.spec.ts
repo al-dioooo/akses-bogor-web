@@ -9,9 +9,20 @@ const MALFORMED = "/lokasi/bukan-id-lokasi";
 const FAILING = "/lokasi/00000000-0000-4000-8000-000000000500";
 // Bot yang hanya membaca HTML mendapat render dinamis penuh dengan metadata di <head>, bukan kerangka statis.
 const LINK_PREVIEW_BOT = "WhatsApp/2.23.20.0 A";
+// Header yang diteruskan cloudflared ke Evergarden (ADR-0048): alamat publik dan https, padahal server berjalan di
+// http://127.0.0.1. Rewrite ke halaman 404 pernah diproxy lewat https karenanya dan menjawab 500 (issue #156).
+const TUNNEL_HEADERS = {
+  host: "akses-bogor.aldio.dev",
+  "x-forwarded-proto": "https",
+  "x-forwarded-host": "akses-bogor.aldio.dev",
+  "x-forwarded-for": "203.0.113.9",
+  "cf-connecting-ip": "203.0.113.9",
+};
 const CLIENTS: { name: string; headers: Record<string, string> }[] = [
   { name: "browser", headers: {} },
   { name: "link preview bot", headers: { "user-agent": LINK_PREVIEW_BOT } },
+  { name: "browser via cloudflare tunnel", headers: TUNNEL_HEADERS },
+  { name: "link preview bot via cloudflare tunnel", headers: { ...TUNNEL_HEADERS, "user-agent": LINK_PREVIEW_BOT } },
 ];
 
 const SHARE_IMAGE = /<meta[^>]+(property="og:image|name="twitter:image)/;
@@ -59,6 +70,14 @@ test("an api failure answers 503 with a retry instead of a fake 404", async ({ p
   await expect(page.getByRole("link", { name: "Coba lagi" })).toHaveAttribute("href", FAILING);
   await expect(page.getByRole("link", { name: "Kembali ke Jelajahi" })).toHaveAttribute("href", "/jelajahi");
   await expect(page.getByText("Lokasi ini tidak ada.")).toHaveCount(0);
+});
+
+test("in-app navigation skips the status check and leaves api errors to the page", async ({ request }) => {
+  // Navigasi dan prefetch (RSC) tidak dicek proxy, jadi tidak menambah panggilan API; halaman Detail menampilkan
+  // galatnya sendiri. Header `rsc` dulu dibuang Next.js sebelum sampai ke proxy (issue #156).
+  const response = await request.get(FAILING, { headers: { rsc: "1" } });
+  expect(response.status()).toBe(200);
+  expect(response.headers()["content-type"]).toContain("text/x-component");
 });
 
 test("the share card answers 404 only for places that do not exist", async ({ request }) => {
