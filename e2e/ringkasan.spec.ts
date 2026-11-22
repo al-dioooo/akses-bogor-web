@@ -83,6 +83,8 @@ for (const colorScheme of ["light", "dark"] as const) {
     test(`Ringkasan for ${prefix} (${colorScheme}) has no serious or critical WCAG 2.2 AA violations`, async ({ page }) => {
       await page.emulateMedia({ colorScheme, reducedMotion: "reduce" });
       await signIn(page, email(prefix));
+      // Next 16 mengalirkan <title> setelah redirect dari server action; axe memeriksa judul dokumen.
+      await expect(page).toHaveTitle(/^Akun saya/);
       await expect(page.getByRole("region", { name: "Yang menunggu Anda" })).toBeVisible();
       await expect(page.getByRole("region", { name: "Laporan saya" })).toBeVisible();
       expect(await blockingViolations(page)).toEqual([]);
