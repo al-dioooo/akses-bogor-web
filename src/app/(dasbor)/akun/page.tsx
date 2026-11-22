@@ -4,9 +4,11 @@ import { Suspense } from "react";
 import { DashboardHeading } from "@/components/dasbor/dashboard-heading";
 import { Agenda } from "@/components/dasbor/ringkasan/agenda";
 import { DeskSummary } from "@/components/dasbor/ringkasan/desk-summary";
+import { NextPlace } from "@/components/dasbor/ringkasan/next-place";
 import { ReportSummary } from "@/components/dasbor/ringkasan/report-summary";
 import { Part } from "@/components/dasbor/ringkasan/section";
 import { TeamSummary } from "@/components/dasbor/ringkasan/team-summary";
+import { agentEnabled } from "@/lib/agen-rute";
 import { firstName } from "@/lib/dasbor";
 import { requireAccount } from "@/lib/sesi";
 
@@ -54,14 +56,24 @@ async function Home() {
         <Part label={t("reports.loading")} rows={2}>
           <ReportSummary token={token} />
         </Part>
-        {user.role === "admin" && (
-          <Part label={t("tim.loading")} rows={1}>
-            <TeamSummary token={token} />
+        <div className="flex flex-col gap-8">
+          {user.role === "admin" && (
+            <Part label={t("tim.loading")} rows={1}>
+              <TeamSummary token={token} />
+            </Part>
+          )}
+          <Part label={t("petakan.loading")} rows={1}>
+            <Places />
           </Part>
-        )}
+        </div>
       </div>
     </>
   );
+}
+
+/** Petakan berikutnya dengan jalan ke agen selama API membukanya. */
+async function Places() {
+  return <NextPlace agent={await agentEnabled()} />;
 }
 
 function HomeSkeleton({ label }: { label: string }) {

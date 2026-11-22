@@ -38,14 +38,64 @@ test("counts reports per status and opens Laporan saya filtered by the chosen st
   await expect(reports).toHaveCount(4);
 });
 
-test("tells a new account that nothing is waiting and no report is sent yet", async ({ page }) => {
+test("walks a new account through its first route, with the next stop marked", async ({ page }) => {
   await signIn(page, email("lama"));
   const main = page.getByRole("main");
   await expect(main.getByText("Tidak ada yang menunggu Anda")).toBeVisible();
-  await expect(main.getByRole("heading", { name: "Belum ada laporan" })).toBeVisible();
+  const route = main.getByRole("region", { name: "Laporan saya" });
+  await expect(route.getByRole("heading", { name: "Dari akun baru ke tempat pertama." })).toBeVisible();
+  const stops = route.getByRole("listitem");
+  await expect(stops).toHaveCount(4);
+  await expect(stops.nth(0)).toContainText("Selesai");
+  await expect(stops.nth(1)).toHaveAttribute("aria-current", "step");
+  await expect(stops.nth(1)).toContainText("Berikutnya");
+  await expect(stops.nth(1)).toContainText("Datangi satu tempat");
+  await expect(route.getByRole("link", { name: "Laporkan tempat pertama" })).toHaveAttribute("href", "/laporkan");
+  await expect(route.getByRole("link", { name: "Cari tempat dengan agen" })).toHaveAttribute("href", "/laporkan/bantu-memetakan");
   await page.goto("/akun/laporan");
   await expect(page.getByRole("navigation", { name: "Saring menurut status" })).toHaveCount(0);
   await expect(main.getByRole("heading", { level: 2 })).toHaveText("Tidak ada laporan");
+});
+
+test("suggests the districts that need data most, with the data caveat and its source", async ({ page }) => {
+  await signIn(page, email("pelapor"));
+  const next = page.getByRole("main").getByRole("region", { name: "Petakan berikutnya" });
+  const districts = next.getByRole("listitem");
+  await expect(districts).toHaveCount(3);
+  await expect(districts.nth(0)).toContainText("Bogor Barat");
+  await expect(districts.nth(0)).toContainText("Prioritas sangat tinggi");
+  await expect(districts.nth(0)).toContainText("38 tempat belum punya data AksesBogor");
+  await expect(next).toContainText("bukan jumlah seluruh penduduk");
+  await expect(next).toContainText("Sumber: Open Data Kota Bogor, Dinas Sosial");
+  await expect(next.getByRole("link", { name: "Cari tempat dengan agen" })).toHaveAttribute("href", "/laporkan/bantu-memetakan");
+  await expect(next.getByRole("link", { name: "Lihat di peta" })).toHaveAttribute("href", "/peta");
+});
+
+test.describe("while the API keeps the district priority off", () => {
+  // IP pengunjung yang membuat API tiruan menjawab 503 data_disabilitas_belum_aktif (e2e/mock-api/prioritas.mjs).
+  test.use({ extraHTTPHeaders: { "x-forwarded-for": "203.0.113.251" } });
+
+  test("only invites the account to report a place it knows", async ({ page }) => {
+    await signIn(page, email("pelapor"));
+    const next = page.getByRole("main").getByRole("region", { name: "Petakan berikutnya" });
+    await expect(next).toContainText("Mulai dari tempat umum yang sering Anda datangi");
+    await expect(next.getByRole("listitem")).toHaveCount(0);
+    await expect(next).not.toContainText("Dinas Sosial");
+  });
+});
+
+test.describe("while the API keeps the agent off", () => {
+  // IP pengunjung yang membuat API tiruan menjawab agen_rute_belum_aktif (e2e/mock-api/agen-rute.mjs).
+  test.use({ extraHTTPHeaders: { "x-forwarded-for": "203.0.113.250" } });
+
+  test("leaves the agent out of the menu, the first route and the next place", async ({ page }) => {
+    await signIn(page, email("lama"));
+    const main = page.getByRole("main");
+    await expect(main.getByRole("heading", { name: "Dari akun baru ke tempat pertama." })).toBeVisible();
+    await expect(main.getByRole("region", { name: "Petakan berikutnya" }).getByRole("link", { name: "Laporkan tempat" })).toHaveAttribute("href", "/laporkan");
+    await expect(page.getByRole("link", { name: "Cari tempat dengan agen" })).toHaveCount(0);
+    await expect(page.locator("#menu-dasbor").getByRole("link", { name: "Bantu memetakan", includeHidden: true })).toHaveCount(0);
+  });
 });
 
 test("shows verifiers the oldest report past the target and the state of the desk", async ({ page }) => {
@@ -87,6 +137,7 @@ for (const colorScheme of ["light", "dark"] as const) {
       await expect(page).toHaveTitle(/^Akun saya/);
       await expect(page.getByRole("region", { name: "Yang menunggu Anda" })).toBeVisible();
       await expect(page.getByRole("region", { name: "Laporan saya" })).toBeVisible();
+      await expect(page.getByRole("region", { name: "Petakan berikutnya" })).toBeVisible();
       expect(await blockingViolations(page)).toEqual([]);
     });
   }

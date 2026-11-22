@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { getFormatter, getTranslations } from "next-intl/server";
-import { MyReports, REPORT_STATUS, ReportStatusBadge } from "@/components/akun/my-reports";
+import { REPORT_STATUS, ReportStatusBadge } from "@/components/akun/my-reports";
+import { agentEnabled } from "@/lib/agen-rute";
 import type { ReportStatus } from "@/lib/akun";
 import { countByStatus } from "@/lib/dasbor";
 import { Icon } from "@/ui/icon";
 import { myReports } from "./data";
+import { FirstRoute } from "./first-route";
 import { SectionTitle } from "./section";
 
 /** Urutan di pita angka: yang sudah tayang dulu, lalu yang masih berjalan. */
@@ -15,7 +17,7 @@ const API_LIMIT = 100;
 
 /**
  * Laporan saya di Ringkasan: pita gelap dengan jumlah per status (pola pita angka ADR-0027), setiap angka menuju Laporan
- * saya yang tersaring, lalu tiga laporan terbaru.
+ * saya yang tersaring, lalu tiga laporan terbaru. Akun yang belum pernah melapor mendapat Rute pertama.
  */
 export async function ReportSummary({ token }: { token: string }) {
   const [t, tl, format, { items }] = await Promise.all([
@@ -29,7 +31,7 @@ export async function ReportSummary({ token }: { token: string }) {
     <section aria-labelledby="ringkasan-laporan" className="flex flex-col gap-4">
       <SectionTitle id="ringkasan-laporan" title={t("title")} action={items.length > 0 ? { href: "/akun/laporan", label: t("all") } : undefined} />
       {items.length === 0 ? (
-        <MyReports reports={[]} />
+        <FirstRoute agent={await agentEnabled()} />
       ) : (
         <>
           <ul aria-label={t("counts")} className="grid grid-cols-2 gap-2 rounded-3xl bg-surface-inverse p-2 text-text-on-inverse sm:grid-cols-4">
