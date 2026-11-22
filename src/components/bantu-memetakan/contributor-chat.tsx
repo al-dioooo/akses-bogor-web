@@ -13,6 +13,8 @@ import { IconAlertTriangle, IconExternalLink, IconInfoCircle, IconSend } from "@
 type Turn = { role: "user" | "assistant"; content: string; sources?: AgentSource[]; cards?: AgentCard[] };
 const EXAMPLES = ["priority", "mosque", "near"] as const;
 const linkClass = "font-semibold text-text-brand underline underline-offset-2";
+/** Contoh pertanyaan boleh turun baris, supaya kalimat panjang tidak melebarkan panel di layar 320 px. */
+const EXAMPLE_BUTTON = buttonClass("outline", "sm", "py-2 text-left").replace("whitespace-nowrap ", "");
 
 function Sources({ sources }: { sources: AgentSource[] }) {
   const t = useTranslations("BantuMemetakan.tanya");
@@ -161,7 +163,7 @@ export function ContributorChat() {
                 setQuestion(t(`example.${key}`));
                 field.current?.focus();
               }}
-              className={buttonClass("outline", "sm", "whitespace-normal py-2 text-left")}
+              className={EXAMPLE_BUTTON}
             >
               {t(`example.${key}`)}
             </button>

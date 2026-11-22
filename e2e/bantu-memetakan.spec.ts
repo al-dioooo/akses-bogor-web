@@ -36,6 +36,10 @@ test("signed-in contributors reach Bantu memetakan from Laporkan and get an answ
   await expect(main(page).getByRole("heading", { level: 1, name: "Cari tempat yang belum punya data" })).toBeVisible();
   await expect(main(page).getByText(/Jangan tulis data pribadi/)).toBeVisible();
 
+  // Contoh pertanyaan yang panjang turun baris dan tetap di dalam panelnya.
+  for (const example of await main(page).getByRole("group", { name: "Contoh pertanyaan" }).getByRole("button").all()) {
+    expect(await example.evaluate((button) => button.getBoundingClientRect().right <= button.closest("section")!.getBoundingClientRect().right)).toBe(true);
+  }
   await main(page).getByRole("button", { name: "Kecamatan mana yang paling perlu didata?" }).click();
   await expect(main(page).getByRole("textbox", { name: "Pertanyaan Anda" })).toHaveValue("Kecamatan mana yang paling perlu didata?");
   await main(page).getByRole("button", { name: "Kirim pertanyaan" }).click();
