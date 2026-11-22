@@ -47,6 +47,10 @@ Contoh ada di [.env.example](.env.example); salin ke `.env.local`. Jangan commit
 | `NEXT_PUBLIC_GOOGLE_CLIENT_ID` | Tidak | Client ID OAuth Google AksesBogor, sama dengan `GOOGLE_CLIENT_ID` di API. Bukan rahasia; dibaca saat build. Kosong berarti tombol "Masuk dengan Google" tidak tampil |
 | `ENABLE_EXPERIMENTAL_COREPACK` | Di Vercel | `1`, supaya Vercel memakai versi pnpm dari `packageManager` di `package.json` |
 | `WEB_SERVER_SECRET` | Di Vercel | Rahasia bersama dengan API, nilainya sama dengan `WEB_SERVER_SECRET` di API. Bila diisi, setiap panggilan API membawa IP pengunjung sehingga rate limit dihitung per pengunjung, bukan per IP Vercel |
+| `SITE_URL` | Di Vercel | Alamat situs tanpa path, mis. `https://akses-bogor.aldio.dev`. Dipakai untuk URL kanonis, OpenGraph, sitemap, dan `robots.txt`. Kosong berarti domain produksi Vercel (atau alamat preview), lalu `http://localhost:3000` di lokal |
+| `SITE_INDEXABLE` | Tidak | `true` supaya halaman publik boleh diindeks mesin pencari. Hanya berlaku bila `SITE_URL` juga diisi. Bawaannya mati: semua halaman `noindex` dan `robots.txt` melarang semua crawler |
+
+`SITE_URL` dan `SITE_INDEXABLE` dibaca saat build untuk halaman statis, jadi deploy ulang setelah mengubahnya. Selama domain produksi belum dipilih ([ADR-0045](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0045-alamat-staging-di-aldio-dev.md)), staging memakai `SITE_URL=https://akses-bogor.aldio.dev` tanpa `SITE_INDEXABLE`. Saat domain produksi siap, ganti `SITE_URL` ke domain itu, isi `SITE_INDEXABLE=true`, lalu deploy ulang. Hanya halaman publik (Beranda, Jelajahi, Peta, Detail lokasi, halaman edukasi, Tentang, dan halaman hukum) yang bisa diindeks; halaman akun, masuk, Laporkan, dan verifikasi selalu `noindex`.
 
 Peta tidak butuh variabel Mapbox di web. Browser mengambil token Mapbox sementara dari `/peta/kunci`, yang meneruskannya dari `GET /map/token` di API ([ADR-0016](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0016-peta-dan-pencarian-mapbox.md)). Selama API belum diatur, halaman Peta menampilkan legenda dan daftar lokasi tanpa peta.
 
@@ -94,7 +98,7 @@ Diagram, pengaturan bahasa, lapisan pengujian, dan struktur folder ada di [docs/
 
 ## Deployment
 
-Proyek Vercel di akun pemilik repo ([ADR-0013](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0013-tech-stack-nextjs-fastify.md)). API produksi ada di `https://akses-bogor-api.yorhagarden.xyz` ([ADR-0026](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0026-api-dan-postgresql-di-evergarden-oci.md)).
+Proyek Vercel di akun pemilik repo ([ADR-0013](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0013-tech-stack-nextjs-fastify.md)). Web dibuka di `https://akses-bogor.aldio.dev`, dengan `https://akses-bogor.vercel.app` tetap sebagai alias, dan API ada di `https://akses-bogor-api.aldio.dev` ([ADR-0026](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0026-api-dan-postgresql-di-evergarden-oci.md)). Untuk sementara lingkungan ini disebut staging, dan domain produksinya belum diputuskan ([ADR-0045](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0045-alamat-staging-di-aldio-dev.md)).
 
 | Pengaturan Vercel | Nilai |
 | --- | --- |
@@ -102,10 +106,10 @@ Proyek Vercel di akun pemilik repo ([ADR-0013](https://github.com/al-dioooo/akse
 | Root Directory | `./` |
 | Production Branch | `release` (Settings → Environments → Production) |
 | Node.js Version | 24.x, sama dengan `.nvmrc` |
-| Environment Variables | `API_URL` = `https://akses-bogor-api.yorhagarden.xyz`, `ENABLE_EXPERIMENTAL_COREPACK` = `1`, `NEXT_PUBLIC_GOOGLE_CLIENT_ID` (dibaca saat build, jadi deploy ulang setelah diisi), dan `WEB_SERVER_SECRET`, untuk Production dan Preview |
+| Environment Variables | `API_URL` = `https://akses-bogor-api.aldio.dev`, `ENABLE_EXPERIMENTAL_COREPACK` = `1`, `NEXT_PUBLIC_GOOGLE_CLIENT_ID` (dibaca saat build, jadi deploy ulang setelah diisi), dan `WEB_SERVER_SECRET`, untuk Production dan Preview |
 
 - Rilis berarti merge `main` ke `release` lewat PR, sama seperti API. Push ke branch lain, termasuk `main`, menjadi preview deployment.
-- Preview deployment hanya bisa dibuka anggota proyek di Vercel. Tim membuka alamat produksi proyek (`*.vercel.app`, atau domain sendiri bila sudah dipasang).
+- Preview deployment hanya bisa dibuka anggota proyek di Vercel. Tim membuka alamat utama proyek, `https://akses-bogor.aldio.dev`.
 - Setiap alamat web baru juga ditambahkan ke `FRONTEND_ORIGINS` di API.
 - `WEB_SERVER_SECRET` diisi sendiri untuk Production dan Preview, bertipe Sensitive, dengan nilai yang sama seperti di `/etc/akses-bogor/api.env` di API.
 - Paket Hobby Vercel hanya membatasi author commit untuk repo privat. Repo ini publik, jadi tidak perlu commit kosong atas nama pemilik seperti di lokerin. Bila repo dijadikan privat, deploy dari commit anggota lain akan diblokir.

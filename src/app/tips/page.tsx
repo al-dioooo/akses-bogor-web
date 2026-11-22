@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { EduPage } from "@/components/edukasi/edu-page";
+import { pageMetadata } from "@/lib/metadata";
 import { Icon } from "@/ui/icon";
 import { IconShieldCheck } from "@/ui/icons";
 import { PageRow } from "@/ui/page-row";
@@ -10,9 +11,8 @@ type Tip = { title: string; body: string };
 // Urutan sama dengan tag foto di formulir Laporkan (ADR-0023); "Lainnya" tidak butuh petunjuk khusus.
 const SHOTS = ["pintu_masuk", "toilet_difabel", "guiding_block", "lift"] as const;
 
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("Tips");
-  return { title: t("metaTitle") };
+export function generateMetadata(): Promise<Metadata> {
+  return pageMetadata("Tips", "/tips");
 }
 
 /**

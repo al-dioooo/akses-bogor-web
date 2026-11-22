@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
 import { LegalDocument } from "@/components/legal/legal-document";
 import { TERMS_VERSION } from "@/lib/kebijakan";
+import { pageMetadata } from "@/lib/metadata";
 
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("SyaratLayanan");
-  return { title: t("metaTitle") };
+export function generateMetadata(): Promise<Metadata> {
+  return pageMetadata("SyaratLayanan", "/syarat");
 }
 
 /** Syarat Layanan (FR-50), disalin dari akses-bogor-docs (product/syarat-layanan.md). Halaman statis tanpa data dari API. */
