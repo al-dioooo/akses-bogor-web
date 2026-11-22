@@ -1,5 +1,5 @@
 import { connection } from "next/server";
-import { apiHeaders, apiPost, apiUrl, type Category, type Status } from "./api";
+import { apiHeaders, apiPost, apiUrl, type Category, type DistrictPriority, type Status } from "./api";
 import type { LatLng } from "./laporan";
 
 // Agen bantu memetakan (ADR-0042, ADR-0043): agen yang membantu kontributor menemukan fasilitas publik yang belum punya
@@ -45,21 +45,7 @@ export type CardTarget = { kind: "aksesbogor"; placeId: string } | { kind: "osm"
 
 export type District = { slug: string; name: string };
 
-export type PriorityLevel = "rendah" | "sedang" | "tinggi" | "sangat_tinggi";
-
-/** Prioritas kecamatan dari data penyandang disabilitas terdaftar; sama dengan GET /districts/priority. */
-export type DistrictPriority = {
-  year: number;
-  /** Jumlah terdaftar per tahun untuk seluruh kota; belum ditampilkan. */
-  yearTotals?: { year: number; registered: number }[];
-  /** Cara menghitung skor, dalam bahasa Indonesia. */
-  formula?: string;
-  /** Asal hitungan fasilitas tanpa data (OpenStreetMap) dan atribusinya. */
-  facilitiesSource?: { retrievedAt: string | null; attribution: string };
-  districts: { slug: string; name: string; registered: number; verifiedPlaces: number; facilitiesWithoutData: number; score: number; rank: number; level: PriorityLevel }[];
-  caveat: string;
-  source: { title: string; url: string; publisher: string; retrievedAt: string; terms: string };
-};
+export type { DistrictPriority, PriorityLevel } from "./api";
 
 export type AgentCard =
   | { type: "tempat"; target: { kind: "aksesbogor"; placeId: string }; name: string; category: Category; district: District; status: Status; lastVerifiedAt: string }

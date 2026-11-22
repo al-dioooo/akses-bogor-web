@@ -61,6 +61,29 @@ export type MapFeature = {
 
 export type PlaceMap = { type: "FeatureCollection"; features: MapFeature[] };
 
+export type PriorityLevel = "rendah" | "sedang" | "tinggi" | "sangat_tinggi";
+
+/** Prioritas kecamatan dari data penyandang disabilitas terdaftar; sama dengan GET /districts/priority. */
+export type DistrictPriority = {
+  year: number;
+  /** Jumlah terdaftar per tahun untuk seluruh kota; belum ditampilkan. */
+  yearTotals?: { year: number; registered: number }[];
+  /** Cara menghitung skor, dalam bahasa Indonesia. */
+  formula?: string;
+  /** Asal hitungan fasilitas tanpa data (OpenStreetMap) dan atribusinya. */
+  facilitiesSource?: { retrievedAt: string | null; attribution: string };
+  districts: { slug: string; name: string; registered: number; verifiedPlaces: number; facilitiesWithoutData: number; score: number; rank: number; level: PriorityLevel }[];
+  caveat: string;
+  source: { title: string; url: string; publisher: string; retrievedAt: string; terms: string };
+};
+
+/** Batas kecamatan dari OpenStreetMap (ADR-0034), disederhanakan untuk peta; data ODbL. */
+export type DistrictBoundaries = {
+  type: "FeatureCollection";
+  features: { type: "Feature"; properties: { slug: string; name: string }; geometry: { type: "Polygon" | "MultiPolygon"; coordinates: unknown } }[];
+  attribution: string;
+};
+
 /** Token Mapbox sementara dari API (ADR-0016). */
 export type MapToken = { token: string; expiresAt: string };
 
@@ -192,6 +215,22 @@ export const getMapPlaces = (filters: Omit<PlaceFilters, "limit" | "offset"> = {
 
 /** Token peta untuk browser. API menjawab 503 `peta_belum_diatur` bila Mapbox belum diatur di server. */
 export const getMapToken = () => get<MapToken>("/map/token");
+
+/**
+ * Prioritas kecamatan dari data penyandang disabilitas terdaftar (ADR-0043), atau `null` selama API belum membukanya
+ * (503 `data_disabilitas_belum_aktif`), API belum punya route ini, atau API tidak terhubung. Peta tetap tampil tanpanya.
+ */
+export async function getDistrictPriority(): Promise<DistrictPriority | null> {
+  try {
+    return await get<DistrictPriority>("/districts/priority");
+  } catch (error) {
+    if (error instanceof ApiError) return null;
+    throw error;
+  }
+}
+
+/** Batas keenam kecamatan untuk lapisan peta. Publik dan jarang berubah. */
+export const getDistrictBoundaries = () => get<DistrictBoundaries>("/districts/boundaries");
 
 /** `null` bila lokasi tidak ada atau id-nya tidak valid. */
 export async function getPlace(id: string): Promise<PlaceDetail | null> {
