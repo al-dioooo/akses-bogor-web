@@ -35,6 +35,8 @@ export default defineConfig({
         API_URL: `http://localhost:${mockApiPort}`,
         NEXT_PUBLIC_GOOGLE_CLIENT_ID: "client-tiruan.apps.googleusercontent.com",
         WEB_SERVER_SECRET: webServerSecret,
+        // Domain publik seperti di produksi. Pemeriksaan asal POST menerima asal ini dan asal server sendiri (issue #165).
+        SITE_URL: "https://akses-bogor.aldio.dev",
       },
       reuseExistingServer: !process.env.CI,
       timeout: 180_000,
