@@ -240,6 +240,10 @@ export function PlaceMap({
 
   const ready = state === "siap";
   const shown = ready && inView ? places.filter((p) => inView.has(p.id)) : places;
+  // Tanpa lokasi sama sekali, kepala panel (yang selalu terlihat) membawa pesannya: belum ada data, atau filter terlalu
+  // sempit.
+  const empty = tj(filtered ? "results.emptyTitle" : "results.noDataTitle");
+  const status = places.length === 0 ? empty : ready ? t("list.count", { shown: shown.length, total: places.length }) : t("count", { total: places.length });
   const layerShown = priority && (layer === "nyala" || layer === "galat");
 
   /** Menutup ringkasan, lalu fokus kembali ke marker atau ke tombol daftar yang membukanya. */
@@ -311,37 +315,6 @@ export function PlaceMap({
               {t("map.loading")}
             </p>
           )}
-          {(state === "tanpa-webgl" || state === "galat") && (
-            <div role="alert" className="panel-raised flex max-w-md flex-col items-start gap-3 rounded-3xl p-6">
-              <span className="grid size-12 place-items-center rounded-full bg-surface-brand-subtle text-icon-brand">
-                <Icon icon={IconMap2} className="size-6" />
-              </span>
-              <p className="font-heading text-xl font-bold">{t(state === "galat" ? "map.failedTitle" : "map.noWebglTitle")}</p>
-              <p className="text-text-secondary">{t("map.fallbackBody")}</p>
-              <div className="flex flex-wrap gap-3">
-                {state === "galat" && (
-                  <button type="button" onClick={() => setAttempt(attempt + 1)} className={buttonClass("outline", "sm")}>
-                    {t("map.retry")}
-                  </button>
-                )}
-                <Link href={listHref} className={buttonClass("outline", "sm")}>
-                  <Icon icon={IconList} />
-                  {t("asList")}
-                </Link>
-              </div>
-            </div>
-          )}
-          {(state === "siap" || state === "awal") && places.length === 0 && (
-            // Ringkas, supaya muat di atas panel daftar; penjelasannya ada di panel.
-            <div className="panel-raised flex flex-wrap items-center justify-center gap-x-3 gap-y-2 rounded-3xl p-2 pl-5">
-              <p className="font-heading font-bold">{tj(filtered ? "results.emptyTitle" : "results.noDataTitle")}</p>
-              {filtered && (
-                <Link href="/peta" className={buttonClass("outline", "sm")}>
-                  {tj("filters.reset")}
-                </Link>
-              )}
-            </div>
-          )}
         </div>
       </div>
       <section ref={panel} aria-labelledby="judul-daftar-peta" className="peta-lembar">
@@ -350,7 +323,7 @@ export function PlaceMap({
             {t(ready ? "list.inView" : "list.title")}
           </h2>
           <p role="status" className="text-sm text-text-secondary">
-            {ready ? t("list.count", { shown: shown.length, total: places.length }) : t("count", { total: places.length })}
+            {status}
           </p>
         </div>
         <div className="peta-lembar-isi">
@@ -358,6 +331,39 @@ export function PlaceMap({
           <PlaceSummary place={place} headingRef={summaryHeading} onClose={closeSummary} />
         ) : (
           <div className="flex flex-col gap-5 px-5 pb-5">
+            {/* Pesan peta yang gagal ada di panel, bukan di atas peta, supaya tidak pernah tertutup panel di layar pendek. */}
+            {(state === "tanpa-webgl" || state === "galat") && (
+              <div role="alert" className="flex flex-col items-start gap-3 rounded-2xl bg-surface-brand-subtle p-4">
+                <p className="inline-flex items-center gap-2 font-heading text-lg font-bold">
+                  <Icon icon={IconMap2} className="size-5 text-icon-brand" />
+                  {t(state === "galat" ? "map.failedTitle" : "map.noWebglTitle")}
+                </p>
+                <p>{t("map.fallbackBody")}</p>
+                <div className="flex flex-wrap gap-3">
+                  {state === "galat" && (
+                    <button type="button" onClick={() => setAttempt(attempt + 1)} className={buttonClass("outline", "sm")}>
+                      {t("map.retry")}
+                    </button>
+                  )}
+                  <Link href={listHref} className={buttonClass("outline", "sm")}>
+                    <Icon icon={IconList} />
+                    {t("asList")}
+                  </Link>
+                </div>
+              </div>
+            )}
+            {/* Tanpa lokasi, penjelasannya di bagian paling atas panel. */}
+            {places.length === 0 && (
+              <div className="flex flex-col items-start gap-2 rounded-2xl bg-bg-sunken p-4">
+                <p className="font-bold">{empty}</p>
+                <p className="text-text-secondary">{tj(filtered ? "results.emptyBody" : "results.noDataBody")}</p>
+                {filtered && (
+                  <Link href="/peta" className={buttonClass("outline", "sm", "mt-1")}>
+                    {tj("filters.reset")}
+                  </Link>
+                )}
+              </div>
+            )}
             <noscript>
               <p className="rounded-2xl bg-surface-brand-subtle p-4 font-semibold">{t("map.noscript")}</p>
             </noscript>
@@ -372,12 +378,6 @@ export function PlaceMap({
               ) : (
                 <p className="rounded-2xl bg-bg-sunken p-4 text-text-secondary">{t("list.none")}</p>
               ))}
-            {places.length === 0 && (
-              <div className="flex flex-col gap-1 rounded-2xl bg-bg-sunken p-4">
-                <p className="font-bold">{tj(filtered ? "results.emptyTitle" : "results.noDataTitle")}</p>
-                <p className="text-text-secondary">{tj(filtered ? "results.emptyBody" : "results.noDataBody")}</p>
-              </div>
-            )}
             {layerShown && (
               <>
                 {layer === "galat" && (
