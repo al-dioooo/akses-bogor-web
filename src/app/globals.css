@@ -423,8 +423,9 @@ body:has(> .peta-app) {
   overflow: hidden;
   isolation: isolate;
   &[data-tinggi="setengah"] {
-    /* Paling tinggi sampai di bawah kontrol, dengan ruang untuk atribusi Mapbox di antaranya. */
-    --peta-bawah: calc(var(--peta-nav) + clamp(var(--peta-kepala) + 6rem, 45%, 100% - var(--peta-atas) - var(--peta-nav) - 3.25rem));
+    /* Paling tinggi sampai di bawah kontrol, dengan ruang untuk atribusi Mapbox dan setidaknya 6rem peta di antaranya,
+       supaya ponsel pendek tetap melihat lokasi yang dipilih di atas panel. */
+    --peta-bawah: calc(var(--peta-nav) + clamp(var(--peta-kepala) + 6rem, 45%, 100% - var(--peta-atas) - var(--peta-nav) - 9.25rem));
   }
   @media (width >= 48rem) {
     --peta-bawah: var(--peta-nav);
