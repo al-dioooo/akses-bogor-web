@@ -3,7 +3,7 @@
  * `PRIVACY_POLICY_VERSION` di akses-bogor-api dan versi di akses-bogor-docs (product/kebijakan-privasi.md); API
  * menolak persetujuan untuk versi lain.
  */
-export const PRIVACY_POLICY_VERSION = "2026-11-10";
+export const PRIVACY_POLICY_VERSION = "2026-11-22";
 export const PRIVACY_POLICY_PATH = "/kebijakan-privasi";
 
 /**
