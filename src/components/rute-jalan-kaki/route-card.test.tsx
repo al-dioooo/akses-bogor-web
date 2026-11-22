@@ -5,7 +5,7 @@ import { RouteCard, routeTarget } from "./route-card";
 
 const WARNING = "Rute ini rute jalan kaki dari Mapbox. Rute ini tidak memperhitungkan tangga, trotoar, kerb, atau kemiringan jalan, jadi belum tentu bisa dilewati kursi roda.";
 const ROUTE = {
-  destination: { name: "Masjid Al-Hidayah", location: { lat: -6.5712, lng: 106.7655 } },
+  destination: { placeId: null, osm: { type: "node", id: 9001 }, name: "Masjid Al-Hidayah", location: { lat: -6.5712, lng: 106.7655 } },
   distanceMeters: 1460,
   durationSeconds: 1100,
   steps: [
@@ -63,7 +63,8 @@ describe("RouteCard", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Pakai lokasi saya" }));
     await waitFor(() => expect(screen.getByText("1,5 km · sekitar 18 menit jalan kaki")).toBeTruthy());
-    expect(document.activeElement?.textContent).toBe("1,5 km · sekitar 18 menit jalan kaki");
+    // Fokus dipindah efek setelah render, jadi ditunggu juga.
+    await waitFor(() => expect(document.activeElement?.textContent).toBe("1,5 km · sekitar 18 menit jalan kaki"));
     expect(screen.getByText(WARNING)).toBeTruthy();
     expect(screen.getByRole("region", { name: "Langkah" }).querySelectorAll("li")).toHaveLength(2);
     await waitFor(() => expect(screen.getByText("Tangga, 4 anak tangga")).toBeTruthy());
