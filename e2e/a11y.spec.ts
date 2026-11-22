@@ -14,6 +14,8 @@ const PAGES = [
   "/lokasi/4037ba19-b366-45bc-aceb-270944fe9372",
   "/lokasi/f2aeb27d-5f54-42f8-8368-780b6d62b51c",
   "/lokasi/00000000-0000-4000-8000-000000000000",
+  // Halaman 503 dari src/proxy.ts saat API galat (issue #150).
+  "/lokasi/00000000-0000-4000-8000-000000000500",
   "/halaman-yang-tidak-ada",
   "/masuk",
   "/masuk?sesi=berakhir",
