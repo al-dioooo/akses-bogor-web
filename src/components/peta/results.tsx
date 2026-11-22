@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { getMapPlaces } from "@/lib/api";
+import { getDistrictPriority, getMapPlaces } from "@/lib/api";
 import { exploreHref, hasFilters, type ExploreFilters } from "@/lib/filters";
 import { buttonClass } from "@/ui/button-styles";
 import { Icon } from "@/ui/icon";
@@ -12,13 +12,16 @@ import { toMapPlaces } from "./places";
 /** Isi Peta untuk filter di URL: jumlah, tombol ke daftar dengan filter yang sama (FR-05), peta, legenda, dan daftar lokasi. */
 export async function MapResults({ filters }: { filters: ExploreFilters }) {
   const [t, tj] = await Promise.all([getTranslations("Peta"), getTranslations("Jelajahi")]);
-  const { features } = await getMapPlaces({
-    q: filters.q || undefined,
-    category: filters.category,
-    district: filters.district,
-    facility: filters.facility,
-    status: filters.status,
-  });
+  const [{ features }, priority] = await Promise.all([
+    getMapPlaces({
+      q: filters.q || undefined,
+      category: filters.category,
+      district: filters.district,
+      facility: filters.facility,
+      status: filters.status,
+    }),
+    getDistrictPriority(),
+  ]);
   const places = toMapPlaces(features);
 
   return (
@@ -42,7 +45,7 @@ export async function MapResults({ filters }: { filters: ExploreFilters }) {
           </Link>
         </div>
       )}
-      <PlaceMap places={places} listHref={exploreHref(filters)} legend={<MapLegend />} />
+      <PlaceMap places={places} listHref={exploreHref(filters)} legend={<MapLegend />} priority={priority} />
     </>
   );
 }

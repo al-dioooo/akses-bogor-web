@@ -1,7 +1,8 @@
 // API tiruan untuk tes Playwright, supaya CI tidak butuh akses-bogor-api dan database.
 // Datanya salinan respons API dari seed pengembangan (fixtures.json); filter meniru GET /places dan GET /places/map.
 // Pencarian "galat-tiruan" menjawab 500, untuk menguji keadaan galat di web. Route akun ada di akun.mjs, route
-// Laporkan di laporkan.mjs, route panel verifikator di verifikasi.mjs, route agen rute di agen-rute.mjs.
+// Laporkan di laporkan.mjs, route panel verifikator di verifikasi.mjs, route agen rute di agen-rute.mjs, dan prioritas
+// kecamatan di prioritas.mjs.
 // GET /_tiruan/pengunjung?ip=...&path=... menjawab rahasia server web terakhir yang dikirim bersama IP pengunjung itu,
 // untuk path API tertentu atau, tanpa path, untuk path mana pun.
 import { readFileSync } from "node:fs";
@@ -9,6 +10,7 @@ import { createServer } from "node:http";
 import { handleAgenRute } from "./agen-rute.mjs";
 import { handleAkun } from "./akun.mjs";
 import { handleLaporkan } from "./laporkan.mjs";
+import { handlePrioritas } from "./prioritas.mjs";
 import { handleVerifikasi } from "./verifikasi.mjs";
 
 const { districts, places } = JSON.parse(readFileSync(new URL("./fixtures.json", import.meta.url), "utf8"));
@@ -112,6 +114,7 @@ createServer(async (request, response) => {
     handleLaporkan(request.method, url.pathname, request.headers, payload, places) ??
     handleVerifikasi(request.method, url, request.headers, payload, places) ??
     handleAgenRute(request.method, url, request.headers, payload, places) ??
+    handlePrioritas(request.method, url.pathname, request.headers) ??
     route(url);
   response.writeHead(status, { "content-type": "application/json; charset=utf-8", ...headers });
   // Foto dikirim sebagai berkas biner, selebihnya JSON.
