@@ -58,6 +58,39 @@ for (const viewport of [
   });
 }
 
+for (const viewport of [
+  { width: 320, height: 568 },
+  { width: 667, height: 375 },
+]) {
+  test(`the searching and refused messages never cover the focused Lokasi saya button (${viewport.width}×${viewport.height})`, async ({ page }) => {
+    // Lokasi pertama tidak pernah datang (masih mencari); yang kedua ditolak.
+    await page.addInitScript(() => {
+      let calls = 0;
+      navigator.geolocation.getCurrentPosition = (_success, failure) => {
+        calls += 1;
+        if (calls > 1) failure?.({ code: 1, message: "ditolak", PERMISSION_DENIED: 1, POSITION_UNAVAILABLE: 2, TIMEOUT: 3 } as GeolocationPositionError);
+      };
+    });
+    await page.setViewportSize(viewport);
+    await openMap(page);
+    const uncovered = () =>
+      button(page).evaluate((element) => {
+        const box = element.getBoundingClientRect();
+        const hit = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
+        return !!hit && (hit === element || element.contains(hit));
+      });
+    await button(page).click();
+    await page.getByRole("button", { name: "Izinkan lokasi" }).click();
+    await expect(page.getByText("Mencari lokasi Anda…").first()).toBeVisible();
+    await expect(button(page)).toBeFocused();
+    expect(await uncovered()).toBe(true);
+    await button(page).press("Enter");
+    await expect(page.getByText("Izin lokasi ditolak. Anda bisa mengizinkannya lagi di pengaturan browser.").first()).toBeVisible();
+    await expect(button(page)).toBeFocused();
+    expect(await uncovered()).toBe(true);
+  });
+}
+
 test("says so when the browser refuses the location", async ({ page }) => {
   // Penolakan dibuat pasti: tanpa ini, lama browser tanpa layar menolak izin bergantung pada beban mesin.
   await page.addInitScript(() => {

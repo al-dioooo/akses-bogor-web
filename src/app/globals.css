@@ -509,9 +509,10 @@ body:has(> .peta-app) {
 }
 
 /* Penjelasan izin dan pesan "Lokasi saya", di atas panel daftar. Di ponsel kartu selebar layar (main yang menjadi
-   acuannya), paling bawah di atas Bottom nav, dan isinya digulir bila tidak muat: pesan di bawah pencarian dan kontrol,
-   penjelasan izin di atas, menutupi pencarian selama terbuka, supaya tombolnya muat juga di ponsel kecil dan landscape.
-   Di layar lebar kartu di kiri kontrol. */
+   acuannya), paling bawah di atas Bottom nav, dan isinya digulir bila tidak muat. Pesan hasil selalu di bawah pencarian
+   dan kontrol, juga di landscape, supaya tidak pernah menutupi tombol Lokasi saya yang menerima fokus lagi. Penjelasan
+   izin, yang memegang fokus selama terbuka dan tertutup saat fokus keluar, di bagian atas peta, supaya tombolnya muat di
+   ponsel kecil dan landscape. Di layar lebar kartu di kiri kontrol. */
 .peta-lokasi {
   position: absolute;
   top: calc(var(--peta-atas) + 0.5rem);
@@ -521,10 +522,6 @@ body:has(> .peta-app) {
   overflow-y: auto;
   overscroll-behavior: contain;
   &[role="dialog"] {
-    top: 0.75rem;
-    max-height: calc(100% - 1.5rem - var(--peta-nav));
-  }
-  @media (height < 32rem) {
     top: 0.75rem;
     max-height: calc(100% - 1.5rem - var(--peta-nav));
   }
