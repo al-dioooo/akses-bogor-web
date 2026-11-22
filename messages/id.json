@@ -1428,7 +1428,8 @@
         "cari": "Dari pencarian: {name}",
         "gps": "Dari lokasi perangkat, akurasi sekitar {meters} m",
         "peta": "Dari tengah peta",
-        "awal": "Lokasi saat ini"
+        "awal": "Lokasi saat ini",
+        "osm": "Dari OpenStreetMap, sering di tengah gedung. Geser pin ke pintu masuk."
       },
       "coordinates": "{lat}, {lng}",
       "noCandidate": "Belum ada titik. Cari tempatnya, pakai lokasi Anda, atau geser peta.",
@@ -1495,6 +1496,7 @@
       "tagKosong": "Pilih objek di foto {number}."
     },
     "info": {
+      "fromOsm": "Nama, kategori, dan titik awal diisi dari OpenStreetMap dan belum diperiksa. Periksa semuanya, geser pin ke pintu masuk yang paling mudah diakses, lalu pakai lokasi itu.",
       "nameLabel": "Nama tempat",
       "nameHint": "Nama yang tertulis di papan nama atau yang dikenal warga.",
       "categoryLegend": "Kategori",

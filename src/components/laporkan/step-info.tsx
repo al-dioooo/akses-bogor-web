@@ -7,7 +7,7 @@ import { CATEGORIES } from "@/lib/api";
 import { LIMITS, type FieldError as StepError, type ReportDraft } from "@/lib/isian-laporan";
 import { buttonClass } from "@/ui/button-styles";
 import { Icon } from "@/ui/icon";
-import { IconPencil } from "@/ui/icons";
+import { IconInfoCircle, IconPencil } from "@/ui/icons";
 import { CATEGORY_ICON } from "@/ui/place-icons";
 import { errorFor, TextField } from "./form-parts";
 import { LocationPicker, type Candidate } from "./location-picker";
@@ -58,6 +58,13 @@ export function StepInfo({ draft, errors, update, onNearbyPending, map }: Props)
   const locationError = errorFor(errors, "lokasi");
   return (
     <div className="flex flex-col gap-6">
+      {/* Laporan dari kandidat OpenStreetMap di Peta (ADR-0049): isiannya belum diperiksa siapa pun. */}
+      {draft.osm && (
+        <p className="flex items-start gap-2.5 rounded-2xl bg-surface-brand-subtle p-4">
+          <Icon icon={IconInfoCircle} className="mt-0.5 size-5 shrink-0 text-icon-brand" />
+          {t("fromOsm")}
+        </p>
+      )}
       <TextField
         id="nama"
         label={t("nameLabel")}
@@ -101,6 +108,7 @@ export function StepInfo({ draft, errors, update, onNearbyPending, map }: Props)
 
       <LocationPicker
         confirmed={draft.location}
+        start={draft.start ?? null}
         name={draft.name}
         placeId={draft.placeId}
         error={locationError ? te(locationError.message) : undefined}
