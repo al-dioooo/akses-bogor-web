@@ -414,8 +414,15 @@ body:has(> .peta-app) {
   --peta-atas: 9rem;
   --peta-durasi: 320ms;
   /* Tinggi panel daftar di ponsel, juga jarak atribusi Mapbox dari bawah peta supaya tidak pernah tertutup. Paling tinggi
-     sampai di bawah kontrol, dengan ruang untuk atribusi Mapbox di antaranya. */
-  --peta-bawah: calc(var(--peta-nav) + clamp(var(--peta-kepala) + 6rem, 45%, 100% - var(--peta-atas) - var(--peta-nav) - 3.25rem));
+     sampai di bawah kontrol, dengan ruang untuk atribusi Mapbox di antaranya; di layar pendek tidak menutupi pencarian dan
+     kontrol, tetapi kepalanya selalu di atas Bottom nav. */
+  --peta-bawah: max(
+    var(--peta-nav) + var(--peta-kepala),
+    min(
+      var(--peta-nav) + clamp(var(--peta-kepala) + 6rem, 45%, 100% - var(--peta-atas) - var(--peta-nav) - 3.25rem),
+      100% - var(--peta-atas) - 0.5rem
+    )
+  );
   position: relative;
   display: grid;
   flex: 1;
@@ -478,6 +485,26 @@ body:has(> .peta-app) {
   grid-column: 2;
   grid-row: 2;
   align-self: start;
+}
+
+/* Ponsel landscape: tombol lapisan dan kontrol peta naik ke samping pencarian, supaya tidak masuk ke balik panel daftar
+   yang kecil. Chip kategori tetap di bawah pencarian dan bisa digeser. */
+@media (width < 48rem) and (height < 32rem) {
+  .peta-app {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+  .peta-cari {
+    grid-column: 1;
+  }
+  .peta-lapisan {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .peta-kontrol {
+    grid-column: 3;
+    grid-row: 1;
+  }
 }
 
 @media (width >= 48rem) {

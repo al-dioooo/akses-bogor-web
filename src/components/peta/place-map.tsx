@@ -278,9 +278,9 @@ export function PlaceMap({
             className={buttonClass(layerShown ? "ink" : "outline", "sm", `shadow-[0_8px_20px_-10px_var(--color-shadow-soft)] disabled:opacity-70 ${layerShown ? "" : "bg-surface-raised"}`)}
           >
             <Icon icon={IconUsers} />
-            {/* Di ponsel label pendek, supaya tombol dan kontrol peta muat dalam satu baris. */}
-            <span className="sm:hidden">{t("prioritas.short")}</span>
-            <span className="max-sm:hidden">{t("prioritas.toggle")}</span>
+            {/* Di ponsel label pendek, supaya tombol dan kontrol peta muat dalam satu baris (di landscape juga bersama pencarian). */}
+            <span className="md:hidden">{t("prioritas.short")}</span>
+            <span className="max-md:hidden">{t("prioritas.toggle")}</span>
           </button>
           <p role="status" className="sr-only">
             {layer === "memuat" ? t("prioritas.loading") : layer === "nyala" ? t("prioritas.on") : ""}
