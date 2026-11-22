@@ -27,11 +27,11 @@ export async function renameProfile(_state: FormState, form: FormData): Promise<
   if (!displayName) return { error: { field: "displayName", message: t("galat.namaKosong") }, values };
   if (displayName.length > DISPLAY_NAME_MAX) return { error: { field: "displayName", message: t("galat.namaPanjang") }, values };
   const token = await sessionToken();
-  if (!token) redirect(withReturn("/masuk", "/akun"));
+  if (!token) redirect(withReturn("/masuk", "/akun/pengaturan"));
   try {
     await renameAccount(token, displayName);
   } catch (error) {
-    if (error instanceof ApiError && error.status === 401) redirect(withReturn("/masuk/sesi-berakhir", "/akun"));
+    if (error instanceof ApiError && error.status === 401) redirect(withReturn("/masuk/sesi-berakhir", "/akun/pengaturan"));
     return { error: { message: error instanceof ApiError && error.status > 0 ? error.message : t("galat.server") }, values };
   }
   // Data akun di halaman yang sama ikut memakai nama baru.

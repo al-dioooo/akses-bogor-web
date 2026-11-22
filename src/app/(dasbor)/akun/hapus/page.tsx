@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
-import { AuthPanelSkeleton, AuthShell } from "@/components/akun/auth-shell";
+import { AuthPanelSkeleton } from "@/components/akun/auth-shell";
 import { DeleteForm } from "@/components/akun/delete-form";
+import { DashboardHeading } from "@/components/dasbor/dashboard-heading";
 import { getMyReports } from "@/lib/akun";
 import { requireAccount } from "@/lib/sesi";
 import { Icon } from "@/ui/icon";
@@ -17,11 +18,14 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function HapusAkun() {
   const t = await getTranslations("HapusAkun");
   return (
-    <AuthShell eyebrow={t("eyebrow")} title={t("title")} accent={t("accent")} intro={t("intro")}>
-      <Suspense fallback={<AuthPanelSkeleton label={t("loading")} />}>
-        <Confirm />
-      </Suspense>
-    </AuthShell>
+    <>
+      <DashboardHeading id="judul-hapus" label={t("eyebrow")} title={t("title")} accent={t("accent")} intro={t("intro")} />
+      <div className="panel flex max-w-2xl flex-col gap-6 rounded-3xl p-5 sm:p-8">
+        <Suspense fallback={<AuthPanelSkeleton label={t("loading")} />}>
+          <Confirm />
+        </Suspense>
+      </div>
+    </>
   );
 }
 
