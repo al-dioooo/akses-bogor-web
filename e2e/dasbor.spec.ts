@@ -20,20 +20,19 @@ test("shows a regular account only its own menu, with the open page marked", asy
   await signIn(page, email("lama"));
   await expect(page).toHaveURL(/\/akun$/);
   const links = await menuLinks(page);
-  await expect(links).toHaveText(["Akun saya", "Bantu memetakan"]);
+  await expect(links).toHaveText(["Ringkasan", "Laporan saya", "Bantu memetakan", "Pengaturan akun"]);
   await expect(links.first()).toHaveAttribute("aria-current", "page");
   await expect(page.getByText("Verifikasi", { exact: true })).toHaveCount(0);
 });
 
 test("adds the verification desk for verifiers and the team page for admins", async ({ page }) => {
   await signIn(page, email("verifikator"));
-  await expect(await menuLinks(page)).toHaveText(["Akun saya", "Bantu memetakan", "Antrean", "Menunggu jawaban", "Perlu dicek ulang"]);
+  await expect(await menuLinks(page)).toHaveText(["Ringkasan", "Laporan saya", "Bantu memetakan", "Antrean", "Menunggu jawaban", "Perlu dicek ulang", "Pengaturan akun"]);
 
   await page.context().clearCookies();
   await signIn(page, email("admin"));
-  const links = await menuLinks(page);
-  await expect(links.last()).toHaveText("Tim verifikator");
-  await expect(links.last()).toHaveAttribute("href", "/verifikasi/tim");
+  const team = (await menuLinks(page)).filter({ hasText: "Tim verifikator" });
+  await expect(team).toHaveAttribute("href", "/verifikasi/tim");
 });
 
 test("names the account and its role next to the menu", async ({ page }) => {
@@ -103,7 +102,7 @@ for (const colorScheme of ["light", "dark"] as const) {
     // Next 16 mengalirkan <title> setelah redirect dari server action; axe memeriksa judul dokumen.
     await expect(page).toHaveTitle(/^Akun saya/);
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-    await expect(await menuLinks(page)).toHaveCount(6);
+    await expect(await menuLinks(page)).toHaveCount(8);
     expect(await blockingViolations(page)).toEqual([]);
   });
 }

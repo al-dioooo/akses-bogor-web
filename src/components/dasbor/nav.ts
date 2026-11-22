@@ -1,20 +1,28 @@
 import type { Role } from "@/lib/akun";
-import { IconClipboardCheck, IconLayoutDashboard, IconMessage, IconRefresh, IconRoute, IconUsers, type Glyph } from "@/ui/icons";
+import { IconClipboardCheck, IconLayoutDashboard, IconMessage, IconMessageReport, IconRefresh, IconRoute, IconSettings, IconUsers, type Glyph } from "@/ui/icons";
 
 // Menu dasbor akun (ADR-0046). Bagian verifikasi dan admin hanya disusun untuk peran itu; halaman dan API tetap
 // memeriksa peran sendiri (ADR-0035), jadi menu ini hanya memilih apa yang ditampilkan.
 
-export type DashboardKey = "akun" | "bantu" | "antrean" | "jawaban" | "cekUlang" | "tim";
+export type DashboardKey = "ringkasan" | "laporan" | "bantu" | "antrean" | "jawaban" | "cekUlang" | "tim" | "pengaturan";
 /** "utama" tidak berlabel: Ringkasan berdiri sendiri di atas bagian lain. */
-export type DashboardGroupKey = "utama" | "kontribusi" | "verifikasi" | "admin";
+export type DashboardGroupKey = "utama" | "kontribusi" | "verifikasi" | "admin" | "akun";
 
 export type DashboardItem = { key: DashboardKey; href: string; icon: Glyph };
 export type DashboardGroup = { key: DashboardGroupKey; items: DashboardItem[] };
 
 /** Bagian menu untuk peran akun. Bantu memetakan hanya muncul selama API membuka agen (ADR-0043). */
 export function dashboardGroups({ role, agent }: { role: Role; agent: boolean }): DashboardGroup[] {
-  const groups: DashboardGroup[] = [{ key: "utama", items: [{ key: "akun", href: "/akun", icon: IconLayoutDashboard }] }];
-  if (agent) groups.push({ key: "kontribusi", items: [{ key: "bantu", href: "/laporkan/bantu-memetakan", icon: IconRoute }] });
+  const groups: DashboardGroup[] = [
+    { key: "utama", items: [{ key: "ringkasan", href: "/akun", icon: IconLayoutDashboard }] },
+    {
+      key: "kontribusi",
+      items: [
+        { key: "laporan", href: "/akun/laporan", icon: IconMessageReport },
+        ...(agent ? [{ key: "bantu" as const, href: "/laporkan/bantu-memetakan", icon: IconRoute }] : []),
+      ],
+    },
+  ];
   if (role === "verifikator" || role === "admin") {
     groups.push({
       key: "verifikasi",
@@ -26,13 +34,15 @@ export function dashboardGroups({ role, agent }: { role: Role; agent: boolean })
     });
   }
   if (role === "admin") groups.push({ key: "admin", items: [{ key: "tim", href: "/verifikasi/tim", icon: IconUsers }] });
+  groups.push({ key: "akun", items: [{ key: "pengaturan", href: "/akun/pengaturan", icon: IconSettings }] });
   return groups;
 }
 
 /** Halaman di bawah sebuah menu ikut menandai menu itu, mis. pemeriksaan laporan termasuk Antrean. */
 const SUBPAGES: Partial<Record<DashboardKey, string[]>> = {
-  akun: ["/akun/laporan/", "/akun/hapus"],
+  laporan: ["/akun/laporan/"],
   antrean: ["/verifikasi/laporan/"],
+  pengaturan: ["/akun/hapus"],
 };
 
 /** Menu yang sedang dibuka. `pathname` kosong saat prerender, jadi belum ada yang aktif. */

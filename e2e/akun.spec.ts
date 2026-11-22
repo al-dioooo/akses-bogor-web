@@ -15,6 +15,9 @@ test.beforeEach(async ({ page }) => {
 /** Tautan akun di header (desktop) atau di menu Lainnya (ponsel). */
 async function accountLink(page: Page, name: string) {
   if (!isPhone()) return page.getByRole("banner").getByRole("link", { name });
+  // Bottom nav dialirkan setelah cookie sesi dibaca dan menggantikan kerangkanya; menu yang dibuka sebelum itu ikut
+  // hilang. Nav yang sudah dialirkan menandai halaman yang sedang dibuka.
+  await expect(page.getByRole("navigation", { name: "Menu cepat" }).locator('[aria-current="page"]')).toBeVisible();
   await page.getByRole("button", { name: "Lainnya" }).click();
   return page.locator("#menu-lainnya").getByRole("link", { name });
 }
@@ -35,15 +38,17 @@ test("shows Akun saya instead of Masuk once signed in, and an empty Laporan saya
   await expect(await accountLink(page, "Masuk")).toBeVisible();
   await signIn(page, address);
   await expect(page).toHaveURL(/\/akun$/);
-  await expect(page.getByRole("main").getByText(address)).toBeVisible();
   await expect(page.getByRole("heading", { name: "Belum ada laporan" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Laporkan tempat" }).last()).toHaveAttribute("href", "/laporkan");
+  await expect(page.getByRole("main").getByRole("link", { name: "Laporkan tempat" })).toHaveAttribute("href", "/laporkan");
+  await page.goto("/akun/pengaturan");
+  await expect(page.getByRole("main").getByText(address)).toBeVisible();
   await page.goto("/jelajahi");
   await expect(await accountLink(page, "Akun saya")).toHaveAttribute("href", "/akun");
 });
 
 test("lists each report with its status as text, the rejection reason, and the clarification question", async ({ page }) => {
   await signIn(page, email("pelapor"));
+  await page.goto("/akun/laporan");
   const reports = page.getByRole("region", { name: "Laporan saya" }).getByRole("listitem");
   await expect(reports).toHaveCount(4);
   await expect(reports.nth(0)).toContainText("Perlu klarifikasi");
@@ -56,6 +61,7 @@ test("lists each report with its status as text, the rejection reason, and the c
 
 test("renames the account and explains an empty name", async ({ page }) => {
   await signIn(page, email("lama"));
+  await page.goto("/akun/pengaturan");
   const name = page.getByLabel("Nama tampilan");
   await expect(name).toHaveValue("Sari");
   await name.fill("");
@@ -91,6 +97,7 @@ test("sends a revoked session to Masuk with a message", async ({ page, context, 
 test("deletes the account only after the confirmation box is ticked (ADR-0024)", async ({ page, request }) => {
   const address = email("pelapor");
   await signIn(page, address);
+  await page.goto("/akun/pengaturan");
   await page.getByRole("link", { name: "Lihat apa yang dihapus" }).click();
   await expect(page).toHaveURL(/\/akun\/hapus$/);
   await expect(page.getByText("3 laporan Anda yang belum terbit ikut dihapus.")).toBeVisible();
@@ -116,7 +123,12 @@ for (const colorScheme of ["light", "dark"] as const) {
     await page.emulateMedia({ colorScheme, reducedMotion: "reduce" });
     await signIn(page, email("pelapor"));
     await expect(page).toHaveTitle(/^Akun saya/);
+    await page.goto("/akun/laporan");
     await expect(page.getByRole("region", { name: "Laporan saya" }).getByRole("listitem")).toHaveCount(4);
+    expect(await blockingViolations(page)).toEqual([]);
+
+    await page.goto("/akun/pengaturan");
+    await expect(page.getByLabel("Nama tampilan")).toBeVisible();
     expect(await blockingViolations(page)).toEqual([]);
 
     await page.goto("/akun/hapus");

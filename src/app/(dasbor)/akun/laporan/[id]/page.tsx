@@ -21,7 +21,7 @@ export default async function JawabKlarifikasi({ params }: PageProps<"/akun/lapo
   const t = await getTranslations("JawabKlarifikasi");
   return (
     <>
-      <Link href="/akun" className="-mb-4 inline-flex min-h-11 items-center gap-2 self-start font-semibold underline-offset-2 hover:underline">
+      <Link href="/akun/laporan" className="-mb-4 inline-flex min-h-11 items-center gap-2 self-start font-semibold underline-offset-2 hover:underline">
         <Icon icon={IconArrowLeft} className="size-5" />
         {t("back")}
       </Link>
