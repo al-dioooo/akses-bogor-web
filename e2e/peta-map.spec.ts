@@ -67,6 +67,20 @@ test.describe("with WebGL", () => {
     await expect(count(page)).toHaveText("7 dari 7 lokasi ada di tampilan peta");
   });
 
+  test("changing filters keeps the same map and swaps its markers", async ({ page }) => {
+    await page.locator(".mapboxgl-canvas").evaluate((canvas) => {
+      canvas.dataset.tanda = "peta-awal";
+    });
+    await page.getByRole("checkbox", { name: "Masjid" }).check();
+    await expect(page.locator(".mapboxgl-marker")).toHaveCount(2);
+    await expect(count(page)).toHaveText("2 dari 2 lokasi ada di tampilan peta");
+    await expect(page.locator(".mapboxgl-canvas")).toHaveAttribute("data-tanda", "peta-awal");
+    await page.getByRole("checkbox", { name: "Masjid" }).uncheck();
+    await expect(page.locator(".mapboxgl-marker")).toHaveCount(7);
+    await expect(page.locator(".mapboxgl-canvas")).toHaveCount(1);
+    await expect(page.locator(".mapboxgl-canvas")).toHaveAttribute("data-tanda", "peta-awal");
+  });
+
   for (const colorScheme of ["light", "dark"] as const) {
     test(`the map with an open summary has no serious WCAG 2.2 AA violations (${colorScheme})`, async ({ page }) => {
       await page.emulateMedia({ colorScheme });
