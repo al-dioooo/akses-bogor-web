@@ -48,7 +48,7 @@ export function DeleteForm() {
           <Icon icon={IconTrash} />
           {pending ? t("deleting") : t("submit")}
         </button>
-        <Link href="/akun" className={buttonClass("outline", "md")}>
+        <Link href="/akun/pengaturan" className={buttonClass("outline", "md")}>
           {t("cancel")}
         </Link>
       </div>

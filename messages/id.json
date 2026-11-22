@@ -1081,7 +1081,16 @@
   },
   "LaporanSaya": {
     "title": "Laporan saya",
+    "eyebrow": "Kontribusi",
+    "heading": "Laporan",
+    "accent": "saya.",
     "intro": "Status setiap laporan yang Anda kirim, terbaru di atas.",
+    "filter": {
+      "label": "Saring menurut status",
+      "all": "Semua",
+      "empty": "Tidak ada laporan dengan status ini."
+    },
+    "shown": "{count, plural, =0 {Tidak ada laporan} other {# laporan}}",
     "loading": "Memuat laporan…",
     "emptyTitle": "Belum ada laporan",
     "emptyBody": "Laporan yang Anda kirim muncul di sini bersama statusnya: menunggu verifikasi, perlu klarifikasi, diterbitkan, atau ditolak beserta alasannya.",
@@ -1177,18 +1186,27 @@
       "groups": {
         "kontribusi": "Kontribusi",
         "verifikasi": "Verifikasi",
-        "admin": "Admin"
+        "admin": "Admin",
+        "akun": "Akun"
       },
       "items": {
-        "akun": "Akun saya",
+        "ringkasan": "Ringkasan",
+        "laporan": "Laporan saya",
         "bantu": "Bantu memetakan",
         "antrean": "Antrean",
         "jawaban": "Menunggu jawaban",
         "cekUlang": "Perlu dicek ulang",
-        "tim": "Tim verifikator"
+        "tim": "Tim verifikator",
+        "pengaturan": "Pengaturan akun"
       },
       "signOut": "Keluar",
       "report": "Laporkan tempat"
+    },
+    "pengaturan": {
+      "metaTitle": "Pengaturan akun",
+      "eyebrow": "Akun",
+      "title": "Pengaturan",
+      "accent": "akun."
     }
   },
   "Laporkan": {

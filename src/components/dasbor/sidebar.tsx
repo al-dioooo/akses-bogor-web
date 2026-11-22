@@ -25,14 +25,16 @@ export async function DashboardSidebar() {
   const [agent, t, roles] = await Promise.all([agentEnabled(), getTranslations("Dasbor.nav"), getTranslations("AkunSaya.roles")]);
   const labels: DashboardNavLabels = {
     label: t("label"),
-    groups: { utama: "", kontribusi: t("groups.kontribusi"), verifikasi: t("groups.verifikasi"), admin: t("groups.admin") },
+    groups: { utama: "", kontribusi: t("groups.kontribusi"), verifikasi: t("groups.verifikasi"), admin: t("groups.admin"), akun: t("groups.akun") },
     items: {
-      akun: t("items.akun"),
+      ringkasan: t("items.ringkasan"),
+      laporan: t("items.laporan"),
       bantu: t("items.bantu"),
       antrean: t("items.antrean"),
       jawaban: t("items.jawaban"),
       cekUlang: t("items.cekUlang"),
       tim: t("items.tim"),
+      pengaturan: t("items.pengaturan"),
     },
   };
   const identity = <Identity user={user} role={roles(user.role)} />;
