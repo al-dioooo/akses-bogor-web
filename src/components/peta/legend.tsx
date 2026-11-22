@@ -7,14 +7,14 @@ export function MapLegend() {
   const t = useTranslations("Peta");
   const ts = useTranslations("Status");
   return (
-    <section aria-labelledby="judul-legenda" className="flex flex-col gap-3">
-      <h2 id="judul-legenda" className="font-heading text-lg font-bold">
+    <section aria-labelledby="judul-legenda" className="flex flex-col gap-2">
+      <h3 id="judul-legenda" className="lbl">
         {t("legend")}
-      </h2>
-      <ul className="flex flex-wrap gap-x-6 gap-y-3">
+      </h3>
+      <ul className="grid grid-cols-2 gap-x-4 gap-y-2">
         {STATUSES.map((status) => (
-          <li key={status} className="flex items-center gap-2.5 font-semibold">
-            <StatusPin status={status} className="size-7" />
+          <li key={status} className="flex items-center gap-2 text-sm font-semibold">
+            <StatusPin status={status} className="size-6" />
             {ts(status)}
           </li>
         ))}
