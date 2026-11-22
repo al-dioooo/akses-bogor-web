@@ -50,10 +50,14 @@ export function PlaceMap({
   const container = useRef<HTMLDivElement>(null);
   const summaryHeading = useRef<HTMLHeadingElement>(null);
   const [map, setMap] = useState<MapHandle | null>(null);
+  // Salinan marker dari peta, diperbarui setiap kali lokasinya berganti, supaya portal isi marker ikut digambar ulang.
+  const [markers, setMarkers] = useState<ReadonlyMap<string, HTMLButtonElement>>(new Map());
   const [state, setState] = useState<MapState>("awal");
   const [attempt, setAttempt] = useState(0);
   const [inView, setInView] = useState<Set<string> | null>(null);
-  const [selected, setSelected] = useState<string | null>(null);
+  const [chosen, setSelected] = useState<string | null>(null);
+  // Lokasi yang dipilih lalu hilang karena filter berganti tidak lagi dianggap terpilih.
+  const selected = chosen && places.some((p) => p.id === chosen) ? chosen : null;
   const [layer, setLayer] = useState<"mati" | "memuat" | "nyala" | "galat">("mati");
   const [boundaries, setBoundaries] = useState<DistrictBoundaries | null>(null);
 
@@ -70,7 +74,8 @@ export function PlaceMap({
           container: container.current,
           token,
           renewToken: fetchToken,
-          places,
+          // Lokasi dikirim lewat setPlaces di bawah, juga setiap kali filter berubah, tanpa membuat peta baru.
+          places: [],
           night: readTheme().night,
           locale: {
             "Map.Title": t("map.title"),
@@ -86,6 +91,7 @@ export function PlaceMap({
           onFail: () => setState("galat"),
           onView: (ids) => setInView(new Set(ids)),
           onSelect: setSelected,
+          onMarkers: setMarkers,
         });
         setMap(mounted);
       } catch {
@@ -99,7 +105,11 @@ export function PlaceMap({
       mounted?.destroy();
       setMap(null);
     };
-  }, [places, attempt, t, tk, ts]);
+  }, [attempt, t, tk, ts]);
+
+  useEffect(() => {
+    map?.setPlaces(places);
+  }, [map, places]);
 
   // Ringkasan menerima fokus setiap kali lokasi dipilih, supaya pembaca layar langsung membacanya.
   useEffect(() => {
@@ -256,7 +266,7 @@ export function PlaceMap({
       )}
       {map &&
         places.map((p) => {
-          const element = map.markers.get(p.id);
+          const element = markers.get(p.id);
           return element ? createPortal(<MarkerFace place={p} selected={p.id === selected} />, element, p.id) : null;
         })}
       {legend}
