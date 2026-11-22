@@ -487,6 +487,41 @@ body:has(> .peta-app) {
   align-self: start;
 }
 
+/* Penjelasan izin dan pesan "Lokasi saya": di ponsel selebar layar di bawah kontrol, di layar lebar di kiri kontrol. */
+.peta-lokasi {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  z-index: 2;
+  width: min(22rem, calc(100vw - 1.5rem));
+  @media (width >= 48rem) {
+    top: 0;
+    right: calc(100% + 0.75rem);
+  }
+}
+
+/* Titik posisi pengguna: dekoratif (lokasinya diumumkan lewat pesan status), dengan lingkar yang berdenyut pelan. */
+.peta-saya {
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 3px solid var(--color-marker-ring);
+  border-radius: var(--radius-full);
+  background: var(--color-brand-fill);
+  box-shadow:
+    0 0 0 1px var(--color-border-strong),
+    0 0 0 0.5rem var(--alpha-violet-24);
+  pointer-events: none;
+  animation: peta-saya 2.4s ease-in-out infinite;
+}
+
+@keyframes peta-saya {
+  50% {
+    box-shadow:
+      0 0 0 1px var(--color-border-strong),
+      0 0 0 0.875rem var(--alpha-violet-24);
+  }
+}
+
 /* Kunci lapisan prioritas: di ponsel selebar layar di bawah tombol lapisan, di layar lebar kartu di bawah tombolnya. */
 .peta-kunci {
   position: absolute;

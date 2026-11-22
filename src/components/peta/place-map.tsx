@@ -3,15 +3,16 @@
 import "mapbox-gl/dist/mapbox-gl.css";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type MouseEvent } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type MouseEvent, type Ref } from "react";
 import { createPortal } from "react-dom";
 import type { DistrictBoundaries, DistrictPriority, MapToken } from "@/lib/api";
 import { hasWebGL, readTheme, watchPreferences } from "@/lib/preferences";
 import { buttonClass } from "@/ui/button-styles";
 import { Icon } from "@/ui/icon";
-import { IconFocusCentered, IconList, IconMap2, IconMinus, IconPlus, IconUsers, type Glyph } from "@/ui/icons";
+import { IconCurrentLocation, IconFocusCentered, IconList, IconMap2, IconMinus, IconPlus, IconUsers, type Glyph } from "@/ui/icons";
 import { StatusPin } from "@/ui/status-pin";
 import { MapLegend } from "./legend";
+import { LocatePanel, useLocate } from "./locate";
 import type { Insets } from "./map/area";
 import type { MapHandle } from "./map/mount";
 import { PlaceList } from "./place-list";
@@ -104,6 +105,8 @@ export function PlaceMap({
   const [height, setHeight] = useState<SheetHeight>("kecil");
   const [layer, setLayer] = useState<"mati" | "memuat" | "nyala" | "galat">("mati");
   const [boundaries, setBoundaries] = useState<DistrictBoundaries | null>(null);
+  const locateButton = useRef<HTMLButtonElement>(null);
+  const locate = useLocate(map);
   const narrow = useSyncExternalStore(subscribeNarrow, () => matchMedia(NARROW).matches, () => false);
   // Lokasi yang dipilih lalu hilang karena filter berganti tidak lagi dianggap terpilih.
   const place = chosen ? places.find((p) => p.id === chosen.id) : undefined;
@@ -323,7 +326,7 @@ export function PlaceMap({
           >
             <Icon icon={IconUsers} />
             {/* Di ponsel label pendek, supaya tombol dan kontrol peta muat dalam satu baris. */}
-            <span className="sm:hidden">{t("prioritas.short")}</span>
+            <span className="max-[22rem]:sr-only sm:hidden">{t("prioritas.short")}</span>
             <span className="max-sm:hidden">{t("prioritas.toggle")}</span>
           </button>
           <p role="status" className="sr-only">
@@ -340,10 +343,14 @@ export function PlaceMap({
         {t("map.skip")}
       </a>
       {ready && (
-        <div role="group" aria-label={t("controls.label")} className="peta-kontrol panel-raised flex overflow-hidden rounded-2xl md:flex-col">
-          <ControlButton label={t("controls.zoomIn")} icon={IconPlus} onClick={() => map?.zoomIn()} />
-          <ControlButton label={t("controls.zoomOut")} icon={IconMinus} onClick={() => map?.zoomOut()} />
-          <ControlButton label={t("controls.reset")} icon={IconFocusCentered} onClick={() => map?.reset()} />
+        <div className="peta-kontrol">
+          <div role="group" aria-label={t("controls.label")} className="panel-raised flex overflow-hidden rounded-2xl md:flex-col">
+            <ControlButton label={t("controls.zoomIn")} icon={IconPlus} onClick={() => map?.zoomIn()} />
+            <ControlButton label={t("controls.zoomOut")} icon={IconMinus} onClick={() => map?.zoomOut()} />
+            <ControlButton label={t("controls.reset")} icon={IconFocusCentered} onClick={() => map?.reset()} />
+            <ControlButton ref={locateButton} label={t("lokasiSaya.button")} icon={IconCurrentLocation} onClick={locate.start} />
+          </div>
+          <LocatePanel locate={locate} buttonRef={locateButton} />
         </div>
       )}
       <div ref={frame} className="peta-peta">
@@ -445,9 +452,10 @@ export function PlaceMap({
   );
 }
 
-function ControlButton({ label, icon, onClick }: { label: string; icon: Glyph; onClick: () => void }) {
+function ControlButton({ label, icon, onClick, ref }: { label: string; icon: Glyph; onClick: () => void; ref?: Ref<HTMLButtonElement> }) {
   return (
     <button
+      ref={ref}
       type="button"
       aria-label={label}
       onClick={onClick}

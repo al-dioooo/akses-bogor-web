@@ -36,7 +36,7 @@ test("the map fills the screen under a slim header, without the footer or any sc
   expect(layout.scrollWidth).toBeLessThanOrEqual(layout.width);
 });
 
-for (const width of [360, 1024, 1280]) {
+for (const width of [320, 360, 1024, 1280]) {
   test(`at ${width} px nothing scrolls sideways and the panel clears the bottom nav`, async ({ page }) => {
     await page.setViewportSize({ width, height: 760 });
     await openMap(page);
