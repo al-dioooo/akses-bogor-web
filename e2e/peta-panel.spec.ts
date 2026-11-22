@@ -108,6 +108,7 @@ for (const viewport of [
     await expect(status).toHaveText("Belum ada lokasi");
     await expect(page.getByText("Memuat peta…")).toHaveCount(0);
     await expect(status).toHaveText("Belum ada lokasi");
+    await expect(page.locator("#judul-daftar-peta")).toHaveText("Daftar lokasi");
     await expect.poll(() => status.evaluate(uncovered)).toBe(true);
     await expect(page.getByText(/dari 0 lokasi|Tidak ada lokasi yang cocok/)).toHaveCount(0);
     // Di ponsel landscape isi panel yang tetap ini hanya beberapa piksel; kepalanya yang membawa pesan.

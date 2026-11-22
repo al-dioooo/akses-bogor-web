@@ -320,7 +320,7 @@ export function PlaceMap({
       <section ref={panel} aria-labelledby="judul-daftar-peta" className="peta-lembar">
         <div className="flex min-h-(--peta-kepala) shrink-0 flex-col justify-center px-5 py-2">
           <h2 id="judul-daftar-peta" ref={listHeading} tabIndex={-1} className="font-heading text-lg leading-tight font-bold">
-            {t(ready ? "list.inView" : "list.title")}
+            {t(ready && places.length > 0 ? "list.inView" : "list.title")}
           </h2>
           <p role="status" className="text-sm text-text-secondary">
             {status}
