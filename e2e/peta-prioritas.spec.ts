@@ -1,6 +1,6 @@
 import type { Page } from "@playwright/test";
 import { blockingViolations } from "./axe";
-import { expect, stubMapbox, test } from "./mapbox";
+import { expect, openList, stubMapbox, test } from "./mapbox";
 
 // Lapisan prioritas kecamatan di Peta (ADR-0043) dengan API tiruan (e2e/mock-api/prioritas.mjs) dan Mapbox tiruan.
 /** IP pengunjung yang membuat API tiruan menjawab data_disabilitas_belum_aktif. */
@@ -16,7 +16,7 @@ test("shows the priority layer with a text legend, the ranked table, the caveat 
   await expect(toggle(page)).toHaveAttribute("aria-pressed", "true");
   await expect(main(page).getByRole("status").filter({ hasText: "Lapisan prioritas kecamatan tampil di peta" })).toBeAttached();
 
-  await main(page).getByRole("button", { name: "Tampilkan daftar" }).click();
+  await openList(page);
   await expect(main(page).getByRole("heading", { level: 3, name: "Prioritas kecamatan 2025" })).toBeVisible();
   const legend = main(page).getByRole("list", { name: "Legenda prioritas" });
   await expect(legend.getByRole("listitem")).toHaveText(["Rendah", "Sedang", "Tinggi", "Sangat tinggi"]);
@@ -49,7 +49,7 @@ test("keeps the table when the boundaries cannot load", async ({ page }) => {
   await page.route("**/peta/batas-kecamatan", (route) => route.fulfill({ status: 503, json: { galat: "galat_api" } }));
   await page.goto("/peta");
   await toggle(page).click();
-  await main(page).getByRole("button", { name: "Tampilkan daftar" }).click();
+  await openList(page);
   await expect(main(page).getByRole("alert")).toContainText("Batas kecamatan tidak bisa dimuat");
   await expect(main(page).getByRole("table")).toBeVisible();
 });
@@ -59,7 +59,7 @@ for (const colorScheme of ["light", "dark"] as const) {
     await page.emulateMedia({ colorScheme, reducedMotion: "reduce" });
     await page.goto("/peta");
     await toggle(page).click();
-    await main(page).getByRole("button", { name: "Tampilkan daftar" }).click();
+    await openList(page);
     await expect(main(page).getByRole("table")).toBeVisible();
     expect(await blockingViolations(page)).toEqual([]);
   });

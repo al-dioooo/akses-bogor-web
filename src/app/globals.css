@@ -538,7 +538,8 @@ body:has(> .peta-app) {
     border-bottom: var(--border-width-default) solid var(--color-border-subtle);
     border-radius: var(--radius-3xl);
     box-shadow: 0 12px 32px -16px var(--color-shadow-soft);
-    .peta-app[data-tinggi="setengah"] & {
+    /* Sebelum pengguna memilih ("awal"), panel samping terbuka; di ponsel lembar mulai kecil. */
+    .peta-app:is([data-tinggi="setengah"], [data-tinggi="awal"]) & {
       align-self: stretch;
     }
   }
@@ -557,13 +558,16 @@ body:has(> .peta-app) {
      untuk semua properti) membuat isi masih tersembunyi tepat saat ringkasan lokasi menerima fokus. */
   transition-property: none;
   /* Isi panel kecil tidak terlihat dan tidak bisa difokus, setelah panel selesai mengecil. */
-  .peta-app[data-tinggi="kecil"] & {
+  .peta-app:is([data-tinggi="kecil"], [data-tinggi="awal"]) & {
     visibility: hidden;
     transition: visibility 0s linear var(--peta-durasi);
   }
   @media (width >= 48rem) {
     padding-bottom: 0;
     scroll-padding-bottom: 0;
+    .peta-app[data-tinggi="awal"] & {
+      visibility: visible;
+    }
     .peta-app[data-tinggi="kecil"] & {
       display: none;
     }

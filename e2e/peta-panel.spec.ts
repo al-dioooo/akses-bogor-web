@@ -1,6 +1,6 @@
 import type { Page } from "@playwright/test";
 import { blockingViolations } from "./axe";
-import { expect, stubMapbox, test } from "./mapbox";
+import { expect, openList, stubMapbox, test } from "./mapbox";
 
 // Peta layar penuh: panel daftar (lembar bawah di ponsel, panel samping mulai 768 px), dengan API dan Mapbox tiruan.
 const placeList = (page: Page) => page.getByRole("list", { name: /^(Daftar lokasi|Lokasi di tampilan peta)$/ });
@@ -52,7 +52,7 @@ for (const width of [360, 1024, 1280]) {
   test(`at ${width} px nothing scrolls sideways and the panel clears the bottom nav`, async ({ page }) => {
     await page.setViewportSize({ width, height: 760 });
     await openMap(page);
-    await page.getByRole("button", { name: "Tampilkan daftar" }).click();
+    await openList(page);
     await expect(placeList(page)).toBeVisible();
     const sizes = await page.evaluate(() => {
       const nav = [...document.querySelectorAll("nav")].find((element) => getComputedStyle(element).position === "fixed");
@@ -76,14 +76,26 @@ for (const width of [360, 1024, 1280]) {
 
 test("the panel opens with its button and closes with Escape, returning focus to the button", async ({ page }) => {
   await openMap(page);
-  const toggle = page.getByRole("button", { name: "Tampilkan daftar" });
-  await expect(placeList(page)).toBeHidden();
-  await toggle.click();
+  await openList(page);
   await expect(placeList(page).getByRole("listitem")).toHaveCount(7);
   await placeList(page).getByRole("link").first().focus();
   await page.keyboard.press("Escape");
   await expect(placeList(page)).toBeHidden();
-  await expect(page.getByRole("button", { name: "Tampilkan daftar" })).toBeFocused();
+  const toggle = page.getByRole("button", { name: "Tampilkan daftar" });
+  await expect(toggle).toBeFocused();
+  await expect(toggle).toHaveAttribute("aria-expanded", "false");
+  await toggle.click();
+  await expect(placeList(page)).toBeVisible();
+});
+
+test("on a wide screen the side panel starts open without moving once the page has loaded", async ({ page }) => {
+  test.skip((page.viewportSize()?.width ?? 0) < 768, "Panel samping mulai 768 px");
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/peta");
+  const before = await page.locator(".peta-lembar").boundingBox();
+  await expect(placeList(page)).toBeVisible();
+  await expect(page.getByRole("button", { name: "Tampilkan peta" })).toHaveAttribute("aria-expanded", "true");
+  expect(await page.locator(".peta-lembar").boundingBox()).toEqual(before);
 });
 
 test("on a short phone a chosen marker ends up above the opened panel", async ({ page }) => {
@@ -120,7 +132,7 @@ for (const colorScheme of ["light", "dark"] as const) {
   test(`the open panel has no serious WCAG 2.2 AA violations (${colorScheme})`, async ({ page }) => {
     await page.emulateMedia({ colorScheme, reducedMotion: "reduce" });
     await page.goto("/peta");
-    await page.getByRole("button", { name: "Tampilkan daftar" }).click();
+    await openList(page);
     await expect(placeList(page)).toBeVisible();
     expect(await blockingViolations(page)).toEqual([]);
   });
@@ -142,15 +154,17 @@ for (const viewport of [
     await expect(status).toHaveText("Belum ada lokasi");
     await expect(page.getByText("Memuat peta…")).toHaveCount(0);
     await expect(status).toHaveText("Belum ada lokasi");
-    expect(await status.evaluate(uncovered)).toBe(true);
+    await expect.poll(() => status.evaluate(uncovered)).toBe(true);
     await expect(page.getByText(/dari 0 lokasi|Tidak ada lokasi yang cocok/)).toHaveCount(0);
+    await openList(page);
     const body = page.getByText("Lokasi tampil di sini setelah laporan warga diperiksa tim.");
-    expect(await body.evaluate(uncovered)).toBe(true);
+    await expect.poll(() => body.evaluate(uncovered)).toBe(true);
     // Dengan filter: pesan "tidak ada yang cocok" dan jalan untuk menghapus filter.
     await page.goto("/peta?q=tidak-ada");
     await expect(status).toHaveText("Tidak ada lokasi yang cocok");
+    await openList(page);
     const reset = page.getByRole("main").getByRole("link", { name: "Hapus filter" });
-    expect(await reset.evaluate(uncovered)).toBe(true);
+    await expect.poll(() => reset.evaluate(uncovered)).toBe(true);
     await context.close();
   });
 }

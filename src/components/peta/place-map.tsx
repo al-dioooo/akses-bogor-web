@@ -3,7 +3,7 @@
 import "mapbox-gl/dist/mapbox-gl.css";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useLayoutEffect, useRef, useState, type MouseEvent } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type MouseEvent } from "react";
 import { createPortal } from "react-dom";
 import type { DistrictBoundaries, DistrictPriority, MapToken } from "@/lib/api";
 import { hasWebGL, readTheme, watchPreferences } from "@/lib/preferences";
@@ -62,6 +62,13 @@ function measure(main: HTMLElement): { top: number; insets: Insets; covers: Rect
   };
 }
 
+const NARROW = "(width < 48rem)";
+const subscribeNarrow = (onChange: () => void) => {
+  const query = matchMedia(NARROW);
+  query.addEventListener("change", onChange);
+  return () => query.removeEventListener("change", onChange);
+};
+
 /**
  * Peta Kota Bogor layar penuh (FR-05, ADR-0016) dengan marker per status, kontrol zoom, dan panel daftar yang berisi
  * ringkasan lokasi yang dipilih, legenda, dan daftar lokasi di bagian peta yang terlihat sebagai alternatif untuk
@@ -102,7 +109,11 @@ export function PlaceMap({
   const [attempt, setAttempt] = useState(0);
   const [inView, setInView] = useState<Set<string> | null>(null);
   const [chosen, setSelected] = useState<{ id: string; from: "peta" | "daftar" } | null>(null);
-  const [height, setHeight] = useState<SheetHeight>("kecil");
+  // Tinggi panel yang dipilih pengguna. Sebelum itu ("awal") lembar ponsel kecil dan panel samping terbuka, langsung dari
+  // CSS, jadi tidak ada lompatan saat halaman selesai dimuat.
+  const [chosenHeight, setHeight] = useState<SheetHeight | null>(null);
+  const narrow = useSyncExternalStore(subscribeNarrow, () => matchMedia(NARROW).matches, () => true);
+  const height: SheetHeight = chosenHeight ?? (narrow ? "kecil" : "setengah");
   const [layer, setLayer] = useState<"mati" | "memuat" | "nyala" | "galat">("mati");
   const [boundaries, setBoundaries] = useState<DistrictBoundaries | null>(null);
   // Lokasi yang dipilih lalu hilang karena filter berganti tidak lagi dianggap terpilih.
@@ -199,8 +210,8 @@ export function PlaceMap({
   // Tinggi panel ditulis di main, karena panel, atribusi Mapbox, dan pesan di atas peta memakai ukuran yang sama.
   useLayoutEffect(() => {
     const main = frame.current?.closest("main");
-    if (main) main.dataset.tinggi = height;
-  }, [height]);
+    if (main) main.dataset.tinggi = chosenHeight ?? "awal";
+  }, [chosenHeight]);
 
   // Ukuran diukur ulang setelah berhenti berubah (mis. selesai animasi panel), lalu perpindahan yang menunggu dijalankan.
   useEffect(() => {
