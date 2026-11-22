@@ -22,7 +22,7 @@ Rules for anyone changing this repository, people and coding agents alike. They 
 
 **Branches.** Trunk-based. `main` is always release-ready; `release` tracks production; there is no `develop` or `staging`. Work on short-lived `feature/<desc>`, `fix/<desc>` or `chore/<desc>` branches and merge through a PR whose title carries the issue number, e.g. `feat(laporan): add step 2 facility answers (#14)`. No direct commits to `main` except emergency hotfixes.
 
-**Secrets.** Never commit `.env*` files, API keys, tokens, credentials or logs. Secrets live in the Vercel project settings; only `.env.example` with empty or sample values is committed.
+**Secrets.** Never commit `.env*` files, API keys, tokens, credentials or logs. Secrets live in `/etc/akses-bogor/web.env` on the server; only `.env.example` and `deploy/web.env.example` with empty or sample values are committed.
 
 **Docs.** Keep the README sections current: overview, tech stack, setup and run, environment variables, deployment. `docs/` holds the architecture diagram. Product and technical decisions are ADRs in [akses-bogor-docs](https://github.com/al-dioooo/akses-bogor-docs/tree/main/decisions), not here.
 
