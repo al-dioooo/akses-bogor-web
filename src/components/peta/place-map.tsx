@@ -12,7 +12,7 @@ import { Icon } from "@/ui/icon";
 import { IconFocusCentered, IconList, IconMap2, IconMinus, IconPlus, IconUsers, type Glyph } from "@/ui/icons";
 import { StatusPin } from "@/ui/status-pin";
 import { MapLegend } from "./legend";
-import type { Insets } from "./map/area";
+import type { Insets, Rect } from "./map/area";
 import type { MapHandle } from "./map/mount";
 import { PlaceList } from "./place-list";
 import { PlaceSummary } from "./place-summary";
@@ -27,20 +27,29 @@ async function fetchToken(): Promise<MapToken> {
   return (await response.json()) as MapToken;
 }
 
+/** Elemen yang mengambang di atas peta. Marker di bawahnya tidak terlihat, jadi tidak boleh bisa difokus (WCAG 2.4.11). */
+const OVERLAYS = ".peta-cari, .peta-lapisan, .peta-kontrol";
+
 /**
- * Bagian atas main yang terpakai pencarian dan kontrol (batas tinggi panel di ponsel), dan bagian peta yang tertutup
- * panel daftar: panel samping (mulai 768 px) menutup sisi kiri, lembar bawah menutup bagian bawah dan pencarian bagian
- * atas. Bottom nav di layar lebar menutup bagian bawah, selebar padding bawah main.
+ * Bagian atas main yang terpakai pencarian dan kontrol (batas tinggi panel di ponsel), bagian peta yang tertutup panel
+ * daftar, dan persegi setiap elemen yang mengambang di atas peta. Panel samping (mulai 768 px) menutup sisi kiri, lembar
+ * bawah menutup bagian bawah dan pencarian bagian atas. Bottom nav di layar lebar menutup bagian bawah, selebar padding
+ * bawah main.
  */
-function measure(main: HTMLElement): { top: number; insets: Insets } {
+function measure(main: HTMLElement): { top: number; insets: Insets; covers: Rect[] } {
   const box = main.getBoundingClientRect();
+  const rectOf = (element: Element): Rect => {
+    const rect = element.getBoundingClientRect();
+    return { left: rect.left - box.left, top: rect.top - box.top, right: rect.right - box.left, bottom: rect.bottom - box.top };
+  };
   const below = (selector: string) => {
     const element = main.querySelector(selector);
-    return element ? element.getBoundingClientRect().bottom - box.top : 0;
+    return element ? rectOf(element).bottom : 0;
   };
+  const covers = [...main.querySelectorAll(OVERLAYS)].map(rectOf).filter((rect) => rect.right > rect.left && rect.bottom > rect.top);
   const top = Math.ceil(Math.max(below(".peta-cari"), below(".peta-kontrol"), below(".peta-lapisan")));
   const panel = main.querySelector(".peta-lembar")?.getBoundingClientRect();
-  if (!panel) return { top, insets: { top: 0, right: 0, bottom: 0, left: 0 } };
+  if (!panel) return { top, insets: { top: 0, right: 0, bottom: 0, left: 0 }, covers };
   const side = panel.width < box.width * 0.75;
   return {
     top,
@@ -48,6 +57,7 @@ function measure(main: HTMLElement): { top: number; insets: Insets } {
       ? { top: 0, right: 0, bottom: Number.parseFloat(getComputedStyle(main).paddingBottom) || 0, left: panel.right - box.left }
       : // Atribusi Mapbox duduk di atas lembar, jadi ikut dihitung sebagai bagian yang tertutup.
         { top: below(".peta-cari"), right: 0, bottom: box.bottom - panel.top + 44, left: 0 },
+    covers,
   };
 }
 
@@ -155,9 +165,9 @@ export function PlaceMap({
     if (!main) return;
     let timer: number | undefined;
     const update = () => {
-      const { top, insets } = measure(main);
+      const { top, insets, covers } = measure(main);
       main.style.setProperty("--peta-atas", `${top}px`);
-      map?.setInsets(insets);
+      map?.setInsets(insets, covers);
     };
     const schedule = () => {
       window.clearTimeout(timer);
