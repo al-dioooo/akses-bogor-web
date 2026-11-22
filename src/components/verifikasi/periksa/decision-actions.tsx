@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useFormatter, useTranslations } from "next-intl";
 import { useEffect, useRef, useState, useTransition } from "react";
-import { clarifyDecision, publishDecision, rejectDecision, type DecisionResult } from "@/app/verifikasi/actions";
+import { clarifyDecision, publishDecision, rejectDecision, type DecisionResult } from "@/app/(dasbor)/verifikasi/actions";
 import { FieldError } from "@/components/akun/form-parts";
 import { VERIFIER_REASONS, type RejectionReason, type Review } from "@/lib/verifikasi";
 import { buttonClass } from "@/ui/button-styles";

@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { useRef, useState, useTransition, type KeyboardEvent, type PointerEvent } from "react";
-import { moderateReportPhoto } from "@/app/verifikasi/actions";
+import { moderateReportPhoto } from "@/app/(dasbor)/verifikasi/actions";
 import type { BlurRegion, ReviewPhoto } from "@/lib/verifikasi";
 import { buttonClass } from "@/ui/button-styles";
 import { fieldClass } from "@/ui/field-styles";
