@@ -1051,10 +1051,6 @@
     ]
   },
   "AkunSaya": {
-    "metaTitle": "Akun saya",
-    "eyebrow": "Akun",
-    "title": "Akun",
-    "accent": "saya.",
     "loading": "Memuat akun…",
     "dataTitle": "Data akun",
     "email": "Email",
@@ -1201,6 +1197,34 @@
       },
       "signOut": "Keluar",
       "report": "Laporkan tempat"
+    },
+    "ringkasan": {
+      "metaTitle": "Akun saya",
+      "loading": "Memuat ringkasan…",
+      "greeting": "Halo,",
+      "intro": {
+        "pengguna": "Laporan Anda dan yang perlu dikerjakan berikutnya.",
+        "verifikator": "Yang menunggu Anda, keadaan meja verifikasi, dan laporan Anda sendiri.",
+        "admin": "Yang menunggu Anda, keadaan meja verifikasi, tim, dan laporan Anda sendiri."
+      },
+      "agenda": {
+        "title": "Yang menunggu Anda",
+        "loading": "Memuat yang menunggu Anda…",
+        "clarify": "Jawab pertanyaan verifikator",
+        "unnamed": "Tempat tanpa nama",
+        "daysLeft": "{days, plural, =0 {Hari ini} =1 {Besok} other {# hari lagi}}",
+        "due": "tenggat {date}",
+        "emptyTitle": "Tidak ada yang menunggu Anda",
+        "emptyBody": "Pertanyaan verifikator untuk laporan Anda muncul di sini bersama tenggatnya."
+      },
+      "reports": {
+        "title": "Laporan saya",
+        "loading": "Memuat laporan…",
+        "all": "Semua laporan",
+        "counts": "Jumlah laporan per status",
+        "recent": "Terbaru",
+        "limit": "Dihitung dari 100 laporan terbaru."
+      }
     },
     "pengaturan": {
       "metaTitle": "Pengaturan akun",
