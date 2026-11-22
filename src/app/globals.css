@@ -504,6 +504,27 @@ body:has(> .peta-app) {
   align-self: start;
 }
 
+/* Kunci lapisan prioritas: di ponsel selebar layar di bawah tombol lapisan, di layar lebar kartu di bawah tombolnya. */
+.peta-kunci {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  width: calc(100vw - 1.5rem);
+  /* Tidak pernah masuk ke balik panel daftar atau Bottom nav (tingginya diukur komponen peta); sisanya digulir. Bila
+     satu baris pun tidak muat, kunci disembunyikan sampai ruangnya ada lagi. */
+  max-height: var(--peta-kunci-maks, none);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  .peta-app[data-kunci-tersembunyi] & {
+    visibility: hidden;
+  }
+  @media (width >= 48rem) {
+    position: static;
+    width: 21rem;
+    margin-top: 0.5rem;
+  }
+}
+
 /* Ponsel landscape: tombol lapisan dan kontrol peta naik ke samping pencarian, supaya tidak masuk ke balik panel daftar
    yang kecil. Chip kategori tetap di bawah pencarian dan bisa digeser. */
 @media (width < 48rem) and (height < 32rem) {
@@ -522,6 +543,12 @@ body:has(> .peta-app) {
     grid-column: 3;
     grid-row: 1;
   }
+  /* Tombol lapisan ada di kanan, jadi kuncinya mengambang ke kiri dari tepi kanan tombol itu. */
+  .peta-kunci {
+    right: 0;
+    left: auto;
+    width: min(21rem, calc(100vw - 1.5rem));
+  }
 }
 
 @media (width >= 48rem) {
@@ -539,9 +566,10 @@ body:has(> .peta-app) {
       }
     }
   }
+  /* Kunci prioritas yang terbuka tidak boleh memanjangkan baris pertama (dan menggeser panel ke bawah). */
   .peta-lapisan {
     grid-column: 2;
-    grid-row: 1;
+    grid-row: 1 / -1;
   }
   .peta-kontrol {
     grid-column: 3;

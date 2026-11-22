@@ -17,6 +17,7 @@ import type { MapHandle } from "./map/mount";
 import { PlaceList } from "./place-list";
 import { PlaceSheet, type SheetHeight } from "./place-sheet";
 import { PlaceSummary } from "./place-summary";
+import { PriorityKey } from "./priority-key";
 import { PriorityLegend } from "./priority-legend";
 import type { MapPlace } from "./places";
 
@@ -29,15 +30,17 @@ async function fetchToken(): Promise<MapToken> {
 }
 
 /** Elemen yang mengambang di atas peta. Marker di bawahnya tidak terlihat, jadi tidak boleh bisa difokus (WCAG 2.4.11). */
-const OVERLAYS = ".peta-cari, .peta-lapisan, .peta-kontrol";
+const OVERLAYS = ".peta-cari, .peta-lapisan, .peta-kontrol, .peta-kunci";
+/** Tinggi satu baris kunci prioritas yang ringkas (tombol 44 px dan bingkainya). */
+const KEY_LINE = 56;
 
 /**
  * Bagian atas main yang terpakai pencarian dan kontrol (batas tinggi panel setengah), bagian peta yang tertutup panel
- * daftar, dan persegi setiap elemen yang mengambang di atas peta. Panel samping (mulai 768 px) menutup sisi kiri, lembar
- * bawah menutup bagian bawah dan pencarian bagian atas. Bottom nav di layar lebar menutup bagian bawah, selebar padding
- * bawah main.
+ * daftar, persegi setiap elemen yang mengambang di atas peta, dan tinggi terbesar kunci prioritas supaya tidak masuk ke
+ * balik panel atau Bottom nav. Panel samping (mulai 768 px) menutup sisi kiri, lembar bawah menutup bagian bawah dan
+ * pencarian bagian atas. Bottom nav di layar lebar menutup bagian bawah, selebar padding bawah main.
  */
-function measure(main: HTMLElement): { top: number; insets: Insets; covers: Rect[]; camera: Insets } {
+function measure(main: HTMLElement): { top: number; insets: Insets; covers: Rect[]; camera: Insets; keyRoom: number | null; keyHidden: boolean } {
   const box = main.getBoundingClientRect();
   const rectOf = (element: Element): Rect => {
     const rect = element.getBoundingClientRect();
@@ -47,17 +50,29 @@ function measure(main: HTMLElement): { top: number; insets: Insets; covers: Rect
     const element = main.querySelector(selector);
     return element ? rectOf(element).bottom : 0;
   };
-  const covers = [...main.querySelectorAll(OVERLAYS)].map(rectOf).filter((rect) => rect.right > rect.left && rect.bottom > rect.top);
+  // Kunci prioritas tidak ikut dihitung: tingginya sendiri dibatasi oleh panel (keyRoom).
   const top = Math.ceil(Math.max(below(".peta-cari"), below(".peta-kontrol"), below(".peta-lapisan")));
   const panel = main.querySelector(".peta-lembar")?.getBoundingClientRect();
-  if (!panel) return { top, insets: NO_INSETS, covers, camera: NO_INSETS };
-  const side = panel.width < box.width * 0.75;
+  const paddingBottom = Number.parseFloat(getComputedStyle(main).paddingBottom) || 0;
+  const side = !!panel && panel.width < box.width * 0.75;
+  const key = main.querySelector(".peta-kunci")?.getBoundingClientRect();
+  // Kunci berhenti 8 px di atas lembar bawah, atau di atas padding bawah main (Bottom nav) di layar lebar. Bila satu
+  // baris kunci pun tidak muat (lembar setengah di ponsel pendek), kunci disembunyikan, supaya tidak ada tombol atau
+  // tautan yang terpotong tetapi masih bisa difokus.
+  const keyRoom = key ? Math.max(0, Math.floor((side || !panel ? box.bottom - paddingBottom : panel.top) - key.top - 8)) : null;
+  const keyHidden = keyRoom !== null && keyRoom < KEY_LINE;
+  const covers = [...main.querySelectorAll(OVERLAYS)]
+    .filter((element) => !(keyHidden && element.matches(".peta-kunci")))
+    .map(rectOf)
+    .filter((rect) => rect.right > rect.left && rect.bottom > rect.top);
+  if (!panel) return { top, insets: NO_INSETS, covers, camera: NO_INSETS, keyRoom, keyHidden };
   const insets = side
-    ? { top: 0, right: 0, bottom: Number.parseFloat(getComputedStyle(main).paddingBottom) || 0, left: panel.right - box.left }
-    : // Atribusi Mapbox duduk di atas lembar, jadi ikut dihitung sebagai bagian yang tertutup.
-      { top: below(".peta-cari"), right: 0, bottom: box.bottom - panel.top + 44, left: 0 };
+    ? { top: 0, right: 0, bottom: paddingBottom, left: panel.right - box.left }
+    : // Atribusi Mapbox duduk di atas lembar, jadi ikut dihitung sebagai bagian yang tertutup. Kunci prioritas
+      // mengambang selebar layar di ponsel, di bawah tombol lapisannya.
+      { top: Math.max(below(".peta-cari"), keyHidden ? 0 : below(".peta-kunci")), right: 0, bottom: box.bottom - panel.top + 44, left: 0 };
   // Perpindahan peta di ponsel menghindari seluruh pita atas, juga celah di antara tombol lapisan dan kontrol.
-  return { top, insets, covers, camera: side ? insets : { ...insets, top: Math.max(insets.top, top) } };
+  return { top, insets, covers, camera: side ? insets : { ...insets, top: Math.max(insets.top, top) }, keyRoom, keyHidden };
 }
 
 /** Elemen bisa menerima fokus: tidak di bagian yang inert dan tidak dikeluarkan dari urutan Tab (marker yang tertutup). */
@@ -242,8 +257,11 @@ export function PlaceMap({
     if (!main) return;
     let timer: number | undefined;
     const update = () => {
-      const { top, insets, covers, camera } = measure(main);
+      const { top, insets, covers, camera, keyRoom, keyHidden } = measure(main);
       main.style.setProperty("--peta-atas", `${top}px`);
+      if (keyRoom === null) main.style.removeProperty("--peta-kunci-maks");
+      else main.style.setProperty("--peta-kunci-maks", `${keyRoom}px`);
+      main.toggleAttribute("data-kunci-tersembunyi", keyHidden);
       map?.setInsets(insets, covers, camera);
       flushMove();
     };
@@ -252,7 +270,7 @@ export function PlaceMap({
       timer = window.setTimeout(update, 120);
     };
     const observer = new ResizeObserver(schedule);
-    for (const selector of [".peta-lembar", ".peta-cari", ".peta-kontrol", ".peta-lapisan"]) {
+    for (const selector of [".peta-lembar", ".peta-cari", ".peta-kontrol", ".peta-lapisan", ".peta-kunci"]) {
       const element = main.querySelector(selector);
       if (element) observer.observe(element);
     }
@@ -262,7 +280,7 @@ export function PlaceMap({
       observer.disconnect();
       window.clearTimeout(timer);
     };
-  }, [map, state, priority, flushMove]);
+  }, [map, state, priority, layer, flushMove]);
 
   // Ringkasan menerima fokus setiap kali lokasi dipilih, supaya pembaca layar langsung membacanya.
   useEffect(() => {
@@ -338,6 +356,13 @@ export function PlaceMap({
     queueMove(id, "show");
   }
 
+  /** Membuka panel daftar di tabel prioritas, lalu memindahkan fokus ke sana. */
+  function showTable() {
+    setSelected(null);
+    setHeight(narrow ? "penuh" : "setengah");
+    requestAnimationFrame(() => requestAnimationFrame(() => document.getElementById("tabel-prioritas")?.focus()));
+  }
+
   function skipToList(event: MouseEvent<HTMLAnchorElement>) {
     event.preventDefault();
     if (height === "kecil") setHeight("setengah");
@@ -364,6 +389,9 @@ export function PlaceMap({
           <p role="status" className="sr-only">
             {layer === "memuat" ? t("prioritas.loading") : layer === "nyala" ? t("prioritas.on") : ""}
           </p>
+          {layerShown && (
+            <PriorityKey priority={priority} failed={layer === "galat"} attribution={boundaries?.attribution ?? null} compact={narrow} onShowTable={showTable} />
+          )}
         </div>
       )}
       <a
@@ -465,16 +493,7 @@ export function PlaceMap({
               ) : (
                 <p className="rounded-2xl bg-bg-sunken p-4 text-text-secondary">{t("list.none")}</p>
               ))}
-            {layerShown && (
-              <>
-                {layer === "galat" && (
-                  <p role="alert" className="rounded-2xl bg-status-partial-bg p-4 text-text-primary">
-                    {t("prioritas.failed")}
-                  </p>
-                )}
-                <PriorityLegend priority={priority} attribution={boundaries?.attribution ?? null} />
-              </>
-            )}
+            {layerShown && <PriorityLegend priority={priority} attribution={boundaries?.attribution ?? null} />}
           </div>
         )}
       </PlaceSheet>

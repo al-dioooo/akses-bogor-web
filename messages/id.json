@@ -294,12 +294,21 @@
       "short": "Prioritas",
       "loading": "Memuat batas kecamatan…",
       "failed": "Batas kecamatan tidak bisa dimuat, jadi lapisan tidak tampil di peta. Tabel di panel daftar berisi data yang sama.",
-      "on": "Lapisan prioritas kecamatan tampil di peta. Legenda dan tabelnya ada di panel daftar.",
+      "on": "Lapisan prioritas kecamatan tampil di peta, dengan kuncinya di atas peta. Tabelnya ada di panel daftar.",
       "off": "Lapisan prioritas kecamatan disembunyikan.",
       "title": "Prioritas kecamatan",
       "intro": "Warna kecamatan menunjukkan seberapa perlu fasilitasnya didata, dari penyandang disabilitas terdaftar, fasilitas tanpa data, dan lokasi yang sudah diverifikasi.",
       "legend": "Legenda prioritas",
-      "boundaries": "Batas kecamatan: {attribution}."
+      "boundaries": "Batas kecamatan: <credit>{attribution}</credit>.",
+      "table": "Tabel",
+      "keyShort": "Prioritas {year}",
+      "more": "Catatan",
+      "moreLabel": "Catatan, sumber, dan legenda prioritas kecamatan",
+      "less": "Ringkas kunci prioritas",
+      "caveatLabel": "Catatan:",
+      "newTab": "(tab baru)",
+      "showTable": "Tabel prioritas kecamatan",
+      "source": "Sumber: {publisher}."
     }
   },
   "Detail": {
