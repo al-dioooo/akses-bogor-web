@@ -70,12 +70,22 @@ export async function pageMetadata(namespace: PageNamespace, path: string): Prom
  * ringkasan fasilitas, dan tanggal verifikasi, seperti yang tampil di halamannya. Tidak ada klaim di luar data itu.
  */
 export async function placeMetadata(place: PlaceDetail): Promise<Metadata> {
-  const [t, category, status, card, site, format] = await Promise.all([
+  const [t, site, description] = await Promise.all([getTranslations("Detail"), getTranslations("Metadata"), placeDescription(place)]);
+  return publicMetadata({
+    title: t("metaTitle", { name: place.name, district: place.district.name }),
+    description,
+    path: `/lokasi/${encodeURIComponent(place.id)}`,
+    siteName: site("title"),
+  });
+}
+
+/** Deskripsi Detail lokasi, dipakai untuk meta description dan JSON-LD `Place`. */
+export async function placeDescription(place: PlaceDetail) {
+  const [t, category, status, card, format] = await Promise.all([
     getTranslations("Detail"),
     getTranslations("Kategori"),
     getTranslations("Status"),
     getTranslations("Lokasi"),
-    getTranslations("Metadata"),
     getFormatter(),
   ]);
   const { summary, date } = placeFacts(place, card, format);
@@ -86,12 +96,7 @@ export async function placeMetadata(place: PlaceDetail): Promise<Metadata> {
     summary,
     date,
   });
-  return publicMetadata({
-    title: t("metaTitle", { name: place.name, district: place.district.name }),
-    description: place.needsRecheck ? `${description} ${t("metaRecheck")}` : description,
-    path: `/lokasi/${encodeURIComponent(place.id)}`,
-    siteName: site("title"),
-  });
+  return place.needsRecheck ? `${description} ${t("metaRecheck")}` : description;
 }
 
 /**

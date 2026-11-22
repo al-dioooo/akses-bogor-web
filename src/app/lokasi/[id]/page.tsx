@@ -3,9 +3,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
+import { JsonLd } from "@/components/json-ld";
 import { PlaceDetail } from "@/components/lokasi/place-detail";
 import { getPlace } from "@/lib/api";
-import { placeMetadata } from "@/lib/metadata";
+import { placeJsonLd } from "@/lib/json-ld";
+import { placeDescription, placeMetadata } from "@/lib/metadata";
+import { absoluteUrl } from "@/lib/situs";
 import { Icon } from "@/ui/icon";
 import { IconArrowLeft } from "@/ui/icons";
 import { LoadErrorBoundary } from "@/ui/load-error";
@@ -41,7 +44,14 @@ async function Place({ params }: { params: PageProps<"/lokasi/[id]">["params"] }
   const { id } = await params;
   const place = await getPlace(id);
   if (!place) notFound();
-  return <PlaceDetail place={place} />;
+  const [facility, description] = await Promise.all([getTranslations("Fasilitas"), placeDescription(place)]);
+  const url = absoluteUrl(`/lokasi/${encodeURIComponent(place.id)}`);
+  return (
+    <>
+      <JsonLd data={placeJsonLd(place, { url, description, facility: (key) => facility(key) })} />
+      <PlaceDetail place={place} />
+    </>
+  );
 }
 
 function DetailSkeleton({ label }: { label: string }) {

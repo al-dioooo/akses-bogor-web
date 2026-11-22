@@ -114,3 +114,44 @@ test("there is no share card for a place that does not exist", async ({ request 
   const response = await request.get("/lokasi/00000000-0000-4000-8000-000000000000/opengraph-image");
   expect(response.status()).toBe(404);
 });
+
+// Data terstruktur dan manifest.
+async function jsonLd(page: import("@playwright/test").Page) {
+  const scripts = await page.locator('script[type="application/ld+json"]').allTextContents();
+  return scripts.map((text) => JSON.parse(text));
+}
+
+test("Beranda describes the site and its search for search engines", async ({ page }) => {
+  await page.goto("/");
+  const [data] = await jsonLd(page);
+  const [site, organization] = data["@graph"];
+  expect(site["@type"]).toBe("WebSite");
+  expect(new URL(site.potentialAction.target.urlTemplate.replace("{search_term_string}", "halte")).pathname).toBe("/jelajahi");
+  expect(organization).toMatchObject({ "@type": "Organization", name: "AksesBogor" });
+});
+
+test("Detail lokasi describes the place with only verified facilities", async ({ page }) => {
+  await page.goto(`/lokasi/${HALTE}`);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Halte contoh");
+  const [place] = await jsonLd(page);
+  expect(place).toMatchObject({
+    "@type": "Place",
+    name: "Halte contoh",
+    containedInPlace: { "@type": "AdministrativeArea", name: "Kecamatan Bogor Tengah" },
+    geo: { "@type": "GeoCoordinates", latitude: -6.5958, longitude: 106.7942 },
+  });
+  expect(place.description).toMatch(DETAIL_DESCRIPTION);
+  // Toilet difabel dijawab Tidak perlu, jadi tidak dimasukkan.
+  expect(place.amenityFeature).toEqual([
+    { "@type": "LocationFeatureSpecification", name: "Ramp / Jalur Landai", value: true },
+    { "@type": "LocationFeatureSpecification", name: "Guiding Block", value: false },
+    { "@type": "LocationFeatureSpecification", name: "Lift / Elevator", value: true },
+  ]);
+});
+
+test("the web app manifest names the app and uses the brand colours", async ({ page, request }) => {
+  await page.goto("/");
+  const href = await page.locator('link[rel="manifest"]').getAttribute("href");
+  const manifest = await (await request.get(href ?? "")).json();
+  expect(manifest).toMatchObject({ name: "AksesBogor", lang: "id", start_url: "/", display: "standalone", theme_color: "#6440E8" });
+});
