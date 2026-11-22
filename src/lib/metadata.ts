@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getFormatter, getTranslations } from "next-intl/server";
+import { OG_SIZE } from "@/components/berbagi/ukuran";
 import type { PlaceDetail } from "@/lib/api";
 import { publicRobots } from "@/lib/situs";
 
@@ -12,20 +13,29 @@ type PublicPage = {
   /** Path kanonis tanpa query, mis. `/jelajahi`. Filter dan halaman hasil memakai URL kanonis yang sama. */
   path: string;
   siteName: string;
+  /**
+   * Teks alternatif gambar berbagi bawaan (`app/opengraph-image`). Objek `openGraph` halaman menggantikan gambar dari
+   * segmen root, jadi halaman statis menyebutnya lagi. Detail lokasi tidak mengisinya: gambar di segmennya sendiri
+   * yang dipakai.
+   */
+  defaultImageAlt?: string;
 };
 
 /**
  * Metadata halaman publik (issue #114): judul, deskripsi, URL kanonis, OpenGraph, kartu Twitter, dan izin indeks dari
- * saklar `SITE_INDEXABLE`. URL relatif dilengkapi `metadataBase` dari root layout. Gambar berbagi berasal dari berkas
- * `opengraph-image` terdekat, jadi tidak diisi di sini.
+ * saklar `SITE_INDEXABLE`. URL relatif dilengkapi `metadataBase` dari root layout.
  */
-export function publicMetadata({ title, absoluteTitle = false, description, path, siteName }: PublicPage): Metadata {
+export function publicMetadata({ title, absoluteTitle = false, description, path, siteName, defaultImageAlt }: PublicPage): Metadata {
+  // Kunci `images` hanya diisi bila ada gambar: `images: undefined` pun menimpa gambar dari berkas di segmen halaman.
+  const images = defaultImageAlt
+    ? { images: [{ url: "/opengraph-image", width: OG_SIZE.width, height: OG_SIZE.height, type: "image/png", alt: defaultImageAlt }] }
+    : {};
   return {
     title: absoluteTitle ? { absolute: title } : title,
     description,
     alternates: { canonical: path },
-    openGraph: { type: "website", locale: "id_ID", siteName, url: path, title, description },
-    twitter: { card: "summary_large_image", title, description },
+    openGraph: { type: "website", locale: "id_ID", siteName, url: path, title, description, ...images },
+    twitter: { card: "summary_large_image", title, description, ...images },
     robots: publicRobots(),
   };
 }
@@ -44,13 +54,14 @@ type PageNamespace =
 
 /** Metadata halaman publik statis dari `metaTitle` dan `metaDescription` di namespace-nya. */
 export async function pageMetadata(namespace: PageNamespace, path: string): Promise<Metadata> {
-  const [t, site] = await Promise.all([getTranslations(namespace), getTranslations("Metadata")]);
+  const [t, site, share] = await Promise.all([getTranslations(namespace), getTranslations("Metadata"), getTranslations("Berbagi")]);
   return publicMetadata({
     title: t("metaTitle"),
     absoluteTitle: path === "/",
     description: t("metaDescription"),
     path,
     siteName: site("title"),
+    defaultImageAlt: share("siteAlt"),
   });
 }
 
@@ -85,3 +96,4 @@ export async function placeMetadata(place: PlaceDetail): Promise<Metadata> {
     siteName: site("title"),
   });
 }
+
