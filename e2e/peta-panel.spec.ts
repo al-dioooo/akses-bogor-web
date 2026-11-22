@@ -93,10 +93,14 @@ test("the panel opens with its button and closes with Escape, returning focus to
 test("on a wide screen the side panel starts open without moving once the page has loaded", async ({ page }) => {
   test.skip((page.viewportSize()?.width ?? 0) < 768, "Panel samping mulai 768 px");
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto("/peta");
-  const before = await page.locator(".peta-lembar").boundingBox();
+  await page.goto("/peta", { waitUntil: "commit" });
+  // Panel pertama yang tampil (bisa panel kosong selama isi Peta masih dialirkan) sudah terbuka di tempat akhirnya.
+  const first = page.locator(".peta-lembar").first();
+  await first.waitFor();
+  const before = await first.boundingBox();
   await expect(placeList(page)).toBeVisible();
   await expect(page.getByRole("button", { name: "Tampilkan peta" })).toHaveAttribute("aria-expanded", "true");
+  await expect(page.locator(".peta-lembar")).toHaveCount(1);
   expect(await page.locator(".peta-lembar").boundingBox()).toEqual(before);
 });
 
@@ -125,7 +129,8 @@ test("on a phone the handle shows its own focus ring, inside the sheet", async (
   test.skip(!isMobile(page), "Pegangan hanya ada di lembar bawah ponsel");
   await openMap(page);
   await handle(page).focus();
-  const ring = await handle(page).evaluate((element) => {
+  // Diulang sampai lembar selesai bergerak setelah halaman dimuat.
+  await expect.poll(() => handle(page).evaluate((element) => {
     const style = getComputedStyle(element);
     const grow = Number.parseFloat(style.outlineOffset) + Number.parseFloat(style.outlineWidth);
     const box = element.getBoundingClientRect();
@@ -135,8 +140,7 @@ test("on a phone the handle shows its own focus ring, inside the sheet", async (
       // Lembar memotong isinya (overflow: hidden), jadi cincinnya harus seluruhnya di dalam lembar.
       inside: box.top - grow >= sheet.top && box.left - grow >= sheet.left && box.right + grow <= sheet.right,
     };
-  });
-  expect(ring).toEqual({ shown: true, inside: true });
+  })).toEqual({ shown: true, inside: true });
 });
 
 test("a full sheet lists every place, not only those in the map view it covers", async ({ page }) => {
