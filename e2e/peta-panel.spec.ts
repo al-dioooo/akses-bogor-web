@@ -133,6 +133,26 @@ test("a full sheet makes the map and the search under it unreachable", async ({ 
   await expect(page.getByRole("button", { name: "Tampilkan daftar" })).toBeFocused();
 });
 
+test("on a short phone a chosen marker ends up above the opened panel", async ({ page }) => {
+  test.skip((page.viewportSize()?.width ?? 0) >= 768, "Lembar bawah hanya ada di ponsel");
+  await page.setViewportSize({ width: 360, height: 740 });
+  await openMap(page);
+  await expect(page.getByRole("group", { name: "Kontrol peta" })).toBeVisible({ timeout: 15_000 });
+  const marker = page.getByRole("button", { name: "Masjid contoh A, Masjid, Aksesibel" });
+  await marker.click();
+  await expect(page.getByRole("heading", { level: 3, name: "Masjid contoh A" })).toBeFocused();
+  // Marker yang dipilih digeser ke bagian peta di atas panel (setelah panel selesai membuka), jadi tetap terlihat dan
+  // bisa difokus.
+  await expect
+    .poll(async () => {
+      const markerBox = (await marker.boundingBox())!;
+      const panelBox = (await page.locator(".peta-lembar").boundingBox())!;
+      return panelBox.y - (markerBox.y + markerBox.height);
+    })
+    .toBeGreaterThanOrEqual(0);
+  await expect(marker).not.toHaveAttribute("aria-hidden", "true");
+});
+
 test("the skip link jumps past the map to the list", async ({ page }) => {
   await openMap(page);
   const skip = page.getByRole("link", { name: "Lewati peta ke daftar lokasi" });
