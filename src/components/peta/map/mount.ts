@@ -31,9 +31,10 @@ export type MapHandle = {
   setPlaces(places: MapPlace[]): void;
   /**
    * Bagian peta yang tertutup panel (perpindahan peta menghindarinya) dan persegi elemen lain yang mengambang di atasnya.
-   * Lokasi di balik keduanya tidak dihitung "di tampilan", dan markernya keluar dari urutan Tab.
+   * Lokasi di balik keduanya tidak dihitung "di tampilan", dan markernya keluar dari urutan Tab. `camera` (bawaan:
+   * `insets`) adalah bagian yang dihindari saat peta dipindah, mis. seluruh pita pencarian dan kontrol di atas.
    */
-  setInsets(insets: Insets, covers?: Rect[]): void;
+  setInsets(insets: Insets, covers?: Rect[], camera?: Insets): void;
   setSelected(id: string | null): void;
   setNight(night: boolean): void;
   /** Lapisan prioritas kecamatan: batas dengan tingkatnya, atau null untuk menyembunyikannya. */
@@ -48,6 +49,8 @@ type Options = {
   places: MapPlace[];
   /** Bagian peta yang sudah tertutup panel saat peta dibuat, supaya tampilan awal Kota Bogor tidak di baliknya. */
   insets?: Insets;
+  /** Bagian yang dihindari tampilan awal Kota Bogor; bawaan: `insets`. */
+  camera?: Insets;
   night: boolean;
   /** Satu jari dan roda tetikus menggulir halaman, bukan peta, selama peta ada di tengah halaman. */
   cooperative?: boolean;
@@ -75,6 +78,7 @@ function withToken(url: string, token: string) {
 export function mountMap(options: Options): MapHandle {
   let places = options.places;
   let insets = options.insets ?? NO_INSETS;
+  let camera = options.camera ?? insets;
   let covers: Rect[] = [];
   let token = options.token;
   let night = options.night;
@@ -85,7 +89,7 @@ export function mountMap(options: Options): MapHandle {
     container: options.container,
     style: night ? STYLE.gelap : STYLE.terang,
     bounds: KOTA_BOGOR,
-    fitBoundsOptions: { padding: cameraPadding(options.container.clientWidth, options.container.clientHeight, insets) },
+    fitBoundsOptions: { padding: cameraPadding(options.container.clientWidth, options.container.clientHeight, [camera, insets]) },
     maxBounds: AREA,
     minZoom: 10,
     maxZoom: 18,
@@ -166,7 +170,7 @@ export function mountMap(options: Options): MapHandle {
   };
   const padding = () => {
     const container = map.getContainer();
-    return cameraPadding(container.clientWidth, container.clientHeight, insets);
+    return cameraPadding(container.clientWidth, container.clientHeight, [camera, insets]);
   };
   map.on("load", () => {
     ready = true;
@@ -246,7 +250,8 @@ export function mountMap(options: Options): MapHandle {
       placeMarkers(next);
       if (ready) updateView();
     },
-    setInsets(next, nextCovers = []) {
+    setInsets(next, nextCovers = [], nextCamera = next) {
+      camera = nextCamera;
       if (JSON.stringify([next, nextCovers]) === JSON.stringify([insets, covers])) return;
       insets = next;
       covers = nextCovers;
