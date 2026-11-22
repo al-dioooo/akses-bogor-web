@@ -22,9 +22,10 @@ test("shows a floating key with the levels as text, the caveat and the source wh
   const key = floatingKey(page);
   await expect(key.getByRole("list", { name: "Legenda prioritas" }).getByRole("listitem")).toHaveText(["Rendah", "Sedang", "Tinggi", "Sangat tinggi"]);
   await expect(key.getByText(/bukan jumlah seluruh penduduk; lonjakan antartahun besar/)).toBeVisible();
-  await expect(key.getByText(/Sumber: Open Data Kota Bogor, Dinas Sosial\. Batas kecamatan: © kontributor OpenStreetMap\./)).toBeVisible();
+  await expect(key.getByText(/Sumber: Open Data Kota Bogor, Dinas Sosial\. Batas kecamatan: © kontributor OpenStreetMap \(tab baru\)\./)).toBeVisible();
   // Kredit OSM menaut ke halaman hak cipta dan lisensinya (ODbL).
-  await expect(key.getByRole("link", { name: "© kontributor OpenStreetMap" })).toHaveAttribute("href", "https://www.openstreetmap.org/copyright");
+  await expect(key.getByRole("link", { name: "© kontributor OpenStreetMap (tab baru)" })).toHaveAttribute("href", "https://www.openstreetmap.org/copyright");
+  await expect(key.getByRole("link", { name: "© kontributor OpenStreetMap (tab baru)" })).toHaveAttribute("target", "_blank");
   await expect(key.getByRole("link", { name: "Bantu memetakan" })).toHaveAttribute("href", "/laporkan/bantu-memetakan");
   // Catatan batas data dan sumber selalu tampil bersama warnanya; tidak ada yang bisa dilipat.
   await expect(key.getByRole("button", { name: "Catatan data dan sumber" })).toHaveCount(0);
@@ -53,7 +54,7 @@ for (const viewport of [
     // Kunci berhenti di atas lembar bawah (ponsel) atau Bottom nav (layar lebar); isi yang tidak muat digulir di dalamnya.
     for (const part of [
       key.getByText(/bukan jumlah seluruh penduduk/),
-      key.getByRole("link", { name: "© kontributor OpenStreetMap" }),
+      key.getByRole("link", { name: "© kontributor OpenStreetMap (tab baru)" }),
       key.getByRole("link", { name: "Bantu memetakan" }),
     ]) {
       await expect
@@ -94,7 +95,7 @@ test("the table button opens the list panel at the ranked table with its source"
   const table = page.locator("#tabel-prioritas");
   await expect(table.getByText(/bukan jumlah seluruh penduduk; lonjakan antartahun besar/)).toBeVisible();
   await expect(table.getByText(/Open Data Kota Bogor, Dinas Sosial/)).toBeVisible();
-  await expect(table.getByText("Batas kecamatan: © kontributor OpenStreetMap.")).toBeVisible();
+  await expect(table.getByText("Batas kecamatan: © kontributor OpenStreetMap (tab baru).")).toBeVisible();
 });
 
 test("hides the layer button while the API keeps the disability data off", async ({ browser }) => {

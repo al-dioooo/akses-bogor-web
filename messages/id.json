@@ -301,6 +301,7 @@
       "legend": "Legenda prioritas",
       "boundaries": "Batas kecamatan: <credit>{attribution}</credit>.",
       "table": "Tabel",
+      "newTab": "(tab baru)",
       "showTable": "Tabel prioritas kecamatan",
       "source": "Sumber: {publisher}."
     }
