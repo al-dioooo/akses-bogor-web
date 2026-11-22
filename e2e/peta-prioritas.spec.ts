@@ -37,6 +37,50 @@ test("shows a floating key with the levels as text, the caveat and the source wh
   await expect(main(page).getByRole("table")).toHaveCount(0);
 });
 
+for (const viewport of [
+  { width: 320, height: 568 },
+  { width: 360, height: 740 },
+  { width: 1024, height: 600 },
+]) {
+  test(`the key never slips under the list panel, and markers under it cannot take focus (${viewport.width}×${viewport.height})`, async ({ page }) => {
+    await page.setViewportSize(viewport);
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/peta");
+    await expect(main(page).getByRole("group", { name: "Kontrol peta" })).toBeVisible({ timeout: 15_000 });
+    await toggle(page).click();
+    const key = floatingKey(page);
+    // Kunci berhenti di atas lembar bawah (ponsel) atau Bottom nav (layar lebar); isi yang tidak muat digulir di dalamnya.
+    for (const part of [
+      key.getByText(/bukan jumlah seluruh penduduk/),
+      key.getByRole("link", { name: "© kontributor OpenStreetMap" }),
+      key.getByRole("link", { name: "Bantu memetakan" }),
+    ]) {
+      await expect
+        .poll(() =>
+          part.evaluate((element) => {
+            element.scrollIntoView({ block: "nearest" });
+            // Baris pertama saja: tautan di dalam kalimat bisa terbagi dua baris.
+            const box = element.getClientRects()[0];
+            const hit = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
+            return !!hit && (hit === element || element.contains(hit));
+          }),
+        )
+        .toBe(true);
+    }
+    const covered = await page.evaluate(() =>
+      [...document.querySelectorAll<HTMLElement>(".mapboxgl-marker")]
+        .filter((element) => element.tabIndex === 0)
+        .filter((element) => {
+          const box = element.getBoundingClientRect();
+          const hit = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
+          return !hit || !(hit === element || element.contains(hit));
+        })
+        .map((element) => element.getAttribute("aria-label")),
+    );
+    expect(covered).toEqual([]);
+  });
+}
+
 test("the table button opens the list panel at the ranked table with its source", async ({ page }) => {
   await page.goto("/peta");
   await toggle(page).click();
