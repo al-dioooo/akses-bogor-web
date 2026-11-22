@@ -1707,5 +1707,47 @@
     "sentTitle": "Jawaban terkirim",
     "sentBody": "Laporan Anda kembali ke antrean di posisi semula. Kami mengirim email setelah laporan diputuskan.",
     "server": "Server AksesBogor tidak bisa dihubungi. Coba lagi sebentar lagi."
+  },
+  "RuteJalanKaki": {
+    "title": "Rute jalan kaki ke {name}",
+    "unnamed": "fasilitas ini",
+    "awal": {
+      "title": "Dari mana Anda berangkat?",
+      "why": "Titik awal dipakai untuk menghitung rute jalan kaki ke tempat ini, mis. untuk datang memotret dan mencatat fasilitasnya.",
+      "privacy": "Titik awal dibulatkan sampai sekitar 11 m dan dikirim lewat server AksesBogor ke Mapbox hanya untuk menghitung rute. Titik ini tidak disimpan dan tidak pernah dikirim ke agen AI.",
+      "useLocation": "Pakai lokasi saya",
+      "locating": "Mencari lokasi Anda…",
+      "pickOnMap": "Pilih titik awal di peta",
+      "denied": "Izin lokasi ditolak. Pilih titik awal di peta.",
+      "noGps": "Lokasi perangkat tidak bisa dibaca. Pilih titik awal di peta.",
+      "unsupported": "Browser ini tidak bisa membaca lokasi. Pilih titik awal di peta.",
+      "pickTitle": "Pilih titik awal di peta",
+      "usePoint": "Pakai titik ini",
+      "mapUnavailable": "Peta tidak bisa tampil, jadi titik awal hanya bisa diambil dari lokasi perangkat."
+    },
+    "rute": {
+      "loading": "Menghitung rute…",
+      "summary": "{distance} · sekitar {minutes, plural, other {# menit}} jalan kaki",
+      "warningTitle": "Belum tentu bisa dilewati kursi roda",
+      "stepsTitle": "Langkah",
+      "changeStart": "Ganti titik awal",
+      "retry": "Coba lagi",
+      "failed": "Rute tidak bisa dimuat. Coba lagi sebentar lagi.",
+      "mapLabel": "Peta rute jalan kaki ke {name}",
+      "mapHint": "Peta hanya gambaran. Langkah dan daftar hambatan di bawah berisi informasi yang sama.",
+      "mapLoading": "Memuat peta…",
+      "mapUnavailable": "Peta tidak bisa tampil. Langkah dan daftar hambatan di bawah berisi informasi yang sama.",
+      "attribution": "Rute: <mapbox>© Mapbox</mapbox>. Data jalan dan hambatan: <osm>© kontributor OpenStreetMap</osm>."
+    },
+    "hambatan": {
+      "title": "Hambatan yang tercatat di OpenStreetMap",
+      "loading": "Memuat hambatan di rute…",
+      "none": "Tidak ada hambatan yang tercatat di OpenStreetMap dalam {meters} m dari rute ini.",
+      "position": "Sekitar {along} dari titik awal, {distance} dari rute",
+      "osmLink": "Lihat di OpenStreetMap",
+      "osmLinkTarget": "({description})",
+      "truncated": "Hanya 50 hambatan pertama yang ditampilkan.",
+      "failed": "Hambatan di rute tidak bisa dimuat. Rute tetap bisa dilihat, tetapi hambatan di jalan tidak ditampilkan."
+    }
   }
 }
