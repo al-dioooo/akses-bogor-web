@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { cache } from "react";
 import { getMe, type SignedIn, type User } from "./akun";
 import { withReturn } from "./kembali";
 
@@ -70,8 +71,19 @@ export async function hasSession() {
 export async function requireAccount(path: string, { allowIncomplete = false } = {}): Promise<{ token: string; user: User }> {
   const token = await sessionToken();
   if (!token) redirect(withReturn("/masuk", path));
-  const user = await getMe(token);
-  if (!user) redirect(withReturn("/masuk/sesi-berakhir", path));
-  if (user.needsCompletion && !allowIncomplete) redirect(withReturn("/masuk/lengkapi", path));
-  return { token, user };
+  const account = await currentAccount();
+  if (!account) redirect(withReturn("/masuk/sesi-berakhir", path));
+  if (account.user.needsCompletion && !allowIncomplete) redirect(withReturn("/masuk/lengkapi", path));
+  return account;
 }
+
+/**
+ * Akun dari cookie sesi, atau `null` tanpa sesi yang berlaku, tanpa mengarahkan ke mana pun. Dibaca sekali per request,
+ * jadi kerangka dasbor dan halamannya berbagi satu panggilan `GET /me` (ADR-0046).
+ */
+export const currentAccount = cache(async (): Promise<{ token: string; user: User } | null> => {
+  const token = await sessionToken();
+  if (!token) return null;
+  const user = await getMe(token);
+  return user ? { token, user } : null;
+});
