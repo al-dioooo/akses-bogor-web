@@ -25,9 +25,9 @@ test("passes routes to AksesBogor places and OSM facilities, obstacles and quest
   const toPlace = await page.request.post(`${base}/rute`, { data: { from, placeId: HALTE } });
   expect(toPlace.status()).toBe(200);
   expect(toPlace.headers()["cache-control"]).toBe("no-store");
-  expect(await toPlace.json()).toMatchObject({ destination: { placeId: HALTE }, warning: expect.stringContaining("kursi roda") });
+  expect(await toPlace.json()).toMatchObject({ destination: { placeId: HALTE, osm: null }, warning: expect.stringContaining("kursi roda") });
   const toOsm = await page.request.post(`${base}/rute`, { data: { from, osm: { type: "node", id: 9001 } } });
-  expect(await toOsm.json()).toMatchObject({ destination: { name: "Masjid Al-Hidayah" } });
+  expect(await toOsm.json()).toMatchObject({ destination: { placeId: null, osm: { type: "node", id: 9001 }, name: "Masjid Al-Hidayah" } });
 
   const obstacles = await page.request.post(`${base}/hambatan`, { data: { polyline: "tiruan" } });
   expect((await obstacles.json()).features).toHaveLength(2);

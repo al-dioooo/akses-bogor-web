@@ -31,6 +31,12 @@ export const PRIORITY = {
     { slug: "bogor-utara", name: "Bogor Utara", registered: 720, verifiedPlaces: 1, facilitiesWithoutData: 12, score: 33, rank: 5, level: "sedang" },
     { slug: "bogor-tengah", name: "Bogor Tengah", registered: 450, verifiedPlaces: 1, facilitiesWithoutData: 9, score: 18, rank: 6, level: "rendah" },
   ],
+  yearTotals: [
+    { year: 2024, registered: 3150 },
+    { year: 2025, registered: 5105 },
+  ],
+  formula: "Skor naik bila penyandang disabilitas terdaftar banyak dan fasilitas tanpa data banyak, dan turun bila lokasi terverifikasi banyak.",
+  facilitiesSource: { retrievedAt: "2026-11-16T00:00:00.000Z", attribution: "© kontributor OpenStreetMap" },
   caveat: "Angka ini jumlah penyandang disabilitas yang terdaftar di Dinas Sosial, bukan jumlah seluruh penduduk; lonjakan antartahun besar.",
   source: { title: "Jumlah Penyandang Disabilitas Menurut Kecamatan", url: "https://opendata.kotabogor.go.id/", publisher: "Open Data Kota Bogor, Dinas Sosial", retrievedAt: "2026-11-22T00:00:00.000Z", terms: "Data terbuka Pemerintah Kota Bogor" },
 };
@@ -127,8 +133,13 @@ export function handleAgenRute(method, url, headers, body, places) {
   if (method === "POST" && pathname === "/route/walking") {
     const from = body?.from;
     if (typeof from?.lat !== "number" || typeof from?.lng !== "number") return error(400, "input_tidak_valid", "Data yang dikirim tidak sesuai.");
+    if ((body?.placeId === undefined) === (body?.osm === undefined)) return error(400, "input_tidak_valid", "Kirim placeId atau osm, salah satu saja.");
     const osm = body?.osm ? OSM_PLACES.find((p) => p.type === body.osm.type && p.id === body.osm.id) : undefined;
-    const destination = place ? { placeId: place.id, name: place.name, location: place.location } : osm ? { name: osm.name, location: osm.location } : null;
+    const destination = place
+      ? { placeId: place.id, osm: null, name: place.name, location: place.location }
+      : osm
+        ? { placeId: null, osm: { type: osm.type, id: osm.id }, name: osm.name, location: osm.location }
+        : null;
     if (!destination) return error(404, "lokasi_tidak_ditemukan", "Lokasi tidak ditemukan.");
     if (!inside(from)) return error(422, "di_luar_kota_bogor", "Posisi Anda berada di luar Kota Bogor. Rute hanya tersedia dari dalam Kota Bogor.");
     return [200, route(from, destination)];
