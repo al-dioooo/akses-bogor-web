@@ -9,6 +9,7 @@ import { buttonClass } from "@/ui/button-styles";
 import { fieldClass } from "@/ui/field-styles";
 import { Icon } from "@/ui/icon";
 import { IconAlertTriangle, IconExternalLink, IconInfoCircle, IconSend } from "@/ui/icons";
+import { AgentCards } from "./agent-cards";
 
 type Turn = { role: "user" | "assistant"; content: string; sources?: AgentSource[]; cards?: AgentCard[] };
 const EXAMPLES = ["priority", "mosque", "near"] as const;
@@ -102,6 +103,7 @@ export function ContributorChat() {
               <span className="text-sm font-bold">{turn.role === "user" ? t("you") : t("agent")}</span>
               <p className="whitespace-pre-line">{turn.content}</p>
               {turn.sources && <Sources sources={turn.sources} />}
+              {turn.cards && <AgentCards cards={turn.cards} />}
             </li>
           ))}
         </ol>
