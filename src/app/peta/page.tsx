@@ -3,6 +3,7 @@ import { pageMetadata } from "@/lib/metadata";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { MapResults, MapResultsSkeleton } from "@/components/peta/results";
+import { RouteHiddenMarker } from "@/components/peta/route-marker";
 import { SearchBar } from "@/components/peta/search-bar";
 import { getDistricts } from "@/lib/api";
 import { parseFilters } from "@/lib/filters";
@@ -23,6 +24,7 @@ export default async function Peta({ searchParams }: PageProps<"/peta">) {
       <h1 className="sr-only">
         {t("title")} {t("accent")}
       </h1>
+      <RouteHiddenMarker />
       <Suspense fallback={<MapResultsSkeleton label={t("loading")} search />}>
         <MapContent searchParams={searchParams} loading={t("loading")} />
       </Suspense>
