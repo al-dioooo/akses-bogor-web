@@ -29,6 +29,11 @@ export type MapHandle = {
   show(id: string): void;
   /** Menggeser peta ke lokasi tanpa mengubah zoom, hanya bila lokasinya tidak terlihat atau di balik panel. */
   reveal(id: string): void;
+  /**
+   * Menandai posisi pengguna dengan titik (bukan tombol) dan menggeser peta ke sana. Posisi hanya dipakai di browser.
+   * Mengembalikan false tanpa menggeser bila posisinya di luar wilayah yang bisa ditampilkan peta.
+   */
+  showUser(point: { lng: number; lat: number }): boolean;
   /** Mengganti lokasi di peta (mis. setelah filter berubah) tanpa membuat peta baru. */
   setPlaces(places: MapPlace[]): void;
   /** Bagian peta yang tertutup panel: lokasi di baliknya tidak dihitung "di tampilan", dan perpindahan menghindarinya. */
@@ -105,6 +110,7 @@ export function mountMap(options: Options): MapHandle {
 
   const markers = new Map<string, HTMLButtonElement>();
   const pins = new Map<string, mapboxgl.Marker>();
+  let user: mapboxgl.Marker | undefined;
   let byId = new Map<string, MapPlace>();
   const placeMarkers = (next: MapPlace[]) => {
     places = next;
@@ -249,6 +255,20 @@ export function mountMap(options: Options): MapHandle {
       const margin = 56;
       if (rect && x >= rect.left + margin && x <= rect.right - margin && y >= rect.top + margin && y <= rect.bottom - margin) return;
       map.easeTo({ center: [place.lng, place.lat], padding: padding(), retainPadding: false });
+    },
+    showUser({ lng, lat }) {
+      const [[west, south], [east, north]] = AREA as [[number, number], [number, number]];
+      if (lng < west || lng > east || lat < south || lat > north) return false;
+      if (!user) {
+        const dot = document.createElement("span");
+        dot.className = "peta-saya";
+        dot.setAttribute("aria-hidden", "true");
+        user = new mapboxgl.Marker({ element: dot }).setLngLat([lng, lat]).addTo(map);
+      } else {
+        user.setLngLat([lng, lat]);
+      }
+      map.flyTo({ center: [lng, lat], zoom: Math.max(map.getZoom(), 15), padding: padding(), retainPadding: false });
+      return true;
     },
     setPlaces(next) {
       placeMarkers(next);
