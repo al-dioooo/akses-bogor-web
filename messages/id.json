@@ -8,6 +8,8 @@
     "home": "AksesBogor, ke Beranda"
   },
   "Beranda": {
+    "metaTitle": "AksesBogor: info aksesibilitas tempat umum di Kota Bogor",
+    "metaDescription": "Cek ramp, toilet difabel, guiding block, dan lift di kampus, masjid, halte, dan rumah sakit Kota Bogor sebelum berangkat, dari laporan warga yang diperiksa tim.",
     "eyebrow": "Peta aksesibilitas Kota Bogor",
     "titleLead": "Cek aksesnya dulu. Berangkat lebih",
     "titleAccent": "tenang.",
@@ -186,6 +188,7 @@
   },
   "Jelajahi": {
     "metaTitle": "Jelajahi Lokasi",
+    "metaDescription": "Cari kampus, masjid, halte, dan rumah sakit di Kota Bogor, lalu saring menurut kecamatan, fasilitas, dan status aksesibilitas.",
     "eyebrow": "Jelajahi",
     "title": "Semua",
     "accent": "lokasi.",
@@ -225,6 +228,7 @@
   },
   "Peta": {
     "metaTitle": "Peta Lokasi",
+    "metaDescription": "Lihat status aksesibilitas kampus, masjid, halte, dan rumah sakit di Kota Bogor pada peta, lalu saring menurut kecamatan dan fasilitas.",
     "eyebrow": "Peta",
     "title": "Lokasi di",
     "accent": "peta.",
@@ -282,6 +286,9 @@
   "Detail": {
     "back": "Kembali ke Jelajahi",
     "loading": "Memuat lokasi…",
+    "metaTitle": "{name}, {district}",
+    "metaDescription": "{category} di Kecamatan {district}, Kota Bogor. Status aksesibilitas: {status}. {summary}. Terakhir diverifikasi {date}.",
+    "metaRecheck": "Data ini perlu dicek ulang.",
     "landmark": "Patokan",
     "summaryTitle": "Ringkasan fasilitas",
     "ofRelevant": "dari {relevant} fasilitas tersedia",
@@ -385,6 +392,7 @@
   },
   "KebijakanPrivasi": {
     "metaTitle": "Kebijakan Privasi",
+    "metaDescription": "Draf kebijakan privasi AksesBogor: data yang kami kumpulkan, untuk apa dipakai, siapa yang bisa melihatnya, berapa lama disimpan, dan hak Anda.",
     "eyebrow": "Kebijakan",
     "title": "Kebijakan",
     "accent": "Privasi.",
@@ -562,6 +570,7 @@
   },
   "SyaratLayanan": {
     "metaTitle": "Syarat Layanan",
+    "metaDescription": "Draf syarat layanan AksesBogor: memakai situs dengan atau tanpa akun, aturan melapor, hak atas laporan dan foto, dan batas tanggung jawab.",
     "eyebrow": "Kebijakan",
     "title": "Syarat",
     "accent": "Layanan.",
@@ -699,6 +708,7 @@
   },
   "Tentang": {
     "metaTitle": "Tentang AksesBogor",
+    "metaDescription": "Apa itu AksesBogor, cara data aksesibilitas tempat umum di Kota Bogor dikumpulkan dan diperiksa, batasnya, dan cara menghubungi kami.",
     "eyebrow": "Tentang",
     "title": "Tentang",
     "accent": "AksesBogor.",
@@ -797,6 +807,7 @@
   },
   "Aksesibilitas": {
     "metaTitle": "Mengenal aksesibilitas",
+    "metaDescription": "Draf: cara AksesBogor menilai sebuah tempat, yaitu fasilitas yang dicatat, arti setiap jawaban, dan cara status dihitung.",
     "title": "Mengenal",
     "accent": "aksesibilitas.",
     "related": "Empat fasilitas, empat jawaban, dan cara status dihitung.",
@@ -898,6 +909,7 @@
   },
   "Disabilitas": {
     "metaTitle": "Mengenal disabilitas",
+    "metaDescription": "Draf: arti penyandang disabilitas menurut UU No. 8 Tahun 2016, mengapa AksesBogor menilai tempat dan bukan orang, dan kata yang kami pakai.",
     "title": "Mengenal",
     "accent": "disabilitas.",
     "related": "Arti penyandang disabilitas, hambatan di lingkungan, dan kata yang kami pakai.",
@@ -967,6 +979,7 @@
   },
   "Tips": {
     "metaTitle": "Tips berkunjung dan melapor",
+    "metaDescription": "Draf: cara membaca halaman lokasi sebelum berangkat, dan cara melapor supaya laporan Anda mudah diperiksa dan cepat tayang.",
     "title": "Tips berkunjung dan",
     "accent": "melapor.",
     "related": "Yang perlu dicek sebelum berangkat, dan cara melapor supaya cepat diverifikasi.",
