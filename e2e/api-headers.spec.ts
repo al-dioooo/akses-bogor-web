@@ -3,8 +3,8 @@ import { webServerSecret } from "../playwright.config";
 import { mockApi, signIn, uniqueEmail } from "./akun-masuk";
 import { png } from "./foto";
 
-// Di Vercel, x-forwarded-for berisi IP pengunjung; di sini nilainya diisi tes. Setiap project memakai IP sendiri
-// karena project ponsel dan desktop berjalan bersamaan.
+// Di balik Cloudflare, IP pengunjung ada di cf-connecting-ip; tanpa Cloudflare, web memakai x-forwarded-for. Di sini
+// nilainya diisi tes. Setiap project memakai IP sendiri karena project ponsel dan desktop berjalan bersamaan.
 const visitorIp = (project: string) => (project === "ponsel" ? "198.51.100.7" : "198.51.100.8");
 
 /** Rahasia server web yang diterima API tiruan untuk IP pengunjung dan path API itu, atau null. */
@@ -20,6 +20,20 @@ test("sends the web server secret and the visitor ip when rendering a page", asy
   const page = await context.newPage();
   await page.goto("/");
   expect(await secretSeen(request, ip, "/places/stats")).toBe(webServerSecret);
+  await context.close();
+});
+
+test("prefers the Cloudflare visitor ip over a forwarded-for value the client sent", async ({ browser, request }, testInfo) => {
+  const ponsel = testInfo.project.name === "ponsel";
+  const ip = ponsel ? "198.51.100.17" : "198.51.100.18";
+  const spoofed = ponsel ? "203.0.113.17" : "203.0.113.18";
+  const context = await browser.newContext({
+    extraHTTPHeaders: { "cf-connecting-ip": ip, "x-forwarded-for": `${spoofed}, ${ip}` },
+  });
+  const page = await context.newPage();
+  await page.goto("/");
+  expect(await secretSeen(request, ip, "/places/stats")).toBe(webServerSecret);
+  expect(await secretSeen(request, spoofed)).toBeNull();
   await context.close();
 });
 
