@@ -1,5 +1,6 @@
-import mapboxgl, { type LngLatBoundsLike } from "mapbox-gl";
-import type { MapToken } from "@/lib/api";
+import mapboxgl, { type GeoJSONSource, type LngLatBoundsLike } from "mapbox-gl";
+import type { DistrictBoundaries, MapToken, PriorityLevel } from "@/lib/api";
+import { LEVEL_COLOR, LEVELS } from "@/components/prioritas/levels";
 import { motionReduced } from "@/lib/preferences";
 import type { MapPlace } from "../places";
 
@@ -27,6 +28,8 @@ export type MapHandle = {
   show(id: string): void;
   setSelected(id: string | null): void;
   setNight(night: boolean): void;
+  /** Lapisan prioritas kecamatan: batas dengan tingkatnya, atau null untuk menyembunyikannya. */
+  setPriority(districts: { boundaries: DistrictBoundaries; levels: Record<string, PriorityLevel> } | null): void;
   destroy(): void;
 };
 
@@ -129,6 +132,43 @@ export function mountMap(options: Options): MapHandle {
     if (!ready && !map.isStyleLoaded()) options.onFail();
   });
 
+  // Lapisan prioritas digambar di bawah label peta dasar dan di bawah marker (marker berupa elemen HTML). Gaya baru
+  // (tema berganti) menghapus semua lapisan, jadi lapisan digambar ulang setiap kali gaya selesai dimuat.
+  let priority: Parameters<MapHandle["setPriority"]>[0] = null;
+  const drawPriority = () => {
+    if (!map.isStyleLoaded()) return;
+    if (!priority) {
+      for (const id of ["prioritas-garis", "prioritas-isi"]) if (map.getLayer(id)) map.removeLayer(id);
+      if (map.getSource("prioritas")) map.removeSource("prioritas");
+      return;
+    }
+    const { boundaries, levels } = priority;
+    const data = {
+      type: "FeatureCollection" as const,
+      features: boundaries.features.map((f) => ({ ...f, properties: { ...f.properties, level: levels[f.properties.slug] ?? "" } })),
+    } as Parameters<GeoJSONSource["setData"]>[0];
+    const source = map.getSource("prioritas") as GeoJSONSource | undefined;
+    if (source) return source.setData(data);
+    const css = getComputedStyle(document.documentElement);
+    const color = (name: string) => css.getPropertyValue(name).trim();
+    const label = map.getStyle().layers?.find((layer) => layer.type === "symbol")?.id;
+    map.addSource("prioritas", { type: "geojson", data });
+    map.addLayer(
+      {
+        id: "prioritas-isi",
+        type: "fill",
+        source: "prioritas",
+        paint: {
+          "fill-color": ["match", ["get", "level"], ...LEVELS.flatMap((level) => [level, color(LEVEL_COLOR[level])]), "rgba(0,0,0,0)"] as never,
+          "fill-opacity": 0.55,
+        },
+      },
+      label,
+    );
+    map.addLayer({ id: "prioritas-garis", type: "line", source: "prioritas", paint: { "line-color": color("--color-text-primary"), "line-width": 1.5 } }, label);
+  };
+  map.on("style.load", drawPriority);
+
   let timer: number | undefined;
   const schedule = (delay: number) => {
     timer = window.setTimeout(renew, Math.max(delay, 1000));
@@ -164,6 +204,10 @@ export function mountMap(options: Options): MapHandle {
       if (value === night) return;
       night = value;
       map.setStyle(night ? STYLE.gelap : STYLE.terang);
+    },
+    setPriority(value) {
+      priority = value;
+      drawPriority();
     },
     destroy() {
       window.clearTimeout(timer);
