@@ -99,7 +99,9 @@ export function mountMap(options: Options): MapHandle {
     bounds: KOTA_BOGOR,
     fitBoundsOptions: { padding: cameraPadding(options.container.clientWidth, options.container.clientHeight, [camera, insets]) },
     maxBounds: AREA,
-    minZoom: 10,
+    // Zoom 9 (dengan batas AREA) supaya seluruh kota muat di bagian peta yang sempit di atas lembar ponsel; di zoom 10
+    // kota setinggi kira-kira 280 px.
+    minZoom: 9,
     maxZoom: 18,
     dragRotate: false,
     pitchWithRotate: false,
