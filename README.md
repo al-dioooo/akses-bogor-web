@@ -94,7 +94,7 @@ Diagram, pengaturan bahasa, lapisan pengujian, dan struktur folder ada di [docs/
 
 ## Deployment
 
-Proyek Vercel di akun pemilik repo ([ADR-0013](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0013-tech-stack-nextjs-fastify.md)). API produksi ada di `https://akses-bogor-api.yorhagarden.xyz` ([ADR-0026](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0026-api-dan-postgresql-di-evergarden-oci.md)).
+Proyek Vercel di akun pemilik repo ([ADR-0013](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0013-tech-stack-nextjs-fastify.md)). Web dibuka di `https://akses-bogor.aldio.dev`, dengan `https://akses-bogor.vercel.app` tetap sebagai alias, dan API ada di `https://akses-bogor-api.aldio.dev` ([ADR-0026](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0026-api-dan-postgresql-di-evergarden-oci.md)). Untuk sementara lingkungan ini disebut staging, dan domain produksinya belum diputuskan ([ADR-0045](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0045-alamat-staging-di-aldio-dev.md)).
 
 | Pengaturan Vercel | Nilai |
 | --- | --- |
@@ -102,10 +102,10 @@ Proyek Vercel di akun pemilik repo ([ADR-0013](https://github.com/al-dioooo/akse
 | Root Directory | `./` |
 | Production Branch | `release` (Settings → Environments → Production) |
 | Node.js Version | 24.x, sama dengan `.nvmrc` |
-| Environment Variables | `API_URL` = `https://akses-bogor-api.yorhagarden.xyz`, `ENABLE_EXPERIMENTAL_COREPACK` = `1`, `NEXT_PUBLIC_GOOGLE_CLIENT_ID` (dibaca saat build, jadi deploy ulang setelah diisi), dan `WEB_SERVER_SECRET`, untuk Production dan Preview |
+| Environment Variables | `API_URL` = `https://akses-bogor-api.aldio.dev`, `ENABLE_EXPERIMENTAL_COREPACK` = `1`, `NEXT_PUBLIC_GOOGLE_CLIENT_ID` (dibaca saat build, jadi deploy ulang setelah diisi), dan `WEB_SERVER_SECRET`, untuk Production dan Preview |
 
 - Rilis berarti merge `main` ke `release` lewat PR, sama seperti API. Push ke branch lain, termasuk `main`, menjadi preview deployment.
-- Preview deployment hanya bisa dibuka anggota proyek di Vercel. Tim membuka alamat produksi proyek (`*.vercel.app`, atau domain sendiri bila sudah dipasang).
+- Preview deployment hanya bisa dibuka anggota proyek di Vercel. Tim membuka alamat utama proyek, `https://akses-bogor.aldio.dev`.
 - Setiap alamat web baru juga ditambahkan ke `FRONTEND_ORIGINS` di API.
 - `WEB_SERVER_SECRET` diisi sendiri untuk Production dan Preview, bertipe Sensitive, dengan nilai yang sama seperti di `/etc/akses-bogor/api.env` di API.
 - Paket Hobby Vercel hanya membatasi author commit untuk repo privat. Repo ini publik, jadi tidak perlu commit kosong atas nama pemilik seperti di lokerin. Bila repo dijadikan privat, deploy dari commit anggota lain akan diblokir.
