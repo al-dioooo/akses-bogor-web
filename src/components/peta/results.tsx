@@ -2,6 +2,7 @@ import { getDistrictPriority, getMapPlaces } from "@/lib/api";
 import { exploreHref, hasFilters, type ExploreFilters } from "@/lib/filters";
 import { PlaceMap } from "./place-map";
 import { toMapPlaces } from "./places";
+import { SearchBarPlaceholder } from "./search-bar";
 
 /** Isi Peta untuk filter di URL: lokasi dan prioritas kecamatan, digambar oleh peta layar penuh (FR-05). */
 export async function MapResults({ filters }: { filters: ExploreFilters }) {
@@ -22,7 +23,7 @@ export async function MapResults({ filters }: { filters: ExploreFilters }) {
 export function MapResultsSkeleton({ label, search = false }: { label: string; search?: boolean }) {
   return (
     <>
-      {search && <div aria-hidden="true" className="peta-cari h-26 md:h-36" />}
+      {search && <SearchBarPlaceholder />}
       <div className="peta-peta">
         <div className="peta-pesan">
           <p role="status" className="panel-raised rounded-full px-5 py-3 font-semibold">

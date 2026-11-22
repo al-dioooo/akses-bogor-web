@@ -1,7 +1,8 @@
 // API tiruan untuk tes Playwright, supaya CI tidak butuh akses-bogor-api dan database.
 // Datanya salinan respons API dari seed pengembangan (fixtures.json); filter meniru GET /places dan GET /places/map.
 // Pencarian "galat-tiruan" menjawab 500, untuk menguji keadaan galat di web. Pengunjung dengan IP 203.0.113.249 melihat
-// data kosong di GET /places dan GET /places/map, seperti production sebelum ada lokasi. Route akun ada di akun.mjs, route
+// data kosong di GET /places dan GET /places/map, seperti production sebelum ada lokasi. IP 203.0.113.248 mendapat
+// GET /districts yang lambat. Route akun ada di akun.mjs, route
 // Laporkan di laporkan.mjs, route panel verifikator di verifikasi.mjs, route agen rute di agen-rute.mjs, dan prioritas
 // kecamatan di prioritas.mjs.
 // GET /_tiruan/pengunjung?ip=...&path=... menjawab rahasia server web terakhir yang dikirim bersama IP pengunjung itu,
@@ -18,6 +19,8 @@ const { districts, places } = JSON.parse(readFileSync(new URL("./fixtures.json",
 const port = Number(process.env.PORT ?? 3101);
 const secretsByVisitor = new Map();
 const NO_PLACES_IP = "203.0.113.249";
+// Untuk IP ini GET /districts menjawab setelah 2 detik, supaya kerangka Peta (pencarian pengganti) bisa diukur.
+const SLOW_DISTRICTS_IP = "203.0.113.248";
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 const listItem = ({ id, name, category, district, status, summary, location, lastVerifiedAt, photos }) => ({
@@ -99,6 +102,7 @@ function route(url, headers) {
 createServer(async (request, response) => {
   const url = new URL(request.url ?? "/", `http://localhost:${port}`);
   const visitorIp = request.headers["x-visitor-ip"];
+  if (url.pathname === "/districts" && visitorIp === SLOW_DISTRICTS_IP) await new Promise((resolve) => setTimeout(resolve, 2000));
   if (visitorIp) {
     secretsByVisitor.set(visitorIp, request.headers["x-web-server-secret"]);
     secretsByVisitor.set(`${visitorIp} ${url.pathname}`, request.headers["x-web-server-secret"]);
