@@ -46,7 +46,7 @@ export function useLocate(map: MapHandle | null) {
   return { phase, start, allow, close };
 }
 
-/** Penjelasan izin lokasi dan pesan hasilnya, di samping kontrol peta. */
+/** Penjelasan izin lokasi dan pesan hasilnya, di bawah kontrol peta di ponsel dan di sampingnya di layar lebar. */
 export function LocatePanel({ locate, buttonRef }: { locate: ReturnType<typeof useLocate>; buttonRef: RefObject<HTMLButtonElement | null> }) {
   const t = useTranslations("Peta.lokasiSaya");
   const title = useRef<HTMLHeadingElement>(null);
@@ -58,7 +58,14 @@ export function LocatePanel({ locate, buttonRef }: { locate: ReturnType<typeof u
     buttonRef.current?.focus();
   }
 
-  // Penjelasan menerima fokus saat dibuka, dan Escape menutupnya lalu fokus kembali ke tombol Lokasi saya.
+  /** Fokus kembali ke tombol Lokasi saya dulu (menutup penjelasan), lalu lokasi dicari; hasilnya diumumkan. */
+  function accept() {
+    buttonRef.current?.focus();
+    allow();
+  }
+
+  // Penjelasan menerima fokus saat dibuka. Escape menutupnya lalu fokus kembali ke tombol Lokasi saya, dan penjelasan
+  // juga tertutup saat fokus pindah ke luarnya, karena kartunya bisa menutupi panel daftar di layar pendek.
   useEffect(() => {
     const element = dialog.current;
     if (phase !== "tanya" || !element) return;
@@ -69,8 +76,15 @@ export function LocatePanel({ locate, buttonRef }: { locate: ReturnType<typeof u
       close();
       buttonRef.current?.focus();
     };
+    const onFocusOut = (event: FocusEvent) => {
+      if (event.relatedTarget instanceof Node && !element.contains(event.relatedTarget)) close();
+    };
     element.addEventListener("keydown", onKey);
-    return () => element.removeEventListener("keydown", onKey);
+    element.addEventListener("focusout", onFocusOut);
+    return () => {
+      element.removeEventListener("keydown", onKey);
+      element.removeEventListener("focusout", onFocusOut);
+    };
   }, [phase, close, buttonRef]);
 
   if (phase === "tanya") {
@@ -84,7 +98,7 @@ export function LocatePanel({ locate, buttonRef }: { locate: ReturnType<typeof u
           {t("body")}
         </p>
         <div className="flex flex-wrap gap-2">
-          <button type="button" onClick={allow} className={buttonClass("primary", "sm")}>
+          <button type="button" onClick={accept} className={buttonClass("primary", "sm")}>
             {t("allow")}
           </button>
           <button type="button" onClick={cancel} className={buttonClass("outline", "sm")}>

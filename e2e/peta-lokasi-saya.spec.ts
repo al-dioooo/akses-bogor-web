@@ -29,6 +29,35 @@ test("explains the location permission first and closes with Cancel or Escape", 
   await expect(button(page)).toBeFocused();
 });
 
+for (const viewport of [
+  { width: 320, height: 568 },
+  { width: 667, height: 375 },
+]) {
+  test(`the permission card stays above the list panel on a small screen (${viewport.width}×${viewport.height})`, async ({ page }) => {
+    await page.setViewportSize(viewport);
+    await openMap(page);
+    await button(page).click();
+    const dialog = page.getByRole("dialog", { name: "Tampilkan lokasi Anda di peta?" });
+    await expect(dialog.getByRole("heading")).toBeFocused();
+    for (const name of ["Izinkan lokasi", "Batal"]) {
+      await expect
+        .poll(() =>
+          dialog.getByRole("button", { name }).evaluate((element) => {
+            element.scrollIntoView({ block: "nearest" });
+            const box = element.getBoundingClientRect();
+            const hit = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
+            return !!hit && (hit === element || element.contains(hit));
+          }),
+        )
+        .toBe(true);
+    }
+    // Fokus yang pindah ke luar kartu menutupnya, supaya kartu tidak pernah menutupi elemen yang sedang difokus.
+    await dialog.getByRole("button", { name: "Batal" }).focus();
+    await page.keyboard.press("Tab");
+    await expect(dialog).toHaveCount(0);
+  });
+}
+
 test("says so when the browser refuses the location", async ({ page }) => {
   // Penolakan dibuat pasti: tanpa ini, lama browser tanpa layar menolak izin bergantung pada beban mesin.
   await page.addInitScript(() => {
@@ -38,6 +67,8 @@ test("says so when the browser refuses the location", async ({ page }) => {
   await openMap(page);
   await button(page).click();
   await page.getByRole("button", { name: "Izinkan lokasi" }).click();
+  // Fokus kembali ke tombol Lokasi saya selama lokasi dicari.
+  await expect(button(page)).toBeFocused();
   await expect(page.getByText("Izin lokasi ditolak. Anda bisa mengizinkannya lagi di pengaturan browser.").first()).toBeVisible();
   await page.getByRole("button", { name: "Tutup pesan lokasi" }).click();
   await expect(button(page)).toBeFocused();

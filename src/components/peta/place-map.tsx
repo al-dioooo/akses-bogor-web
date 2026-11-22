@@ -31,7 +31,7 @@ async function fetchToken(): Promise<MapToken> {
 }
 
 /** Elemen yang mengambang di atas peta. Marker di bawahnya tidak terlihat, jadi tidak boleh bisa difokus (WCAG 2.4.11). */
-const OVERLAYS = ".peta-cari, .peta-lapisan, .peta-kontrol, .peta-kunci";
+const OVERLAYS = ".peta-cari, .peta-lapisan, .peta-kontrol, .peta-kunci, .peta-lokasi";
 
 /**
  * Bagian atas main yang terpakai pencarian dan kontrol (batas tinggi panel setengah), bagian peta yang tertutup panel
@@ -260,7 +260,7 @@ export function PlaceMap({
       timer = window.setTimeout(update, 120);
     };
     const observer = new ResizeObserver(schedule);
-    for (const selector of [".peta-lembar", ".peta-cari", ".peta-kontrol", ".peta-lapisan", ".peta-kunci"]) {
+    for (const selector of [".peta-lembar", ".peta-cari", ".peta-kontrol", ".peta-lapisan", ".peta-kunci", ".peta-lokasi"]) {
       const element = main.querySelector(selector);
       if (element) observer.observe(element);
     }
@@ -270,7 +270,8 @@ export function PlaceMap({
       observer.disconnect();
       window.clearTimeout(timer);
     };
-  }, [map, state, priority, layer, flushMove]);
+    // Kunci prioritas dan kartu Lokasi saya muncul dan hilang, jadi pengamatnya dipasang ulang.
+  }, [map, state, priority, layer, locate.phase, flushMove]);
 
   // Ringkasan menerima fokus setiap kali lokasi dipilih, supaya pembaca layar langsung membacanya.
   useEffect(() => {

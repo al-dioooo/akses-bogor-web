@@ -502,18 +502,42 @@ body:has(> .peta-app) {
   grid-column: 2;
   grid-row: 2;
   align-self: start;
+  /* Di ponsel kartu Lokasi saya diletakkan terhadap main, bukan terhadap kontrol. */
+  @media (width < 48rem) {
+    position: static;
+  }
 }
 
-/* Penjelasan izin dan pesan "Lokasi saya": di ponsel selebar layar di bawah kontrol, di layar lebar di kiri kontrol. */
+/* Penjelasan izin dan pesan "Lokasi saya", di atas panel daftar. Di ponsel kartu selebar layar di bawah pencarian dan
+   kontrol (main yang menjadi acuannya), paling bawah di atas Bottom nav, dan isinya digulir bila tidak muat. Di layar
+   lebar kartu di kiri kontrol. */
 .peta-lokasi {
   position: absolute;
-  top: calc(100% + 0.5rem);
-  right: 0;
-  z-index: 2;
-  width: min(22rem, calc(100vw - 1.5rem));
+  top: calc(var(--peta-atas) + 0.5rem);
+  right: 0.75rem;
+  left: 0.75rem;
+  max-height: calc(100% - var(--peta-atas) - 0.5rem - var(--peta-nav));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  /* Ponsel landscape: di bawah pencarian hampir tidak ada ruang, jadi kartu menutupi pencarian selama terbuka. */
+  @media (width < 48rem) and (height < 32rem) {
+    top: 0.75rem;
+    max-height: calc(100% - 1.5rem - var(--peta-nav));
+  }
   @media (width >= 48rem) {
     top: 0;
     right: calc(100% + 0.75rem);
+    left: auto;
+    width: min(22rem, calc(100vw - 1.5rem));
+    max-height: none;
+  }
+}
+
+/* Kontrol dengan kartu Lokasi saya yang terbuka berada di atas panel daftar, kecuali saat lembar penuh menutup peta. */
+.peta-kontrol:has(.peta-lokasi) {
+  z-index: 3;
+  .peta-app[data-tinggi="penuh"] & {
+    z-index: 1;
   }
 }
 
