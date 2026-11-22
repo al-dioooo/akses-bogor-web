@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
-import { FilterForm } from "@/components/jelajahi/filter-form";
 import { MapResults, MapResultsSkeleton } from "@/components/peta/results";
-import { mapHref, parseFilters } from "@/lib/filters";
+import { SearchBar } from "@/components/peta/search-bar";
+import { getDistricts } from "@/lib/api";
+import { parseFilters } from "@/lib/filters";
 import { LoadErrorBoundary } from "@/ui/load-error";
 import { SectionHeading } from "@/ui/section-heading";
 
@@ -25,13 +26,18 @@ export default async function Peta({ searchParams }: PageProps<"/peta">) {
   );
 }
 
+/**
+ * Filter baru dimuat lewat navigasi klien tanpa kunci Suspense baru, jadi hasil lama (dan peta yang sama) tetap tampil
+ * sampai hasil baru siap. Kotak pencarian menunjukkan bahwa hasil sedang dimuat.
+ */
 async function MapContent({ searchParams, loading }: { searchParams: PageProps<"/peta">["searchParams"]; loading: string }) {
   const filters = parseFilters(await searchParams);
+  const districts = await getDistricts().catch(() => []);
   return (
     <>
-      <FilterForm filters={filters} action="/peta" />
+      <SearchBar filters={filters} districts={districts} />
       <LoadErrorBoundary>
-        <Suspense key={mapHref(filters)} fallback={<MapResultsSkeleton label={loading} />}>
+        <Suspense fallback={<MapResultsSkeleton label={loading} />}>
           <MapResults filters={filters} />
         </Suspense>
       </LoadErrorBoundary>
