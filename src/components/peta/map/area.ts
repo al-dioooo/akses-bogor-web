@@ -25,16 +25,19 @@ export function visibleRect(width: number, height: number, insets: Insets): Rect
 }
 
 /**
- * Padding untuk fitBounds dan flyTo: bagian yang tertutup ditambah `margin`. Bila sisa kanvas terlalu sempit untuk
- * memuat seluruh Kota Bogor, padding hanya `margin`, supaya Mapbox tidak menolak perpindahannya.
+ * Padding untuk fitBounds dan flyTo: bagian yang tertutup ditambah `margin`. Pilihan pertama yang masih menyisakan cukup
+ * kanvas untuk memuat seluruh Kota Bogor yang dipakai (mis. seluruh pita kontrol di atas, lalu hanya bagian yang tertutup
+ * panel); bila tidak ada, padding hanya `margin`, supaya Mapbox tidak menolak perpindahannya.
  */
-export function cameraPadding(width: number, height: number, insets: Insets, margin = 16): Insets {
-  const padded = {
-    top: Math.max(0, insets.top) + margin,
-    right: Math.max(0, insets.right) + margin,
-    bottom: Math.max(0, insets.bottom) + margin,
-    left: Math.max(0, insets.left) + margin,
-  };
-  const roomy = width - padded.left - padded.right >= 80 && height - padded.top - padded.bottom >= 80;
-  return roomy ? padded : { top: margin, right: margin, bottom: margin, left: margin };
+export function cameraPadding(width: number, height: number, choices: Insets | Insets[], margin = 16): Insets {
+  for (const insets of Array.isArray(choices) ? choices : [choices]) {
+    const padded = {
+      top: Math.max(0, insets.top) + margin,
+      right: Math.max(0, insets.right) + margin,
+      bottom: Math.max(0, insets.bottom) + margin,
+      left: Math.max(0, insets.left) + margin,
+    };
+    if (width - padded.left - padded.right >= 80 && height - padded.top - padded.bottom >= 80) return padded;
+  }
+  return { top: margin, right: margin, bottom: margin, left: margin };
 }
