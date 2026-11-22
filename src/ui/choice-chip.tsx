@@ -4,7 +4,7 @@ import { IconCheck } from "./icons";
 
 // Kotak centang tak terlihat menutupi seluruh chip, supaya sentuhan dan pembaca layar di ponsel mengenai
 // kontrolnya sendiri. Cincin fokus dan tanda centang digambar di label.
-const CHOICE =
+export const CHOICE =
   "relative inline-flex min-h-11 shrink-0 cursor-pointer items-center gap-2 rounded-full border-2 border-border-subtle bg-surface-raised px-4 text-sm font-semibold " +
   "transition-colors duration-200 hover:border-border-strong has-checked:border-border-strong has-checked:bg-text-primary " +
   "has-checked:text-bg-canvas has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-focus-ring";
