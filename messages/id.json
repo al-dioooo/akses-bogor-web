@@ -1238,6 +1238,19 @@
         "oldestVerified": "Terlama diverifikasi {date}",
         "recheckEmpty": "Semua lokasi diverifikasi dalam 12 bulan terakhir."
       },
+      "petakan": {
+        "title": "Petakan berikutnya",
+        "loading": "Memuat prioritas kecamatan…",
+        "intro": "Kecamatan yang paling perlu data, menurut prioritas kecamatan {year}.",
+        "level": "Prioritas {level}",
+        "withoutData": "{count, plural, other {# tempat belum punya data AksesBogor}}",
+        "source": "Sumber: {publisher}; jumlah tempat dari OpenStreetMap, {osm}.",
+        "sourceDinsos": "Sumber: {publisher}.",
+        "fallback": "Mulai dari tempat umum yang sering Anda datangi: kampus, masjid, halte, atau rumah sakit di Kota Bogor.",
+        "agent": "Cari tempat dengan agen",
+        "report": "Laporkan tempat",
+        "map": "Lihat di peta"
+      },
       "rute": {
         "eyebrow": "Rute pertama Anda",
         "title": "Dari akun baru ke",
