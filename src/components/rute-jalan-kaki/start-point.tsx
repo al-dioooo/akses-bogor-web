@@ -12,10 +12,16 @@ import { IconFocusCentered, IconMap2, IconShieldCheck } from "@/ui/icons";
 /** Tengah Kota Bogor, tengah peta bila lokasi tujuan tidak diketahui. */
 const KOTA_BOGOR: LatLng = { lat: -6.5971, lng: 106.7972 };
 
+/** Teks pengganti untuk judul, kegunaan, dan catatan privasi titik awal; yang kosong memakai teks Bantu memetakan. */
+export type StartPointCopy = { title?: string; why?: string; privacy?: string };
+
 type Props = {
   /** Lokasi tujuan bila diketahui, tengah peta saat memilih titik awal. */
   destination?: LatLng;
-  onStart: (from: LatLng) => void;
+  onStart: (from: LatLng, source: "perangkat" | "peta") => void;
+  copy?: StartPointCopy;
+  /** Tingkat judul: 4 di dalam kartu rute, 3 di panel halaman. Judul pemilih peta satu tingkat di bawahnya. */
+  level?: 3 | 4;
 };
 
 /**
@@ -23,7 +29,7 @@ type Props = {
  * pengguna memilih titik di peta dengan pin di tengah, yang bisa digeser dengan tombol arah atau keyboard. Satu
  * percakapan bisa punya beberapa kartu rute, jadi id di sini dibuat unik.
  */
-export function StartPoint({ destination, onStart }: Props) {
+export function StartPoint({ destination, onStart, copy = {}, level = 4 }: Props) {
   const t = useTranslations("RuteJalanKaki.awal");
   const [picking, setPicking] = useState(false);
   const [locating, setLocating] = useState(false);
@@ -31,6 +37,8 @@ export function StartPoint({ destination, onStart }: Props) {
   const [candidate, setCandidate] = useState<Candidate>({ point: destination ?? KOTA_BOGOR, source: "awal" });
   const pickTitle = useRef<HTMLHeadingElement>(null);
   const titleId = useId();
+  const Title = level === 3 ? "h3" : "h4";
+  const PickTitle = level === 3 ? "h4" : "h5";
 
   function openMap(message = "") {
     setProblem(message);
@@ -46,7 +54,7 @@ export function StartPoint({ destination, onStart }: Props) {
     navigator.geolocation.getCurrentPosition(
       ({ coords }) => {
         setLocating(false);
-        onStart({ lat: coords.latitude, lng: coords.longitude });
+        onStart({ lat: coords.latitude, lng: coords.longitude }, "perangkat");
       },
       (failure) => {
         setLocating(false);
@@ -58,13 +66,13 @@ export function StartPoint({ destination, onStart }: Props) {
 
   return (
     <section aria-labelledby={titleId} className="flex flex-col gap-4">
-      <h4 id={titleId} className="font-heading text-lg font-bold">
-        {t("title")}
-      </h4>
-      <p className="text-text-secondary">{t("why")}</p>
+      <Title id={titleId} className="font-heading text-lg font-bold">
+        {copy.title ?? t("title")}
+      </Title>
+      <p className="text-text-secondary">{copy.why ?? t("why")}</p>
       <p className="flex gap-3 rounded-2xl bg-bg-sunken p-4">
         <Icon icon={IconShieldCheck} className="mt-0.5 size-5 shrink-0 text-icon-brand" />
-        <span>{t("privacy")}</span>
+        <span>{copy.privacy ?? t("privacy")}</span>
       </p>
       <div className="flex flex-wrap gap-3">
         <button type="button" onClick={locate} disabled={locating} className={buttonClass("primary", "md", "disabled:opacity-70")}>
@@ -88,11 +96,11 @@ export function StartPoint({ destination, onStart }: Props) {
       )}
       {picking && (
         <div className="flex flex-col gap-3">
-          <h5 ref={pickTitle} tabIndex={-1} className="font-heading font-bold">
+          <PickTitle ref={pickTitle} tabIndex={-1} className="font-heading font-bold">
             {t("pickTitle")}
-          </h5>
+          </PickTitle>
           <PickerMap candidate={candidate} onMove={setCandidate} unavailable={t("mapUnavailable")} />
-          <button type="button" onClick={() => onStart(candidate.point)} className={buttonClass("primary", "md", "self-start")}>
+          <button type="button" onClick={() => onStart(candidate.point, "peta")} className={buttonClass("primary", "md", "self-start")}>
             {t("usePoint")}
           </button>
         </div>
