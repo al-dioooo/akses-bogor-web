@@ -407,6 +407,9 @@ body:has(> .peta-app) {
   /* Ruang Bottom nav (70 px dan jarak 8 px dari tepinya) di bawah 1280 px; tinggi kepala panel daftar. */
   --peta-nav: calc(max(0.75rem, env(safe-area-inset-bottom)) + 4.875rem);
   --peta-kepala: 5rem;
+  @media (height < 32rem) {
+    --peta-kepala: 4rem;
+  }
   /* Bagian atas yang terpakai pencarian dan kontrol; diukur ulang oleh komponen peta. */
   --peta-atas: 9rem;
   --peta-durasi: 320ms;
@@ -487,12 +490,16 @@ body:has(> .peta-app) {
 @media (width >= 48rem) {
   .peta-cari {
     grid-column: 1;
-    /* Empat chip kategori dalam dua kolom yang rapi selebar kotak pencarian. */
+    /* Empat chip kategori dalam dua kolom yang rapi selebar kotak pencarian. Di layar pendek (ponsel landscape) tetap
+       satu baris yang bisa digeser, supaya panel daftar di bawahnya punya ruang. */
     & .peta-chip {
       display: grid;
       grid-template-columns: 1fr 1fr;
       margin-inline: 0;
       padding-inline: 0;
+      @media (height < 32rem) {
+        display: flex;
+      }
     }
   }
   .peta-lapisan {
@@ -542,7 +549,10 @@ body:has(> .peta-app) {
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
+  /* Lembar ponsel memanjang di balik Bottom nav: isi terakhir bisa digulir ke atasnya, dan elemen yang difokus atau
+     digulir ke tampilan berhenti di atas Bottom nav, tidak di baliknya. */
   padding-bottom: var(--peta-nav);
+  scroll-padding-bottom: var(--peta-nav);
   /* Saat panel membesar, isinya langsung terlihat dan bisa difokus. Tanpa ini, aturan "kurangi gerakan" (durasi 0.01 ms
      untuk semua properti) membuat isi masih tersembunyi tepat saat ringkasan lokasi menerima fokus. */
   transition-property: none;
@@ -553,6 +563,7 @@ body:has(> .peta-app) {
   }
   @media (width >= 48rem) {
     padding-bottom: 0;
+    scroll-padding-bottom: 0;
     .peta-app[data-tinggi="kecil"] & {
       display: none;
     }
@@ -564,7 +575,8 @@ body:has(> .peta-app) {
   outline-offset: -4px;
 }
 
-/* Pesan di atas peta (memuat, galat, tidak ada lokasi): di tengah bagian peta yang tidak tertutup pencarian dan panel. */
+/* Pesan "memuat" di atas peta, di tengah bagian yang tidak tertutup pencarian dan panel. Pesan galat dan "tidak ada
+   lokasi" ada di panel daftar, karena di layar pendek bagian peta ini bisa lebih pendek dari pesannya. */
 .peta-pesan {
   position: absolute;
   inset: var(--peta-atas) 0.75rem var(--peta-bawah);

@@ -1,9 +1,23 @@
 import type { Page } from "@playwright/test";
 import { blockingViolations } from "./axe";
-import { expect, test } from "./mapbox";
+import { expect, stubMapbox, test } from "./mapbox";
 
 // Peta layar penuh: panel daftar (lembar bawah di ponsel, panel samping mulai 768 px), dengan API dan Mapbox tiruan.
 const placeList = (page: Page) => page.getByRole("list", { name: /^(Daftar lokasi|Lokasi di tampilan peta)$/ });
+
+/** IP pengunjung yang mendapat data kosong dari API tiruan, seperti production sebelum ada lokasi. */
+const NO_PLACES_IP = "203.0.113.249";
+
+/**
+ * Elemen digulir ke tampilan di panel, lalu harus terlihat di layar dan tidak tertutup elemen lain (panel, Bottom nav)
+ * di titik tengahnya.
+ */
+const uncovered = (element: Element) => {
+  element.scrollIntoView({ block: "nearest" });
+  const box = element.getBoundingClientRect();
+  const hit = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
+  return box.top >= 0 && box.bottom <= window.innerHeight && !!hit && (hit === element || element.contains(hit));
+};
 
 async function openMap(page: Page, path = "/peta") {
   await page.emulateMedia({ reducedMotion: "reduce" });
@@ -109,5 +123,34 @@ for (const colorScheme of ["light", "dark"] as const) {
     await page.getByRole("button", { name: "Tampilkan daftar" }).click();
     await expect(placeList(page)).toBeVisible();
     expect(await blockingViolations(page)).toEqual([]);
+  });
+}
+
+for (const viewport of [
+  { width: 320, height: 568 },
+  { width: 667, height: 375 },
+  { width: 915, height: 412 },
+]) {
+  test(`with no places at all the panel says so where it can be seen (${viewport.width}×${viewport.height})`, async ({ browser }, testInfo) => {
+    test.skip(testInfo.project.name !== "ponsel", "Ukuran layar ditentukan tes ini sendiri");
+    const context = await browser.newContext({ viewport, reducedMotion: "reduce", extraHTTPHeaders: { "x-forwarded-for": NO_PLACES_IP } });
+    const page = await context.newPage();
+    await stubMapbox(page);
+    await page.goto("/peta");
+    // Tanpa filter: "belum ada lokasi", bukan "tidak ada yang cocok" atau "0 dari 0", sebelum dan sesudah peta dimuat.
+    const status = page.locator("#judul-daftar-peta + [role=status]");
+    await expect(status).toHaveText("Belum ada lokasi");
+    await expect(page.getByText("Memuat peta…")).toHaveCount(0);
+    await expect(status).toHaveText("Belum ada lokasi");
+    expect(await status.evaluate(uncovered)).toBe(true);
+    await expect(page.getByText(/dari 0 lokasi|Tidak ada lokasi yang cocok/)).toHaveCount(0);
+    const body = page.getByText("Lokasi tampil di sini setelah laporan warga diperiksa tim.");
+    expect(await body.evaluate(uncovered)).toBe(true);
+    // Dengan filter: pesan "tidak ada yang cocok" dan jalan untuk menghapus filter.
+    await page.goto("/peta?q=tidak-ada");
+    await expect(status).toHaveText("Tidak ada lokasi yang cocok");
+    const reset = page.getByRole("main").getByRole("link", { name: "Hapus filter" });
+    expect(await reset.evaluate(uncovered)).toBe(true);
+    await context.close();
   });
 }

@@ -233,7 +233,7 @@
     "title": "Lokasi di",
     "accent": "peta.",
     "loading": "Memuat peta…",
-    "count": "{total, plural, =0 {Tidak ada lokasi yang cocok} other {Menampilkan # lokasi}}",
+    "count": "Menampilkan {total} lokasi",
     "asList": "Lihat sebagai daftar",
     "legend": "Legenda status",
     "cari": {
