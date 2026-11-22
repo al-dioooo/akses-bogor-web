@@ -299,11 +299,10 @@
       "title": "Prioritas kecamatan",
       "intro": "Warna kecamatan menunjukkan seberapa perlu fasilitasnya didata, dari penyandang disabilitas terdaftar, fasilitas tanpa data, dan lokasi yang sudah diverifikasi.",
       "legend": "Legenda prioritas",
-      "boundaries": "Batas kecamatan: {attribution}.",
+      "boundaries": "Batas kecamatan: <credit>{attribution}</credit>.",
       "table": "Tabel",
       "showTable": "Tabel prioritas kecamatan",
-      "source": "Sumber: {publisher}.",
-      "notes": "Catatan data dan sumber"
+      "source": "Sumber: {publisher}."
     }
   },
   "Detail": {
