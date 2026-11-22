@@ -5,13 +5,14 @@
 // GET /districts yang lambat. GET /places/00000000-0000-4000-8000-000000000500 selalu menjawab 500, untuk menguji
 // status halaman Detail saat API galat. Route akun ada di akun.mjs, route
 // Laporkan di laporkan.mjs, route panel verifikator di verifikasi.mjs, route agen rute di agen-rute.mjs, dan prioritas
-// kecamatan di prioritas.mjs.
+// kecamatan di prioritas.mjs, dan kandidat "Belum ada data" di kandidat.mjs.
 // GET /_tiruan/pengunjung?ip=...&path=... menjawab rahasia server web terakhir yang dikirim bersama IP pengunjung itu,
 // untuk path API tertentu atau, tanpa path, untuk path mana pun.
 import { readFileSync } from "node:fs";
 import { createServer } from "node:http";
 import { handleAgenRute } from "./agen-rute.mjs";
 import { handleAkun } from "./akun.mjs";
+import { handleKandidat } from "./kandidat.mjs";
 import { handleLaporkan } from "./laporkan.mjs";
 import { handlePrioritas } from "./prioritas.mjs";
 import { handleVerifikasi } from "./verifikasi.mjs";
@@ -126,6 +127,7 @@ createServer(async (request, response) => {
     handleVerifikasi(request.method, url, request.headers, payload, places) ??
     handleAgenRute(request.method, url, request.headers, payload, places) ??
     handlePrioritas(request.method, url.pathname, request.headers) ??
+    handleKandidat(request.method, url) ??
     route(url, request.headers);
   response.writeHead(status, { "content-type": "application/json; charset=utf-8", ...headers });
   // Foto dikirim sebagai berkas biner, selebihnya JSON.
