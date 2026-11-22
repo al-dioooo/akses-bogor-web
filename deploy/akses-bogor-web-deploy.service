@@ -1,0 +1,28 @@
+# Men-deploy web bila branch release berisi commit baru (ADR-0048). Dipicu akses-bogor-web-deploy.timer, atau langsung
+# dengan `sudo systemctl start akses-bogor-web-deploy`.
+[Unit]
+Description=Deploy AksesBogor Web dari branch release
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=aksesbogor-web
+Group=aksesbogor-web
+Environment=DEPLOY_REF=release
+# Keluar 1 bila release belum berubah atau commit-nya pernah gagal health check, sehingga unit dilewati, bukan gagal.
+ExecCondition=/usr/local/lib/akses-bogor-web/deploy.sh --check
+ExecStart=/usr/local/lib/akses-bogor-web/deploy.sh
+# Awalan + menjalankan restart, health check, dan rollback sebagai root; langkah lain tetap sebagai aksesbogor-web.
+ExecStartPost=+/usr/local/lib/akses-bogor-web/deploy.sh --activate
+TimeoutStartSec=20min
+# Build Next.js memakai semua core dan lebih dari 1 GB memori. Bobot CPU rendah supaya API dan layanan lain tetap
+# didahulukan; batas memori membuat build yang membengkak gagal sendiri tanpa memicu OOM untuk layanan lain.
+CPUWeight=20
+MemoryMax=4G
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/srv/akses-bogor-web

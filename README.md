@@ -12,9 +12,9 @@ Keputusan produk dan teknis ada di [akses-bogor-docs](https://github.com/al-dioo
 | Gaya | Tailwind CSS v4; token design system Figma sebagai CSS variables dan utility |
 | Bahasa | next-intl, satu locale `id` |
 | Tes dan lint | Vitest + Testing Library untuk komponen, Playwright + axe-core untuk halaman, ESLint dengan `jsx-a11y` strict |
-| Hosting | Vercel |
+| Hosting | Evergarden (OCI Batam): systemd + `next start`, dibuka lewat Cloudflare Tunnel |
 
-Alasan pilihan ini ada di [ADR-0013](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0013-tech-stack-nextjs-fastify.md).
+Alasan pilihan ini ada di [ADR-0013](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0013-tech-stack-nextjs-fastify.md), dan untuk hosting di [ADR-0048](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0048-web-di-host-sendiri-di-evergarden-oci.md).
 
 ## Menjalankan di Lokal
 
@@ -45,12 +45,11 @@ Contoh ada di [.env.example](.env.example); salin ke `.env.local`. Jangan commit
 | --- | --- | --- |
 | `API_URL` | Ya | Alamat [akses-bogor-api](https://github.com/al-dioooo/akses-bogor-api), mis. `http://localhost:8080`. Hanya dibaca di server; browser tidak pernah memanggil API langsung |
 | `NEXT_PUBLIC_GOOGLE_CLIENT_ID` | Tidak | Client ID OAuth Google AksesBogor, sama dengan `GOOGLE_CLIENT_ID` di API. Bukan rahasia; dibaca saat build. Kosong berarti tombol "Masuk dengan Google" tidak tampil |
-| `ENABLE_EXPERIMENTAL_COREPACK` | Di Vercel | `1`, supaya Vercel memakai versi pnpm dari `packageManager` di `package.json` |
-| `WEB_SERVER_SECRET` | Di Vercel | Rahasia bersama dengan API, nilainya sama dengan `WEB_SERVER_SECRET` di API. Bila diisi, setiap panggilan API membawa IP pengunjung sehingga rate limit dihitung per pengunjung, bukan per IP Vercel |
-| `SITE_URL` | Di Vercel | Alamat situs tanpa path, mis. `https://akses-bogor.aldio.dev`. Dipakai untuk URL kanonis, OpenGraph, sitemap, dan `robots.txt`. Kosong berarti domain produksi Vercel (atau alamat preview), lalu `http://localhost:3000` di lokal |
+| `WEB_SERVER_SECRET` | Di server | Rahasia bersama dengan API, nilainya sama dengan `WEB_SERVER_SECRET` di API. Bila diisi, setiap panggilan API membawa IP pengunjung sehingga rate limit dihitung per pengunjung, bukan per IP server web |
+| `SITE_URL` | Di server | Alamat situs tanpa path, mis. `https://akses-bogor.aldio.dev`. Dipakai untuk URL kanonis, OpenGraph, sitemap, dan `robots.txt`. Kosong berarti `http://localhost:3000`; skrip deploy menolak build tanpa nilai ini |
 | `SITE_INDEXABLE` | Tidak | `true` supaya halaman publik boleh diindeks mesin pencari. Hanya berlaku bila `SITE_URL` juga diisi. Bawaannya mati: semua halaman `noindex` dan `robots.txt` melarang semua crawler |
 
-`SITE_URL` dan `SITE_INDEXABLE` dibaca saat build untuk halaman statis, jadi deploy ulang setelah mengubahnya. Selama domain produksi belum dipilih ([ADR-0045](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0045-alamat-staging-di-aldio-dev.md)), staging memakai `SITE_URL=https://akses-bogor.aldio.dev` tanpa `SITE_INDEXABLE`. Saat domain produksi siap, ganti `SITE_URL` ke domain itu, isi `SITE_INDEXABLE=true`, lalu deploy ulang. Hanya halaman publik (Beranda, Jelajahi, Peta, Detail lokasi, halaman edukasi, Tentang, dan halaman hukum) yang bisa diindeks; halaman akun, masuk, Laporkan, dan verifikasi selalu `noindex`.
+`SITE_URL` dan `SITE_INDEXABLE` dibaca saat build untuk halaman statis. Di server, mengubah `web.env` otomatis berarti build baru (lihat [Deployment](#deployment)). Selama domain produksi belum dipilih ([ADR-0045](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0045-alamat-staging-di-aldio-dev.md)), staging memakai `SITE_URL=https://akses-bogor.aldio.dev` tanpa `SITE_INDEXABLE`. Saat domain produksi siap, ganti `SITE_URL` ke domain itu, isi `SITE_INDEXABLE=true`, lalu deploy ulang. Hanya halaman publik (Beranda, Jelajahi, Peta, Detail lokasi, halaman edukasi, Tentang, dan halaman hukum) yang bisa diindeks; halaman akun, masuk, Laporkan, dan verifikasi selalu `noindex`.
 
 Peta tidak butuh variabel Mapbox di web. Browser mengambil token Mapbox sementara dari `/peta/kunci`, yang meneruskannya dari `GET /map/token` di API ([ADR-0016](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0016-peta-dan-pencarian-mapbox.md)). Selama API belum diatur, halaman Peta menampilkan legenda dan daftar lokasi tanpa peta.
 
@@ -99,21 +98,70 @@ Diagram, pengaturan bahasa, lapisan pengujian, dan struktur folder ada di [docs/
 
 ## Deployment
 
-Proyek Vercel di akun pemilik repo ([ADR-0013](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0013-tech-stack-nextjs-fastify.md)). Web dibuka di `https://akses-bogor.aldio.dev`, dengan `https://akses-bogor.vercel.app` tetap sebagai alias, dan API ada di `https://akses-bogor-api.aldio.dev` ([ADR-0026](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0026-api-dan-postgresql-di-evergarden-oci.md)). Untuk sementara lingkungan ini disebut staging, dan domain produksinya belum diputuskan ([ADR-0045](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0045-alamat-staging-di-aldio-dev.md)).
+Web berjalan di Evergarden, VM Ubuntu 24.04 di OCI region Batam, di server yang sama dengan API, dan dibuka di `https://akses-bogor.aldio.dev` lewat Cloudflare Tunnel ([ADR-0048](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0048-web-di-host-sendiri-di-evergarden-oci.md)). API ada di `https://akses-bogor-api.aldio.dev` ([ADR-0026](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0026-api-dan-postgresql-di-evergarden-oci.md)). Untuk sementara lingkungan ini disebut staging, dan domain produksinya belum diputuskan ([ADR-0045](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0045-alamat-staging-di-aldio-dev.md)). Berkasnya ada di [deploy/](deploy/).
 
-| Pengaturan Vercel | Nilai |
+| Bagian | Di Evergarden |
 | --- | --- |
-| Framework Preset | Next.js, dengan perintah install, build, dan output bawaan |
-| Root Directory | `./` |
-| Production Branch | `release` (Settings → Environments → Production) |
-| Node.js Version | 24.x, sama dengan `.nvmrc` |
-| Environment Variables | `API_URL` = `https://akses-bogor-api.aldio.dev`, `ENABLE_EXPERIMENTAL_COREPACK` = `1`, `NEXT_PUBLIC_GOOGLE_CLIENT_ID` (dibaca saat build, jadi deploy ulang setelah diisi), dan `WEB_SERVER_SECRET`, untuk Production dan Preview |
+| Web | `akses-bogor-web.service`: user `aksesbogor-web`, `next start` di `127.0.0.1:8091`, Node 24, memori maksimal 1 GB |
+| Environment | `/etc/akses-bogor/web.env`, contohnya [deploy/web.env.example](deploy/web.env.example). Dibaca saat build dan saat runtime |
+| Rilis | `/srv/akses-bogor-web/releases/<sha>-<hash web.env>`; rilis aktif ditunjuk tautan `/srv/akses-bogor-web/current`, rilis sebelumnya oleh `previous` |
+| Deploy | `akses-bogor-web-deploy.timer` memeriksa branch `release` setiap 5 menit dan menjalankan [deploy/deploy.sh](deploy/deploy.sh) |
+| Tunnel | Public hostname di dashboard Cloudflare Zero Trust, diarahkan ke `http://127.0.0.1:8091` |
 
-- Rilis berarti merge `main` ke `release` lewat PR, sama seperti API. Push ke branch lain, termasuk `main`, menjadi preview deployment.
-- Preview deployment hanya bisa dibuka anggota proyek di Vercel. Tim membuka alamat utama proyek, `https://akses-bogor.aldio.dev`.
-- Setiap alamat web baru juga ditambahkan ke `FRONTEND_ORIGINS` di API.
-- `WEB_SERVER_SECRET` diisi sendiri untuk Production dan Preview, bertipe Sensitive, dengan nilai yang sama seperti di `/etc/akses-bogor/api.env` di API.
-- Paket Hobby Vercel hanya membatasi author commit untuk repo privat. Repo ini publik, jadi tidak perlu commit kosong atas nama pemilik seperti di lokerin. Bila repo dijadikan privat, deploy dari commit anggota lain akan diblokir.
+### Rilis
+
+Merge `main` ke `release` lewat PR, sama seperti API. Paling lama lima menit kemudian, timer mengekspor commit itu ke folder rilis baru, menjalankan `pnpm install --frozen-lockfile` dan `pnpm build` dengan isi `web.env`, memindahkan `current`, me-restart web, lalu memeriksa `/` dan `/robots.txt`. Build butuh sekitar 20 detik dan memori sekitar 2 GB. Tiga rilis terakhir disimpan.
+
+```bash
+journalctl -u akses-bogor-web-deploy -n 50    # hasil deploy terakhir
+journalctl -u akses-bogor-web -n 50           # log Next.js
+sudo systemctl start akses-bogor-web-deploy   # deploy sekarang tanpa menunggu timer
+curl -sI https://akses-bogor.aldio.dev
+```
+
+`NEXT_PUBLIC_*`, `SITE_URL`, dan `SITE_INDEXABLE` ditanam saat build. Karena itu nama folder rilis memuat hash `web.env`: setelah `web.env` diubah, timer berikutnya membangun rilis baru dari commit yang sama, termasuk untuk perubahan yang hanya dibaca saat runtime seperti `WEB_SERVER_SECRET`.
+
+Bila health check gagal setelah restart, skrip mengembalikan `current` ke rilis sebelumnya, me-restart web, dan menandai rilis itu di `/srv/akses-bogor-web/gagal/`. Unit deploy berstatus gagal, dan timer tidak mencobanya lagi sampai `release` berisi commit baru atau `web.env` berubah. Build yang gagal tidak memindahkan `current` dan dicoba lagi pada jadwal berikutnya, seperti di API.
+
+Rollback dengan tangan dilakukan dengan revert di `release`. Bila perlu kembali sebelum revert itu masuk:
+
+```bash
+sudo systemctl stop akses-bogor-web-deploy.timer
+sudo -u aksesbogor-web ln -sfn releases/<rilis-lama> /srv/akses-bogor-web/current
+sudo systemctl restart akses-bogor-web
+```
+
+Nyalakan lagi timer setelah revert masuk ke `release`. Unit systemd dan skrip di `deploy/` dipasang dengan tangan, jadi perubahan pada berkas itu baru berlaku setelah dipasang ulang dengan perintah `install` di bawah dan `sudo systemctl daemon-reload`.
+
+Tidak ada preview deployment per PR. Screenshot di PR diambil dari Playwright di lokal.
+
+### Menyiapkan Server
+
+Sekali saja, sebagai admin, dari checkout repo ini:
+
+```bash
+# User sistem tanpa akses database
+sudo useradd --system --home-dir /srv/akses-bogor-web --shell /usr/sbin/nologin aksesbogor-web
+sudo install -d -m 0750 -o aksesbogor-web -g aksesbogor-web /srv/akses-bogor-web
+
+# Skrip, unit, dan environment. Folder /etc/akses-bogor milik grup aksesbogor (API), jadi user web hanya diberi hak
+# masuk ke folder itu, tanpa bisa membaca api.env.
+sudo install -d -m 0755 /usr/local/lib/akses-bogor-web
+sudo install -m 0755 deploy/deploy.sh /usr/local/lib/akses-bogor-web/
+sudo install -m 0644 deploy/akses-bogor-web.service deploy/akses-bogor-web-deploy.service \
+  deploy/akses-bogor-web-deploy.timer /etc/systemd/system/
+sudo setfacl -m u:aksesbogor-web:x /etc/akses-bogor
+sudo install -m 0640 -o root -g aksesbogor-web deploy/web.env.example /etc/akses-bogor/web.env   # lalu sesuaikan
+sudo systemctl daemon-reload
+
+# Rilis pertama, lalu nyalakan semuanya
+sudo -u aksesbogor-web -H git clone --bare https://github.com/al-dioooo/akses-bogor-web.git /srv/akses-bogor-web/repo.git
+sudo systemctl start akses-bogor-web-deploy
+sudo systemctl enable akses-bogor-web akses-bogor-web-deploy.timer
+sudo systemctl start akses-bogor-web-deploy.timer
+```
+
+Terakhir, arahkan public hostname `akses-bogor.aldio.dev` di tunnel Evergarden (Zero Trust → Networks → Tunnels) ke `http://127.0.0.1:8091`. Hostname lain di tunnel itu jangan diubah. Setiap alamat web baru juga ditambahkan ke `FRONTEND_ORIGINS` di API.
 
 ## Kontribusi
 
