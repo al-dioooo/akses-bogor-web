@@ -217,6 +217,7 @@
       "emptyBody": "Coba kata lain, atau kurangi filter yang dipakai.",
       "noDataTitle": "Belum ada lokasi",
       "noDataBody": "Lokasi tampil di sini setelah laporan warga diperiksa tim.",
+      "candidates": "Lihat {count} tempat yang belum ada datanya di Peta",
       "onMap": "Lihat di peta"
     },
     "pagination": {
