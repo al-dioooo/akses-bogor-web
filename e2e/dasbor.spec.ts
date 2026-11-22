@@ -48,6 +48,8 @@ test("skip link jumps past the dashboard menu to the page content", async ({ pag
   await signIn(page, email("lama"));
   await page.goto("/akun");
   await expect(page.getByRole("navigation", { name: "Menu dasbor" })).toBeVisible();
+  // Bagian Ringkasan dialirkan setelah kerangka; tunggu sampai ada yang bisa difokus di `main`.
+  await expect(page.getByRole("main").getByRole("link").first()).toBeVisible();
   await page.keyboard.press("Tab");
   await expect(page.getByRole("link", { name: "Lewati ke konten utama" })).toBeFocused();
   await page.keyboard.press("Enter");
