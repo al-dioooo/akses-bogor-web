@@ -26,7 +26,7 @@ export function PriorityLegend({ priority, attribution }: { priority: DistrictPr
 
 /**
  * Kredit batas kecamatan dari API (ADR-0034). Atribusi OpenStreetMap menaut ke halaman hak cipta dan lisensinya, sesuai
- * syarat ODbL.
+ * syarat ODbL, di tab baru (disebut di teks tautannya).
  */
 export function BoundariesCredit({ attribution }: { attribution: string }) {
   const t = useTranslations("Peta.prioritas");
@@ -35,7 +35,7 @@ export function BoundariesCredit({ attribution }: { attribution: string }) {
     credit: (chunks) =>
       attribution.includes("OpenStreetMap") ? (
         <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer" className="font-semibold text-text-brand underline underline-offset-2">
-          {chunks}
+          {chunks} {t("newTab")}
         </a>
       ) : (
         chunks

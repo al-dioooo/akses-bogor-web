@@ -215,6 +215,20 @@ test("on a landscape phone the opened list covers the map and leaves nothing foc
   expect(await inert()).toEqual([false, false]);
 });
 
+test("closing a place card whose marker the sheet now covers moves focus to that place in the list", async ({ page }) => {
+  test.skip(!isMobile(page), "Lembar bawah hanya ada di ponsel");
+  await page.setViewportSize({ width: 360, height: 740 });
+  await openMap(page);
+  await expect(page.getByRole("group", { name: "Kontrol peta" })).toBeVisible({ timeout: 15_000 });
+  await page.getByRole("button", { name: "Masjid contoh A, Masjid, Aksesibel" }).click();
+  await expect(page.getByRole("heading", { level: 3, name: "Masjid contoh A" })).toBeFocused();
+  // Ponsel diputar: lembar yang terbuka menjadi setinggi layar dan peta di baliknya inert, termasuk marker tadi.
+  await page.setViewportSize({ width: 667, height: 375 });
+  await expect.poll(() => page.evaluate(() => document.querySelector<HTMLElement>(".peta-peta")!.inert)).toBe(true);
+  await page.getByRole("button", { name: "Tutup ringkasan" }).click();
+  await expect(page.getByRole("button", { name: "Tunjukkan di peta: Masjid contoh A" })).toBeFocused();
+});
+
 test("on a short phone a chosen marker ends up above the opened panel", async ({ page }) => {
   test.skip((page.viewportSize()?.width ?? 0) >= 768, "Lembar bawah hanya ada di ponsel");
   await page.setViewportSize({ width: 360, height: 740 });
