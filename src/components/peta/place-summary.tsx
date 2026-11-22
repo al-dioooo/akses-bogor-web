@@ -39,7 +39,7 @@ export function PlaceSummary({ place, headingRef, onClose }: { place: MapPlace; 
 
   const summary = loaded?.data?.summary;
   return (
-    <section aria-labelledby="judul-ringkasan" aria-busy={!loaded} className="relative flex flex-col items-start gap-3 px-5 pt-1 pb-5">
+    <section aria-labelledby="judul-ringkasan" className="relative flex flex-col items-start gap-3 px-5 pt-1 pb-5">
       <p className="inline-flex flex-wrap items-center gap-x-1.5 pr-12 text-sm font-semibold">
         <Icon icon={CATEGORY_ICON[place.category]} className="size-4.5 text-icon-brand" />
         {tk(place.category)}
@@ -49,15 +49,18 @@ export function PlaceSummary({ place, headingRef, onClose }: { place: MapPlace; 
         {place.name}
       </h3>
       <StatusBadge status={place.status} />
-      {summary ? (
-        <div className="flex w-full max-w-xs flex-col gap-2">
-          <p className="font-semibold">{td("summary", { available: summary.available, relevant: summary.relevant })}</p>
-          <FacilityMeter summary={summary} status={place.status} />
-          {summary.unknown > 0 && <p className="text-sm text-text-secondary">{td("unknown", { count: summary.unknown })}</p>}
-        </div>
-      ) : (
-        !loaded && <span aria-hidden="true" className="h-12 w-full max-w-xs rounded-xl bg-bg-sunken" />
-      )}
+      {/* Hanya ringkasan fasilitas yang sedang dimuat; judul (yang menerima fokus) dan status sudah lengkap. */}
+      <div aria-busy={!loaded} className="flex w-full max-w-xs flex-col gap-2 empty:hidden">
+        {summary ? (
+          <>
+            <p className="font-semibold">{td("summary", { available: summary.available, relevant: summary.relevant })}</p>
+            <FacilityMeter summary={summary} status={place.status} />
+            {summary.unknown > 0 && <p className="text-sm text-text-secondary">{td("unknown", { count: summary.unknown })}</p>}
+          </>
+        ) : (
+          !loaded && <span aria-hidden="true" className="h-12 w-full rounded-xl bg-bg-sunken" />
+        )}
+      </div>
       <div className="flex flex-wrap gap-2 pt-1">
         <Link href={`/lokasi/${place.id}`} className={buttonClass("primary", "sm")}>
           {t("summary.detail")}

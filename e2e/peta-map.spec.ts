@@ -122,7 +122,9 @@ test.describe("with WebGL", () => {
     await page.route("**/peta/lokasi/**", (route) => route.fulfill({ status: 503, json: { galat: "galat_api" } }));
     await page.getByRole("button", { name: "Masjid contoh B, Masjid, Tidak aksesibel" }).click();
     const summary = page.getByRole("region", { name: "Masjid contoh B" });
-    await expect(summary).toHaveAttribute("aria-busy", "false");
+    // Hanya bagian ringkasan fasilitas yang ditandai sedang dimuat, bukan seluruh kartu yang judulnya menerima fokus.
+    await expect(summary).not.toHaveAttribute("aria-busy", /.*/);
+    await expect(summary.locator("[aria-busy]")).toHaveAttribute("aria-busy", "false");
     await expect(summary.getByText("Tidak aksesibel", { exact: true })).toBeVisible();
     await expect(summary.getByText(/fasilitas tersedia/)).toHaveCount(0);
     await expect(summary.getByRole("link", { name: "Laporkan kekurangan" })).toBeVisible();
