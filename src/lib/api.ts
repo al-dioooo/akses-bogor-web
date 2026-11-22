@@ -124,10 +124,22 @@ export function apiUrl(path: string, query: Record<string, string | number | und
 }
 
 /**
+ * IP pengunjung dari header permintaan. Web berjalan di balik Cloudflare Tunnel, dan Cloudflare selalu menulis ulang
+ * `cf-connecting-ip`, sama seperti yang dibaca API. `x-forwarded-for` tidak bisa dipercaya di sana: Cloudflare hanya
+ * menambahkan IP asli di belakang nilai yang dikirim klien, dan `next start` tidak mengubahnya. Header itu hanya
+ * dipakai bila `cf-connecting-ip` tidak ada, yaitu di lokal dan di tes.
+ */
+export function visitorIp(requestHeaders: Pick<Headers, "get">) {
+  const cloudflare = requestHeaders.get("cf-connecting-ip")?.trim();
+  if (cloudflare) return cloudflare;
+  return requestHeaders.get("x-forwarded-for")?.split(",")[0]?.trim() || undefined;
+}
+
+/**
  * Header untuk setiap panggilan API dari server web: halaman, route handler (foto, kirim laporan, cari tempat, cek
  * lokasi, kunci peta, foto verifikator), dan server action (akun, verifikasi). Dengan `WEB_SERVER_SECRET`, panggilan
  * ikut membawa IP pengunjung supaya rate limit API, termasuk batas kode masuk dan unggah foto, dihitung per pengunjung,
- * bukan per IP server Vercel. Vercel menulis ulang `x-forwarded-for`, jadi isinya IP pengunjung yang asli.
+ * bukan per IP server web.
  */
 export async function apiHeaders(): Promise<Record<string, string>> {
   const result: Record<string, string> = { accept: "application/json" };
@@ -136,10 +148,10 @@ export async function apiHeaders(): Promise<Record<string, string>> {
   // Diimpor saat dipanggil: komponen klien ikut mengimpor konstanta dari modul ini, dan next/headers hanya boleh ada
   // di sisi server.
   const { headers } = await import("next/headers");
-  const visitorIp = (await headers()).get("x-forwarded-for")?.split(",")[0]?.trim();
-  if (visitorIp) {
+  const ip = visitorIp(await headers());
+  if (ip) {
     result["x-web-server-secret"] = secret;
-    result["x-visitor-ip"] = visitorIp;
+    result["x-visitor-ip"] = ip;
   }
   return result;
 }
