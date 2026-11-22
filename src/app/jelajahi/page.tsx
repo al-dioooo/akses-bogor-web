@@ -4,12 +4,12 @@ import { Suspense } from "react";
 import { FilterForm } from "@/components/jelajahi/filter-form";
 import { Results, ResultsSkeleton } from "@/components/jelajahi/results";
 import { exploreHref, parseFilters } from "@/lib/filters";
+import { pageMetadata } from "@/lib/metadata";
 import { SectionHeading } from "@/ui/section-heading";
 import { LoadErrorBoundary } from "@/ui/load-error";
 
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("Jelajahi");
-  return { title: t("metaTitle") };
+export function generateMetadata(): Promise<Metadata> {
+  return pageMetadata("Jelajahi", "/jelajahi");
 }
 
 /** Jelajahi (ADR-0027): judul tampil langsung, filter dan hasil dibaca dari URL saat request. */

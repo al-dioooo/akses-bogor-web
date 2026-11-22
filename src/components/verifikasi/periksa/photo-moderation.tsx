@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
-import { moderateReportPhoto } from "@/app/verifikasi/actions";
+import { moderateReportPhoto } from "@/app/(dasbor)/verifikasi/actions";
 import type { PhotoTag } from "@/lib/api";
 import { PHOTO_TAGS } from "@/lib/isian-laporan";
 import type { ModerationPatch, ReviewPhoto } from "@/lib/verifikasi";

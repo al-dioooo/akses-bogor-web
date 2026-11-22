@@ -2,15 +2,15 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { EDU_LINK, EduPage } from "@/components/edukasi/edu-page";
+import { pageMetadata } from "@/lib/metadata";
 import { Icon } from "@/ui/icon";
 import { IconArrowRight } from "@/ui/icons";
 import { PageRow } from "@/ui/page-row";
 
 type Word = { term: string; body: string };
 
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("Disabilitas");
-  return { title: t("metaTitle") };
+export function generateMetadata(): Promise<Metadata> {
+  return pageMetadata("Disabilitas", "/disabilitas");
 }
 
 /**

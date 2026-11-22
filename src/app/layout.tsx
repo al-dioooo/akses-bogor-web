@@ -6,6 +6,7 @@ import { DISPLAY_SCRIPT } from "@/components/display-script";
 import { SiteBottomNav, SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { locale } from "@/i18n/config";
+import { NOINDEX, siteUrl } from "@/lib/situs";
 import "./globals.css";
 
 const inter = Inter({
@@ -37,8 +38,11 @@ const instrumentSerif = Instrument_Serif({
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Metadata");
   return {
+    metadataBase: siteUrl(),
     title: { default: t("title"), template: `%s · ${t("title")}` },
     description: t("description"),
+    // Semua halaman noindex kecuali halaman publik yang memasang publicRobots() sendiri (issue #114).
+    robots: NOINDEX,
   };
 }
 
