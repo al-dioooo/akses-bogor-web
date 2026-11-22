@@ -3,7 +3,7 @@ import type { DistrictBoundaries, MapToken, PriorityLevel } from "@/lib/api";
 import { LEVEL_COLOR, LEVELS } from "@/components/prioritas/levels";
 import { motionReduced } from "@/lib/preferences";
 import type { MapPlace } from "../places";
-import { NO_INSETS, cameraPadding, visibleRect, type Insets } from "./area";
+import { NO_INSETS, cameraPadding, isVisible, visibleRect, type Insets, type Rect } from "./area";
 
 /** Tampilan awal: seluruh Kota Bogor (ADR-0010). */
 const KOTA_BOGOR: LngLatBoundsLike = [
@@ -31,8 +31,11 @@ export type MapHandle = {
   reveal(id: string): void;
   /** Mengganti lokasi di peta (mis. setelah filter berubah) tanpa membuat peta baru. */
   setPlaces(places: MapPlace[]): void;
-  /** Bagian peta yang tertutup panel: lokasi di baliknya tidak dihitung "di tampilan", dan perpindahan menghindarinya. */
-  setInsets(insets: Insets): void;
+  /**
+   * Bagian peta yang tertutup panel (perpindahan peta menghindarinya) dan persegi elemen lain yang mengambang di atasnya.
+   * Lokasi di balik keduanya tidak dihitung "di tampilan", dan markernya keluar dari urutan Tab.
+   */
+  setInsets(insets: Insets, covers?: Rect[]): void;
   setSelected(id: string | null): void;
   setNight(night: boolean): void;
   /** Lapisan prioritas kecamatan: batas dengan tingkatnya, atau null untuk menyembunyikannya. */
@@ -56,7 +59,8 @@ type Options = {
   markerLabel: (place: MapPlace) => string;
   onReady: () => void;
   onFail: () => void;
-  onView: (ids: string[]) => void;
+  /** Lokasi di bagian peta yang terlihat, atau null bila panel menutup seluruh peta (mis. lembar penuh di ponsel). */
+  onView: (ids: string[] | null) => void;
   onSelect: (id: string) => void;
   /** Dipanggil dengan salinan marker setiap kali lokasi di peta berganti. */
   onMarkers: (markers: ReadonlyMap<string, HTMLButtonElement>) => void;
@@ -74,6 +78,7 @@ function withToken(url: string, token: string) {
 export function mountMap(options: Options): MapHandle {
   let places = options.places;
   let insets = options.insets ?? NO_INSETS;
+  let covers: Rect[] = [];
   let token = options.token;
   let night = options.night;
   let ready = false;
@@ -142,15 +147,15 @@ export function mountMap(options: Options): MapHandle {
   };
   placeMarkers(places);
 
-  // Marker di luar bagian peta yang terlihat (di luar layar atau di balik panel) keluar dari urutan Tab dan
-  // disembunyikan dari pembaca layar; daftar ikut bagian yang terlihat.
+  // Marker di luar bagian peta yang terlihat (di luar layar, di balik panel, atau di bawah pencarian dan kontrol) keluar
+  // dari urutan Tab dan disembunyikan dari pembaca layar, supaya fokus tidak pernah tertutup (WCAG 2.4.11); daftar ikut
+  // bagian yang terlihat.
   const updateView = () => {
     const container = map.getContainer();
     const rect = visibleRect(container.clientWidth, container.clientHeight, insets);
-    const bounds = rect && new mapboxgl.LngLatBounds(map.unproject([rect.left, rect.bottom]), map.unproject([rect.right, rect.top]));
     const ids: string[] = [];
     for (const place of places) {
-      const inside = bounds?.contains([place.lng, place.lat]) ?? false;
+      const inside = isVisible(map.project([place.lng, place.lat]), rect, covers);
       const button = markers.get(place.id)!;
       button.tabIndex = inside ? 0 : -1;
       if (inside) {
@@ -160,7 +165,7 @@ export function mountMap(options: Options): MapHandle {
         button.setAttribute("aria-hidden", "true");
       }
     }
-    options.onView(ids);
+    options.onView(rect ? ids : null);
   };
   const padding = () => {
     const container = map.getContainer();
@@ -262,9 +267,10 @@ export function mountMap(options: Options): MapHandle {
       placeMarkers(next);
       if (ready) updateView();
     },
-    setInsets(next) {
-      if (next.top === insets.top && next.right === insets.right && next.bottom === insets.bottom && next.left === insets.left) return;
+    setInsets(next, nextCovers = []) {
+      if (JSON.stringify([next, nextCovers]) === JSON.stringify([insets, covers])) return;
       insets = next;
+      covers = nextCovers;
       if (ready) updateView();
     },
     setSelected(id) {

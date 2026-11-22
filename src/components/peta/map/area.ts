@@ -3,8 +3,20 @@ export type Insets = { top: number; right: number; bottom: number; left: number 
 
 export const NO_INSETS: Insets = { top: 0, right: 0, bottom: 0, left: 0 };
 
+/** Persegi dalam piksel kanvas peta, dihitung dari kiri atas. */
+export type Rect = { left: number; top: number; right: number; bottom: number };
+
+/**
+ * Titik di kanvas (pusat marker) terlihat bila ada di bagian yang tidak tertutup panel dan tidak berada di bawah elemen
+ * lain yang mengambang di atas peta, seperti pencarian, kontrol, atau tombol lapisan.
+ */
+export function isVisible(point: { x: number; y: number }, rect: Rect | null, covers: readonly Rect[] = []) {
+  const contains = (area: Rect) => point.x >= area.left && point.x <= area.right && point.y >= area.top && point.y <= area.bottom;
+  return rect !== null && contains(rect) && !covers.some(contains);
+}
+
 /** Persegi kanvas yang benar-benar terlihat, atau null bila panel menutup seluruh peta. */
-export function visibleRect(width: number, height: number, insets: Insets) {
+export function visibleRect(width: number, height: number, insets: Insets): Rect | null {
   const left = Math.max(0, insets.left);
   const top = Math.max(0, insets.top);
   const right = width - Math.max(0, insets.right);

@@ -1,6 +1,6 @@
 import type { Page } from "@playwright/test";
 import { blockingViolations } from "./axe";
-import { expect, stubMapbox, test } from "./mapbox";
+import { expect, openList, stubMapbox, test } from "./mapbox";
 
 // Lapisan prioritas kecamatan di Peta (ADR-0043) dengan API tiruan (e2e/mock-api/prioritas.mjs) dan Mapbox tiruan.
 /** IP pengunjung yang membuat API tiruan menjawab data_disabilitas_belum_aktif. */
@@ -80,7 +80,7 @@ for (const colorScheme of ["light", "dark"] as const) {
     await page.emulateMedia({ colorScheme, reducedMotion: "reduce" });
     await page.goto("/peta");
     await toggle(page).click();
-    await main(page).getByRole("button", { name: "Tampilkan daftar" }).click();
+    await openList(page);
     await expect(main(page).getByRole("table")).toBeVisible();
     expect(await blockingViolations(page)).toEqual([]);
   });
