@@ -3,7 +3,7 @@
 import "mapbox-gl/dist/mapbox-gl.css";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useLayoutEffect, useRef, useState, type MouseEvent } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type MouseEvent } from "react";
 import { createPortal } from "react-dom";
 import type { DistrictBoundaries, DistrictPriority, MapToken } from "@/lib/api";
 import { hasWebGL, readTheme, watchPreferences } from "@/lib/preferences";
@@ -52,6 +52,13 @@ function measure(main: HTMLElement): { top: number; insets: Insets } {
   };
 }
 
+const NARROW = "(width < 48rem)";
+const subscribeNarrow = (onChange: () => void) => {
+  const query = matchMedia(NARROW);
+  query.addEventListener("change", onChange);
+  return () => query.removeEventListener("change", onChange);
+};
+
 /**
  * Peta Kota Bogor layar penuh (FR-05, ADR-0016) dengan marker per status, kontrol zoom, dan panel daftar yang berisi
  * ringkasan lokasi yang dipilih, legenda, dan daftar lokasi di bagian peta yang terlihat sebagai alternatif untuk
@@ -95,6 +102,7 @@ export function PlaceMap({
   const [height, setHeight] = useState<SheetHeight>("kecil");
   const [layer, setLayer] = useState<"mati" | "memuat" | "nyala" | "galat">("mati");
   const [boundaries, setBoundaries] = useState<DistrictBoundaries | null>(null);
+  const narrow = useSyncExternalStore(subscribeNarrow, () => matchMedia(NARROW).matches, () => false);
   // Lokasi yang dipilih lalu hilang karena filter berganti tidak lagi dianggap terpilih.
   const place = chosen ? places.find((p) => p.id === chosen.id) : undefined;
   const selected = place ? place.id : null;
@@ -191,6 +199,14 @@ export function PlaceMap({
     const main = frame.current?.closest("main");
     if (main) main.dataset.tinggi = height;
   }, [height]);
+
+  // Lembar penuh di ponsel menutup pencarian, kontrol, dan peta: bagian itu dibuat inert supaya fokus tidak masuk ke
+  // sesuatu yang tidak terlihat (WCAG 2.4.11).
+  useLayoutEffect(() => {
+    const main = frame.current?.closest("main");
+    const covered = height === "penuh" && narrow;
+    for (const element of main?.querySelectorAll<HTMLElement>(".peta-cari, .peta-lapisan, .peta-kontrol, .peta-peta") ?? []) element.inert = covered;
+  }, [height, narrow, state, priority]);
 
   // Ukuran diukur ulang setelah berhenti berubah (mis. selesai animasi panel), lalu perpindahan yang menunggu dijalankan.
   useEffect(() => {

@@ -426,6 +426,10 @@ body:has(> .peta-app) {
     /* Paling tinggi sampai di bawah kontrol, dengan ruang untuk atribusi Mapbox di antaranya. */
     --peta-bawah: calc(var(--peta-nav) + clamp(var(--peta-kepala) + 6rem, 45%, 100% - var(--peta-atas) - var(--peta-nav) - 3.25rem));
   }
+  /* Penuh: lembar menutup seluruh peta, dan bagian di baliknya tidak bisa difokus (lihat place-map.tsx). */
+  &[data-tinggi="penuh"] {
+    --peta-bawah: 100%;
+  }
   @media (width >= 48rem) {
     --peta-bawah: var(--peta-nav);
     grid-template-columns: 24rem minmax(0, 1fr) auto;
@@ -530,7 +534,7 @@ body:has(> .peta-app) {
     border-bottom: var(--border-width-default) solid var(--color-border-subtle);
     border-radius: var(--radius-3xl);
     box-shadow: 0 12px 32px -16px var(--color-shadow-soft);
-    .peta-app[data-tinggi="setengah"] & {
+    .peta-app:is([data-tinggi="setengah"], [data-tinggi="penuh"]) & {
       align-self: stretch;
     }
   }
@@ -561,6 +565,11 @@ body:has(> .peta-app) {
 /* Cincin fokus kanvas Mapbox digambar di sisi dalam, karena tepi peta adalah tepi layar. */
 .peta-peta .mapboxgl-canvas:focus-visible {
   outline-offset: -4px;
+}
+
+/* Selama lembar ditarik, lembar dan atribusi mengikuti jari tanpa animasi. */
+.peta-app[data-menyeret] :is(.peta-lembar, .peta-pesan, .mapboxgl-ctrl-bottom-left, .mapboxgl-ctrl-bottom-right) {
+  transition: none;
 }
 
 /* Pesan di atas peta (memuat, galat, tidak ada lokasi): di tengah bagian peta yang tidak tertutup pencarian dan panel. */

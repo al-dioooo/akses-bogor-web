@@ -274,6 +274,12 @@
       "showPlace": "Tunjukkan di peta: {name}"
     },
     "lembar": {
+      "handle": "Tinggi panel daftar",
+      "tinggi": {
+        "kecil": "kecil",
+        "setengah": "setengah layar",
+        "penuh": "penuh"
+      },
       "showList": "Tampilkan daftar",
       "showMap": "Tampilkan peta",
       "list": "Daftar",
