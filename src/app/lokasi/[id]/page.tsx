@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { Suspense } from "react";
+import { cache, Suspense } from "react";
 import { JsonLd } from "@/components/json-ld";
 import { PlaceDetail } from "@/components/lokasi/place-detail";
 import { getPlace } from "@/lib/api";
@@ -13,13 +13,31 @@ import { Icon } from "@/ui/icon";
 import { IconArrowLeft } from "@/ui/icons";
 import { LoadErrorBoundary } from "@/ui/load-error";
 
+/** Metadata dan isi halaman memakai satu permintaan API yang sama. */
+const findPlace = cache(getPlace);
+
+/** Tanpa gambar berbagi: gambar segmen ini hanya ada untuk lokasi yang tayang. */
+const NO_SHARE_IMAGE = { openGraph: { images: [] }, twitter: { images: [] } } satisfies Metadata;
+
 export async function generateMetadata({ params }: PageProps<"/lokasi/[id]">): Promise<Metadata> {
-  const [{ id }, t] = await Promise.all([params, getTranslations("Detail.notFound")]);
-  const place = await getPlace(id);
-  return place ? placeMetadata(place) : { title: t("metaTitle") };
+  const { id } = await params;
+  try {
+    const place = await findPlace(id);
+    if (place) return placeMetadata(place);
+    const t = await getTranslations("Detail.notFound");
+    return { title: t("metaTitle"), ...NO_SHARE_IMAGE };
+  } catch {
+    // Hanya terjadi saat navigasi di dalam aplikasi: LoadErrorBoundary menampilkan galatnya. Permintaan halaman biasa
+    // sudah dijawab 503 oleh src/proxy.ts sebelum render (issue #150).
+    const t = await getTranslations("GagalMemuat");
+    return { title: t("title"), ...NO_SHARE_IMAGE };
+  }
 }
 
-/** Detail lokasi (ADR-0027). Tautan kembali tampil langsung; isi lokasi diambil saat request. */
+/**
+ * Detail lokasi (ADR-0027). Tautan kembali tampil langsung; isi lokasi diambil saat request. Status 404 dan 503 diatur
+ * src/proxy.ts sebelum render, karena status 200 sudah terkirim bersama kerangka halaman.
+ */
 export default async function LokasiPage({ params }: PageProps<"/lokasi/[id]">) {
   const t = await getTranslations("Detail");
   return (
@@ -42,7 +60,7 @@ export default async function LokasiPage({ params }: PageProps<"/lokasi/[id]">) 
 
 async function Place({ params }: { params: PageProps<"/lokasi/[id]">["params"] }) {
   const { id } = await params;
-  const place = await getPlace(id);
+  const place = await findPlace(id);
   if (!place) notFound();
   const [facility, description] = await Promise.all([getTranslations("Fasilitas"), placeDescription(place)]);
   const url = absoluteUrl(`/lokasi/${encodeURIComponent(place.id)}`);
