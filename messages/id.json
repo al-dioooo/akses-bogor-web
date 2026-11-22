@@ -1791,6 +1791,35 @@
       "tooShort": "Tulis pertanyaan paling sedikit 2 karakter.",
       "failed": "Pertanyaan tidak bisa dikirim. Coba lagi sebentar lagi.",
       "note": "Jawaban agen bisa keliru. Periksa lagi di tempatnya sebelum mengirim laporan."
+    },
+    "kartu": {
+      "noData": "Belum ada data AksesBogor",
+      "unnamed": "Tanpa nama di OpenStreetMap",
+      "osmLink": "Lihat di OpenStreetMap",
+      "report": "Laporkan tempat ini",
+      "detail": "Lihat detail lokasi",
+      "update": "Perbarui data",
+      "verified": "Terakhir diverifikasi {date}",
+      "cardsLabel": "Kartu dari jawaban agen"
     }
+  },
+  "PrioritasKecamatan": {
+    "title": "Prioritas kecamatan {year}",
+    "caption": "Kecamatan diurutkan dari yang paling perlu didata, data tahun {year}",
+    "region": "Tabel prioritas kecamatan, bisa digeser ke samping",
+    "rank": "Peringkat",
+    "district": "Kecamatan",
+    "level": "Prioritas",
+    "score": "Skor (0–100)",
+    "registered": "Penyandang disabilitas terdaftar",
+    "withoutData": "Fasilitas tanpa data",
+    "verified": "Lokasi terverifikasi",
+    "tingkat": {
+      "rendah": "Rendah",
+      "sedang": "Sedang",
+      "tinggi": "Tinggi",
+      "sangat_tinggi": "Sangat tinggi"
+    },
+    "source": "Sumber: <link>{title}</link>, {publisher}, diambil {date}. {terms}"
   }
 }
