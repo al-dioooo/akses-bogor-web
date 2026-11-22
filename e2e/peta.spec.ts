@@ -1,10 +1,9 @@
 import type { Page } from "@playwright/test";
-import { expect, test } from "./mapbox";
+import { expect, openList, test } from "./mapbox";
 
 /** Jumlah lokasi di kepala panel: "Menampilkan N lokasi" sebelum peta siap, "X dari N lokasi" sesudahnya. */
 const total = (page: Page, count: number) =>
   expect(page.getByRole("status").filter({ hasText: new RegExp(`^(Menampilkan ${count} lokasi|\\d+ dari ${count} lokasi)$`) })).toBeVisible();
-const openList = (page: Page) => page.getByRole("button", { name: "Tampilkan daftar" }).click();
 const placeList = (page: Page) => page.getByRole("list", { name: /^(Daftar lokasi|Lokasi di tampilan peta)$/ });
 
 // Data dari API tiruan (e2e/mock-api): 7 lokasi contoh dengan keempat status.
@@ -89,6 +88,7 @@ test("the list view links back to the map with the same filters", async ({ page 
 test("an empty result explains itself and offers to clear the filters", async ({ page }) => {
   await page.goto("/peta?q=tidak-ada-yang-cocok");
   await expect(page.getByText("Tidak ada lokasi yang cocok", { exact: true }).first()).toBeVisible();
+  await openList(page);
   await page.getByRole("main").getByRole("link", { name: "Hapus filter" }).last().click();
   await expect(page).toHaveURL(/\/peta$/);
 });

@@ -196,6 +196,7 @@ export function PlaceSheet({ height, onHeight, onEscape, title, status, headingR
             ref={toggleRef}
             type="button"
             aria-controls="isi-lembar"
+            aria-expanded={open}
             aria-label={open ? t("showMap") : t("showList")}
             onClick={() => onHeight(open ? "kecil" : "setengah")}
             className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full border-2 border-border-strong px-4 text-[0.9375rem] font-bold hover:bg-surface-hover"

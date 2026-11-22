@@ -1,6 +1,6 @@
 import type { Page } from "@playwright/test";
 import { blockingViolations } from "./axe";
-import { expect, test } from "./mapbox";
+import { expect, openList, test } from "./mapbox";
 
 // Peta Mapbox dengan gaya tiruan (e2e/mapbox.ts) dan 7 lokasi dari API tiruan. Gerak dikurangi supaya perpindahan
 // peta selesai seketika.
@@ -50,7 +50,7 @@ test.describe("with WebGL", () => {
   });
 
   test("the list follows the view, and the reset button returns to Kota Bogor", async ({ page }) => {
-    await page.getByRole("button", { name: "Tampilkan daftar" }).click();
+    await openList(page);
     await page.getByRole("button", { name: "Tunjukkan di peta: Halte contoh", exact: true }).click();
     await expect(page.getByRole("heading", { name: "Halte contoh", level: 3 })).toBeFocused();
     await expect(count(page)).toHaveText("1 dari 7 lokasi");
@@ -58,6 +58,48 @@ test.describe("with WebGL", () => {
     await expect(page.getByRole("button", { name: /^Masjid contoh B,/ })).toHaveCount(0);
     await page.getByRole("button", { name: "Tampilkan seluruh Kota Bogor" }).click();
     await expect(count(page)).toHaveText("7 dari 7 lokasi");
+  });
+
+  test("a marker moved under the map controls leaves the Tab order, and visible markers are never covered", async ({ page }) => {
+    // Diperbesar dulu, supaya batas geser Kota Bogor tidak menahan peta.
+    await page.getByRole("button", { name: "Perbesar peta" }).click();
+    await page.getByRole("button", { name: "Perbesar peta" }).click();
+    const marker = page.locator(".mapboxgl-marker[tabindex='0']").first();
+    const name = (await marker.getAttribute("aria-label"))!;
+    const from = (await marker.boundingBox())!;
+    const to = (await page.getByRole("group", { name: "Kontrol peta" }).boundingBox())!;
+    // Peta digeser dengan tetikus dari titik kosong di peta, sampai pusat marker ada di bawah kontrol peta.
+    const start = await page.evaluate(() => {
+      const canvas = document.querySelector(".mapboxgl-canvas")!;
+      const box = canvas.getBoundingClientRect();
+      for (let y = box.top + 20; y < box.bottom; y += 10) {
+        for (let x = box.left + 20; x < box.right; x += 10) {
+          if (document.elementFromPoint(x, y) === canvas) return { x, y };
+        }
+      }
+      throw new Error("tidak ada bagian peta yang terbuka");
+    });
+    const dx = to.x + to.width / 2 - (from.x + from.width / 2);
+    const dy = to.y + to.height / 2 - (from.y + from.height / 2);
+    await page.mouse.move(start.x, start.y);
+    await page.mouse.down();
+    await page.mouse.move(start.x + dx, start.y + dy, { steps: 20 });
+    await page.waitForTimeout(300);
+    await page.mouse.up();
+    const moved = page.locator(`.mapboxgl-marker[aria-label="${name}"]`);
+    await expect(moved).toHaveAttribute("tabindex", "-1");
+    await expect(moved).toHaveAttribute("aria-hidden", "true");
+    const covered = await page.evaluate(() =>
+      [...document.querySelectorAll<HTMLElement>(".mapboxgl-marker")]
+        .filter((element) => element.tabIndex === 0)
+        .filter((element) => {
+          const box = element.getBoundingClientRect();
+          const hit = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
+          return !hit || !(hit === element || element.contains(hit));
+        })
+        .map((element) => element.getAttribute("aria-label")),
+    );
+    expect(covered).toEqual([]);
   });
 
   test("zoom buttons change the zoom", async ({ page }) => {
