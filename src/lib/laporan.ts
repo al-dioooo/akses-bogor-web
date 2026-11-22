@@ -1,4 +1,4 @@
-import { ApiError, apiHeaders, apiUrl, type Answer, type Category, type Facility, type PhotoTag, type Reason, type Status } from "./api";
+import { apiPost as post, type Answer, type Category, type Facility, type PhotoTag, type Reason, type Status } from "./api";
 
 // Tipe mengikuti docs/openapi.json di akses-bogor-api (route Laporkan dan /map/search). Fungsi di sini hanya dipanggil
 // di server web: route handler /laporkan/* meneruskan permintaan browser ke API (ADR-0029, ADR-0033).
@@ -43,37 +43,6 @@ export type SubmittedReport = {
 };
 
 export type UploadedPhoto = { id: string; width: number; height: number; bytes: number };
-
-type Body = { json: unknown } | { bytes: ArrayBuffer; contentType: string };
-
-/** POST ke API. Galat menjadi `ApiError` dengan `{ galat, pesan }` dari API, atau `api_tidak_terhubung`. */
-async function post<T>(path: string, body: Body, token?: string): Promise<T> {
-  const headers = await apiHeaders();
-  if (token) headers.authorization = `Bearer ${token}`;
-  headers["content-type"] = "json" in body ? "application/json" : body.contentType;
-  let response: Response;
-  try {
-    response = await fetch(apiUrl(path), {
-      method: "POST",
-      headers,
-      body: "json" in body ? JSON.stringify(body.json) : body.bytes,
-      cache: "no-store",
-    });
-  } catch {
-    throw new ApiError(0, "api_tidak_terhubung", "Server AksesBogor tidak bisa dihubungi. Coba lagi sebentar lagi.");
-  }
-  if (!response.ok) {
-    const error = (await response.json().catch(() => null)) as { galat?: string; pesan?: string } | null;
-    const retryAfter = Number(response.headers.get("retry-after"));
-    throw new ApiError(
-      response.status,
-      error?.galat ?? "galat_api",
-      error?.pesan ?? "Terjadi kesalahan. Coba lagi.",
-      Number.isFinite(retryAfter) && retryAfter > 0 ? retryAfter : undefined,
-    );
-  }
-  return (await response.json()) as T;
-}
 
 /** Kecamatan dari titik dan lokasi mirip di sekitar; titik di luar Kota Bogor menjadi 422 `di_luar_kota_bogor`. */
 export const checkLocation = (input: { location: LatLng; name?: string; placeId?: string }) =>
