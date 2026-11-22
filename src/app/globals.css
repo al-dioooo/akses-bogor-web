@@ -427,12 +427,25 @@ body:has(> .peta-app) {
   isolation: isolate;
   &[data-tinggi="setengah"] {
     /* Paling tinggi sampai di bawah kontrol, dengan ruang untuk atribusi Mapbox dan setidaknya 6rem peta di antaranya,
-       supaya ponsel pendek tetap melihat lokasi yang dipilih di atas panel. */
-    --peta-bawah: calc(var(--peta-nav) + clamp(var(--peta-kepala) + 6rem, 45%, 100% - var(--peta-atas) - var(--peta-nav) - 9.25rem));
+       supaya ponsel pendek tetap melihat lokasi yang dipilih di atas panel. Di layar pendek tidak menutupi pencarian dan
+       kontrol, tetapi kepalanya selalu di atas Bottom nav. */
+    --peta-bawah: max(
+      var(--peta-nav) + var(--peta-kepala),
+      min(
+        var(--peta-nav) + clamp(var(--peta-kepala) + 6rem, 45%, 100% - var(--peta-atas) - var(--peta-nav) - 9.25rem),
+        100% - var(--peta-atas) - 0.5rem
+      )
+    );
   }
   /* Penuh: lembar menutup seluruh peta, dan bagian di baliknya tidak bisa difokus (lihat place-map.tsx). */
   &[data-tinggi="penuh"] {
     --peta-bawah: 100%;
+  }
+  /* Ponsel landscape: panel yang dibuka langsung penuh; setengah layar hanya menyisakan beberapa piksel isi. */
+  @media (height < 32rem) {
+    &[data-tinggi="setengah"] {
+      --peta-bawah: 100%;
+    }
   }
   @media (width >= 48rem) {
     --peta-bawah: var(--peta-nav);
@@ -505,6 +518,32 @@ body:has(> .peta-app) {
     position: static;
     width: 21rem;
     margin-top: 0.5rem;
+  }
+}
+
+/* Ponsel landscape: tombol lapisan dan kontrol peta naik ke samping pencarian, supaya tidak masuk ke balik panel daftar
+   yang kecil. Chip kategori tetap di bawah pencarian dan bisa digeser. */
+@media (width < 48rem) and (height < 32rem) {
+  .peta-app {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+  .peta-cari {
+    grid-column: 1;
+  }
+  .peta-lapisan {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .peta-kontrol {
+    grid-column: 3;
+    grid-row: 1;
+  }
+  /* Tombol lapisan ada di kanan, jadi kuncinya mengambang ke kiri dari tepi kanan tombol itu. */
+  .peta-kunci {
+    right: 0;
+    left: auto;
+    width: min(21rem, calc(100vw - 1.5rem));
   }
 }
 

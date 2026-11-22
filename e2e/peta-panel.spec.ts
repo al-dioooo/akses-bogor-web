@@ -196,6 +196,21 @@ test("a full sheet makes the map and the search under it unreachable", async ({ 
   await expect(page.getByRole("button", { name: "Tampilkan daftar" })).toBeFocused();
 });
 
+test("on a landscape phone the opened list covers the map and leaves nothing focusable behind it", async ({ page }) => {
+  test.skip(!isMobile(page), "Lembar bawah hanya ada di ponsel");
+  await page.setViewportSize({ width: 667, height: 375 });
+  await openMap(page);
+  await openList(page);
+  const box = await page.locator(".peta-lembar").boundingBox();
+  const main = await page.locator("main").boundingBox();
+  expect(Math.round(box!.y)).toBe(Math.round(main!.y));
+  const inert = () => page.evaluate(() => [".peta-cari", ".peta-peta"].map((selector) => document.querySelector<HTMLElement>(selector)!.inert));
+  expect(await inert()).toEqual([true, true]);
+  await expect(placeList(page).getByRole("listitem")).toHaveCount(7);
+  await page.getByRole("button", { name: "Tampilkan peta" }).click();
+  expect(await inert()).toEqual([false, false]);
+});
+
 test("on a short phone a chosen marker ends up above the opened panel", async ({ page }) => {
   test.skip((page.viewportSize()?.width ?? 0) >= 768, "Lembar bawah hanya ada di ponsel");
   await page.setViewportSize({ width: 360, height: 740 });
@@ -265,6 +280,7 @@ for (const viewport of [
     // Dengan filter: pesan "tidak ada yang cocok" dan jalan untuk menghapus filter.
     await page.goto("/peta?q=tidak-ada");
     await expect(status).toHaveText("Tidak ada lokasi yang cocok");
+    await expect.poll(() => status.evaluate(uncovered)).toBe(true);
     await openList(page);
     const reset = page.getByRole("main").getByRole("link", { name: "Hapus filter" });
     await expect.poll(() => reset.evaluate(uncovered)).toBe(true);
