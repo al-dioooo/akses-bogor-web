@@ -1,5 +1,6 @@
 import type { Status } from "@/lib/api";
-import { IconAccessible, type Glyph } from "@/ui/icons";
+import type { Glyph } from "@/ui/icons";
+import mark from "@/ui/logo-mark.json";
 import { STATUS_ICON } from "@/ui/place-icons";
 import { tokenColor } from "./token";
 
@@ -37,23 +38,18 @@ function GlyphSvg({ icon, size, color, strokeWidth = 2 }: { icon: Glyph; size: n
   );
 }
 
-/** Tanda dan wordmark, sama dengan logo di header. Varian `inverse` untuk latar ungu. */
+/** Tanda dan wordmark, sama dengan logo di header. Di latar ungu, tanda diberi tepi putih supaya kotaknya terlihat. */
 function Brand({ name, inverse = false }: { name: string; inverse?: boolean }) {
+  const size = mark.viewBox;
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          width: 64,
-          height: 64,
-          borderRadius: 18,
-          background: inverse ? C.onBrand : C.brand,
-        }}
-      >
-        <GlyphSvg icon={IconAccessible} size={42} color={inverse ? C.brand : C.onBrand} />
-      </div>
+      <svg width={64} height={64} viewBox={`0 0 ${size} ${size}`}>
+        <rect width={size} height={size} rx={mark.cornerRadius} fill={inverse ? C.onBrand : C.brand} />
+        {inverse && <rect x={24} y={24} width={size - 48} height={size - 48} rx={mark.cornerRadius - 24} fill={C.brand} />}
+        <path d={mark.pin} fill={C.onBrand} />
+        <path d={mark.door} fill={C.brand} />
+        <path d={mark.leaf} fill={C.highlight} />
+      </svg>
       <div style={{ fontSize: 40, letterSpacing: -1, color: inverse ? C.onBrand : C.text }}>{name}</div>
     </div>
   );
