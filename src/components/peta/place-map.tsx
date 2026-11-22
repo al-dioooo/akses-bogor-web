@@ -3,15 +3,16 @@
 import "mapbox-gl/dist/mapbox-gl.css";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type MouseEvent } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type MouseEvent, type Ref } from "react";
 import { createPortal } from "react-dom";
 import type { DistrictBoundaries, DistrictPriority, MapToken } from "@/lib/api";
 import { hasWebGL, readTheme, watchPreferences } from "@/lib/preferences";
 import { buttonClass } from "@/ui/button-styles";
 import { Icon } from "@/ui/icon";
-import { IconFocusCentered, IconList, IconMap2, IconMinus, IconPlus, IconUsers, type Glyph } from "@/ui/icons";
+import { IconCurrentLocation, IconFocusCentered, IconList, IconMap2, IconMinus, IconPlus, IconUsers, type Glyph } from "@/ui/icons";
 import { StatusPin } from "@/ui/status-pin";
 import { MapLegend } from "./legend";
+import { LocatePanel, useLocate } from "./locate";
 import { NO_INSETS, type Insets, type Rect } from "./map/area";
 import type { MapHandle } from "./map/mount";
 import { PlaceList } from "./place-list";
@@ -30,7 +31,7 @@ async function fetchToken(): Promise<MapToken> {
 }
 
 /** Elemen yang mengambang di atas peta. Marker di bawahnya tidak terlihat, jadi tidak boleh bisa difokus (WCAG 2.4.11). */
-const OVERLAYS = ".peta-cari, .peta-lapisan, .peta-kontrol, .peta-kunci";
+const OVERLAYS = ".peta-cari, .peta-lapisan, .peta-kontrol, .peta-kunci, .peta-lokasi";
 /** Tinggi satu baris kunci prioritas yang ringkas (tombol 44 px dan bingkainya). */
 const KEY_LINE = 56;
 
@@ -143,6 +144,8 @@ export function PlaceMap({
   const height: SheetHeight = chosenHeight ?? (narrow ? "kecil" : "setengah");
   const [layer, setLayer] = useState<"mati" | "memuat" | "nyala" | "galat">("mati");
   const [boundaries, setBoundaries] = useState<DistrictBoundaries | null>(null);
+  const locateButton = useRef<HTMLButtonElement>(null);
+  const locate = useLocate(map);
   // Lokasi yang dipilih lalu hilang karena filter berganti tidak lagi dianggap terpilih.
   const place = chosen ? places.find((p) => p.id === chosen.id) : undefined;
   const selected = place ? place.id : null;
@@ -270,7 +273,7 @@ export function PlaceMap({
       timer = window.setTimeout(update, 120);
     };
     const observer = new ResizeObserver(schedule);
-    for (const selector of [".peta-lembar", ".peta-cari", ".peta-kontrol", ".peta-lapisan", ".peta-kunci"]) {
+    for (const selector of [".peta-lembar", ".peta-cari", ".peta-kontrol", ".peta-lapisan", ".peta-kunci", ".peta-lokasi"]) {
       const element = main.querySelector(selector);
       if (element) observer.observe(element);
     }
@@ -280,7 +283,8 @@ export function PlaceMap({
       observer.disconnect();
       window.clearTimeout(timer);
     };
-  }, [map, state, priority, layer, flushMove]);
+    // Kunci prioritas dan kartu Lokasi saya muncul dan hilang, jadi pengamatnya dipasang ulang.
+  }, [map, state, priority, layer, locate.phase, flushMove]);
 
   // Ringkasan menerima fokus setiap kali lokasi dipilih, supaya pembaca layar langsung membacanya.
   useEffect(() => {
@@ -383,7 +387,7 @@ export function PlaceMap({
           >
             <Icon icon={IconUsers} />
             {/* Di ponsel label pendek, supaya tombol dan kontrol peta muat dalam satu baris (di landscape juga bersama pencarian). */}
-            <span className="md:hidden">{t("prioritas.short")}</span>
+            <span className="max-[22rem]:sr-only md:hidden">{t("prioritas.short")}</span>
             <span className="max-md:hidden">{t("prioritas.toggle")}</span>
           </button>
           <p role="status" className="sr-only">
@@ -402,10 +406,14 @@ export function PlaceMap({
         {t("map.skip")}
       </a>
       {ready && (
-        <div role="group" aria-label={t("controls.label")} className="peta-kontrol panel-raised flex overflow-hidden rounded-2xl md:flex-col">
-          <ControlButton label={t("controls.zoomIn")} icon={IconPlus} onClick={() => map?.zoomIn()} />
-          <ControlButton label={t("controls.zoomOut")} icon={IconMinus} onClick={() => map?.zoomOut()} />
-          <ControlButton label={t("controls.reset")} icon={IconFocusCentered} onClick={() => map?.reset()} />
+        <div className="peta-kontrol">
+          <div role="group" aria-label={t("controls.label")} className="panel-raised flex overflow-hidden rounded-2xl md:flex-col">
+            <ControlButton label={t("controls.zoomIn")} icon={IconPlus} onClick={() => map?.zoomIn()} />
+            <ControlButton label={t("controls.zoomOut")} icon={IconMinus} onClick={() => map?.zoomOut()} />
+            <ControlButton label={t("controls.reset")} icon={IconFocusCentered} onClick={() => map?.reset()} />
+            <ControlButton ref={locateButton} label={t("lokasiSaya.button")} icon={IconCurrentLocation} onClick={locate.start} />
+          </div>
+          <LocatePanel locate={locate} buttonRef={locateButton} />
         </div>
       )}
       <div ref={frame} className="peta-peta">
@@ -506,9 +514,10 @@ export function PlaceMap({
   );
 }
 
-function ControlButton({ label, icon, onClick }: { label: string; icon: Glyph; onClick: () => void }) {
+function ControlButton({ label, icon, onClick, ref }: { label: string; icon: Glyph; onClick: () => void; ref?: Ref<HTMLButtonElement> }) {
   return (
     <button
+      ref={ref}
       type="button"
       aria-label={label}
       onClick={onClick}

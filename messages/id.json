@@ -264,6 +264,20 @@
       "zoomOut": "Perkecil peta",
       "reset": "Tampilkan seluruh Kota Bogor"
     },
+    "lokasiSaya": {
+      "button": "Tampilkan lokasi saya",
+      "title": "Tampilkan lokasi Anda di peta?",
+      "body": "Browser akan meminta izin lokasi. Lokasi Anda hanya dipakai di browser ini untuk menggeser peta, tidak dikirim ke AksesBogor, dan tidak disimpan. Seperti setiap tampilan peta, Mapbox menerima area peta yang dimuat.",
+      "allow": "Izinkan lokasi",
+      "cancel": "Batal",
+      "locating": "Mencari lokasi Anda…",
+      "found": "Peta digeser ke lokasi Anda.",
+      "denied": "Izin lokasi ditolak. Anda bisa mengizinkannya lagi di pengaturan browser.",
+      "unavailable": "Lokasi Anda tidak bisa ditemukan. Coba lagi sebentar lagi.",
+      "outside": "Lokasi Anda di luar Kota Bogor, jadi peta tidak digeser.",
+      "unsupported": "Browser ini tidak bisa memberi lokasi.",
+      "close": "Tutup pesan lokasi"
+    },
     "marker": "{name}, {category}, {status}",
     "summary": {
       "detail": "Lihat detail lokasi",

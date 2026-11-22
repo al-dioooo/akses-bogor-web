@@ -27,10 +27,10 @@ describe("cameraPadding", () => {
   });
 
   it("uses the first choice that leaves enough of the map", () => {
-    const band = { top: 200, right: 0, bottom: 520, left: 0 };
+    const band = { top: 220, right: 0, bottom: 520, left: 0 };
     const panel = { top: 120, right: 0, bottom: 520, left: 0 };
     expect(cameraPadding(400, 800, [band, panel])).toEqual({ top: 136, right: 16, bottom: 536, left: 16 });
-    expect(cameraPadding(400, 900, [band, panel])).toEqual({ top: 216, right: 16, bottom: 536, left: 16 });
+    expect(cameraPadding(400, 900, [band, panel])).toEqual({ top: 236, right: 16, bottom: 536, left: 16 });
   });
 
   it("falls back to the margin when too little of the map is left", () => {

@@ -50,7 +50,7 @@ test("the map fills the screen under a slim header, without the footer or any sc
   expect(layout.scrollWidth).toBeLessThanOrEqual(layout.width);
 });
 
-for (const width of [360, 1024, 1280]) {
+for (const width of [320, 360, 1024, 1280]) {
   test(`at ${width} px nothing scrolls sideways and the panel clears the bottom nav`, async ({ page }) => {
     await page.setViewportSize({ width, height: 760 });
     await openMap(page);
@@ -227,6 +227,16 @@ test("closing a place card whose marker the sheet now covers moves focus to that
   await expect.poll(() => page.evaluate(() => document.querySelector<HTMLElement>(".peta-peta")!.inert)).toBe(true);
   await page.getByRole("button", { name: "Tutup ringkasan" }).click();
   await expect(page.getByRole("button", { name: "Tunjukkan di peta: Masjid contoh A" })).toBeFocused();
+});
+
+test("on a small phone the reset button fits every place above the sheet", async ({ page }) => {
+  test.skip(!isMobile(page), "Lembar bawah hanya ada di ponsel");
+  await page.setViewportSize({ width: 320, height: 568 });
+  await openMap(page);
+  await expect(page.getByRole("group", { name: "Kontrol peta" })).toBeVisible({ timeout: 15_000 });
+  await page.getByRole("button", { name: "Perbesar peta" }).click();
+  await page.getByRole("button", { name: "Tampilkan seluruh Kota Bogor" }).click();
+  await expect(page.locator("#judul-daftar-peta + [role=status]")).toHaveText("7 dari 7 lokasi");
 });
 
 test("on a short phone a chosen marker ends up above the opened panel", async ({ page }) => {

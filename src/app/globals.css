@@ -502,6 +502,76 @@ body:has(> .peta-app) {
   grid-column: 2;
   grid-row: 2;
   align-self: start;
+  /* Di ponsel kartu Lokasi saya diletakkan terhadap main, bukan terhadap kontrol. */
+  @media (width < 48rem) {
+    position: static;
+  }
+}
+
+/* Penjelasan izin dan pesan "Lokasi saya", di atas panel daftar. Di ponsel kartu selebar layar (main yang menjadi
+   acuannya), paling bawah di atas Bottom nav, dan isinya digulir bila tidak muat. Pesan hasil selalu di bawah pencarian
+   dan kontrol, juga di landscape, supaya tidak pernah menutupi tombol Lokasi saya yang menerima fokus lagi. Penjelasan
+   izin, yang memegang fokus selama terbuka dan tertutup saat fokus keluar, di bagian atas peta, supaya tombolnya muat di
+   ponsel kecil dan landscape. Di layar lebar kartu di kiri kontrol. */
+.peta-lokasi {
+  position: absolute;
+  top: calc(var(--peta-atas) + 0.5rem);
+  right: 0.75rem;
+  left: 0.75rem;
+  /* Paling pendek setinggi satu baris pesan dengan tombol tutupnya, juga di ponsel landscape yang sangat pendek. */
+  max-height: max(3.75rem, calc(100% - var(--peta-atas) - 0.5rem - var(--peta-nav)));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  &[role="dialog"] {
+    top: 0.75rem;
+    max-height: calc(100% - 1.5rem - var(--peta-nav));
+  }
+  @media (width >= 48rem) {
+    &,
+    &[role="dialog"] {
+      top: 0;
+      right: calc(100% + 0.75rem);
+      left: auto;
+      width: min(22rem, calc(100vw - 1.5rem));
+      max-height: none;
+    }
+  }
+}
+
+/* Kontrol dengan kartu Lokasi saya yang terbuka berada di atas panel daftar, kecuali saat lembar penuh menutup peta. */
+.peta-kontrol:has(.peta-lokasi) {
+  z-index: 3;
+  .peta-app[data-tinggi="penuh"] & {
+    z-index: 1;
+  }
+  /* Di ponsel landscape lembar yang dibuka setinggi layar. */
+  @media (width < 48rem) and (height < 32rem) {
+    .peta-app[data-tinggi="setengah"] & {
+      z-index: 1;
+    }
+  }
+}
+
+/* Titik posisi pengguna: dekoratif (lokasinya diumumkan lewat pesan status), dengan lingkar yang berdenyut pelan. */
+.peta-saya {
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 3px solid var(--color-marker-ring);
+  border-radius: var(--radius-full);
+  background: var(--color-brand-fill);
+  box-shadow:
+    0 0 0 1px var(--color-border-strong),
+    0 0 0 0.5rem var(--alpha-violet-24);
+  pointer-events: none;
+  animation: peta-saya 2.4s ease-in-out infinite;
+}
+
+@keyframes peta-saya {
+  50% {
+    box-shadow:
+      0 0 0 1px var(--color-border-strong),
+      0 0 0 0.875rem var(--alpha-violet-24);
+  }
 }
 
 /* Kunci lapisan prioritas: di ponsel selebar layar di bawah tombol lapisan, di layar lebar kartu di bawah tombolnya. */

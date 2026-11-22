@@ -37,7 +37,10 @@ export function cameraPadding(width: number, height: number, choices: Insets | I
       bottom: Math.max(0, insets.bottom) + margin,
       left: Math.max(0, insets.left) + margin,
     };
-    if (width - padded.left - padded.right >= 80 && height - padded.top - padded.bottom >= 80) return padded;
+    // Selama bagian yang terlihat setidaknya 48 px, Kota Bogor dipusatkan di sana dan diperkecil sejauh batas peta
+    // mengizinkan. Di ponsel kecil bagian itu bisa lebih pendek dari kota, jadi tepinya tertutup, tetapi pusatnya tetap
+    // terlihat, bukan di bawah kontrol.
+    if (width - padded.left - padded.right >= 48 && height - padded.top - padded.bottom >= 48) return padded;
   }
   return { top: margin, right: margin, bottom: margin, left: margin };
 }
