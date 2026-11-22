@@ -260,14 +260,17 @@ for (const viewport of [
     await expect.poll(() => status.evaluate(uncovered)).toBe(true);
     await expect(page.getByText(/dari 0 lokasi|Tidak ada lokasi yang cocok/)).toHaveCount(0);
     await openList(page);
+    // Di ponsel landscape isi panel setengah hanya beberapa piksel; kepalanya yang membawa pesan.
+    const roomy = viewport.height >= 500 || viewport.width >= 768;
     const body = page.getByText("Lokasi tampil di sini setelah laporan warga diperiksa tim.");
-    await expect.poll(() => body.evaluate(uncovered)).toBe(true);
+    if (roomy) await expect.poll(() => body.evaluate(uncovered)).toBe(true);
     // Dengan filter: pesan "tidak ada yang cocok" dan jalan untuk menghapus filter.
     await page.goto("/peta?q=tidak-ada");
     await expect(status).toHaveText("Tidak ada lokasi yang cocok");
+    await expect.poll(() => status.evaluate(uncovered)).toBe(true);
     await openList(page);
     const reset = page.getByRole("main").getByRole("link", { name: "Hapus filter" });
-    await expect.poll(() => reset.evaluate(uncovered)).toBe(true);
+    if (roomy) await expect.poll(() => reset.evaluate(uncovered)).toBe(true);
     await context.close();
   });
 }

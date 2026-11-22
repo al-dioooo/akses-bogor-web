@@ -26,6 +26,13 @@ describe("cameraPadding", () => {
     expect(cameraPadding(400, 800, { top: 120, right: 0, bottom: 300, left: 0 })).toEqual({ top: 136, right: 16, bottom: 316, left: 16 });
   });
 
+  it("uses the first choice that leaves enough of the map", () => {
+    const band = { top: 200, right: 0, bottom: 520, left: 0 };
+    const panel = { top: 120, right: 0, bottom: 520, left: 0 };
+    expect(cameraPadding(400, 800, [band, panel])).toEqual({ top: 136, right: 16, bottom: 536, left: 16 });
+    expect(cameraPadding(400, 900, [band, panel])).toEqual({ top: 216, right: 16, bottom: 536, left: 16 });
+  });
+
   it("falls back to the margin when too little of the map is left", () => {
     expect(cameraPadding(400, 800, { top: 400, right: 0, bottom: 350, left: 0 })).toEqual({ top: 16, right: 16, bottom: 16, left: 16 });
   });
