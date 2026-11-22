@@ -2023,6 +2023,59 @@
       "cardsLabel": "Kartu dari jawaban agen"
     }
   },
+  "TanyaRute": {
+    "metaTitle": "Tanya rute",
+    "metaDescription": "Tanyakan cara ke kampus, masjid, halte, atau rumah sakit di Kota Bogor yang tercatat di AksesBogor, lalu lihat rute jalan kaki beserta peringatan dan hambatannya.",
+    "loading": "Memuat…",
+    "eyebrow": "Tanya rute",
+    "title": "Tanya cara ke",
+    "accent": "tempat di Kota Bogor",
+    "intro": "Asisten menjawab dari data AksesBogor dan menampilkan rute jalan kaki. Rute itu tidak memperhitungkan tangga, kerb, atau kemiringan jalan, jadi selalu periksa peringatan dan hambatannya.",
+    "unavailable": {
+      "title": "Tanya rute belum dibuka",
+      "body": "Fitur ini masih disiapkan. Anda tetap bisa mencari tempat lewat Jelajahi dan Peta."
+    },
+    "notice": "Pertanyaan Anda dikirim lewat server AksesBogor ke Anthropic (Claude API) untuk dijawab, dan tidak disimpan AksesBogor. Titik awal hanya dipakai server AksesBogor dan Mapbox, tidak pernah dikirim ke Anthropic. Jangan tulis data pribadi, mis. nama, nomor telepon, atau alamat rumah. Baca <link>Kebijakan Privasi</link>.",
+    "awal": {
+      "heading": "Titik awal",
+      "title": "Dari mana Anda berangkat?",
+      "why": "Titik awal dipakai untuk mencari tempat terdekat dan menghitung rute jalan kaki. Anda juga bisa bertanya tanpa titik awal.",
+      "privacy": "Titik awal dibulatkan sampai sekitar 11 m. Server AksesBogor memakainya untuk jarak ke tempat terdekat, dan Mapbox untuk menghitung rute. Titik ini tidak disimpan dan tidak pernah dikirim ke asisten AI.",
+      "chosen": {
+        "perangkat": "Titik awal: lokasi perangkat Anda.",
+        "peta": "Titik awal: titik yang Anda pilih di peta."
+      },
+      "change": "Ganti titik awal",
+      "clear": "Hapus titik awal",
+      "keep": "Tetap pakai titik awal sebelumnya"
+    },
+    "place": {
+      "label": "Tujuan: {name}",
+      "clear": "Hapus tujuan"
+    },
+    "tanya": {
+      "title": "Tanya asisten",
+      "label": "Pertanyaan Anda",
+      "hint": "Paling banyak 500 karakter dan {count} pertanyaan per hari. Percakapan hilang saat halaman ditutup.",
+      "send": "Kirim pertanyaan",
+      "sending": "Asisten sedang menjawab…",
+      "examples": "Contoh pertanyaan",
+      "example": {
+        "place": "Bagaimana cara ke {name}?",
+        "hospital": "Rute ke rumah sakit terdekat dari sini",
+        "mosque": "Masjid terdekat yang aksesibel",
+        "halte": "Apakah halte terdekat ramah kursi roda?"
+      },
+      "conversation": "Percakapan dengan asisten",
+      "you": "Anda",
+      "assistant": "Asisten",
+      "answered": "Asisten menjawab: {answer}",
+      "tooShort": "Tulis pertanyaan paling sedikit 2 karakter.",
+      "failed": "Pertanyaan tidak bisa dikirim. Coba lagi sebentar lagi.",
+      "note": "Jawaban asisten bisa keliru. Periksa peringatan dan hambatan di kartu rute, dan bila ragu, telepon tempatnya dulu."
+    },
+    "cards": "Kartu rute dari jawaban asisten"
+  },
   "PrioritasKecamatan": {
     "title": "Prioritas kecamatan {year}",
     "caption": "Kecamatan diurutkan dari yang paling perlu didata, data tahun {year}",
