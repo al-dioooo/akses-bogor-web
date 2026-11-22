@@ -99,6 +99,8 @@ for (const colorScheme of ["light", "dark"] as const) {
   test(`dashboard menu (${colorScheme}) has no serious or critical WCAG 2.2 AA violations`, async ({ page }) => {
     await page.emulateMedia({ colorScheme, reducedMotion: "reduce" });
     await signIn(page, email("admin"));
+    // Next 16 mengalirkan <title> setelah redirect dari server action; axe memeriksa judul dokumen.
+    await expect(page).toHaveTitle(/^Akun saya/);
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     await expect(await menuLinks(page)).toHaveCount(8);
     expect(await blockingViolations(page)).toEqual([]);
