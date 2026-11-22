@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
+import { DashboardHeading } from "@/components/dasbor/dashboard-heading";
 import { DeskNav } from "@/components/verifikasi/desk-nav";
 import { NoAccess } from "@/components/verifikasi/no-access";
 import { verifierSession } from "@/lib/verifikator";
-import { SectionHeading } from "@/ui/section-heading";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Verifikasi");
@@ -15,12 +15,12 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function MejaLayout({ children }: LayoutProps<"/verifikasi">) {
   const t = await getTranslations("Verifikasi");
   return (
-    <main id="konten" className="page-width flex flex-1 flex-col gap-8 py-10 sm:py-16">
-      <SectionHeading id="judul-meja" level={1} label={t("eyebrow")} title={t("title")} accent={t("accent")} intro={t("intro")} />
+    <>
+      <DashboardHeading id="judul-meja" label={t("eyebrow")} title={t("title")} accent={t("accent")} intro={t("intro")} />
       <Suspense fallback={<p role="status">{t("queue.loading")}</p>}>
         <Gate>{children}</Gate>
       </Suspense>
-    </main>
+    </>
   );
 }
 
@@ -37,7 +37,10 @@ async function Gate({ children }: { children: React.ReactNode }) {
   }
   return (
     <div className="flex flex-col gap-6">
-      <DeskNav admin={session.user.role === "admin"} />
+      {/* Di layar lebar bagian meja sudah ada di sidebar dasbor (ADR-0046); tab ini untuk ponsel dan tablet. */}
+      <div className="lg:hidden">
+        <DeskNav admin={session.user.role === "admin"} />
+      </div>
       {children}
     </div>
   );

@@ -1,4 +1,5 @@
 import { connection } from "next/server";
+import { cache } from "react";
 import { apiHeaders, apiPost, apiUrl, type Category, type DistrictPriority, type Status } from "./api";
 import type { LatLng } from "./laporan";
 
@@ -74,9 +75,10 @@ export const askAgent = (token: string, input: { question: string; history: Agen
 /**
  * Apakah agen dibuka di API. Tanpa token, API menjawab 503 `agen_rute_belum_aktif` selama `ROUTE_AGENT_ENABLED`
  * mati, dan 401 bila sudah dibuka; jadi pemeriksaan ini tidak memakai batas per akun. API yang belum punya route agen
- * (404) atau tidak terhubung dianggap belum dibuka.
+ * (404) atau tidak terhubung dianggap belum dibuka. Dibaca sekali per request, karena menu dasbor dan beberapa bagian
+ * Ringkasan menanyakannya (ADR-0046).
  */
-export async function agentEnabled(): Promise<boolean> {
+export const agentEnabled = cache(async (): Promise<boolean> => {
   await connection();
   try {
     const response = await fetch(apiUrl("/agent/tools"), { headers: await apiHeaders(), cache: "no-store" });
@@ -84,4 +86,4 @@ export async function agentEnabled(): Promise<boolean> {
   } catch {
     return false;
   }
-}
+});

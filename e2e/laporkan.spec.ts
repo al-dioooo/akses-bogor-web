@@ -1,6 +1,7 @@
 import type { Page } from "@playwright/test";
 import { mockApi, uniqueEmail } from "./akun-masuk";
 import { blockingViolations } from "./axe";
+import { dashboardMenu } from "./dasbor";
 import { photo } from "./foto";
 import { stubGoogle } from "./google";
 import { expect, test } from "./mapbox";
@@ -188,7 +189,7 @@ test("clears the drafts on this device when signing out", async ({ page }) => {
   await main(page).getByRole("textbox", { name: "Nama tempat" }).fill("Draf di perangkat bersama");
   await page.waitForTimeout(500);
   await page.goto("/akun");
-  await main(page).getByRole("button", { name: "Keluar" }).click();
+  await (await dashboardMenu(page)).getByRole("button", { name: "Keluar" }).click();
   await expect(page).toHaveURL(/\/$/);
   await page.goto("/laporkan");
   await expect(main(page).getByRole("textbox", { name: "Nama tempat" })).toHaveValue("");
