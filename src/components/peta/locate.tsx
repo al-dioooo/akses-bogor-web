@@ -17,13 +17,27 @@ type Phase = "awal" | "tanya" | "mencari" | "ketemu" | "ditolak" | "gagal" | "lu
 export function useLocate(map: MapHandle | null) {
   const [phase, setPhase] = useState<Phase>("awal");
   const agreed = useRef(false);
+  // Peta yang sedang tampil saat lokasi datang, bukan peta saat tombol ditekan: peta itu bisa sudah dibuat ulang (Coba
+  // lagi) atau dihancurkan (pindah halaman).
+  const current = useRef(map);
+  useEffect(() => {
+    current.current = map;
+    return () => {
+      current.current = null;
+    };
+  }, [map]);
 
   function locate() {
     setPhase("mencari");
     navigator.geolocation.getCurrentPosition(
-      ({ coords }) => setPhase(map?.showUser({ lng: coords.longitude, lat: coords.latitude }) ? "ketemu" : "luar"),
+      ({ coords }) => {
+        const shown = current.current;
+        if (!shown) return setPhase("awal");
+        setPhase(shown.showUser({ lng: coords.longitude, lat: coords.latitude }) ? "ketemu" : "luar");
+      },
       (error) => setPhase(error.code === error.PERMISSION_DENIED ? "ditolak" : "gagal"),
-      { enableHighAccuracy: true, timeout: 15_000, maximumAge: 60_000 },
+      // Posisi kasar sudah cukup untuk menggeser peta, dan lebih cepat serta hemat baterai.
+      { enableHighAccuracy: false, timeout: 15_000, maximumAge: 60_000 },
     );
   }
 
