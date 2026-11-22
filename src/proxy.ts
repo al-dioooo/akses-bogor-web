@@ -33,6 +33,11 @@ export async function proxy(request: NextRequest) {
   });
 }
 
+/**
+ * Tujuan rewrite harus seasal dengan `request.url`, bukan `request.nextUrl` atau header `Host`/`x-forwarded-*`: hanya
+ * `request.url` yang sama persis dengan asal yang dipakai router (`skipProxyUrlNormalize` di next.config.ts). Asal
+ * yang berbeda membuat Next.js memproxy rewrite ke server lain (issue #156).
+ */
 function notFoundPage(request: NextRequest) {
   return NextResponse.rewrite(new URL(NOT_FOUND_PATH, request.url), { status: 404 });
 }
