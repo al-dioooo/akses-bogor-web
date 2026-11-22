@@ -68,7 +68,7 @@ test("shows the cards after the answer: priority, places without data, and a rou
   await expect(osm.getByRole("link", { name: "Lihat di OpenStreetMap" })).toHaveAttribute("href", "https://www.openstreetmap.org/node/9001");
   await expect(cards.getByRole("article", { name: "Halte contoh" }).getByText("Sebagian")).toBeVisible();
 
-  const route = cards.getByRole("region", { name: "Rute jalan kaki ke Masjid Al-Hidayah" });
+  const route = cards.getByRole("region", { name: "Rute jalan kaki ke Masjid Al-Hidayah", exact: true });
   await expect(route.getByText(/tidak pernah dikirim ke agen AI/)).toBeVisible();
   await route.getByRole("button", { name: "Pakai lokasi saya" }).click();
   await expect(route.getByText(/menit jalan kaki/)).toBeFocused();
@@ -88,7 +88,7 @@ test("lets the user pick the start point on the map when the location is denied"
   const page = await openSignedIn(browser, PAGE);
   await page.context().clearPermissions();
   await ask(page, "Masjid mana yang belum punya data?");
-  const route = main(page).getByRole("region", { name: "Rute jalan kaki ke Masjid Al-Hidayah" });
+  const route = main(page).getByRole("region", { name: "Rute jalan kaki ke Masjid Al-Hidayah", exact: true });
   await route.getByRole("button", { name: "Pakai lokasi saya" }).click();
   await expect(route.getByRole("alert")).toHaveText("Izin lokasi ditolak. Pilih titik awal di peta.");
   await expect(route.getByRole("heading", { name: "Pilih titik awal di peta" })).toBeFocused();
@@ -135,7 +135,7 @@ for (const colorScheme of ["light", "dark"] as const) {
     await ask(page, "Kecamatan mana yang paling perlu didata?");
     await expect(main(page).getByRole("list", { name: "Percakapan dengan agen" })).toContainText("Bogor Barat");
     expect(await blockingViolations(page)).toEqual([]);
-    const route = main(page).getByRole("region", { name: "Rute jalan kaki ke Masjid Al-Hidayah" });
+    const route = main(page).getByRole("region", { name: "Rute jalan kaki ke Masjid Al-Hidayah", exact: true });
     await route.getByRole("button", { name: "Pakai lokasi saya" }).click();
     await expect(route.getByRole("region", { name: "Hambatan yang tercatat di OpenStreetMap" }).getByRole("listitem")).toHaveCount(2);
     expect(await blockingViolations(page)).toEqual([]);
