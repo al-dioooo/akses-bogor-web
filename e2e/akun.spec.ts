@@ -38,8 +38,8 @@ test("shows Akun saya instead of Masuk once signed in, and an empty Laporan saya
   await expect(await accountLink(page, "Masuk")).toBeVisible();
   await signIn(page, address);
   await expect(page).toHaveURL(/\/akun$/);
-  await expect(page.getByRole("heading", { name: "Belum ada laporan" })).toBeVisible();
-  await expect(page.getByRole("main").getByRole("link", { name: "Laporkan tempat" })).toHaveAttribute("href", "/laporkan");
+  await expect(page.getByRole("heading", { name: "Dari akun baru ke tempat pertama." })).toBeVisible();
+  await expect(page.getByRole("main").getByRole("link", { name: "Laporkan tempat pertama" })).toHaveAttribute("href", "/laporkan");
   await page.goto("/akun/pengaturan");
   await expect(page.getByRole("main").getByText(address)).toBeVisible();
   await page.goto("/jelajahi");
@@ -144,7 +144,7 @@ for (const colorScheme of ["light", "dark"] as const) {
     await page.emulateMedia({ colorScheme, reducedMotion: "reduce" });
     await signIn(page, email("lama"));
     await expect(page).toHaveTitle(/^Akun saya/);
-    await expect(page.getByRole("heading", { name: "Belum ada laporan" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Dari akun baru ke tempat pertama." })).toBeVisible();
     expect(await blockingViolations(page)).toEqual([]);
   });
 }
