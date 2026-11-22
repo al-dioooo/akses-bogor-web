@@ -65,6 +65,7 @@ Warna, spasi, radius, dan ukuran berasal dari variable design system ([ADR-0027]
 | [scripts/tokens.mjs](scripts/tokens.mjs) | Generator CSS |
 | [scripts/figma/export-variables.js](scripts/figma/export-variables.js) | Skrip ekspor yang dijalankan di file Figma |
 | [scripts/ilustrasi.mjs](scripts/ilustrasi.mjs) | Merender poster hero dan close-up dari adegan three.js ([catatan](src/assets/ilustrasi/README.md)) |
+| [scripts/ikon.mjs](scripts/ikon.mjs) | Membuat favicon (`src/app/icon.svg`, `favicon.ico`), Apple touch icon, dan ikon manifest di `public/ikon/` dari tanda di [src/ui/logo-mark.json](src/ui/logo-mark.json). Jalankan lagi setelah bentuk tanda atau warna token berubah |
 
 Mode warna:
 
