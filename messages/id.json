@@ -301,7 +301,12 @@
       "osmLink": "Lihat di OpenStreetMap",
       "newTab": "(tab baru)",
       "attribution": "© kontributor OpenStreetMap",
-      "emptyBody": "Lingkaran abu-abu adalah tempat dari OpenStreetMap yang belum diperiksa tim."
+      "emptyBody": "Lingkaran abu-abu adalah tempat dari OpenStreetMap yang belum diperiksa tim.",
+      "listTitle": "Belum ada data ({count})",
+      "listBody": "Tempat dari OpenStreetMap yang belum diperiksa tim. Laporkan aksesibilitasnya supaya bisa diverifikasi.",
+      "listNone": "Tidak ada tempat Belum ada data di bagian peta ini.",
+      "reportPlace": "Laporkan tempat ini: {name}",
+      "more": "Tampilkan {count} lagi"
     },
     "list": {
       "title": "Daftar lokasi",
