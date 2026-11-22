@@ -10,7 +10,8 @@ import type { LatLng } from "./laporan";
 export type WalkingStep = { instruction: string; distanceMeters: number; durationSeconds: number; name: string | null; maneuver: string; location: LatLng };
 
 export type WalkingRoute = {
-  destination: { placeId?: string; name: string | null; location: LatLng };
+  /** Lokasi AksesBogor (`placeId`) atau fasilitas OpenStreetMap (`osm`); yang lain bernilai null. */
+  destination: { placeId: string | null; osm: { type: OsmType; id: number } | null; name: string | null; location: LatLng };
   distanceMeters: number;
   durationSeconds: number;
   steps: WalkingStep[];
@@ -49,6 +50,12 @@ export type PriorityLevel = "rendah" | "sedang" | "tinggi" | "sangat_tinggi";
 /** Prioritas kecamatan dari data penyandang disabilitas terdaftar; sama dengan GET /districts/priority. */
 export type DistrictPriority = {
   year: number;
+  /** Jumlah terdaftar per tahun untuk seluruh kota; belum ditampilkan. */
+  yearTotals?: { year: number; registered: number }[];
+  /** Cara menghitung skor, dalam bahasa Indonesia. */
+  formula?: string;
+  /** Asal hitungan fasilitas tanpa data (OpenStreetMap) dan atribusinya. */
+  facilitiesSource?: { retrievedAt: string | null; attribution: string };
   districts: { slug: string; name: string; registered: number; verifiedPlaces: number; facilitiesWithoutData: number; score: number; rank: number; level: PriorityLevel }[];
   caveat: string;
   source: { title: string; url: string; publisher: string; retrievedAt: string; terms: string };
