@@ -15,6 +15,9 @@ test.beforeEach(async ({ page }) => {
 /** Tautan akun di header (desktop) atau di menu Lainnya (ponsel). */
 async function accountLink(page: Page, name: string) {
   if (!isPhone()) return page.getByRole("banner").getByRole("link", { name });
+  // Bottom nav dialirkan setelah cookie sesi dibaca dan menggantikan kerangkanya; menu yang dibuka sebelum itu ikut
+  // hilang. Nav yang sudah dialirkan menandai halaman yang sedang dibuka.
+  await expect(page.getByRole("navigation", { name: "Menu cepat" }).locator('[aria-current="page"]')).toBeVisible();
   await page.getByRole("button", { name: "Lainnya" }).click();
   return page.locator("#menu-lainnya").getByRole("link", { name });
 }
