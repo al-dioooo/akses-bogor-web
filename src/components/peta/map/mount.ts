@@ -27,6 +27,8 @@ export type MapHandle = {
   zoomOut(): void;
   reset(): void;
   show(id: string): void;
+  /** Menggeser peta ke lokasi tanpa mengubah zoom, hanya bila lokasinya tidak terlihat atau di balik panel. */
+  reveal(id: string): void;
   /** Mengganti lokasi di peta (mis. setelah filter berubah) tanpa membuat peta baru. */
   setPlaces(places: MapPlace[]): void;
   /** Bagian peta yang tertutup panel: lokasi di baliknya tidak dihitung "di tampilan", dan perpindahan menghindarinya. */
@@ -237,6 +239,16 @@ export function mountMap(options: Options): MapHandle {
       const place = byId.get(id);
       // Padding tidak disimpan sebagai padding peta, supaya perpindahan berikutnya tidak ikut bergeser.
       if (place) map.flyTo({ center: [place.lng, place.lat], zoom: Math.max(map.getZoom(), 15), padding: padding(), retainPadding: false });
+    },
+    reveal(id) {
+      const place = byId.get(id);
+      if (!place) return;
+      const container = map.getContainer();
+      const rect = visibleRect(container.clientWidth, container.clientHeight, insets);
+      const { x, y } = map.project([place.lng, place.lat]);
+      const margin = 56;
+      if (rect && x >= rect.left + margin && x <= rect.right - margin && y >= rect.top + margin && y <= rect.bottom - margin) return;
+      map.easeTo({ center: [place.lng, place.lat], padding: padding(), retainPadding: false });
     },
     setPlaces(next) {
       placeMarkers(next);
