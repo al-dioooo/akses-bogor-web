@@ -121,6 +121,38 @@ export async function apiHeaders(): Promise<Record<string, string>> {
   return result;
 }
 
+/** Badan POST ke API: JSON, atau byte mentah dengan jenis isinya (foto). */
+export type PostBody = { json: unknown } | { bytes: ArrayBuffer; contentType: string };
+
+/** POST ke API dari server web. Galat menjadi `ApiError` dengan `{ galat, pesan }` dari API, atau `api_tidak_terhubung`. */
+export async function apiPost<T>(path: string, body: PostBody, token?: string): Promise<T> {
+  const headers = await apiHeaders();
+  if (token) headers.authorization = `Bearer ${token}`;
+  headers["content-type"] = "json" in body ? "application/json" : body.contentType;
+  let response: Response;
+  try {
+    response = await fetch(apiUrl(path), {
+      method: "POST",
+      headers,
+      body: "json" in body ? JSON.stringify(body.json) : body.bytes,
+      cache: "no-store",
+    });
+  } catch {
+    throw new ApiError(0, "api_tidak_terhubung", "Server AksesBogor tidak bisa dihubungi. Coba lagi sebentar lagi.");
+  }
+  if (!response.ok) {
+    const error = (await response.json().catch(() => null)) as { galat?: string; pesan?: string } | null;
+    const retryAfter = Number(response.headers.get("retry-after"));
+    throw new ApiError(
+      response.status,
+      error?.galat ?? "galat_api",
+      error?.pesan ?? "Terjadi kesalahan. Coba lagi.",
+      Number.isFinite(retryAfter) && retryAfter > 0 ? retryAfter : undefined,
+    );
+  }
+  return (await response.json()) as T;
+}
+
 async function get<T>(path: string, query?: Record<string, string | number | undefined>): Promise<T> {
   // Data lokasi selalu diambil saat request, tidak saat build, jadi build tidak butuh API.
   await connection();

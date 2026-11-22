@@ -1,11 +1,12 @@
 // API tiruan untuk tes Playwright, supaya CI tidak butuh akses-bogor-api dan database.
 // Datanya salinan respons API dari seed pengembangan (fixtures.json); filter meniru GET /places dan GET /places/map.
 // Pencarian "galat-tiruan" menjawab 500, untuk menguji keadaan galat di web. Route akun ada di akun.mjs, route
-// Laporkan di laporkan.mjs, route panel verifikator di verifikasi.mjs.
+// Laporkan di laporkan.mjs, route panel verifikator di verifikasi.mjs, route agen rute di agen-rute.mjs.
 // GET /_tiruan/pengunjung?ip=...&path=... menjawab rahasia server web terakhir yang dikirim bersama IP pengunjung itu,
 // untuk path API tertentu atau, tanpa path, untuk path mana pun.
 import { readFileSync } from "node:fs";
 import { createServer } from "node:http";
+import { handleAgenRute } from "./agen-rute.mjs";
 import { handleAkun } from "./akun.mjs";
 import { handleLaporkan } from "./laporkan.mjs";
 import { handleVerifikasi } from "./verifikasi.mjs";
@@ -110,6 +111,7 @@ createServer(async (request, response) => {
     handleAkun(request.method, url.pathname, url.searchParams, request.headers, payload) ??
     handleLaporkan(request.method, url.pathname, request.headers, payload, places) ??
     handleVerifikasi(request.method, url, request.headers, payload, places) ??
+    handleAgenRute(request.method, url, request.headers, payload, places) ??
     route(url);
   response.writeHead(status, { "content-type": "application/json; charset=utf-8", ...headers });
   // Foto dikirim sebagai berkas biner, selebihnya JSON.
