@@ -73,3 +73,44 @@ test("pages that need an account have no canonical address or share card", async
   await expect(page.locator('head link[rel="canonical"]')).toHaveCount(0);
   await expect(page.locator('head meta[property="og:url"]')).toHaveCount(0);
 });
+
+// Gambar berbagi: bawaan untuk halaman statis, kartu lokasi untuk Detail lokasi.
+async function pngSize(body: Buffer) {
+  expect(body.subarray(1, 4).toString()).toBe("PNG");
+  return { width: body.readUInt32BE(16), height: body.readUInt32BE(20) };
+}
+
+async function shareImage(request: import("@playwright/test").APIRequestContext, path: string) {
+  const html = await (await request.get(path, { headers: { "user-agent": "WhatsApp/2.23.20.0" } })).text();
+  const head = html.slice(0, html.indexOf("</head>"));
+  const og = head.match(/<meta property="og:image" content="([^"]+)"/)?.[1];
+  const twitter = head.match(/<meta name="twitter:image" content="([^"]+)"/)?.[1];
+  expect(og).toBeTruthy();
+  expect(twitter).toBe(og);
+  const url = new URL(og ?? "");
+  return { path: url.pathname + url.search, alt: head.match(/<meta property="og:image:alt" content="([^"]+)"/)?.[1] };
+}
+
+for (const path of ["/", "/tentang", "/jelajahi"]) {
+  test(`${path} shares the default AksesBogor image`, async ({ request }) => {
+    const image = await shareImage(request, path);
+    expect(image.path).toMatch(/^\/opengraph-image/);
+    expect(image.alt).toMatch(/^AksesBogor, peta aksesibilitas Kota Bogor/);
+    const response = await request.get(image.path);
+    expect(response.headers()["content-type"]).toBe("image/png");
+    expect(await pngSize(await response.body())).toEqual({ width: 1200, height: 630 });
+  });
+}
+
+test("Detail lokasi shares a card made from the place data", async ({ request }) => {
+  const image = await shareImage(request, `/lokasi/${HALTE}`);
+  expect(image.path).toMatch(new RegExp(`^/lokasi/${HALTE}/opengraph-image`));
+  const response = await request.get(image.path);
+  expect(response.headers()["content-type"]).toBe("image/png");
+  expect(await pngSize(await response.body())).toEqual({ width: 1200, height: 630 });
+});
+
+test("there is no share card for a place that does not exist", async ({ request }) => {
+  const response = await request.get("/lokasi/00000000-0000-4000-8000-000000000000/opengraph-image");
+  expect(response.status()).toBe(404);
+});

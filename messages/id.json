@@ -318,6 +318,11 @@
       "explore": "Jelajahi lokasi lain"
     }
   },
+  "Berbagi": {
+    "siteAlt": "AksesBogor, peta aksesibilitas Kota Bogor: cek aksesnya dulu, berangkat lebih tenang. Ramp, toilet difabel, guiding block, dan lift.",
+    "placeAlt": "Kartu lokasi AksesBogor: nama tempat, kategori, kecamatan, status aksesibilitas, ringkasan fasilitas, dan tanggal verifikasi.",
+    "place": "{category} · Kecamatan {district}"
+  },
   "Masuk": {
     "metaTitle": "Masuk",
     "eyebrow": "Akun AksesBogor",

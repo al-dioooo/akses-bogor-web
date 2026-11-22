@@ -43,6 +43,18 @@ describe("publicMetadata", () => {
     });
   });
 
+  it("points static pages to the default share image", () => {
+    const metadata = publicMetadata({ ...PAGE, defaultImageAlt: "Kartu AksesBogor" });
+    const image = { url: "/opengraph-image", width: 1200, height: 630, type: "image/png", alt: "Kartu AksesBogor" };
+    expect(metadata.openGraph).toMatchObject({ images: [image] });
+    expect(metadata.twitter).toMatchObject({ images: [image] });
+  });
+
+  it("leaves the share image to the page segment when there is no default", () => {
+    expect(publicMetadata(PAGE).openGraph).not.toHaveProperty("images");
+    expect(publicMetadata(PAGE).twitter).not.toHaveProperty("images");
+  });
+
   it("keeps the home page title free of the site name template", () => {
     expect(publicMetadata({ ...PAGE, title: "AksesBogor: peta aksesibilitas", absoluteTitle: true, path: "/" }).title).toEqual({
       absolute: "AksesBogor: peta aksesibilitas",
