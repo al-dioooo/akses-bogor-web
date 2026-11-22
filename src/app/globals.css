@@ -437,6 +437,16 @@ body:has(> .peta-app) {
       )
     );
   }
+  /* Penuh: lembar menutup seluruh peta, dan bagian di baliknya tidak bisa difokus (lihat place-map.tsx). */
+  &[data-tinggi="penuh"] {
+    --peta-bawah: 100%;
+  }
+  /* Ponsel landscape: panel yang dibuka langsung penuh; setengah layar hanya menyisakan beberapa piksel isi. */
+  @media (height < 32rem) {
+    &[data-tinggi="setengah"] {
+      --peta-bawah: 100%;
+    }
+  }
   @media (width >= 48rem) {
     --peta-bawah: var(--peta-nav);
     grid-template-columns: 24rem minmax(0, 1fr) auto;
@@ -566,7 +576,7 @@ body:has(> .peta-app) {
     border-radius: var(--radius-3xl);
     box-shadow: 0 12px 32px -16px var(--color-shadow-soft);
     /* Sebelum pengguna memilih ("awal"), panel samping terbuka; di ponsel lembar mulai kecil. */
-    .peta-app:is([data-tinggi="setengah"], [data-tinggi="awal"]) & {
+    .peta-app:is([data-tinggi="setengah"], [data-tinggi="penuh"], [data-tinggi="awal"]) & {
       align-self: stretch;
     }
   }
@@ -601,9 +611,19 @@ body:has(> .peta-app) {
   }
 }
 
+/* Cincin fokus pegangan lembar digambar di sisi dalam, karena lembar memotong apa pun di luar tepinya. */
+.peta-pegangan:focus-visible {
+  outline-offset: calc(-1 * var(--border-width-focus) - 2px);
+}
+
 /* Cincin fokus kanvas Mapbox digambar di sisi dalam, karena tepi peta adalah tepi layar. */
 .peta-peta .mapboxgl-canvas:focus-visible {
   outline-offset: -4px;
+}
+
+/* Selama lembar ditarik, lembar dan atribusi mengikuti jari tanpa animasi. */
+.peta-app[data-menyeret] :is(.peta-lembar, .peta-pesan, .mapboxgl-ctrl-bottom-left, .mapboxgl-ctrl-bottom-right) {
+  transition: none;
 }
 
 /* Pesan "memuat" di atas peta, di tengah bagian yang tidak tertutup pencarian dan panel. Pesan galat dan "tidak ada

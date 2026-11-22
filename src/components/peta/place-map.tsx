@@ -60,9 +60,22 @@ function measure(main: HTMLElement): { top: number; insets: Insets; covers: Rect
   return { top, insets, covers, camera: side ? insets : { ...insets, top: Math.max(insets.top, top) } };
 }
 
+/** Elemen bisa menerima fokus: tidak di bagian yang inert dan tidak dikeluarkan dari urutan Tab (marker yang tertutup). */
+const canFocus = (element: HTMLElement | null | undefined): element is HTMLElement =>
+  !!element && element.isConnected && !element.closest("[inert]") && element.tabIndex >= 0 && element.getAttribute("aria-hidden") !== "true";
+
 const NARROW = "(width < 48rem)";
 const subscribeNarrow = (onChange: () => void) => {
   const query = matchMedia(NARROW);
+  query.addEventListener("change", onChange);
+  return () => query.removeEventListener("change", onChange);
+};
+
+// Ponsel landscape: panel yang dibuka langsung setinggi layar (globals.css), karena setengah layar hanya menyisakan
+// beberapa piksel isi.
+const SHORT = "(height < 32rem)";
+const subscribeShort = (onChange: () => void) => {
+  const query = matchMedia(SHORT);
   query.addEventListener("change", onChange);
   return () => query.removeEventListener("change", onChange);
 };
@@ -111,6 +124,7 @@ export function PlaceMap({
   // CSS, jadi tidak ada lompatan saat halaman selesai dimuat.
   const [chosenHeight, setHeight] = useState<SheetHeight | null>(null);
   const narrow = useSyncExternalStore(subscribeNarrow, () => matchMedia(NARROW).matches, () => true);
+  const short = useSyncExternalStore(subscribeShort, () => matchMedia(SHORT).matches, () => false);
   const height: SheetHeight = chosenHeight ?? (narrow ? "kecil" : "setengah");
   const [layer, setLayer] = useState<"mati" | "memuat" | "nyala" | "galat">("mati");
   const [boundaries, setBoundaries] = useState<DistrictBoundaries | null>(null);
@@ -177,7 +191,7 @@ export function PlaceMap({
             setState("galat");
             setHeight("setengah");
           },
-          onView: (ids) => setInView(new Set(ids)),
+          onView: (ids) => setInView(ids && new Set(ids)),
           onSelect: (id) => {
             setSelected({ id, from: "peta" });
             setHeight("setengah");
@@ -213,6 +227,14 @@ export function PlaceMap({
     const main = frame.current?.closest("main");
     if (main) main.dataset.tinggi = chosenHeight ?? "awal";
   }, [chosenHeight]);
+
+  // Lembar penuh di ponsel (juga lembar yang dibuka di ponsel landscape) menutup pencarian, kontrol, dan peta: bagian itu
+  // dibuat inert supaya fokus tidak masuk ke sesuatu yang tidak terlihat (WCAG 2.4.11).
+  useLayoutEffect(() => {
+    const main = frame.current?.closest("main");
+    const covered = narrow && (height === "penuh" || (height === "setengah" && short));
+    for (const element of main?.querySelectorAll<HTMLElement>(".peta-cari, .peta-lapisan, .peta-kontrol, .peta-peta") ?? []) element.inert = covered;
+  }, [height, narrow, short, state, priority]);
 
   // Ukuran diukur ulang setelah berhenti berubah (mis. selesai animasi panel), lalu perpindahan yang menunggu dijalankan.
   useEffect(() => {
@@ -282,20 +304,32 @@ export function PlaceMap({
   }
 
   const ready = state === "siap";
-  const shown = ready && inView ? places.filter((p) => inView.has(p.id)) : places;
+  // Daftar mengikuti bagian peta yang terlihat. Sebelum peta siap, tanpa peta, atau saat panel menutup seluruh peta (lembar
+  // penuh), daftar berisi semua lokasi.
+  const followsView = ready && inView !== null;
+  const shown = followsView ? places.filter((p) => inView.has(p.id)) : places;
   // Tanpa lokasi sama sekali, kepala panel (yang selalu terlihat) membawa pesannya: belum ada data, atau filter terlalu
   // sempit.
   const empty = tj(filtered ? "results.emptyTitle" : "results.noDataTitle");
-  const status = places.length === 0 ? empty : ready ? t("list.count", { shown: shown.length, total: places.length }) : t("count", { total: places.length });
+  const status = places.length === 0 ? empty : followsView ? t("list.count", { shown: shown.length, total: places.length }) : t("count", { total: places.length });
   const layerShown = priority && (layer === "nyala" || layer === "galat");
 
-  /** Menutup ringkasan, lalu fokus kembali ke marker atau ke tombol daftar yang membukanya. */
+  /**
+   * Menutup ringkasan, lalu fokus kembali ke marker atau ke tombol daftar yang membukanya. Bila marker itu tidak bisa
+   * difokus lagi (mis. lembar di ponsel landscape menutup peta dan membuatnya inert), fokus pindah ke tombol daftar lokasi
+   * itu, atau ke judul daftar.
+   */
   function closeSummary() {
     if (!chosen) return;
     const { id, from } = chosen;
     setSelected(null);
-    if (from === "peta") return map?.markers.get(id)?.focus();
-    requestAnimationFrame(() => document.querySelector<HTMLButtonElement>(`[data-tunjukkan="${id}"]`)?.focus());
+    requestAnimationFrame(() => {
+      const marker = map?.markers.get(id);
+      if (from === "peta" && canFocus(marker)) return marker.focus();
+      const show = document.querySelector<HTMLButtonElement>(`[data-tunjukkan="${id}"]`);
+      if (canFocus(show)) return show.focus();
+      listHeading.current?.focus();
+    });
   }
 
   function showOnMap(id: string) {
@@ -375,7 +409,7 @@ export function PlaceMap({
           setHeight("kecil");
           toggle.current?.focus();
         }}
-        title={t(ready && places.length > 0 ? "list.inView" : "list.title")}
+        title={t(followsView && places.length > 0 ? "list.inView" : "list.title")}
         status={status}
         headingRef={listHeading}
         toggleRef={toggle}

@@ -62,7 +62,8 @@ type Options = {
   markerLabel: (place: MapPlace) => string;
   onReady: () => void;
   onFail: () => void;
-  onView: (ids: string[]) => void;
+  /** Lokasi di bagian peta yang terlihat, atau null bila panel menutup seluruh peta (mis. lembar penuh di ponsel). */
+  onView: (ids: string[] | null) => void;
   onSelect: (id: string) => void;
   /** Dipanggil dengan salinan marker setiap kali lokasi di peta berganti. */
   onMarkers: (markers: ReadonlyMap<string, HTMLButtonElement>) => void;
@@ -168,7 +169,7 @@ export function mountMap(options: Options): MapHandle {
         button.setAttribute("aria-hidden", "true");
       }
     }
-    options.onView(ids);
+    options.onView(rect ? ids : null);
   };
   const padding = () => {
     const container = map.getContainer();

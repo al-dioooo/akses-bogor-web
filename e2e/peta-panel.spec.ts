@@ -3,7 +3,9 @@ import { blockingViolations } from "./axe";
 import { expect, openList, stubMapbox, test } from "./mapbox";
 
 // Peta layar penuh: panel daftar (lembar bawah di ponsel, panel samping mulai 768 px), dengan API dan Mapbox tiruan.
+const handle = (page: Page) => page.getByRole("slider", { name: "Tinggi panel daftar" });
 const placeList = (page: Page) => page.getByRole("list", { name: /^(Daftar lokasi|Lokasi di tampilan peta)$/ });
+const isMobile = (page: Page) => (page.viewportSize()?.width ?? 0) < 768;
 
 /** IP pengunjung yang mendapat data kosong dari API tiruan, seperti production sebelum ada lokasi. */
 const NO_PLACES_IP = "203.0.113.249";
@@ -102,6 +104,131 @@ test("on a wide screen the side panel starts open without moving once the page h
   expect(await page.locator(".peta-lembar").boundingBox()).toEqual(before);
 });
 
+test("on a phone the handle is a slider that changes the sheet height without dragging", async ({ page }) => {
+  test.skip(!isMobile(page), "Pegangan hanya ada di lembar bawah ponsel");
+  await openMap(page);
+  await expect(handle(page)).toHaveAttribute("aria-valuetext", "kecil");
+  await handle(page).click();
+  await expect(handle(page)).toHaveAttribute("aria-valuetext", "setengah layar");
+  await expect(placeList(page)).toBeVisible();
+  await handle(page).press("ArrowUp");
+  await expect(handle(page)).toHaveAttribute("aria-valuetext", "penuh");
+  // Lembar penuh menutup seluruh peta.
+  const box = await page.locator(".peta-lembar").boundingBox();
+  const main = await page.locator("main").boundingBox();
+  expect(Math.round(box!.y)).toBe(Math.round(main!.y));
+  await handle(page).press("Home");
+  await expect(handle(page)).toHaveAttribute("aria-valuetext", "kecil");
+  await handle(page).press("End");
+  await expect(handle(page)).toHaveAttribute("aria-valuetext", "penuh");
+  await page.getByRole("button", { name: "Tampilkan peta" }).click();
+  await expect(handle(page)).toHaveAttribute("aria-valuetext", "kecil");
+});
+
+test("on a phone the handle shows its own focus ring, inside the sheet", async ({ page }) => {
+  test.skip(!isMobile(page), "Pegangan hanya ada di lembar bawah ponsel");
+  await openMap(page);
+  await handle(page).focus();
+  // Diulang sampai lembar selesai bergerak setelah halaman dimuat.
+  await expect.poll(() => handle(page).evaluate((element) => {
+    const style = getComputedStyle(element);
+    const grow = Number.parseFloat(style.outlineOffset) + Number.parseFloat(style.outlineWidth);
+    const box = element.getBoundingClientRect();
+    const sheet = element.closest(".peta-lembar")!.getBoundingClientRect();
+    return {
+      shown: element.matches(":focus-visible") && style.outlineStyle !== "none",
+      // Lembar memotong isinya (overflow: hidden), jadi cincinnya harus seluruhnya di dalam lembar.
+      inside: box.top - grow >= sheet.top && box.left - grow >= sheet.left && box.right + grow <= sheet.right,
+    };
+  })).toEqual({ shown: true, inside: true });
+});
+
+test("a full sheet lists every place, not only those in the map view it covers", async ({ page }) => {
+  test.skip(!isMobile(page), "Lembar penuh hanya ada di ponsel");
+  await openMap(page);
+  await expect(page.getByRole("group", { name: "Kontrol peta" })).toBeVisible({ timeout: 15_000 });
+  const status = page.locator("#judul-daftar-peta + [role=status]");
+  await openList(page);
+  await page.getByRole("button", { name: "Tunjukkan di peta: Halte contoh", exact: true }).click();
+  await expect(page.getByRole("heading", { level: 3, name: "Halte contoh" })).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(status).toHaveText(/^[1-6] dari 7 lokasi$/);
+  await handle(page).press("End");
+  await expect(handle(page)).toHaveAttribute("aria-valuetext", "penuh");
+  await expect(page.getByRole("heading", { level: 2, name: "Daftar lokasi" })).toBeVisible();
+  await expect(status).toHaveText("Menampilkan 7 lokasi");
+  await expect(placeList(page).getByRole("listitem")).toHaveCount(7);
+  await handle(page).press("ArrowDown");
+  await expect(status).toHaveText(/^[1-6] dari 7 lokasi$/);
+});
+
+test("on a phone the sheet follows a drag and settles on the nearest height", async ({ page }) => {
+  test.skip(!isMobile(page), "Lembar hanya bisa ditarik di ponsel");
+  await openMap(page);
+  const box = (await handle(page).boundingBox())!;
+  const x = box.x + box.width / 2;
+  const y = box.y + box.height / 2;
+  const viewport = page.viewportSize()!;
+  await page.mouse.move(x, y);
+  await page.mouse.down();
+  await page.mouse.move(x, y - viewport.height * 0.25, { steps: 12 });
+  await page.mouse.move(x, y - viewport.height * 0.27, { steps: 20 });
+  await page.mouse.up();
+  await expect(handle(page)).toHaveAttribute("aria-valuetext", "setengah layar");
+  // Tarikan pendek ke atas tidak sampai ke tinggi berikutnya; lembar kembali ke tinggi semula.
+  const half = (await handle(page).boundingBox())!;
+  await page.mouse.move(x, half.y + 10);
+  await page.mouse.down();
+  await page.mouse.move(x, half.y - 30, { steps: 15 });
+  await page.waitForTimeout(100);
+  await page.mouse.move(x, half.y - 32, { steps: 5 });
+  await page.mouse.up();
+  await expect(handle(page)).toHaveAttribute("aria-valuetext", "setengah layar");
+  expect(await page.evaluate(() => document.querySelector("main")!.hasAttribute("data-menyeret"))).toBe(false);
+});
+
+test("a full sheet makes the map and the search under it unreachable", async ({ page }) => {
+  test.skip(!isMobile(page), "Lembar penuh hanya ada di ponsel");
+  await openMap(page);
+  await handle(page).press("End");
+  await expect(handle(page)).toHaveAttribute("aria-valuetext", "penuh");
+  const inert = () => page.evaluate(() => [".peta-cari", ".peta-peta"].map((selector) => document.querySelector<HTMLElement>(selector)!.inert));
+  expect(await inert()).toEqual([true, true]);
+  await page.keyboard.press("Escape");
+  await expect(handle(page)).toHaveAttribute("aria-valuetext", "kecil");
+  expect(await inert()).toEqual([false, false]);
+  await expect(page.getByRole("button", { name: "Tampilkan daftar" })).toBeFocused();
+});
+
+test("on a landscape phone the opened list covers the map and leaves nothing focusable behind it", async ({ page }) => {
+  test.skip(!isMobile(page), "Lembar bawah hanya ada di ponsel");
+  await page.setViewportSize({ width: 667, height: 375 });
+  await openMap(page);
+  await openList(page);
+  const box = await page.locator(".peta-lembar").boundingBox();
+  const main = await page.locator("main").boundingBox();
+  expect(Math.round(box!.y)).toBe(Math.round(main!.y));
+  const inert = () => page.evaluate(() => [".peta-cari", ".peta-peta"].map((selector) => document.querySelector<HTMLElement>(selector)!.inert));
+  expect(await inert()).toEqual([true, true]);
+  await expect(placeList(page).getByRole("listitem")).toHaveCount(7);
+  await page.getByRole("button", { name: "Tampilkan peta" }).click();
+  expect(await inert()).toEqual([false, false]);
+});
+
+test("closing a place card whose marker the sheet now covers moves focus to that place in the list", async ({ page }) => {
+  test.skip(!isMobile(page), "Lembar bawah hanya ada di ponsel");
+  await page.setViewportSize({ width: 360, height: 740 });
+  await openMap(page);
+  await expect(page.getByRole("group", { name: "Kontrol peta" })).toBeVisible({ timeout: 15_000 });
+  await page.getByRole("button", { name: "Masjid contoh A, Masjid, Aksesibel" }).click();
+  await expect(page.getByRole("heading", { level: 3, name: "Masjid contoh A" })).toBeFocused();
+  // Ponsel diputar: lembar yang terbuka menjadi setinggi layar dan peta di baliknya inert, termasuk marker tadi.
+  await page.setViewportSize({ width: 667, height: 375 });
+  await expect.poll(() => page.evaluate(() => document.querySelector<HTMLElement>(".peta-peta")!.inert)).toBe(true);
+  await page.getByRole("button", { name: "Tutup ringkasan" }).click();
+  await expect(page.getByRole("button", { name: "Tunjukkan di peta: Masjid contoh A" })).toBeFocused();
+});
+
 test("on a short phone a chosen marker ends up above the opened panel", async ({ page }) => {
   test.skip((page.viewportSize()?.width ?? 0) >= 768, "Lembar bawah hanya ada di ponsel");
   await page.setViewportSize({ width: 360, height: 740 });
@@ -166,6 +293,11 @@ for (const colorScheme of ["light", "dark"] as const) {
     await openList(page);
     await expect(placeList(page)).toBeVisible();
     expect(await blockingViolations(page)).toEqual([]);
+    if (isMobile(page)) {
+      await handle(page).press("End");
+      await expect(handle(page)).toHaveAttribute("aria-valuetext", "penuh");
+      expect(await blockingViolations(page)).toEqual([]);
+    }
   });
 }
 
@@ -189,17 +321,15 @@ for (const viewport of [
     await expect.poll(() => status.evaluate(uncovered)).toBe(true);
     await expect(page.getByText(/dari 0 lokasi|Tidak ada lokasi yang cocok/)).toHaveCount(0);
     await openList(page);
-    // Di ponsel landscape isi panel setengah hanya beberapa piksel; kepalanya yang membawa pesan.
-    const roomy = viewport.height >= 500 || viewport.width >= 768;
     const body = page.getByText("Lokasi tampil di sini setelah laporan warga diperiksa tim.");
-    if (roomy) await expect.poll(() => body.evaluate(uncovered)).toBe(true);
+    await expect.poll(() => body.evaluate(uncovered)).toBe(true);
     // Dengan filter: pesan "tidak ada yang cocok" dan jalan untuk menghapus filter.
     await page.goto("/peta?q=tidak-ada");
     await expect(status).toHaveText("Tidak ada lokasi yang cocok");
     await expect.poll(() => status.evaluate(uncovered)).toBe(true);
     await openList(page);
     const reset = page.getByRole("main").getByRole("link", { name: "Hapus filter" });
-    if (roomy) await expect.poll(() => reset.evaluate(uncovered)).toBe(true);
+    await expect.poll(() => reset.evaluate(uncovered)).toBe(true);
     await context.close();
   });
 }
