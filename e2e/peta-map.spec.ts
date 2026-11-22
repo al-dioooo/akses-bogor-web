@@ -102,7 +102,8 @@ test.describe("with WebGL", () => {
         .filter((element) => {
           const box = element.getBoundingClientRect();
           const hit = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
-          return !hit || !(hit === element || element.contains(hit));
+          // Marker lain yang bertumpuk di peta yang diperkecil tidak dihitung; yang dicari adalah elemen yang mengambang.
+          return !hit || !(hit === element || element.contains(hit) || hit.closest(".mapboxgl-marker"));
         })
         .map((element) => element.getAttribute("aria-label")),
     );

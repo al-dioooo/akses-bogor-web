@@ -510,10 +510,14 @@ body:has(> .peta-app) {
   top: calc(100% + 0.5rem);
   left: 0;
   width: calc(100vw - 1.5rem);
-  /* Tidak pernah masuk ke balik panel daftar atau Bottom nav (tingginya diukur komponen peta); sisanya digulir. */
+  /* Tidak pernah masuk ke balik panel daftar atau Bottom nav (tingginya diukur komponen peta); sisanya digulir. Bila
+     satu baris pun tidak muat, kunci disembunyikan sampai ruangnya ada lagi. */
   max-height: var(--peta-kunci-maks, none);
   overflow-y: auto;
   overscroll-behavior: contain;
+  .peta-app[data-kunci-tersembunyi] & {
+    visibility: hidden;
+  }
   @media (width >= 48rem) {
     position: static;
     width: 21rem;

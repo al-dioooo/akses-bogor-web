@@ -301,6 +301,11 @@
       "legend": "Legenda prioritas",
       "boundaries": "Batas kecamatan: <credit>{attribution}</credit>.",
       "table": "Tabel",
+      "keyShort": "Prioritas {year}",
+      "more": "Catatan",
+      "moreLabel": "Catatan, sumber, dan legenda prioritas kecamatan",
+      "less": "Ringkas kunci prioritas",
+      "caveatLabel": "Catatan:",
       "newTab": "(tab baru)",
       "showTable": "Tabel prioritas kecamatan",
       "source": "Sumber: {publisher}."
