@@ -93,10 +93,14 @@ test("the panel opens with its button and closes with Escape, returning focus to
 test("on a wide screen the side panel starts open without moving once the page has loaded", async ({ page }) => {
   test.skip((page.viewportSize()?.width ?? 0) < 768, "Panel samping mulai 768 px");
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto("/peta");
-  const before = await page.locator(".peta-lembar").boundingBox();
+  await page.goto("/peta", { waitUntil: "commit" });
+  // Panel pertama yang tampil (bisa panel kosong selama isi Peta masih dialirkan) sudah terbuka di tempat akhirnya.
+  const first = page.locator(".peta-lembar").first();
+  await first.waitFor();
+  const before = await first.boundingBox();
   await expect(placeList(page)).toBeVisible();
   await expect(page.getByRole("button", { name: "Tampilkan peta" })).toHaveAttribute("aria-expanded", "true");
+  await expect(page.locator(".peta-lembar")).toHaveCount(1);
   expect(await page.locator(".peta-lembar").boundingBox()).toEqual(before);
 });
 
