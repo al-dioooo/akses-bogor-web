@@ -142,18 +142,44 @@ export function visitorIp(requestHeaders: Pick<Headers, "get">) {
  * bukan per IP server web.
  */
 export async function apiHeaders(): Promise<Record<string, string>> {
-  const result: Record<string, string> = { accept: "application/json" };
-  const secret = process.env.WEB_SERVER_SECRET;
-  if (!secret) return result;
+  if (!process.env.WEB_SERVER_SECRET) return { accept: "application/json" };
   // Diimpor saat dipanggil: komponen klien ikut mengimpor konstanta dari modul ini, dan next/headers hanya boleh ada
   // di sisi server.
   const { headers } = await import("next/headers");
-  const ip = visitorIp(await headers());
+  return visitorHeaders(await headers());
+}
+
+/** Header `apiHeaders` dari header permintaan yang sudah ada, untuk src/proxy.ts yang tidak bisa memakai next/headers. */
+export function visitorHeaders(requestHeaders: Pick<Headers, "get">): Record<string, string> {
+  const result: Record<string, string> = { accept: "application/json" };
+  const secret = process.env.WEB_SERVER_SECRET;
+  if (!secret) return result;
+  const ip = visitorIp(requestHeaders);
   if (ip) {
     result["x-web-server-secret"] = secret;
     result["x-visitor-ip"] = ip;
   }
   return result;
+}
+
+/**
+ * Apakah lokasi tayang, dicek src/proxy.ts sebelum halaman Detail dirender (issue #150). `tidak_ada` untuk 404 dan id
+ * yang tidak valid (400), seperti `getPlace`; `galat` untuk jawaban lain dan API yang tidak bisa dihubungi. Memakai HEAD
+ * supaya isi lokasi tidak dikirim dua kali; halaman tetap mengambil isinya sendiri.
+ */
+export async function placeExists(id: string, requestHeaders: Pick<Headers, "get">): Promise<"ada" | "tidak_ada" | "galat"> {
+  let response: Response;
+  try {
+    response = await fetch(apiUrl(`/places/${encodeURIComponent(id)}`), {
+      method: "HEAD",
+      headers: visitorHeaders(requestHeaders),
+      cache: "no-store",
+    });
+  } catch {
+    return "galat";
+  }
+  if (response.ok) return "ada";
+  return response.status === 404 || response.status === 400 ? "tidak_ada" : "galat";
 }
 
 /** Badan POST ke API: JSON, atau byte mentah dengan jenis isinya (foto). */
