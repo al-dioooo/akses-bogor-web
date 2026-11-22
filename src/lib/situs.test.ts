@@ -23,9 +23,9 @@ describe("siteUrl", () => {
     expect(siteUrl({ VERCEL_ENV: "preview", VERCEL_URL: "x.vercel.app" }).href).toBe("https://x.vercel.app/");
   });
 
-  it("falls back to localhost outside Vercel", () => {
+  it("falls back to localhost:3000 outside Vercel, whatever port the server runs on", () => {
     expect(siteUrl({}).href).toBe("http://localhost:3000/");
-    expect(siteUrl({ PORT: "3300" }).href).toBe("http://localhost:3300/");
+    expect(siteUrl({ PORT: "3300" }).href).toBe("http://localhost:3000/");
   });
 });
 

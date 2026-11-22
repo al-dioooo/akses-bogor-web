@@ -42,7 +42,9 @@ export function siteUrl(env: Env = process.env): URL {
   }
   const vercelHost = env.VERCEL_ENV === "production" ? env.VERCEL_PROJECT_PRODUCTION_URL : env.VERCEL_BRANCH_URL || env.VERCEL_URL;
   if (vercelHost) return new URL(`https://${vercelHost}`);
-  return new URL(`http://localhost:${env.PORT || 3000}`);
+  // Sengaja tidak membaca PORT: `next start --port` mengisinya hanya saat runtime, sehingga metadata hasil build dan
+  // hasil request berbeda dan halaman mendapat dua URL kanonis.
+  return new URL("http://localhost:3000");
 }
 
 /** URL lengkap untuk sebuah path di situs, mis. `/lokasi/123` menjadi `https://akses-bogor.aldio.dev/lokasi/123`. */
