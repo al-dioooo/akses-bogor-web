@@ -1,6 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { mockApi, signIn, uniqueEmail } from "./akun-masuk";
 import { blockingViolations } from "./axe";
+import { dashboardMenu } from "./dasbor";
 import { stubGoogle } from "./google";
 
 // Panel verifikator (FR-30 sampai FR-38, ADR-0035) dengan API tiruan. Setiap verifikator punya antrean tiruannya sendiri.
@@ -13,8 +14,9 @@ test.beforeEach(async ({ page }) => {
 test("shows the queue oldest first without the verifier's own report", async ({ page }) => {
   await signIn(page, email("verifikator"));
   await page.goto("/akun");
-  await page.getByRole("link", { name: "Buka meja verifikasi" }).click();
+  await (await dashboardMenu(page)).getByRole("link", { name: "Antrean" }).click();
   await expect(page).toHaveURL(/\/verifikasi$/);
+  await expect(page.getByRole("heading", { level: 1, name: "Meja verifikasi." })).toBeVisible();
   const main = page.getByRole("main");
   const queue = main.getByRole("region", { name: "2 laporan" });
   const tickets = queue.getByRole("listitem");
@@ -23,16 +25,16 @@ test("shows the queue oldest first without the verifier's own report", async ({ 
   await expect(tickets.nth(1)).toContainText("Halte contoh");
   await expect(tickets.nth(1)).toContainText("Memperburuk data");
   await expect(main).not.toContainText("Laporan saya sendiri");
-  await expect(main.getByRole("link", { name: "Antrean" })).toHaveAttribute("aria-current", "page");
+  await expect((await dashboardMenu(page)).getByRole("link", { name: "Antrean" })).toHaveAttribute("aria-current", "page");
 
-  await main.getByRole("link", { name: "Menunggu jawaban" }).click();
+  await (await dashboardMenu(page)).getByRole("link", { name: "Menunggu jawaban" }).click();
   const waiting = main.getByRole("region", { name: "1 laporan" }).getByRole("listitem");
   await expect(waiting.first()).toContainText("Kampus contoh B");
   await expect(waiting.first()).toContainText("Jawaban paling lambat 12 November 2026");
 
-  await main.getByRole("link", { name: "Perlu dicek ulang" }).click();
+  await (await dashboardMenu(page)).getByRole("link", { name: "Perlu dicek ulang" }).click();
   await expect(main.getByRole("link", { name: /Halte contoh B/ })).toHaveAttribute("href", /\/lokasi\//);
-  await expect(main.getByRole("link", { name: "Tim verifikator" })).toHaveCount(0);
+  await expect((await dashboardMenu(page)).getByRole("link", { name: "Tim verifikator" })).toHaveCount(0);
 });
 
 test("tells reporters that the desk is for verifiers only", async ({ page }) => {
@@ -238,7 +240,7 @@ test("lets an admin add and remove verifiers by exact email (FR-36)", async ({ p
 
   await signIn(page, email("admin"));
   await page.goto("/verifikasi");
-  await page.getByRole("navigation", { name: "Bagian meja verifikasi" }).getByRole("link", { name: "Tim verifikator" }).click();
+  await (await dashboardMenu(page)).getByRole("link", { name: "Tim verifikator" }).click();
   await expect(page).toHaveURL(/\/verifikasi\/tim$/);
   const add = page.getByRole("region", { name: "Tambah verifikator" });
   await add.getByLabel("Email akun").fill("tidak-ada@contoh.id");
