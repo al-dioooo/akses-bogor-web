@@ -1,14 +1,13 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { ContributorChat } from "@/components/bantu-memetakan/contributor-chat";
+import { DashboardHeading } from "@/components/dasbor/dashboard-heading";
 import { agentEnabled } from "@/lib/agen-rute";
 import { requireAccount } from "@/lib/sesi";
 import { Icon } from "@/ui/icon";
-import { IconArrowLeft, IconInfoCircle } from "@/ui/icons";
+import { IconInfoCircle } from "@/ui/icons";
 import { LoadErrorBoundary } from "@/ui/load-error";
-import { SectionHeading } from "@/ui/section-heading";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("BantuMemetakan");
@@ -23,26 +22,20 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function BantuMemetakanPage() {
   const t = await getTranslations("BantuMemetakan");
   return (
-    <main id="konten" className="page-width flex flex-1 flex-col items-center py-6 sm:py-8">
-      <div className="flex w-full max-w-3xl flex-col gap-6">
-        <Link href="/laporkan" className="-ml-3 inline-flex min-h-11 items-center gap-2 self-start rounded-full px-3 font-bold hover:bg-surface-hover">
-          <Icon icon={IconArrowLeft} />
-          {t("back")}
-        </Link>
-        <SectionHeading id="judul-bantu" level={1} label={t("eyebrow")} title={t("title")} accent={t("accent")} />
-        <LoadErrorBoundary>
-          <Suspense
-            fallback={
-              <p role="status" className="rounded-3xl bg-bg-sunken p-6 text-text-secondary">
-                {t("loading")}
-              </p>
-            }
-          >
-            <Agent />
-          </Suspense>
-        </LoadErrorBoundary>
-      </div>
-    </main>
+    <div className="flex w-full max-w-3xl flex-col gap-6">
+      <DashboardHeading id="judul-bantu" label={t("eyebrow")} title={t("title")} accent={t("accent")} />
+      <LoadErrorBoundary>
+        <Suspense
+          fallback={
+            <p role="status" className="rounded-3xl bg-bg-sunken p-6 text-text-secondary">
+              {t("loading")}
+            </p>
+          }
+        >
+          <Agent />
+        </Suspense>
+      </LoadErrorBoundary>
+    </div>
   );
 }
 
