@@ -277,6 +277,12 @@
       "show": "Tunjukkan di peta",
       "showPlace": "Tunjukkan di peta: {name}"
     },
+    "lembar": {
+      "showList": "Tampilkan daftar",
+      "showMap": "Tampilkan peta",
+      "list": "Daftar",
+      "map": "Peta"
+    },
     "prioritas": {
       "toggle": "Lapisan prioritas kecamatan",
       "short": "Prioritas",

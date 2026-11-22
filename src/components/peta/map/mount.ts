@@ -27,6 +27,8 @@ export type MapHandle = {
   zoomOut(): void;
   reset(): void;
   show(id: string): void;
+  /** Menggeser peta ke lokasi tanpa mengubah zoom, hanya bila lokasinya tidak terlihat atau di balik panel. */
+  reveal(id: string): void;
   /** Mengganti lokasi di peta (mis. setelah filter berubah) tanpa membuat peta baru. */
   setPlaces(places: MapPlace[]): void;
   /**
@@ -172,6 +174,13 @@ export function mountMap(options: Options): MapHandle {
     const container = map.getContainer();
     return cameraPadding(container.clientWidth, container.clientHeight, [camera, insets]);
   };
+  // Untuk memusatkan satu titik: tepat bagian yang terlihat, tanpa jarak tambahan. Di ponsel pendek bagian itu bisa lebih
+  // sempit dari padding biasa, dan tanpa ini titiknya dipusatkan di seluruh kanvas, di balik panel.
+  const focusPadding = () => {
+    const container = map.getContainer();
+    const rect = visibleRect(container.clientWidth, container.clientHeight, insets);
+    return rect ? { top: rect.top, right: container.clientWidth - rect.right, bottom: container.clientHeight - rect.bottom, left: rect.left } : padding();
+  };
   map.on("load", () => {
     ready = true;
     updateView();
@@ -244,7 +253,18 @@ export function mountMap(options: Options): MapHandle {
     show(id) {
       const place = byId.get(id);
       // Padding tidak disimpan sebagai padding peta, supaya perpindahan berikutnya tidak ikut bergeser.
-      if (place) map.flyTo({ center: [place.lng, place.lat], zoom: Math.max(map.getZoom(), 15), padding: padding(), retainPadding: false });
+      if (place) map.flyTo({ center: [place.lng, place.lat], zoom: Math.max(map.getZoom(), 15), padding: focusPadding(), retainPadding: false });
+    },
+    reveal(id) {
+      const place = byId.get(id);
+      if (!place) return;
+      const container = map.getContainer();
+      const rect = visibleRect(container.clientWidth, container.clientHeight, insets);
+      const { x, y } = map.project([place.lng, place.lat]);
+      // Titik yang sudah terlihat, tidak terlalu dekat ke tepi, tidak digeser.
+      const margin = rect ? Math.min(56, (rect.bottom - rect.top) / 4, (rect.right - rect.left) / 4) : 0;
+      if (rect && x >= rect.left + margin && x <= rect.right - margin && y >= rect.top + margin && y <= rect.bottom - margin) return;
+      map.easeTo({ center: [place.lng, place.lat], padding: focusPadding(), retainPadding: false });
     },
     setPlaces(next) {
       placeMarkers(next);

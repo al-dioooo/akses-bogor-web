@@ -1,6 +1,6 @@
 import type { Page } from "@playwright/test";
 import { blockingViolations } from "./axe";
-import { expect, stubMapbox, test } from "./mapbox";
+import { expect, openList, stubMapbox, test } from "./mapbox";
 
 // Peta layar penuh: panel daftar (lembar bawah di ponsel, panel samping mulai 768 px), dengan API dan Mapbox tiruan.
 const placeList = (page: Page) => page.getByRole("list", { name: /^(Daftar lokasi|Lokasi di tampilan peta)$/ });
@@ -52,11 +52,12 @@ for (const width of [360, 1024, 1280]) {
   test(`at ${width} px nothing scrolls sideways and the panel clears the bottom nav`, async ({ page }) => {
     await page.setViewportSize({ width, height: 760 });
     await openMap(page);
+    await openList(page);
     await expect(placeList(page)).toBeVisible();
     const sizes = await page.evaluate(() => {
       const nav = [...document.querySelectorAll("nav")].find((element) => getComputedStyle(element).position === "fixed");
       const panel = document.querySelector(".peta-lembar")!.getBoundingClientRect();
-      const toggle = document.querySelector<HTMLElement>("#judul-daftar-peta")!.getBoundingClientRect();
+      const toggle = document.querySelector<HTMLElement>("[aria-controls='isi-lembar']")!.getBoundingClientRect();
       return {
         scrollWidth: document.documentElement.scrollWidth,
         width: window.innerWidth,
@@ -67,11 +68,59 @@ for (const width of [360, 1024, 1280]) {
     });
     expect(sizes.scrollWidth).toBeLessThanOrEqual(sizes.width);
     if (width >= 1280) expect(sizes.navTop).toBeNull();
-    // Kepala panel tidak pernah tertutup Bottom nav; di layar lebar panel berhenti di atasnya.
+    // Kepala panel (dengan tombolnya) tidak pernah tertutup Bottom nav; di layar lebar panel berhenti di atasnya.
     if (sizes.navTop !== null) expect(sizes.toggleBottom).toBeLessThanOrEqual(sizes.navTop);
     if (sizes.navTop !== null && width >= 768) expect(sizes.panelBottom).toBeLessThanOrEqual(sizes.navTop);
   });
 }
+
+test("the panel opens with its button and closes with Escape, returning focus to the button", async ({ page }) => {
+  await openMap(page);
+  await openList(page);
+  await expect(placeList(page).getByRole("listitem")).toHaveCount(7);
+  await placeList(page).getByRole("link").first().focus();
+  await page.keyboard.press("Escape");
+  await expect(placeList(page)).toBeHidden();
+  const toggle = page.getByRole("button", { name: "Tampilkan daftar" });
+  await expect(toggle).toBeFocused();
+  await expect(toggle).toHaveAttribute("aria-expanded", "false");
+  await toggle.click();
+  await expect(placeList(page)).toBeVisible();
+});
+
+test("on a wide screen the side panel starts open without moving once the page has loaded", async ({ page }) => {
+  test.skip((page.viewportSize()?.width ?? 0) < 768, "Panel samping mulai 768 px");
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/peta", { waitUntil: "commit" });
+  // Panel pertama yang tampil (bisa panel kosong selama isi Peta masih dialirkan) sudah terbuka di tempat akhirnya.
+  const first = page.locator(".peta-lembar").first();
+  await first.waitFor();
+  const before = await first.boundingBox();
+  await expect(placeList(page)).toBeVisible();
+  await expect(page.getByRole("button", { name: "Tampilkan peta" })).toHaveAttribute("aria-expanded", "true");
+  await expect(page.locator(".peta-lembar")).toHaveCount(1);
+  expect(await page.locator(".peta-lembar").boundingBox()).toEqual(before);
+});
+
+test("on a short phone a chosen marker ends up above the opened panel", async ({ page }) => {
+  test.skip((page.viewportSize()?.width ?? 0) >= 768, "Lembar bawah hanya ada di ponsel");
+  await page.setViewportSize({ width: 360, height: 740 });
+  await openMap(page);
+  await expect(page.getByRole("group", { name: "Kontrol peta" })).toBeVisible({ timeout: 15_000 });
+  const marker = page.getByRole("button", { name: "Masjid contoh A, Masjid, Aksesibel" });
+  await marker.click();
+  await expect(page.getByRole("heading", { level: 3, name: "Masjid contoh A" })).toBeFocused();
+  // Marker yang dipilih digeser ke bagian peta di atas panel (setelah panel selesai membuka), jadi tetap terlihat dan
+  // bisa difokus.
+  await expect
+    .poll(async () => {
+      const markerBox = (await marker.boundingBox())!;
+      const panelBox = (await page.locator(".peta-lembar").boundingBox())!;
+      return panelBox.y - (markerBox.y + markerBox.height);
+    })
+    .toBeGreaterThanOrEqual(0);
+  await expect(marker).not.toHaveAttribute("aria-hidden", "true");
+});
 
 for (const viewport of [
   { width: 360, height: 740 },
@@ -114,6 +163,7 @@ for (const colorScheme of ["light", "dark"] as const) {
   test(`the open panel has no serious WCAG 2.2 AA violations (${colorScheme})`, async ({ page }) => {
     await page.emulateMedia({ colorScheme, reducedMotion: "reduce" });
     await page.goto("/peta");
+    await openList(page);
     await expect(placeList(page)).toBeVisible();
     expect(await blockingViolations(page)).toEqual([]);
   });
@@ -138,7 +188,8 @@ for (const viewport of [
     await expect(page.locator("#judul-daftar-peta")).toHaveText("Daftar lokasi");
     await expect.poll(() => status.evaluate(uncovered)).toBe(true);
     await expect(page.getByText(/dari 0 lokasi|Tidak ada lokasi yang cocok/)).toHaveCount(0);
-    // Di ponsel landscape isi panel yang tetap ini hanya beberapa piksel; kepalanya yang membawa pesan.
+    await openList(page);
+    // Di ponsel landscape isi panel setengah hanya beberapa piksel; kepalanya yang membawa pesan.
     const roomy = viewport.height >= 500 || viewport.width >= 768;
     const body = page.getByText("Lokasi tampil di sini setelah laporan warga diperiksa tim.");
     if (roomy) await expect.poll(() => body.evaluate(uncovered)).toBe(true);
@@ -146,6 +197,7 @@ for (const viewport of [
     await page.goto("/peta?q=tidak-ada");
     await expect(status).toHaveText("Tidak ada lokasi yang cocok");
     await expect.poll(() => status.evaluate(uncovered)).toBe(true);
+    await openList(page);
     const reset = page.getByRole("main").getByRole("link", { name: "Hapus filter" });
     if (roomy) await expect.poll(() => reset.evaluate(uncovered)).toBe(true);
     await context.close();
