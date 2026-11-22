@@ -6,7 +6,7 @@ import { Icon } from "@/ui/icon";
 import { IconArrowRight, IconCircleCheck, IconCirclePlus, IconCircleX, IconClock, IconHelpCircle, IconMessageReport, type Glyph } from "@/ui/icons";
 
 // Status laporan selalu teks + ikon + warna (Frame Akun, ADR-0027).
-const STATUS: Record<ReportStatus, { icon: Glyph; tone: string }> = {
+export const REPORT_STATUS: Record<ReportStatus, { icon: Glyph; tone: string }> = {
   menunggu: { icon: IconClock, tone: "bg-status-unknown-bg text-status-unknown-fg" },
   klarifikasi: { icon: IconHelpCircle, tone: "bg-status-partial-bg text-status-partial-fg" },
   diterbitkan: { icon: IconCircleCheck, tone: "bg-status-accessible-bg text-status-accessible-fg" },
@@ -15,7 +15,7 @@ const STATUS: Record<ReportStatus, { icon: Glyph; tone: string }> = {
 
 export async function ReportStatusBadge({ status }: { status: ReportStatus }) {
   const t = await getTranslations("LaporanSaya.status");
-  const { icon, tone } = STATUS[status];
+  const { icon, tone } = REPORT_STATUS[status];
   return (
     <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-bold ${tone}`}>
       <Icon icon={icon} className="size-4.5" />

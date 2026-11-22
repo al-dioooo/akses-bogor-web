@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { useActionState, useRef } from "react";
-import { addTeamMember, removeTeamMember } from "@/app/verifikasi/(meja)/tim/actions";
+import { addTeamMember, removeTeamMember } from "@/app/(dasbor)/verifikasi/(meja)/tim/actions";
 import { FieldError, FormAlert, FormNotice, useFocusOnError } from "@/components/akun/form-parts";
 import { EMPTY_FORM } from "@/components/akun/form-state";
 import { buttonClass } from "@/ui/button-styles";
