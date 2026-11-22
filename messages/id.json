@@ -266,6 +266,17 @@
       "none": "Tidak ada lokasi di bagian peta ini. Geser atau perkecil peta, atau tampilkan seluruh Kota Bogor.",
       "show": "Tunjukkan di peta",
       "showPlace": "Tunjukkan di peta: {name}"
+    },
+    "prioritas": {
+      "toggle": "Lapisan prioritas kecamatan",
+      "loading": "Memuat batas kecamatan…",
+      "failed": "Batas kecamatan tidak bisa dimuat, jadi lapisan tidak tampil di peta. Tabel di bawah berisi data yang sama.",
+      "on": "Lapisan prioritas kecamatan tampil di peta. Legenda dan tabelnya ada di bawah peta.",
+      "off": "Lapisan prioritas kecamatan disembunyikan.",
+      "title": "Prioritas kecamatan",
+      "intro": "Warna kecamatan menunjukkan seberapa perlu fasilitasnya didata, dari penyandang disabilitas terdaftar, fasilitas tanpa data, dan lokasi yang sudah diverifikasi.",
+      "legend": "Legenda prioritas",
+      "boundaries": "Batas kecamatan: {attribution}."
     }
   },
   "Detail": {
@@ -1707,5 +1718,122 @@
     "sentTitle": "Jawaban terkirim",
     "sentBody": "Laporan Anda kembali ke antrean di posisi semula. Kami mengirim email setelah laporan diputuskan.",
     "server": "Server AksesBogor tidak bisa dihubungi. Coba lagi sebentar lagi."
+  },
+  "RuteJalanKaki": {
+    "title": "Rute jalan kaki ke {name}",
+    "unnamed": "fasilitas ini",
+    "awal": {
+      "title": "Dari mana Anda berangkat?",
+      "why": "Titik awal dipakai untuk menghitung rute jalan kaki ke tempat ini, mis. untuk datang memotret dan mencatat fasilitasnya.",
+      "privacy": "Titik awal dibulatkan sampai sekitar 11 m dan dikirim lewat server AksesBogor ke Mapbox hanya untuk menghitung rute. Titik ini tidak disimpan dan tidak pernah dikirim ke agen AI.",
+      "useLocation": "Pakai lokasi saya",
+      "locating": "Mencari lokasi Anda…",
+      "pickOnMap": "Pilih titik awal di peta",
+      "denied": "Izin lokasi ditolak. Pilih titik awal di peta.",
+      "noGps": "Lokasi perangkat tidak bisa dibaca. Pilih titik awal di peta.",
+      "unsupported": "Browser ini tidak bisa membaca lokasi. Pilih titik awal di peta.",
+      "pickTitle": "Pilih titik awal di peta",
+      "usePoint": "Pakai titik ini",
+      "mapUnavailable": "Peta tidak bisa tampil, jadi titik awal hanya bisa diambil dari lokasi perangkat."
+    },
+    "rute": {
+      "loading": "Menghitung rute…",
+      "summary": "{distance} · sekitar {minutes, plural, other {# menit}} jalan kaki",
+      "warningTitle": "Belum tentu bisa dilewati kursi roda",
+      "stepsTitle": "Langkah",
+      "changeStart": "Ganti titik awal",
+      "retry": "Coba lagi",
+      "failed": "Rute tidak bisa dimuat. Coba lagi sebentar lagi.",
+      "mapLabel": "Peta rute jalan kaki ke {name}",
+      "mapHint": "Peta hanya gambaran. Langkah dan daftar hambatan di bawah berisi informasi yang sama.",
+      "mapLoading": "Memuat peta…",
+      "mapUnavailable": "Peta tidak bisa tampil. Langkah dan daftar hambatan di bawah berisi informasi yang sama.",
+      "attribution": "Rute: <mapbox>© Mapbox</mapbox>. Data jalan dan hambatan: <osm>© kontributor OpenStreetMap</osm>."
+    },
+    "hambatan": {
+      "title": "Hambatan yang tercatat di OpenStreetMap",
+      "loading": "Memuat hambatan di rute…",
+      "none": "Tidak ada hambatan yang tercatat di OpenStreetMap dalam {meters} m dari rute ini.",
+      "position": "Sekitar {along} dari titik awal, {distance} dari rute",
+      "osmLink": "Lihat di OpenStreetMap",
+      "osmLinkTarget": "({description})",
+      "truncated": "Hanya 50 hambatan pertama yang ditampilkan.",
+      "failed": "Hambatan di rute tidak bisa dimuat. Rute tetap bisa dilihat, tetapi hambatan di jalan tidak ditampilkan."
+    }
+  },
+  "BantuMemetakan": {
+    "metaTitle": "Bantu memetakan",
+    "back": "Kembali ke Laporkan",
+    "loading": "Memuat…",
+    "eyebrow": "Bantu memetakan",
+    "title": "Cari tempat yang",
+    "accent": "belum punya data",
+    "intro": "Tanyakan kepada agen kampus, masjid, halte, atau rumah sakit mana yang belum punya data AksesBogor, diurutkan menurut kecamatan yang paling perlu didata. Lalu datang, periksa fasilitasnya, dan kirim laporan.",
+    "unavailable": {
+      "title": "Bantu memetakan belum dibuka",
+      "body": "Fitur ini masih disiapkan. Anda tetap bisa melaporkan tempat lewat Laporkan."
+    },
+    "entry": {
+      "title": "Belum tahu tempat mana yang perlu didata?",
+      "body": "Agen bisa menunjukkan tempat yang belum punya data AksesBogor di kecamatan yang paling perlu.",
+      "link": "Bantu memetakan"
+    },
+    "tanya": {
+      "title": "Tanya agen",
+      "intro": "Agen hanya tahu data AksesBogor, data tempat dari OpenStreetMap, peraturan, dan prioritas kecamatan. Agen tidak bisa menilai apakah sebuah tempat atau rute aksesibel; bila datanya belum ada, agen akan mengatakannya.",
+      "privacy": "Jangan tulis data pribadi, mis. nama, nomor telepon, atau alamat rumah. Pertanyaan dikirim ke penyedia model AI lewat OpenRouter dan tidak disimpan AksesBogor.",
+      "label": "Pertanyaan Anda",
+      "hint": "Paling banyak 500 karakter. Percakapan hilang saat halaman ditutup.",
+      "send": "Kirim pertanyaan",
+      "sending": "Agen sedang menjawab…",
+      "examples": "Contoh pertanyaan",
+      "example": {
+        "priority": "Kecamatan mana yang paling perlu didata?",
+        "mosque": "Masjid mana di Bogor Barat yang belum punya data?",
+        "near": "Halte mana yang belum didata di Tanah Sareal?"
+      },
+      "conversation": "Percakapan dengan agen",
+      "you": "Anda",
+      "agent": "Agen",
+      "answered": "Agen menjawab: {answer}",
+      "sources": "Sumber",
+      "sourcePlace": "Data terverifikasi AksesBogor: {name}, diverifikasi {date}",
+      "license": "Lisensi {license}",
+      "tooShort": "Tulis pertanyaan paling sedikit 2 karakter.",
+      "failed": "Pertanyaan tidak bisa dikirim. Coba lagi sebentar lagi.",
+      "note": "Jawaban agen bisa keliru. Periksa lagi di tempatnya sebelum mengirim laporan."
+    },
+    "kartu": {
+      "noData": "Belum ada data AksesBogor",
+      "unnamed": "Tanpa nama di OpenStreetMap",
+      "osmLink": "Lihat di OpenStreetMap",
+      "report": "Laporkan tempat ini",
+      "detail": "Lihat detail lokasi",
+      "update": "Perbarui data",
+      "verified": "Terakhir diverifikasi {date}",
+      "cardsLabel": "Kartu dari jawaban agen"
+    }
+  },
+  "PrioritasKecamatan": {
+    "title": "Prioritas kecamatan {year}",
+    "caption": "Kecamatan diurutkan dari yang paling perlu didata, data tahun {year}",
+    "region": "Tabel prioritas kecamatan, bisa digeser ke samping",
+    "rank": "Peringkat",
+    "district": "Kecamatan",
+    "level": "Prioritas",
+    "score": "Skor (0–100)",
+    "registered": "Penyandang disabilitas terdaftar",
+    "withoutData": "Fasilitas tanpa data",
+    "verified": "Lokasi terverifikasi",
+    "tingkat": {
+      "rendah": "Rendah",
+      "sedang": "Sedang",
+      "tinggi": "Tinggi",
+      "sangat_tinggi": "Sangat tinggi"
+    },
+    "source": "Sumber: <link>{title}</link>, {publisher}, diambil {date}. {terms}",
+    "formula": "Cara menghitung skor: {formula}",
+    "facilities": "Jumlah fasilitas tanpa data dihitung dari data OpenStreetMap, {attribution}.",
+    "facilitiesDated": "Jumlah fasilitas tanpa data dihitung dari data OpenStreetMap, {attribution}, diambil {date}."
   }
 }

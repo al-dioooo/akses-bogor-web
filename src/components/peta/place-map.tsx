@@ -5,16 +5,17 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
-import type { MapToken } from "@/lib/api";
+import type { DistrictBoundaries, DistrictPriority, MapToken } from "@/lib/api";
 import { hasWebGL, readTheme, watchPreferences } from "@/lib/preferences";
 import { buttonClass } from "@/ui/button-styles";
 import { Icon } from "@/ui/icon";
-import { IconArrowRight, IconFocusCentered, IconList, IconMap2, IconMinus, IconPlus, IconX, type Glyph } from "@/ui/icons";
+import { IconArrowRight, IconFocusCentered, IconList, IconMap2, IconMinus, IconPlus, IconUsers, IconX, type Glyph } from "@/ui/icons";
 import { CATEGORY_ICON } from "@/ui/place-icons";
 import { StatusBadge } from "@/ui/status-badge";
 import { StatusPin } from "@/ui/status-pin";
 import type { MapHandle } from "./map/mount";
 import { PlaceList } from "./place-list";
+import { PriorityLegend } from "./priority-legend";
 import type { MapPlace } from "./places";
 
 type MapState = "awal" | "memuat" | "siap" | "tanpa-webgl" | "galat";
@@ -30,7 +31,18 @@ async function fetchToken(): Promise<MapToken> {
  * lokasi di tampilan peta sebagai alternatif untuk pembaca layar. Mapbox GL JS dimuat hanya bila WebGL ada; tanpa
  * JavaScript, WebGL, atau token, daftar tetap berisi semua lokasi.
  */
-export function PlaceMap({ places, listHref, legend }: { places: MapPlace[]; listHref: string; legend: ReactNode }) {
+export function PlaceMap({
+  places,
+  listHref,
+  legend,
+  priority = null,
+}: {
+  places: MapPlace[];
+  listHref: string;
+  legend: ReactNode;
+  /** Prioritas kecamatan; null selama API belum membukanya, dan tombol lapisannya tidak tampil. */
+  priority?: DistrictPriority | null;
+}) {
   const t = useTranslations("Peta");
   const tk = useTranslations("Kategori");
   const ts = useTranslations("Status");
@@ -42,6 +54,8 @@ export function PlaceMap({ places, listHref, legend }: { places: MapPlace[]; lis
   const [attempt, setAttempt] = useState(0);
   const [inView, setInView] = useState<Set<string> | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
+  const [layer, setLayer] = useState<"mati" | "memuat" | "nyala" | "galat">("mati");
+  const [boundaries, setBoundaries] = useState<DistrictBoundaries | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -106,6 +120,26 @@ export function PlaceMap({ places, listHref, legend }: { places: MapPlace[]; lis
     return () => element.removeEventListener("keydown", onKey);
   }, [map, selected]);
 
+  // Lapisan prioritas mengikuti peta: digambar ulang bila peta dibuat ulang (mis. setelah Coba lagi).
+  useEffect(() => {
+    if (!map || !priority) return;
+    map.setPriority(layer === "nyala" && boundaries ? { boundaries, levels: Object.fromEntries(priority.districts.map((d) => [d.slug, d.level])) } : null);
+  }, [map, priority, layer, boundaries]);
+
+  async function toggleLayer() {
+    if (layer === "nyala" || layer === "galat") return setLayer("mati");
+    if (boundaries) return setLayer("nyala");
+    setLayer("memuat");
+    try {
+      const response = await fetch("/peta/batas-kecamatan");
+      if (!response.ok) throw new Error("batas kecamatan tidak tersedia");
+      setBoundaries((await response.json()) as DistrictBoundaries);
+      setLayer("nyala");
+    } catch {
+      setLayer("galat");
+    }
+  }
+
   const ready = state === "siap";
   const place = selected ? places.find((p) => p.id === selected) : undefined;
   const shown = ready && inView ? places.filter((p) => inView.has(p.id)) : places;
@@ -128,6 +162,23 @@ export function PlaceMap({ places, listHref, legend }: { places: MapPlace[]; lis
       >
         {t("map.skip")}
       </a>
+      {priority && (
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            aria-pressed={layer === "nyala" || layer === "galat"}
+            disabled={layer === "memuat"}
+            onClick={toggleLayer}
+            className={buttonClass(layer === "nyala" || layer === "galat" ? "primary" : "outline", "sm", "disabled:opacity-70")}
+          >
+            <Icon icon={IconUsers} />
+            {t("prioritas.toggle")}
+          </button>
+          <p role="status" className="text-sm text-text-secondary">
+            {layer === "memuat" ? t("prioritas.loading") : layer === "nyala" ? t("prioritas.on") : ""}
+          </p>
+        </div>
+      )}
       <div ref={frame} className="peta-frame relative h-[clamp(22rem,62svh,44rem)] overflow-hidden rounded-3xl border border-border-subtle bg-bg-sunken">
         {ready && (
           <div
@@ -209,6 +260,16 @@ export function PlaceMap({ places, listHref, legend }: { places: MapPlace[]; lis
           return element ? createPortal(<MarkerFace place={p} selected={p.id === selected} />, element, p.id) : null;
         })}
       {legend}
+      {priority && (layer === "nyala" || layer === "galat") && (
+        <>
+          {layer === "galat" && (
+            <p role="alert" className="rounded-2xl bg-status-partial-bg p-4 text-text-primary">
+              {t("prioritas.failed")}
+            </p>
+          )}
+          <PriorityLegend priority={priority} attribution={boundaries?.attribution ?? null} />
+        </>
+      )}
       {places.length > 0 && (
         <section aria-labelledby="judul-daftar-peta" className="flex flex-col gap-4">
           <div className="flex flex-col gap-1">

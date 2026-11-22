@@ -61,6 +61,29 @@ export type MapFeature = {
 
 export type PlaceMap = { type: "FeatureCollection"; features: MapFeature[] };
 
+export type PriorityLevel = "rendah" | "sedang" | "tinggi" | "sangat_tinggi";
+
+/** Prioritas kecamatan dari data penyandang disabilitas terdaftar; sama dengan GET /districts/priority. */
+export type DistrictPriority = {
+  year: number;
+  /** Jumlah terdaftar per tahun untuk seluruh kota; belum ditampilkan. */
+  yearTotals?: { year: number; registered: number }[];
+  /** Cara menghitung skor, dalam bahasa Indonesia. */
+  formula?: string;
+  /** Asal hitungan fasilitas tanpa data (OpenStreetMap) dan atribusinya. */
+  facilitiesSource?: { retrievedAt: string | null; attribution: string };
+  districts: { slug: string; name: string; registered: number; verifiedPlaces: number; facilitiesWithoutData: number; score: number; rank: number; level: PriorityLevel }[];
+  caveat: string;
+  source: { title: string; url: string; publisher: string; retrievedAt: string; terms: string };
+};
+
+/** Batas kecamatan dari OpenStreetMap (ADR-0034), disederhanakan untuk peta; data ODbL. */
+export type DistrictBoundaries = {
+  type: "FeatureCollection";
+  features: { type: "Feature"; properties: { slug: string; name: string }; geometry: { type: "Polygon" | "MultiPolygon"; coordinates: unknown } }[];
+  attribution: string;
+};
+
 /** Token Mapbox sementara dari API (ADR-0016). */
 export type MapToken = { token: string; expiresAt: string };
 
@@ -121,6 +144,38 @@ export async function apiHeaders(): Promise<Record<string, string>> {
   return result;
 }
 
+/** Badan POST ke API: JSON, atau byte mentah dengan jenis isinya (foto). */
+export type PostBody = { json: unknown } | { bytes: ArrayBuffer; contentType: string };
+
+/** POST ke API dari server web. Galat menjadi `ApiError` dengan `{ galat, pesan }` dari API, atau `api_tidak_terhubung`. */
+export async function apiPost<T>(path: string, body: PostBody, token?: string): Promise<T> {
+  const headers = await apiHeaders();
+  if (token) headers.authorization = `Bearer ${token}`;
+  headers["content-type"] = "json" in body ? "application/json" : body.contentType;
+  let response: Response;
+  try {
+    response = await fetch(apiUrl(path), {
+      method: "POST",
+      headers,
+      body: "json" in body ? JSON.stringify(body.json) : body.bytes,
+      cache: "no-store",
+    });
+  } catch {
+    throw new ApiError(0, "api_tidak_terhubung", "Server AksesBogor tidak bisa dihubungi. Coba lagi sebentar lagi.");
+  }
+  if (!response.ok) {
+    const error = (await response.json().catch(() => null)) as { galat?: string; pesan?: string } | null;
+    const retryAfter = Number(response.headers.get("retry-after"));
+    throw new ApiError(
+      response.status,
+      error?.galat ?? "galat_api",
+      error?.pesan ?? "Terjadi kesalahan. Coba lagi.",
+      Number.isFinite(retryAfter) && retryAfter > 0 ? retryAfter : undefined,
+    );
+  }
+  return (await response.json()) as T;
+}
+
 async function get<T>(path: string, query?: Record<string, string | number | undefined>): Promise<T> {
   // Data lokasi selalu diambil saat request, tidak saat build, jadi build tidak butuh API.
   await connection();
@@ -160,6 +215,22 @@ export const getMapPlaces = (filters: Omit<PlaceFilters, "limit" | "offset"> = {
 
 /** Token peta untuk browser. API menjawab 503 `peta_belum_diatur` bila Mapbox belum diatur di server. */
 export const getMapToken = () => get<MapToken>("/map/token");
+
+/**
+ * Prioritas kecamatan dari data penyandang disabilitas terdaftar (ADR-0043), atau `null` selama API belum membukanya
+ * (503 `data_disabilitas_belum_aktif`), API belum punya route ini, atau API tidak terhubung. Peta tetap tampil tanpanya.
+ */
+export async function getDistrictPriority(): Promise<DistrictPriority | null> {
+  try {
+    return await get<DistrictPriority>("/districts/priority");
+  } catch (error) {
+    if (error instanceof ApiError) return null;
+    throw error;
+  }
+}
+
+/** Batas keenam kecamatan untuk lapisan peta. Publik dan jarang berubah. */
+export const getDistrictBoundaries = () => get<DistrictBoundaries>("/districts/boundaries");
 
 /** `null` bila lokasi tidak ada atau id-nya tidak valid. */
 export async function getPlace(id: string): Promise<PlaceDetail | null> {
