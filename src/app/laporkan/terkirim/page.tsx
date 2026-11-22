@@ -54,7 +54,7 @@ export default async function Terkirim({ searchParams }: PageProps<"/laporkan/te
         </section>
 
         <div className="flex flex-col gap-3 sm:flex-row">
-          <Link href="/akun" className={buttonClass("primary", "md")}>
+          <Link href="/akun/laporan" className={buttonClass("primary", "md")}>
             <Icon icon={IconList} />
             {t("mine")}
           </Link>
