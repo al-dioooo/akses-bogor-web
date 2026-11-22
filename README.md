@@ -47,6 +47,10 @@ Contoh ada di [.env.example](.env.example); salin ke `.env.local`. Jangan commit
 | `NEXT_PUBLIC_GOOGLE_CLIENT_ID` | Tidak | Client ID OAuth Google AksesBogor, sama dengan `GOOGLE_CLIENT_ID` di API. Bukan rahasia; dibaca saat build. Kosong berarti tombol "Masuk dengan Google" tidak tampil |
 | `ENABLE_EXPERIMENTAL_COREPACK` | Di Vercel | `1`, supaya Vercel memakai versi pnpm dari `packageManager` di `package.json` |
 | `WEB_SERVER_SECRET` | Di Vercel | Rahasia bersama dengan API, nilainya sama dengan `WEB_SERVER_SECRET` di API. Bila diisi, setiap panggilan API membawa IP pengunjung sehingga rate limit dihitung per pengunjung, bukan per IP Vercel |
+| `SITE_URL` | Di Vercel | Alamat situs tanpa path, mis. `https://akses-bogor.aldio.dev`. Dipakai untuk URL kanonis, OpenGraph, sitemap, dan `robots.txt`. Kosong berarti domain produksi Vercel (atau alamat preview), lalu `http://localhost:3000` di lokal |
+| `SITE_INDEXABLE` | Tidak | `true` supaya halaman publik boleh diindeks mesin pencari. Hanya berlaku bila `SITE_URL` juga diisi. Bawaannya mati: semua halaman `noindex` dan `robots.txt` melarang semua crawler |
+
+`SITE_URL` dan `SITE_INDEXABLE` dibaca saat build untuk halaman statis, jadi deploy ulang setelah mengubahnya. Selama domain produksi belum dipilih ([ADR-0045](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0045-alamat-staging-di-aldio-dev.md)), staging memakai `SITE_URL=https://akses-bogor.aldio.dev` tanpa `SITE_INDEXABLE`. Saat domain produksi siap, ganti `SITE_URL` ke domain itu, isi `SITE_INDEXABLE=true`, lalu deploy ulang. Hanya halaman publik (Beranda, Jelajahi, Peta, Detail lokasi, halaman edukasi, Tentang, dan halaman hukum) yang bisa diindeks; halaman akun, masuk, Laporkan, dan verifikasi selalu `noindex`.
 
 Peta tidak butuh variabel Mapbox di web. Browser mengambil token Mapbox sementara dari `/peta/kunci`, yang meneruskannya dari `GET /map/token` di API ([ADR-0016](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0016-peta-dan-pencarian-mapbox.md)). Selama API belum diatur, halaman Peta menampilkan legenda dan daftar lokasi tanpa peta.
 
