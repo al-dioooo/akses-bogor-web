@@ -2,7 +2,8 @@
 // Datanya salinan respons API dari seed pengembangan (fixtures.json); filter meniru GET /places dan GET /places/map.
 // Pencarian "galat-tiruan" menjawab 500, untuk menguji keadaan galat di web. Pengunjung dengan IP 203.0.113.249 melihat
 // data kosong di GET /places dan GET /places/map, seperti production sebelum ada lokasi. IP 203.0.113.248 mendapat
-// GET /districts yang lambat. Route akun ada di akun.mjs, route
+// GET /districts yang lambat. GET /places/00000000-0000-4000-8000-000000000500 selalu menjawab 500, untuk menguji
+// status halaman Detail saat API galat. Route akun ada di akun.mjs, route
 // Laporkan di laporkan.mjs, route panel verifikator di verifikasi.mjs, route agen rute di agen-rute.mjs, dan prioritas
 // kecamatan di prioritas.mjs.
 // GET /_tiruan/pengunjung?ip=...&path=... menjawab rahasia server web terakhir yang dikirim bersama IP pengunjung itu,
@@ -22,6 +23,8 @@ const NO_PLACES_IP = "203.0.113.249";
 // Untuk IP ini GET /districts menjawab setelah 2 detik, supaya kerangka Peta (pencarian pengganti) bisa diukur.
 const SLOW_DISTRICTS_IP = "203.0.113.248";
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+// Id lokasi yang selalu menjawab galat server (tes status halaman Detail dan gambar berbagi, issue #150).
+const FAILING_PLACE_ID = "00000000-0000-4000-8000-000000000500";
 
 const listItem = ({ id, name, category, district, status, summary, location, lastVerifiedAt, photos }) => ({
   id,
@@ -92,6 +95,7 @@ function route(url, headers) {
   }
   const id = pathname.match(/^\/places\/([^/]+)$/)?.[1];
   if (id) {
+    if (id === FAILING_PLACE_ID) return [500, { galat: "galat_server", pesan: "Galat tiruan." }];
     if (!UUID.test(id)) return [400, { galat: "permintaan_tidak_valid", pesan: "Id lokasi tidak valid." }];
     const place = places.find((p) => p.id === id);
     return place ? [200, place] : [404, { galat: "lokasi_tidak_ditemukan", pesan: "Lokasi tidak ditemukan." }];
