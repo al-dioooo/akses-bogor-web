@@ -1172,6 +1172,29 @@
     "home": "Ke Beranda",
     "explore": "Jelajahi lokasi"
   },
+  "Dasbor": {
+    "nav": {
+      "label": "Menu dasbor",
+      "menu": "Menu",
+      "menuTitle": "Menu dasbor",
+      "close": "Tutup menu",
+      "groups": {
+        "kontribusi": "Kontribusi",
+        "verifikasi": "Verifikasi",
+        "admin": "Admin"
+      },
+      "items": {
+        "akun": "Akun saya",
+        "bantu": "Bantu memetakan",
+        "antrean": "Antrean",
+        "jawaban": "Menunggu jawaban",
+        "cekUlang": "Perlu dicek ulang",
+        "tim": "Tim verifikator"
+      },
+      "signOut": "Keluar",
+      "report": "Laporkan tempat"
+    }
+  },
   "Laporkan": {
     "lokasi": {
       "legend": "Lokasi",
