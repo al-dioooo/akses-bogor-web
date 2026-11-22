@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
 import { LegalDocument } from "@/components/legal/legal-document";
 import { PRIVACY_POLICY_VERSION } from "@/lib/kebijakan";
+import { pageMetadata } from "@/lib/metadata";
 
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("KebijakanPrivasi");
-  return { title: t("metaTitle") };
+export function generateMetadata(): Promise<Metadata> {
+  return pageMetadata("KebijakanPrivasi", "/kebijakan-privasi");
 }
 
 /**

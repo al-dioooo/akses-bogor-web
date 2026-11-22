@@ -5,6 +5,7 @@ import { getTranslations } from "next-intl/server";
 import { EDU_LINK, EduPage } from "@/components/edukasi/edu-page";
 import { ROUTE } from "@/components/rute";
 import type { Answer, Reason, Status } from "@/lib/api";
+import { pageMetadata } from "@/lib/metadata";
 import { Icon } from "@/ui/icon";
 import { IconArrowRight } from "@/ui/icons";
 import { ANSWER_ICON, ANSWER_TONE } from "@/ui/place-icons";
@@ -16,9 +17,8 @@ const REASONS: Reason[] = ["tidak_ada", "rusak", "terhalang", "terbatas", "tidak
 // Urutan aturan status "pintu masuk dulu" (ADR-0018), bukan urutan status di legenda.
 const RULES: Status[] = ["tidak_aksesibel", "belum_diketahui", "aksesibel", "sebagian"];
 
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("Aksesibilitas");
-  return { title: t("metaTitle") };
+export function generateMetadata(): Promise<Metadata> {
+  return pageMetadata("Aksesibilitas", "/aksesibilitas");
 }
 
 /**

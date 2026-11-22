@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { placeUrl, shareLink } from "./bagikan";
 
-const DATA = { title: "Kampus contoh B", url: "https://akses-bogor.vercel.app/lokasi/b3e865a0" };
+const DATA = { title: "Kampus contoh B", url: "https://akses-bogor.aldio.dev/lokasi/b3e865a0" };
 
 function abort() {
   return Object.assign(new Error("Share canceled"), { name: "AbortError" });
@@ -9,7 +9,7 @@ function abort() {
 
 describe("placeUrl", () => {
   it("keeps only the origin and the place path", () => {
-    expect(placeUrl("https://akses-bogor.vercel.app", "b3e865a0")).toBe("https://akses-bogor.vercel.app/lokasi/b3e865a0");
+    expect(placeUrl("https://akses-bogor.aldio.dev", "b3e865a0")).toBe("https://akses-bogor.aldio.dev/lokasi/b3e865a0");
   });
 });
 
