@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { absoluteUrl, isIndexable, NOINDEX, publicRobots, siteUrl } from "./situs";
 
 describe("siteUrl", () => {
@@ -14,6 +14,20 @@ describe("siteUrl", () => {
   it("falls back to localhost:3000 without SITE_URL, whatever port the server runs on", () => {
     expect(siteUrl({}).href).toBe("http://localhost:3000/");
     expect(siteUrl({ PORT: "3300" }).href).toBe("http://localhost:3000/");
+  });
+
+  it("warns once per process when a production server has no SITE_URL, but not during the build", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    siteUrl({ NODE_ENV: "development" });
+    siteUrl({ NODE_ENV: "production", NEXT_PHASE: "phase-production-build" });
+    siteUrl({ NODE_ENV: "production", SITE_URL: "https://contoh.id" });
+    expect(warn).not.toHaveBeenCalled();
+
+    siteUrl({ NODE_ENV: "production" });
+    siteUrl({ NODE_ENV: "production" });
+    expect(warn).toHaveBeenCalledOnce();
+    expect(warn.mock.calls[0][0]).toMatch(/SITE_URL kosong/);
+    warn.mockRestore();
   });
 
   it("ignores the deployment addresses Vercel used to set", () => {

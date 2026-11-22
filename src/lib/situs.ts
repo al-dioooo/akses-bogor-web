@@ -21,6 +21,24 @@ export const PUBLIC_PATHS = [
   "/syarat",
 ] as const;
 
+// Penanda di globalThis, karena bundle route handler dan bundle halaman masing-masing memuat salinan modul ini.
+const WARNED = Symbol.for("aksesbogor.situs.siteUrlKosong");
+
+/**
+ * Server produksi tanpa `SITE_URL` menulis URL kanonis dan sitemap ke localhost tanpa terlihat salah, jadi beri tahu di
+ * log, sekali per proses. Saat build tidak: CI dan tes lokal sengaja tanpa `SITE_URL`, dan skrip deploy sudah menolak
+ * build tanpa nilai itu.
+ */
+function warnMissingSiteUrl(env: Env) {
+  const flags = globalThis as { [WARNED]?: boolean };
+  if (flags[WARNED] || env.NODE_ENV !== "production" || env.NEXT_PHASE === "phase-production-build") return;
+  flags[WARNED] = true;
+  console.warn(
+    "SITE_URL kosong: URL kanonis, OpenGraph, sitemap, dan robots.txt memakai http://localhost:3000. " +
+      "Isi SITE_URL di /etc/akses-bogor/web.env, lalu deploy ulang.",
+  );
+}
+
 /**
  * Asal situs untuk URL kanonis, OpenGraph, dan sitemap: `SITE_URL` bila diisi, selain itu `http://localhost:3000`.
  * Host dari request sengaja tidak dipakai: halaman statis dirender saat build, dan header `Host` bisa dipalsukan.
@@ -39,6 +57,7 @@ export function siteUrl(env: Env = process.env): URL {
     }
     return new URL(url.origin);
   }
+  warnMissingSiteUrl(env);
   // Sengaja tidak membaca PORT: `next start --port` mengisinya hanya saat runtime, sehingga metadata hasil build dan
   // hasil request berbeda dan halaman mendapat dua URL kanonis.
   return new URL("http://localhost:3000");
