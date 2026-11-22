@@ -463,7 +463,8 @@
         "items": [
           "Akun: alamat email, nama tampilan, peran (pengguna, verifikator, atau admin), serta waktu dan versi Kebijakan Privasi yang Anda setujui.",
           "Masuk: kode 6 digit yang kami kirim ke email Anda, disimpan dalam bentuk acak (hash) selama 10 menit, dan sesi masuk (token, waktu dibuat, dan waktu terakhir dipakai). Bila Anda masuk dengan Google, kami menyimpan nomor akun Google Anda untuk menyambungkannya ke akun AksesBogor. Kami tidak menyimpan foto profil, kontak, atau token akses Google.",
-          "Laporan: isian laporan (nama tempat, kategori, patokan, jawaban fasilitas, catatan, dan deskripsi), titik yang Anda konfirmasi di peta, dan foto yang Anda kirim. Lokasi perangkat hanya dibaca saat Anda menekan Gunakan lokasi saya dan tidak disimpan. Foto diperkecil lalu disimpan ulang tanpa metadata (EXIF), termasuk lokasi GPS. Bila verifikator meminta klarifikasi, jawaban Anda dan foto tambahannya ikut disimpan sebagai bagian laporan.",
+          "Laporan: isian laporan (nama tempat, kategori, patokan, jawaban fasilitas, catatan, dan deskripsi), titik yang Anda konfirmasi di peta, dan foto yang Anda kirim. Lokasi perangkat hanya dibaca saat Anda menekan Gunakan lokasi saya di formulir laporan dan tidak disimpan. Foto diperkecil lalu disimpan ulang tanpa metadata (EXIF), termasuk lokasi GPS. Bila verifikator meminta klarifikasi, jawaban Anda dan foto tambahannya ikut disimpan sebagai bagian laporan.",
+          "Lokasi saya di Peta: lokasi perangkat hanya dibaca setelah Anda menekan Tampilkan lokasi saya. Bila izin lokasi belum diberikan, kami menjelaskan dulu kegunaannya, lalu browser meminta izin Anda. Lokasi itu hanya dipakai di browser Anda untuk menggeser peta dan menaruh titik di posisi Anda. Lokasi tidak dikirim ke server AksesBogor atau ke Anthropic, dan tidak disimpan. Bila Anda berada di luar wilayah peta Kota Bogor, peta tidak digeser. Seperti setiap tampilan peta, Mapbox menerima area peta yang dimuat, jadi setelah peta digeser, Mapbox menerima area di sekitar lokasi Anda.",
           "Pencarian tempat: kata kunci yang Anda ketik di pencarian formulir laporan diteruskan ke Mapbox lewat server kami, tanpa alamat IP Anda, dan tidak kami simpan.",
           "Bantu memetakan: pertanyaan yang Anda ketik ke agen, beserta paling banyak 6 giliran sebelumnya di halaman itu, dikirim lewat server kami ke Anthropic (Claude API) untuk dijawab. Bersama pertanyaan ikut data terverifikasi tempat yang Anda pilih dan hasil pencarian agen di data AksesBogor, OpenStreetMap, dan basis pengetahuan. Kami tidak mengirim posisi, rute, email, nama, atau alamat IP Anda ke Anthropic, dan tidak menyimpan pertanyaan maupun jawabannya. Untuk kartu rute, titik awal yang Anda pilih di peta atau lokasi perangkat Anda dibulatkan sampai sekitar 11 m, lalu dikirim lewat server kami ke Mapbox hanya untuk menghitung rute jalan kaki. Titik dan rutenya tidak kami simpan dan tidak dikirim ke Anthropic.",
           "Teknis: alamat IP, alamat halaman yang dibuka, dan waktunya tercatat di log server untuk keamanan dan memperbaiki galat.",
@@ -492,12 +493,11 @@
           "Verifikator AksesBogor melihat nama tampilan pelapor, bukan email, beserta isian, foto, dan jawaban klarifikasi saat memeriksanya. Sebelum diverifikasi, laporan dan foto tidak bisa dilihat publik. Sebelum foto terbit, verifikator mengaburkan wajah dan pelat nomor atau menyembunyikan fotonya; hanya hasil yang sudah dikaburkan yang tayang. Admin AksesBogor melihat nama tampilan dan email anggota tim verifikator untuk mengatur peran mereka. Pengunjung AksesBogor melihat informasi tempat dan foto yang sudah diterbitkan, tanpa nama pelapor. Penyedia layanan berikut memproses data atas nama kami:"
         ],
         "items": [
-          "Oracle Cloud: server dan database di Batam, Indonesia.",
-          "Cloudflare: jaringan menuju server, dan penyimpanan foto di Cloudflare R2.",
-          "Vercel: menjalankan situs web.",
+          "Oracle Cloud: menyediakan server di region Indonesia North, Batam, tempat situs web, API, database, dan log server AksesBogor berjalan. Tim kami yang mengelola server dan database. Menurut Kebijakan Privasi Layanan Oracle, Oracle memproses data di layanannya atas nama kami untuk menjalankan layanan itu.",
+          "Cloudflare: semua halaman dan permintaan ke API AksesBogor melewati jaringan Cloudflare, lalu diteruskan lewat Cloudflare Tunnel ke server kami. Cloudflare menerima alamat IP Anda dan data tentang permintaan, mis. halaman yang dibuka dan waktunya. Cloudflare juga menyimpan foto laporan di Cloudflare R2. Menurut Kebijakan Privasi Cloudflare dan perjanjian pemrosesan datanya, Cloudflare memproses data ini atas nama kami dan tidak boleh memakainya untuk pemasaran atau iklan.",
           "Resend: mengirim email kode masuk dan pemberitahuan.",
           "Google: hanya bila Anda memakai tombol Masuk dengan Google. Halaman Masuk memuat tombol dari Google.",
-          "Mapbox: menampilkan peta, mencari tempat, dan menghitung rute jalan kaki untuk kartu rute. Mapbox menerima alamat IP dan area peta yang dilihat dari browser Anda, serta kata kunci pencarian dan titik awal rute yang sudah dibulatkan dari server kami.",
+          "Mapbox: menampilkan peta, mencari tempat, dan menghitung rute jalan kaki untuk kartu rute. Mapbox menerima alamat IP dan area peta yang dilihat dari browser Anda, termasuk area di sekitar lokasi Anda setelah Tampilkan lokasi saya, serta kata kunci pencarian dan titik awal rute yang sudah dibulatkan dari server kami.",
           "Anthropic: menjawab pertanyaan di Bantu memetakan lewat Claude API. Anthropic menerima pertanyaan, giliran sebelumnya, data terverifikasi tempat yang dipilih, dan hasil pencarian agen, tanpa posisi, email, nama, atau alamat IP Anda. Menurut Ketentuan Komersial Anthropic, Anthropic tidak boleh memakai data ini untuk melatih model."
         ],
         "after": [
@@ -508,7 +508,7 @@
         "id": "luar-negeri",
         "title": "Data yang diproses di luar Indonesia",
         "paragraphs": [
-          "Vercel, Resend, Google, Mapbox, Cloudflare, dan Anthropic bisa memproses data di luar Indonesia, termasuk di Amerika Serikat. Anthropic menyimpan data di Amerika Serikat dan bisa menjalankan modelnya di negara lain. Kami hanya mengirim data yang dibutuhkan layanan itu: email dan isi email ke Resend, alamat IP ke penyedia jaringan dan peta, kata kunci pencarian dan titik awal rute ke Mapbox, pertanyaan Bantu memetakan ke Anthropic, dan foto laporan ke Cloudflare R2."
+          "Resend, Google, Mapbox, Cloudflare, dan Anthropic bisa memproses data di luar Indonesia, termasuk di Amerika Serikat. Anthropic menyimpan data di Amerika Serikat dan bisa menjalankan modelnya di negara lain. Situs web, API, database, dan log server kami berjalan di Batam, Indonesia, tetapi menurut kebijakan privasinya, Oracle bisa memproses data di layanannya di negara lain bila diperlukan untuk menjalankan layanan itu. Kami hanya mengirim data yang dibutuhkan layanan itu: email dan isi email ke Resend, lalu lintas situs web dan API lewat Cloudflare, alamat IP, area peta, kata kunci pencarian, dan titik awal rute ke Mapbox, pertanyaan Bantu memetakan ke Anthropic, dan foto laporan ke Cloudflare R2."
         ]
       },
       {
@@ -566,6 +566,10 @@
             [
               "Titik awal dan rute jalan kaki",
               "Tidak disimpan"
+            ],
+            [
+              "Lokasi perangkat untuk Tampilkan lokasi saya di Peta",
+              "Tidak dikirim ke kami dan tidak disimpan"
             ],
             [
               "Laporan yang sudah terbit",
