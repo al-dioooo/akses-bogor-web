@@ -44,7 +44,16 @@ function ControlButton({ label, icon, onClick, className = "" }: { label: string
  * peta, atau tombol arah di bawahnya, dan tengah peta menjadi titik terpilih. Tanpa WebGL atau token, peta tidak tampil
  * dan pemilih lokasi tetap bisa dipakai lewat pencarian atau lokasi perangkat.
  */
-export function PickerMap({ candidate, onMove }: { candidate: Candidate | null; onMove: (candidate: Candidate) => void }) {
+export function PickerMap({
+  candidate,
+  onMove,
+  unavailable,
+}: {
+  candidate: Candidate | null;
+  onMove: (candidate: Candidate) => void;
+  /** Pesan bila peta tidak bisa tampil; bawaan untuk pemilih lokasi Laporkan. */
+  unavailable?: string;
+}) {
   const t = useTranslations("Laporkan.peta");
   const tp = useTranslations("Peta.map");
   const container = useRef<HTMLDivElement>(null);
@@ -159,7 +168,7 @@ export function PickerMap({ candidate, onMove }: { candidate: Candidate | null; 
   }, [point, state]);
 
   if (state === "tidak-ada") {
-    return <p className="rounded-2xl bg-bg-sunken p-4 text-text-secondary">{t("unavailable")}</p>;
+    return <p className="rounded-2xl bg-bg-sunken p-4 text-text-secondary">{unavailable ?? t("unavailable")}</p>;
   }
 
   const pan = (x: number, y: number) => map.current?.panBy([x, y]);
