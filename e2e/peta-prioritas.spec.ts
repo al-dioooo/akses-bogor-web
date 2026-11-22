@@ -40,6 +40,7 @@ test("shows a floating key with the levels as text, the caveat and the source wh
 for (const viewport of [
   { width: 320, height: 568 },
   { width: 360, height: 740 },
+  { width: 667, height: 375 },
   { width: 1024, height: 600 },
 ]) {
   test(`the key never slips under the list panel, and markers under it cannot take focus (${viewport.width}×${viewport.height})`, async ({ page }) => {
