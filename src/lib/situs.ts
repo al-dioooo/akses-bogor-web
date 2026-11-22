@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 
 /**
  * Alamat situs dan saklar pengindeksan (issue #114). Nilainya dibaca dari environment: saat build untuk halaman statis,
- * saat request untuk halaman dinamis dan sitemap. Setelah `SITE_URL` atau `SITE_INDEXABLE` diubah di Vercel, deploy
- * ulang supaya semua halaman memakai nilai yang sama.
+ * saat request untuk halaman dinamis dan sitemap. Di server, keduanya ada di `/etc/akses-bogor/web.env`, dan perubahannya
+ * membuat deploy berikutnya membangun ulang semua halaman.
  */
 
 type Env = Record<string, string | undefined>;
@@ -22,8 +22,7 @@ export const PUBLIC_PATHS = [
 ] as const;
 
 /**
- * Asal situs untuk URL kanonis, OpenGraph, dan sitemap: `SITE_URL` bila diisi. Tanpa itu, urutannya sama dengan
- * bawaan Next.js: domain produksi Vercel di deploy produksi, alamat branch atau deploy di preview, lalu localhost.
+ * Asal situs untuk URL kanonis, OpenGraph, dan sitemap: `SITE_URL` bila diisi, selain itu `http://localhost:3000`.
  * Host dari request sengaja tidak dipakai: halaman statis dirender saat build, dan header `Host` bisa dipalsukan.
  */
 export function siteUrl(env: Env = process.env): URL {
@@ -40,8 +39,6 @@ export function siteUrl(env: Env = process.env): URL {
     }
     return new URL(url.origin);
   }
-  const vercelHost = env.VERCEL_ENV === "production" ? env.VERCEL_PROJECT_PRODUCTION_URL : env.VERCEL_BRANCH_URL || env.VERCEL_URL;
-  if (vercelHost) return new URL(`https://${vercelHost}`);
   // Sengaja tidak membaca PORT: `next start --port` mengisinya hanya saat runtime, sehingga metadata hasil build dan
   // hasil request berbeda dan halaman mendapat dua URL kanonis.
   return new URL("http://localhost:3000");
@@ -53,8 +50,8 @@ export function absoluteUrl(path: string, env: Env = process.env) {
 }
 
 /**
- * Situs boleh diindeks hanya bila `SITE_INDEXABLE=true` dan `SITE_URL` diisi, supaya alamat cadangan (vercel.app atau
- * preview) tidak pernah diindeks. Bawaannya mati: staging belum boleh diindeks sebelum domain produksi dipilih.
+ * Situs boleh diindeks hanya bila `SITE_INDEXABLE=true` dan `SITE_URL` diisi, supaya alamat cadangan (localhost) tidak
+ * pernah diindeks. Bawaannya mati: staging belum boleh diindeks sebelum domain produksi dipilih.
  */
 export function isIndexable(env: Env = process.env) {
   return env.SITE_INDEXABLE?.trim().toLowerCase() === "true" && Boolean(env.SITE_URL?.trim());
