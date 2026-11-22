@@ -1,11 +1,11 @@
 # Arsitektur
 
-Sumber keputusan: [ADR-0013](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0013-tech-stack-nextjs-fastify.md), [ADR-0025](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0025-api-dan-postgresql-di-vps-sendiri.md), [ADR-0026](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0026-api-dan-postgresql-di-evergarden-oci.md), dan [ADR-0029](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0029-akun-better-auth-dan-sesi-lewat-server-web.md). Bagian yang direncanakan tetapi belum ada ditandai garis putus-putus.
+Sumber keputusan: [ADR-0013](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0013-tech-stack-nextjs-fastify.md), [ADR-0025](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0025-api-dan-postgresql-di-vps-sendiri.md), [ADR-0026](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0026-api-dan-postgresql-di-evergarden-oci.md), [ADR-0029](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0029-akun-better-auth-dan-sesi-lewat-server-web.md), dan [ADR-0048](https://github.com/al-dioooo/akses-bogor-docs/blob/main/decisions/0048-web-di-host-sendiri-di-evergarden-oci.md). Bagian yang direncanakan tetapi belum ada ditandai garis putus-putus.
 
 ```mermaid
 flowchart LR
-  B[Browser / PWA] -->|halaman + cookie sesi| W[akses-bogor-web<br/>Next.js di Vercel]
-  W -->|render di server, Bearer sesi| F[akses-bogor-api<br/>Fastify di Evergarden, lewat Cloudflare Tunnel]
+  B[Browser / PWA] -->|halaman + cookie sesi, lewat Cloudflare Tunnel| W[akses-bogor-web<br/>Next.js di Evergarden]
+  W -->|render di server, Bearer sesi, lewat Cloudflare Tunnel| F[akses-bogor-api<br/>Fastify di Evergarden]
   B -->|tile peta| M[Mapbox]
   F -->|token peta sementara| M
   F --> DB[(PostgreSQL 17 + PostGIS di Evergarden)]
