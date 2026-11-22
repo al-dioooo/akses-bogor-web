@@ -275,7 +275,7 @@ export function mountMap(options: Options): MapHandle {
       } else {
         user.setLngLat([lng, lat]);
       }
-      map.flyTo({ center: [lng, lat], zoom: Math.max(map.getZoom(), 15), padding: padding(), retainPadding: false });
+      map.flyTo({ center: [lng, lat], zoom: Math.max(map.getZoom(), 15), padding: focusPadding(), retainPadding: false });
       return true;
     },
     setPlaces(next) {
