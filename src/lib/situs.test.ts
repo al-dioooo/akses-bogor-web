@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { absoluteUrl, isIndexable, NOINDEX, publicRobots, siteUrl } from "./situs";
 
 describe("siteUrl", () => {
@@ -11,21 +11,28 @@ describe("siteUrl", () => {
     expect(() => siteUrl({ SITE_URL: "ftp://akses-bogor.aldio.dev" })).toThrow(/SITE_URL/);
   });
 
-  it("falls back to the Vercel production domain on production deploys", () => {
-    const env = { VERCEL_ENV: "production", VERCEL_PROJECT_PRODUCTION_URL: "akses-bogor.aldio.dev", VERCEL_URL: "x-123.vercel.app" };
-    expect(siteUrl(env).href).toBe("https://akses-bogor.aldio.dev/");
-  });
-
-  it("falls back to the branch or deploy address on preview deploys", () => {
-    expect(siteUrl({ VERCEL_ENV: "preview", VERCEL_BRANCH_URL: "cabang.vercel.app", VERCEL_URL: "x.vercel.app" }).href).toBe(
-      "https://cabang.vercel.app/",
-    );
-    expect(siteUrl({ VERCEL_ENV: "preview", VERCEL_URL: "x.vercel.app" }).href).toBe("https://x.vercel.app/");
-  });
-
-  it("falls back to localhost:3000 outside Vercel, whatever port the server runs on", () => {
+  it("falls back to localhost:3000 without SITE_URL, whatever port the server runs on", () => {
     expect(siteUrl({}).href).toBe("http://localhost:3000/");
     expect(siteUrl({ PORT: "3300" }).href).toBe("http://localhost:3000/");
+  });
+
+  it("warns once per process when a production server has no SITE_URL, but not during the build", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    siteUrl({ NODE_ENV: "development" });
+    siteUrl({ NODE_ENV: "production", NEXT_PHASE: "phase-production-build" });
+    siteUrl({ NODE_ENV: "production", SITE_URL: "https://contoh.id" });
+    expect(warn).not.toHaveBeenCalled();
+
+    siteUrl({ NODE_ENV: "production" });
+    siteUrl({ NODE_ENV: "production" });
+    expect(warn).toHaveBeenCalledOnce();
+    expect(warn.mock.calls[0][0]).toMatch(/SITE_URL kosong/);
+    warn.mockRestore();
+  });
+
+  it("ignores the deployment addresses Vercel used to set", () => {
+    const env = { VERCEL_ENV: "production", VERCEL_PROJECT_PRODUCTION_URL: "akses-bogor.aldio.dev", VERCEL_URL: "x.vercel.app" };
+    expect(siteUrl(env).href).toBe("http://localhost:3000/");
   });
 });
 
@@ -46,8 +53,8 @@ describe("isIndexable", () => {
     expect(isIndexable({ SITE_INDEXABLE: " TRUE ", SITE_URL: "https://contoh.id" })).toBe(true);
   });
 
-  it("stays off without a SITE_URL so fallback addresses are never indexed", () => {
-    expect(isIndexable({ SITE_INDEXABLE: "true", VERCEL_ENV: "production", VERCEL_PROJECT_PRODUCTION_URL: "a.vercel.app" })).toBe(false);
+  it("stays off without a SITE_URL so the fallback address is never indexed", () => {
+    expect(isIndexable({ SITE_INDEXABLE: "true" })).toBe(false);
   });
 
   it("stays off for values other than true", () => {
