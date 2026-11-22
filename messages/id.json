@@ -267,7 +267,7 @@
     "lokasiSaya": {
       "button": "Tampilkan lokasi saya",
       "title": "Tampilkan lokasi Anda di peta?",
-      "body": "Browser akan meminta izin lokasi. Lokasi hanya dipakai di perangkat ini untuk menggeser peta, tidak dikirim ke AksesBogor, dan tidak disimpan.",
+      "body": "Browser akan meminta izin lokasi. Lokasi Anda hanya dipakai di browser ini untuk menggeser peta, tidak dikirim ke AksesBogor, dan tidak disimpan. Seperti setiap tampilan peta, Mapbox menerima area peta yang dimuat.",
       "allow": "Izinkan lokasi",
       "cancel": "Batal",
       "locating": "Mencari lokasi Anda…",
