@@ -121,6 +121,24 @@ test("on a phone the handle is a slider that changes the sheet height without dr
   await expect(handle(page)).toHaveAttribute("aria-valuetext", "kecil");
 });
 
+test("on a phone the handle shows its own focus ring, inside the sheet", async ({ page }) => {
+  test.skip(!isMobile(page), "Pegangan hanya ada di lembar bawah ponsel");
+  await openMap(page);
+  await handle(page).focus();
+  const ring = await handle(page).evaluate((element) => {
+    const style = getComputedStyle(element);
+    const grow = Number.parseFloat(style.outlineOffset) + Number.parseFloat(style.outlineWidth);
+    const box = element.getBoundingClientRect();
+    const sheet = element.closest(".peta-lembar")!.getBoundingClientRect();
+    return {
+      shown: element.matches(":focus-visible") && style.outlineStyle !== "none",
+      // Lembar memotong isinya (overflow: hidden), jadi cincinnya harus seluruhnya di dalam lembar.
+      inside: box.top - grow >= sheet.top && box.left - grow >= sheet.left && box.right + grow <= sheet.right,
+    };
+  });
+  expect(ring).toEqual({ shown: true, inside: true });
+});
+
 test("a full sheet lists every place, not only those in the map view it covers", async ({ page }) => {
   test.skip(!isMobile(page), "Lembar penuh hanya ada di ponsel");
   await openMap(page);

@@ -578,6 +578,11 @@ body:has(> .peta-app) {
   }
 }
 
+/* Cincin fokus pegangan lembar digambar di sisi dalam, karena lembar memotong apa pun di luar tepinya. */
+.peta-pegangan:focus-visible {
+  outline-offset: calc(-1 * var(--border-width-focus) - 2px);
+}
+
 /* Cincin fokus kanvas Mapbox digambar di sisi dalam, karena tepi peta adalah tepi layar. */
 .peta-peta .mapboxgl-canvas:focus-visible {
   outline-offset: -4px;
