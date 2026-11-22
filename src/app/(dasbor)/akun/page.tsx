@@ -2,32 +2,30 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getFormatter, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
-import { SignOutForm } from "@/components/akun/clear-drafts";
 import { MyReports } from "@/components/akun/my-reports";
 import { RenameForm } from "@/components/akun/rename-form";
+import { DashboardHeading } from "@/components/dasbor/dashboard-heading";
 import { getMyReports } from "@/lib/akun";
 import { requireAccount } from "@/lib/sesi";
-import { buttonClass } from "@/ui/button-styles";
 import { Icon } from "@/ui/icon";
-import { IconArrowRight, IconChevronRight, IconClipboardCheck, IconLogout } from "@/ui/icons";
+import { IconChevronRight } from "@/ui/icons";
 import { LoadErrorBoundary } from "@/ui/load-error";
-import { SectionHeading } from "@/ui/section-heading";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("AkunSaya");
   return { title: t("metaTitle") };
 }
 
-/** Akun Saya (Frame Akun): Laporan saya (FR-14), data akun (FR-12), Keluar, dan jalan ke Hapus akun (FR-13). */
+/** Akun Saya (Frame Akun): Laporan saya (FR-14), data akun (FR-12), dan jalan ke Hapus akun (FR-13). Keluar ada di menu dasbor. */
 export default async function AkunSaya() {
   const t = await getTranslations("AkunSaya");
   return (
-    <main id="konten" className="page-width flex flex-1 flex-col gap-8 py-10 sm:py-16">
-      <SectionHeading id="judul-akun" level={1} label={t("eyebrow")} title={t("title")} accent={t("accent")} />
+    <>
+      <DashboardHeading id="judul-akun" label={t("eyebrow")} title={t("title")} accent={t("accent")} />
       <Suspense fallback={<AccountSkeleton label={t("loading")} />}>
         <Account />
       </Suspense>
-    </main>
+    </>
   );
 }
 
@@ -35,7 +33,7 @@ async function Account() {
   const { token, user } = await requireAccount("/akun");
   const [t, tl, format] = await Promise.all([getTranslations("AkunSaya"), getTranslations("LaporanSaya"), getFormatter()]);
   return (
-    <div className="grid items-start gap-8 lg:grid-cols-[1fr_24rem]">
+    <div className="grid items-start gap-8 xl:grid-cols-[1fr_22rem]">
       <section aria-labelledby="laporan-saya" className="flex flex-col gap-4">
         <div className="flex flex-col gap-1">
           <h2 id="laporan-saya" className="font-heading text-2xl font-bold">
@@ -74,27 +72,6 @@ async function Account() {
           <RenameForm currentName={user.displayName} />
         </section>
 
-        {user.role !== "pengguna" && (
-          <section aria-labelledby="meja-verifikasi" className="flex flex-col gap-3 rounded-3xl bg-surface-brand-subtle p-5 sm:p-6">
-            <h2 id="meja-verifikasi" className="flex items-center gap-2 font-heading text-lg font-bold">
-              <Icon icon={IconClipboardCheck} className="size-5 text-icon-brand" />
-              {t("verifierTitle")}
-            </h2>
-            <p className="text-text-secondary">{t("verifierBody")}</p>
-            <Link href="/verifikasi" className={buttonClass("primary", "sm", "self-start")}>
-              {t("verifierLink")}
-              <Icon icon={IconArrowRight} />
-            </Link>
-          </section>
-        )}
-
-        <SignOutForm>
-          <button className={buttonClass("outline", "md", "w-full")}>
-            <Icon icon={IconLogout} />
-            {t("signOut")}
-          </button>
-        </SignOutForm>
-
         <section aria-labelledby="hapus-akun" className="flex flex-col gap-2 rounded-3xl border-2 border-border-error p-5 sm:p-6">
           <h2 id="hapus-akun" className="font-heading text-lg font-bold">
             {t("deleteTitle")}
@@ -117,7 +94,7 @@ async function ReportList({ token }: { token: string }) {
 
 function AccountSkeleton({ label }: { label: string }) {
   return (
-    <div role="status" aria-label={label} className="grid gap-8 lg:grid-cols-[1fr_24rem]">
+    <div role="status" aria-label={label} className="grid gap-8 xl:grid-cols-[1fr_22rem]">
       <div className="h-64 rounded-3xl bg-bg-sunken" />
       <div className="h-80 rounded-3xl bg-bg-sunken" />
     </div>

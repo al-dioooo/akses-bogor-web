@@ -1,6 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { mockApi, signIn, uniqueEmail } from "./akun-masuk";
 import { blockingViolations } from "./axe";
+import { dashboardMenu } from "./dasbor";
 import { stubGoogle } from "./google";
 
 // Akun Saya, Laporan saya (FR-14), ubah nama (FR-12), Keluar, dan Hapus Akun (FR-13) dengan API tiruan.
@@ -69,9 +70,9 @@ test("renames the account and explains an empty name", async ({ page }) => {
   await expect(page.getByLabel("Nama tampilan")).toHaveValue("Sari Lestari");
 });
 
-test("signs out from Akun Saya", async ({ page }) => {
+test("signs out from the dashboard menu", async ({ page }) => {
   await signIn(page, email("lama"));
-  await page.getByRole("button", { name: "Keluar" }).click();
+  await (await dashboardMenu(page)).getByRole("button", { name: "Keluar" }).click();
   await expect(page).toHaveURL(/\/$/);
   await expect(await accountLink(page, "Masuk")).toBeVisible();
   await page.goto("/akun");

@@ -1,6 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { mockApi, signIn, uniqueEmail } from "./akun-masuk";
 import { blockingViolations } from "./axe";
+import { dashboardMenu } from "./dasbor";
 import { stubGoogle } from "./google";
 
 // Panel verifikator (FR-30 sampai FR-38, ADR-0035) dengan API tiruan. Setiap verifikator punya antrean tiruannya sendiri.
@@ -13,7 +14,7 @@ test.beforeEach(async ({ page }) => {
 test("shows the queue oldest first without the verifier's own report", async ({ page }) => {
   await signIn(page, email("verifikator"));
   await page.goto("/akun");
-  await page.getByRole("link", { name: "Buka meja verifikasi" }).click();
+  await (await dashboardMenu(page)).getByRole("link", { name: "Antrean" }).click();
   await expect(page).toHaveURL(/\/verifikasi$/);
   const main = page.getByRole("main");
   const queue = main.getByRole("region", { name: "2 laporan" });

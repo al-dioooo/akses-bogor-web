@@ -4,12 +4,12 @@ import { notFound } from "next/navigation";
 import { getFormatter, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { ClarificationAnswer } from "@/components/akun/clarification-answer";
+import { DashboardHeading } from "@/components/dasbor/dashboard-heading";
 import { ClarificationThread } from "@/components/verifikasi/periksa/clarification-thread";
 import { getMyReport } from "@/lib/akun";
 import { requireAccount } from "@/lib/sesi";
 import { Icon } from "@/ui/icon";
 import { IconArrowLeft } from "@/ui/icons";
-import { SectionHeading } from "@/ui/section-heading";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("JawabKlarifikasi");
@@ -20,16 +20,16 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function JawabKlarifikasi({ params }: PageProps<"/akun/laporan/[id]">) {
   const t = await getTranslations("JawabKlarifikasi");
   return (
-    <main id="konten" className="page-width flex flex-1 flex-col gap-8 py-10 sm:py-16">
-      <Link href="/akun" className="inline-flex min-h-11 items-center gap-2 self-start font-semibold underline-offset-2 hover:underline">
+    <>
+      <Link href="/akun" className="-mb-4 inline-flex min-h-11 items-center gap-2 self-start font-semibold underline-offset-2 hover:underline">
         <Icon icon={IconArrowLeft} className="size-5" />
         {t("back")}
       </Link>
-      <SectionHeading id="judul-klarifikasi" level={1} label={t("eyebrow")} title={t("title")} accent={t("accent")} />
+      <DashboardHeading id="judul-klarifikasi" label={t("eyebrow")} title={t("title")} accent={t("accent")} />
       <Suspense fallback={<p role="status">{t("loading")}</p>}>
         <Answer params={params} />
       </Suspense>
-    </main>
+    </>
   );
 }
 
