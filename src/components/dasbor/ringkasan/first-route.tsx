@@ -16,7 +16,7 @@ const CURRENT = 1;
 export async function FirstRoute({ agent }: { agent: boolean }) {
   const t = await getTranslations("Dasbor.ringkasan.rute");
   return (
-    <div className="@container flex flex-col gap-7 rounded-[2rem] bg-surface-inverse p-6 text-text-on-inverse sm:p-8">
+    <div className="@container flex flex-col gap-7 rounded-[2rem] bg-surface-inverse p-5 text-text-on-inverse sm:p-8">
       <div className="flex flex-col gap-2">
         <p className="font-mono text-xs font-medium tracking-[0.08em] text-text-on-inverse-secondary uppercase">{t("eyebrow")}</p>
         <h3 className="display text-[clamp(1.75rem,1.4rem+1.2vw,2.25rem)] leading-tight">
@@ -59,14 +59,15 @@ export async function FirstRoute({ agent }: { agent: boolean }) {
         })}
       </ol>
       <div className="flex flex-wrap gap-3">
-        <Link href="/laporkan" className={buttonClass("primary", "md")}>
+        {/* Di layar 320 px tombol selebar kotak dan teksnya boleh turun baris. */}
+        <Link href="/laporkan" className={buttonClass("primary", "md", "text-center max-sm:w-full max-sm:whitespace-normal")}>
           <Icon icon={IconCirclePlus} />
           {t("report")}
         </Link>
         {agent && (
           <Link
             href="/laporkan/bantu-memetakan"
-            className="inline-flex min-h-13 items-center justify-center gap-2 rounded-full border-2 border-text-on-inverse/40 px-6 font-bold transition-colors duration-200 hover:bg-text-on-inverse/10"
+            className="inline-flex min-h-13 items-center justify-center gap-2 rounded-full border-2 border-text-on-inverse/40 px-6 text-center font-bold transition-colors duration-200 hover:bg-text-on-inverse/10 max-sm:w-full"
           >
             <Icon icon={IconRoute} />
             {t("agent")}
