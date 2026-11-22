@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
+import { getFormatter, getTranslations } from "next-intl/server";
+import type { PlaceDetail } from "@/lib/api";
 import { publicRobots } from "@/lib/situs";
 
 type PublicPage = {
@@ -53,3 +54,34 @@ export async function pageMetadata(namespace: PageNamespace, path: string): Prom
   });
 }
 
+/**
+ * Metadata Detail lokasi dari data tempat yang sudah diverifikasi: nama, kategori, kecamatan, status dalam kata-kata,
+ * ringkasan fasilitas, dan tanggal verifikasi, seperti yang tampil di halamannya. Tidak ada klaim di luar data itu.
+ */
+export async function placeMetadata(place: PlaceDetail): Promise<Metadata> {
+  const [t, category, status, card, site, format] = await Promise.all([
+    getTranslations("Detail"),
+    getTranslations("Kategori"),
+    getTranslations("Status"),
+    getTranslations("Lokasi"),
+    getTranslations("Metadata"),
+    getFormatter(),
+  ]);
+  const { available, relevant, unknown } = place.summary;
+  const summary = [card("summary", { available, relevant }), unknown > 0 ? card("unknown", { count: unknown }) : null]
+    .filter(Boolean)
+    .join(", ");
+  const description = t("metaDescription", {
+    category: category(place.category),
+    district: place.district.name,
+    status: status(place.status),
+    summary,
+    date: format.dateTime(new Date(place.lastVerifiedAt), { dateStyle: "long" }),
+  });
+  return publicMetadata({
+    title: t("metaTitle", { name: place.name, district: place.district.name }),
+    description: place.needsRecheck ? `${description} ${t("metaRecheck")}` : description,
+    path: `/lokasi/${encodeURIComponent(place.id)}`,
+    siteName: site("title"),
+  });
+}

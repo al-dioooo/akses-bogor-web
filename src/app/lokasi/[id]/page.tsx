@@ -5,6 +5,7 @@ import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { PlaceDetail } from "@/components/lokasi/place-detail";
 import { getPlace } from "@/lib/api";
+import { placeMetadata } from "@/lib/metadata";
 import { Icon } from "@/ui/icon";
 import { IconArrowLeft } from "@/ui/icons";
 import { LoadErrorBoundary } from "@/ui/load-error";
@@ -12,7 +13,7 @@ import { LoadErrorBoundary } from "@/ui/load-error";
 export async function generateMetadata({ params }: PageProps<"/lokasi/[id]">): Promise<Metadata> {
   const [{ id }, t] = await Promise.all([params, getTranslations("Detail.notFound")]);
   const place = await getPlace(id);
-  return { title: place?.name ?? t("metaTitle") };
+  return place ? placeMetadata(place) : { title: t("metaTitle") };
 }
 
 /** Detail lokasi (ADR-0027). Tautan kembali tampil langsung; isi lokasi diambil saat request. */

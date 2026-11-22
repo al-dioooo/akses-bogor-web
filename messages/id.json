@@ -286,6 +286,9 @@
   "Detail": {
     "back": "Kembali ke Jelajahi",
     "loading": "Memuat lokasi…",
+    "metaTitle": "{name}, {district}",
+    "metaDescription": "{category} di Kecamatan {district}, Kota Bogor. Status aksesibilitas: {status}. {summary}. Terakhir diverifikasi {date}.",
+    "metaRecheck": "Data ini perlu dicek ulang.",
     "landmark": "Patokan",
     "summaryTitle": "Ringkasan fasilitas",
     "ofRelevant": "dari {relevant} fasilitas tersedia",
