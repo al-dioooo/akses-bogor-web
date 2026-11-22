@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { askFrom, historyFor, isPlaceId, MAX_HISTORY, MAX_TURN, pointFrom } from "./agen-rute-isian";
+import { askFrom, historyFor, isPlaceId, MAX_HISTORY, MAX_TURN, pointFrom, routeTargetFrom } from "./agen-rute-isian";
 
 describe("pointFrom", () => {
   it("accepts finite coordinates and refuses the rest", () => {
@@ -26,8 +26,18 @@ describe("askFrom", () => {
     expect(parsed).toEqual({ question: "Ada ramp?", history: [{ role: "user", content: "Halo" }] });
   });
 
-  it("refuses short or long questions and odd history", () => {
-    for (const body of [{ question: "x" }, { question: "a".repeat(501) }, { question: "Ada ramp?", history: "halo" }, { question: "Ada ramp?", history: [{ role: "system", content: "x" }] }]) {
+  it("keeps an optional place id", () => {
+    expect(askFrom({ question: "Ada ramp?", placeId: "4037ba19-b366-45bc-aceb-270944fe9372" })).toEqual({ question: "Ada ramp?", history: [], placeId: "4037ba19-b366-45bc-aceb-270944fe9372" });
+  });
+
+  it("refuses short or long questions, odd history and a broken place id", () => {
+    for (const body of [
+      { question: "x" },
+      { question: "a".repeat(501) },
+      { question: "Ada ramp?", history: "halo" },
+      { question: "Ada ramp?", history: [{ role: "system", content: "x" }] },
+      { question: "Ada ramp?", placeId: "../agent" },
+    ]) {
       expect(askFrom(body)).toBeNull();
     }
   });
@@ -37,5 +47,15 @@ describe("isPlaceId", () => {
   it("accepts only UUIDs", () => {
     expect(isPlaceId("4037ba19-b366-45bc-aceb-270944fe9372")).toBe(true);
     expect(isPlaceId("../agent/ask")).toBe(false);
+  });
+});
+
+describe("routeTargetFrom", () => {
+  it("reads an AksesBogor place or an OpenStreetMap feature, never both", () => {
+    expect(routeTargetFrom({ placeId: "4037ba19-b366-45bc-aceb-270944fe9372" })).toEqual({ placeId: "4037ba19-b366-45bc-aceb-270944fe9372" });
+    expect(routeTargetFrom({ osm: { type: "way", id: 42 } })).toEqual({ osm: { type: "way", id: 42 } });
+    for (const body of [{}, { placeId: "x" }, { osm: { type: "area", id: 1 } }, { osm: { type: "node", id: -1 } }, { osm: { type: "node", id: 1.5 } }, { placeId: "4037ba19-b366-45bc-aceb-270944fe9372", osm: { type: "node", id: 1 } }]) {
+      expect(routeTargetFrom(body)).toBeNull();
+    }
   });
 });
