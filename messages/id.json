@@ -416,13 +416,14 @@
         "id": "data",
         "title": "Data yang kami kumpulkan",
         "paragraphs": [
-          "Anda bisa menjelajahi AksesBogor tanpa akun. Kami hanya mengumpulkan data pribadi bila Anda membuat akun atau melapor."
+          "Anda bisa menjelajahi AksesBogor tanpa akun. Kami hanya mengumpulkan data pribadi bila Anda membuat akun, melapor, atau memakai Bantu memetakan."
         ],
         "items": [
           "Akun: alamat email, nama tampilan, peran (pengguna, verifikator, atau admin), serta waktu dan versi Kebijakan Privasi yang Anda setujui.",
           "Masuk: kode 6 digit yang kami kirim ke email Anda, disimpan dalam bentuk acak (hash) selama 10 menit, dan sesi masuk (token, waktu dibuat, dan waktu terakhir dipakai). Bila Anda masuk dengan Google, kami menyimpan nomor akun Google Anda untuk menyambungkannya ke akun AksesBogor. Kami tidak menyimpan foto profil, kontak, atau token akses Google.",
           "Laporan: isian laporan (nama tempat, kategori, patokan, jawaban fasilitas, catatan, dan deskripsi), titik yang Anda konfirmasi di peta, dan foto yang Anda kirim. Lokasi perangkat hanya dibaca saat Anda menekan Gunakan lokasi saya dan tidak disimpan. Foto diperkecil lalu disimpan ulang tanpa metadata (EXIF), termasuk lokasi GPS. Bila verifikator meminta klarifikasi, jawaban Anda dan foto tambahannya ikut disimpan sebagai bagian laporan.",
           "Pencarian tempat: kata kunci yang Anda ketik di pencarian formulir laporan diteruskan ke Mapbox lewat server kami, tanpa alamat IP Anda, dan tidak kami simpan.",
+          "Bantu memetakan: pertanyaan yang Anda ketik ke agen, beserta paling banyak 6 giliran sebelumnya di halaman itu, dikirim lewat server kami ke Anthropic (Claude API) untuk dijawab. Bersama pertanyaan ikut data terverifikasi tempat yang Anda pilih dan hasil pencarian agen di data AksesBogor, OpenStreetMap, dan basis pengetahuan. Kami tidak mengirim posisi, rute, email, nama, atau alamat IP Anda ke Anthropic, dan tidak menyimpan pertanyaan maupun jawabannya. Untuk kartu rute, titik awal yang Anda pilih di peta atau lokasi perangkat Anda dibulatkan sampai sekitar 11 m, lalu dikirim lewat server kami ke Mapbox hanya untuk menghitung rute jalan kaki. Titik dan rutenya tidak kami simpan dan tidak dikirim ke Anthropic.",
           "Teknis: alamat IP, alamat halaman yang dibuka, dan waktunya tercatat di log server untuk keamanan dan memperbaiki galat.",
           "Di perangkat Anda: pilihan tampilan (mode terang atau gelap, gerak) disimpan di browser Anda dan tidak dikirim ke kami. Draf laporan yang belum dikirim, termasuk fotonya, juga disimpan di browser Anda dan baru dikirim ke kami saat Anda menekan Kirim laporan. Cookie sesi hanya dipakai untuk menjaga Anda tetap masuk. Kami tidak memakai cookie iklan atau analitik."
         ]
@@ -434,6 +435,7 @@
           "Memasukkan Anda ke akun dan menjaga akun tetap aman.",
           "Menampilkan Laporan saya dan mengirim email saat laporan Anda diterbitkan, ditolak beserta alasannya, atau butuh klarifikasi.",
           "Memeriksa laporan sebelum tayang, menghubungi Anda bila verifikator butuh klarifikasi, dan mencegah spam.",
+          "Menjawab pertanyaan Anda di Bantu memetakan dan menghitung rute jalan kaki untuk kartu rute.",
           "Mencatat siapa mengubah data tempat dan kapan (log audit), supaya perubahan bisa ditelusuri. Log ini berisi akun verifikator dan perubahan data tempat, tanpa email, nama pelapor, atau isi klarifikasi.",
           "Menjaga layanan tetap berjalan dan aman."
         ],
@@ -453,7 +455,8 @@
           "Vercel: menjalankan situs web.",
           "Resend: mengirim email kode masuk dan pemberitahuan.",
           "Google: hanya bila Anda memakai tombol Masuk dengan Google. Halaman Masuk memuat tombol dari Google.",
-          "Mapbox: menampilkan peta dan mencari tempat. Mapbox menerima alamat IP dan area peta yang dilihat dari browser Anda, serta kata kunci pencarian dari server kami."
+          "Mapbox: menampilkan peta, mencari tempat, dan menghitung rute jalan kaki untuk kartu rute. Mapbox menerima alamat IP dan area peta yang dilihat dari browser Anda, serta kata kunci pencarian dan titik awal rute yang sudah dibulatkan dari server kami.",
+          "Anthropic: menjawab pertanyaan di Bantu memetakan lewat Claude API. Anthropic menerima pertanyaan, giliran sebelumnya, data terverifikasi tempat yang dipilih, dan hasil pencarian agen, tanpa posisi, email, nama, atau alamat IP Anda. Menurut Ketentuan Komersial Anthropic, Anthropic tidak boleh memakai data ini untuk melatih model."
         ],
         "after": [
           "Kami tidak menjual data pribadi dan tidak membagikannya untuk iklan."
@@ -463,7 +466,7 @@
         "id": "luar-negeri",
         "title": "Data yang diproses di luar Indonesia",
         "paragraphs": [
-          "Vercel, Resend, Google, Mapbox, dan Cloudflare bisa memproses data di luar Indonesia, termasuk di Amerika Serikat. Kami hanya mengirim data yang dibutuhkan layanan itu: email dan isi email ke Resend, alamat IP ke penyedia jaringan dan peta, kata kunci pencarian ke Mapbox, dan foto laporan ke Cloudflare R2."
+          "Vercel, Resend, Google, Mapbox, Cloudflare, dan Anthropic bisa memproses data di luar Indonesia, termasuk di Amerika Serikat. Anthropic menyimpan data di Amerika Serikat dan bisa menjalankan modelnya di negara lain. Kami hanya mengirim data yang dibutuhkan layanan itu: email dan isi email ke Resend, alamat IP ke penyedia jaringan dan peta, kata kunci pencarian dan titik awal rute ke Mapbox, pertanyaan Bantu memetakan ke Anthropic, dan foto laporan ke Cloudflare R2."
         ]
       },
       {
@@ -513,6 +516,14 @@
             [
               "Draf laporan di browser Anda",
               "Sampai terkirim, sampai Anda keluar, atau 7 hari setelah terakhir diubah"
+            ],
+            [
+              "Pertanyaan dan jawaban Bantu memetakan",
+              "Tidak disimpan di server kami; percakapan hilang saat halaman ditutup. Anthropic menghapusnya paling lama 30 hari setelah diterima, kecuali ditandai melanggar kebijakan penggunaannya (sampai 2 tahun) atau diwajibkan hukum"
+            ],
+            [
+              "Titik awal dan rute jalan kaki",
+              "Tidak disimpan"
             ],
             [
               "Laporan yang sudah terbit",
@@ -1933,7 +1944,7 @@
     "tanya": {
       "title": "Tanya agen",
       "intro": "Agen hanya tahu data AksesBogor, data tempat dari OpenStreetMap, peraturan, dan prioritas kecamatan. Agen tidak bisa menilai apakah sebuah tempat atau rute aksesibel; bila datanya belum ada, agen akan mengatakannya.",
-      "privacy": "Jangan tulis data pribadi, mis. nama, nomor telepon, atau alamat rumah. Pertanyaan dikirim ke penyedia model AI lewat OpenRouter dan tidak disimpan AksesBogor.",
+      "privacy": "Jangan tulis data pribadi, mis. nama, nomor telepon, atau alamat rumah. Pertanyaan dikirim lewat server AksesBogor ke Anthropic (Claude API) untuk dijawab dan tidak disimpan AksesBogor.",
       "label": "Pertanyaan Anda",
       "hint": "Paling banyak 500 karakter. Percakapan hilang saat halaman ditutup.",
       "send": "Kirim pertanyaan",
