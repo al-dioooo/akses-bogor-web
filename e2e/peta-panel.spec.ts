@@ -73,6 +73,33 @@ for (const width of [360, 1024, 1280]) {
   });
 }
 
+for (const viewport of [
+  { width: 360, height: 740 },
+  { width: 667, height: 375 },
+  { width: 915, height: 412 },
+  { width: 1024, height: 768 },
+  { width: 1440, height: 900 },
+]) {
+  test(`the loading search placeholder is as tall as the search bar it turns into (${viewport.width}×${viewport.height})`, async ({ browser }, testInfo) => {
+    test.skip(testInfo.project.name !== "desktop", "Ukuran layar ditentukan tes ini sendiri");
+    // Kecamatan dari API tiruan datang terlambat, jadi kerangka Peta tampil cukup lama untuk diukur.
+    const context = await browser.newContext({ viewport, reducedMotion: "reduce", extraHTTPHeaders: { "x-forwarded-for": "203.0.113.248" } });
+    const page = await context.newPage();
+    await stubMapbox(page);
+    await page.goto("/peta", { waitUntil: "commit" });
+    const placeholder = page.locator(".peta-cari[aria-hidden='true']");
+    await placeholder.waitFor();
+    const before = (await placeholder.boundingBox())!;
+    const search = page.getByRole("search");
+    await search.waitFor();
+    await expect(placeholder).toHaveCount(0);
+    const after = (await search.boundingBox())!;
+    expect(after.height).toBeCloseTo(before.height, 0);
+    expect(after.y).toBeCloseTo(before.y, 0);
+    await context.close();
+  });
+}
+
 test("the skip link jumps past the map to the list", async ({ page }) => {
   await openMap(page);
   const skip = page.getByRole("link", { name: "Lewati peta ke daftar lokasi" });
