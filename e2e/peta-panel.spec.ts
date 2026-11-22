@@ -121,6 +121,25 @@ test("on a phone the handle is a slider that changes the sheet height without dr
   await expect(handle(page)).toHaveAttribute("aria-valuetext", "kecil");
 });
 
+test("a full sheet lists every place, not only those in the map view it covers", async ({ page }) => {
+  test.skip(!isMobile(page), "Lembar penuh hanya ada di ponsel");
+  await openMap(page);
+  await expect(page.getByRole("group", { name: "Kontrol peta" })).toBeVisible({ timeout: 15_000 });
+  const status = page.locator("#judul-daftar-peta + [role=status]");
+  await openList(page);
+  await page.getByRole("button", { name: "Tunjukkan di peta: Halte contoh", exact: true }).click();
+  await expect(page.getByRole("heading", { level: 3, name: "Halte contoh" })).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(status).toHaveText(/^[1-6] dari 7 lokasi$/);
+  await handle(page).press("End");
+  await expect(handle(page)).toHaveAttribute("aria-valuetext", "penuh");
+  await expect(page.getByRole("heading", { level: 2, name: "Daftar lokasi" })).toBeVisible();
+  await expect(status).toHaveText("Menampilkan 7 lokasi");
+  await expect(placeList(page).getByRole("listitem")).toHaveCount(7);
+  await handle(page).press("ArrowDown");
+  await expect(status).toHaveText(/^[1-6] dari 7 lokasi$/);
+});
+
 test("on a phone the sheet follows a drag and settles on the nearest height", async ({ page }) => {
   test.skip(!isMobile(page), "Lembar hanya bisa ditarik di ponsel");
   await openMap(page);

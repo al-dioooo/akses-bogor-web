@@ -176,7 +176,7 @@ export function PlaceMap({
             setState("galat");
             setHeight("setengah");
           },
-          onView: (ids) => setInView(new Set(ids)),
+          onView: (ids) => setInView(ids && new Set(ids)),
           onSelect: (id) => {
             setSelected({ id, from: "peta" });
             setHeight("setengah");
@@ -289,11 +289,14 @@ export function PlaceMap({
   }
 
   const ready = state === "siap";
-  const shown = ready && inView ? places.filter((p) => inView.has(p.id)) : places;
+  // Daftar mengikuti bagian peta yang terlihat. Sebelum peta siap, tanpa peta, atau saat panel menutup seluruh peta (lembar
+  // penuh), daftar berisi semua lokasi.
+  const followsView = ready && inView !== null;
+  const shown = followsView ? places.filter((p) => inView.has(p.id)) : places;
   // Tanpa lokasi sama sekali, kepala panel (yang selalu terlihat) membawa pesannya: belum ada data, atau filter terlalu
   // sempit.
   const empty = tj(filtered ? "results.emptyTitle" : "results.noDataTitle");
-  const status = places.length === 0 ? empty : ready ? t("list.count", { shown: shown.length, total: places.length }) : t("count", { total: places.length });
+  const status = places.length === 0 ? empty : followsView ? t("list.count", { shown: shown.length, total: places.length }) : t("count", { total: places.length });
   const layerShown = priority && (layer === "nyala" || layer === "galat");
 
   /** Menutup ringkasan, lalu fokus kembali ke marker atau ke tombol daftar yang membukanya. */
@@ -382,7 +385,7 @@ export function PlaceMap({
           setHeight("kecil");
           toggle.current?.focus();
         }}
-        title={t(ready ? "list.inView" : "list.title")}
+        title={t(followsView ? "list.inView" : "list.title")}
         status={status}
         headingRef={listHeading}
         toggleRef={toggle}
