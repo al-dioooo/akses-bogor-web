@@ -232,6 +232,12 @@
     "count": "{total, plural, =0 {Tidak ada lokasi yang cocok} other {Menampilkan # lokasi}}",
     "asList": "Lihat sebagai daftar",
     "legend": "Legenda status",
+    "cari": {
+      "placeholder": "Cari nama tempat",
+      "filterTitle": "Filter lokasi",
+      "close": "Tutup filter",
+      "loading": "Memuat lokasi…"
+    },
     "map": {
       "title": "Peta lokasi Kota Bogor",
       "hint": "Di peta, tombol panah menggeser peta, tombol + dan − memperbesar atau memperkecil, dan Tab berpindah ke lokasi berikutnya. Daftar di bawah berisi lokasi yang sedang tampil.",
