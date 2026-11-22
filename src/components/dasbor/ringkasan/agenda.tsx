@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { getFormatter, getTranslations } from "next-intl/server";
-import { URGENT_DAYS, openClarifications } from "@/lib/dasbor";
+import type { Role } from "@/lib/akun";
+import { URGENT_DAYS, deskSummary, openClarifications } from "@/lib/dasbor";
+import { TARGET_WORKING_DAYS } from "@/lib/verifikator";
 import { Icon } from "@/ui/icon";
-import { IconAlertTriangle, IconArrowRight, IconCircleCheck, IconClock, IconHelpCircle, type Glyph } from "@/ui/icons";
-import { myReports } from "./data";
+import { IconAlertTriangle, IconArrowRight, IconCircleCheck, IconClipboardCheck, IconClock, IconHelpCircle, IconMessage, type Glyph } from "@/ui/icons";
+import { myReports, queue, recheck } from "./data";
 import { SectionTitle } from "./section";
 
 export type Task = {
@@ -17,9 +19,13 @@ export type Task = {
   due?: { label: string; date: string; urgent: boolean };
 };
 
-/** Yang menunggu pemilik akun (ADR-0046): untuk saat ini pertanyaan klarifikasi yang masih bisa dijawab (ADR-0036). */
-export async function Agenda({ token, now }: { token: string; now: Date }) {
+/**
+ * Yang menunggu pemilik akun (ADR-0046): pertanyaan klarifikasi yang masih bisa dijawab (ADR-0036), dan untuk verifikator
+ * dan admin laporan terlama di antrean (ditandai bila lewat target 3 hari kerja) serta laporan yang sudah dijawab pelapor.
+ */
+export async function Agenda({ token, role, now }: { token: string; role: Role; now: Date }) {
   const [t, format, { items }] = await Promise.all([getTranslations("Dasbor.ringkasan.agenda"), getFormatter(), myReports(token)]);
+  const desk = role === "pengguna" ? null : deskSummary(...(await Promise.all([queue(token, "menunggu"), queue(token, "klarifikasi"), recheck(token)])), now);
   const tasks: Task[] = openClarifications(items, now).map(({ report, dueAt, daysLeft }) => ({
     key: report.id,
     href: `/akun/laporan/${report.id}`,
@@ -29,7 +35,29 @@ export async function Agenda({ token, now }: { token: string; now: Date }) {
     detail: report.placeName ?? t("unnamed"),
     due: { label: t("daysLeft", { days: daysLeft }), date: t("due", { date: format.dateTime(new Date(dueAt), { dateStyle: "long" }) }), urgent: daysLeft <= URGENT_DAYS },
   }));
-  return <AgendaList title={t("title")} tasks={tasks} empty={{ title: t("emptyTitle"), body: t("emptyBody") }} />;
+  const oldest = desk?.queue.oldest;
+  if (desk && oldest) {
+    const overdue = desk.queue.overdue > 0;
+    tasks.push({
+      key: "antrean",
+      href: `/verifikasi/laporan/${oldest.id}`,
+      icon: overdue ? IconAlertTriangle : IconClipboardCheck,
+      tone: overdue ? "bg-status-inaccessible-bg text-status-inaccessible-fg" : "bg-surface-brand-subtle text-icon-brand",
+      title: overdue ? t("overdue", { count: desk.queue.overdue, target: TARGET_WORKING_DAYS }) : t("queue", { count: desk.queue.total }),
+      detail: t("oldest", { name: oldest.name, days: oldest.workingDays }),
+    });
+  }
+  if (desk && desk.queue.answered > 0) {
+    tasks.push({
+      key: "dijawab",
+      href: "/verifikasi",
+      icon: IconMessage,
+      tone: "bg-surface-brand-subtle text-icon-brand",
+      title: t("answered", { count: desk.queue.answered }),
+      detail: t("answeredDetail"),
+    });
+  }
+  return <AgendaList title={t("title")} tasks={tasks} empty={{ title: t("emptyTitle"), body: t(desk ? "emptyBodyDesk" : "emptyBody") }} />;
 }
 
 /** Daftar tugas. Tenggat yang mendesak memakai teks, ikon, dan warna, tidak hanya warna. */

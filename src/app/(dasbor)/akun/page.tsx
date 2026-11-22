@@ -3,8 +3,10 @@ import { getFormatter, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { DashboardHeading } from "@/components/dasbor/dashboard-heading";
 import { Agenda } from "@/components/dasbor/ringkasan/agenda";
+import { DeskSummary } from "@/components/dasbor/ringkasan/desk-summary";
 import { ReportSummary } from "@/components/dasbor/ringkasan/report-summary";
 import { Part } from "@/components/dasbor/ringkasan/section";
+import { TeamSummary } from "@/components/dasbor/ringkasan/team-summary";
 import { firstName } from "@/lib/dasbor";
 import { requireAccount } from "@/lib/sesi";
 
@@ -14,8 +16,9 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 /**
- * Ringkasan dasbor (ADR-0046): yang menunggu pemilik akun dan laporan sendiri. Setiap bagian dimuat sendiri, jadi satu
- * panggilan API yang gagal hanya mengganti bagian itu dengan pesan galat.
+ * Ringkasan dasbor (ADR-0046): yang menunggu pemilik akun, meja verifikasi untuk verifikator dan admin, tim untuk admin,
+ * dan laporan sendiri. Setiap bagian dimuat sendiri, jadi satu panggilan API yang gagal hanya mengganti bagian itu dengan
+ * pesan galat. Bagian verifikator dan admin tidak dirender untuk peran lain, dan API tetap memeriksa perannya.
  */
 export default async function Ringkasan() {
   const t = await getTranslations("Dasbor.ringkasan");
@@ -40,11 +43,23 @@ async function Home() {
         intro={t(`intro.${user.role}`)}
       />
       <Part label={t("agenda.loading")} rows={1}>
-        <Agenda token={token} now={now} />
+        <Agenda token={token} role={user.role} now={now} />
       </Part>
-      <Part label={t("reports.loading")} rows={2}>
-        <ReportSummary token={token} />
-      </Part>
+      {user.role !== "pengguna" && (
+        <Part label={t("meja.loading")} rows={1}>
+          <DeskSummary token={token} now={now} />
+        </Part>
+      )}
+      <div className="grid items-start gap-8 xl:grid-cols-[minmax(0,1fr)_20rem]">
+        <Part label={t("reports.loading")} rows={2}>
+          <ReportSummary token={token} />
+        </Part>
+        {user.role === "admin" && (
+          <Part label={t("tim.loading")} rows={1}>
+            <TeamSummary token={token} />
+          </Part>
+        )}
+      </div>
     </>
   );
 }
