@@ -13,8 +13,8 @@ export function PriorityLegend({ priority, attribution }: { priority: DistrictPr
   const t = useTranslations("Peta.prioritas");
   const tl = useTranslations("PrioritasKecamatan.tingkat");
   return (
-    <div className="panel flex flex-col gap-4 rounded-3xl p-5 sm:p-6">
-      <PriorityTable data={priority} headingLevel={2}>
+    <div className="flex flex-col gap-4 border-t border-border-subtle pt-5">
+      <PriorityTable data={priority}>
         <p className="text-text-secondary">{t("intro")}</p>
         <div className="flex flex-col gap-2">
           <p id="legenda-prioritas" className="text-sm font-semibold">

@@ -7,7 +7,7 @@ import { useEffect, useRef, useTransition, type FormEvent } from "react";
 import { CATEGORIES, FACILITIES, STATUSES, type District } from "@/lib/api";
 import { mapHref, panelFilterCount, parseFilters, type ExploreFilters } from "@/lib/filters";
 import { buttonClass } from "@/ui/button-styles";
-import { ChoiceChip } from "@/ui/choice-chip";
+import { CHOICE, ChoiceChip } from "@/ui/choice-chip";
 import { Icon } from "@/ui/icon";
 import { IconAdjustmentsHorizontal, IconSearch, IconX } from "@/ui/icons";
 import { CATEGORY_ICON, FACILITY_ICON, STATUS_ICON } from "@/ui/place-icons";
@@ -201,5 +201,40 @@ export function SearchBar({ filters, districts }: { filters: ExploreFilters; dis
         </div>
       </div>
     </form>
+  );
+}
+
+/**
+ * Pengganti pencarian selama isi Peta dimuat: bentuk, kelas, dan isi yang sama dengan SearchBar (kotak pencarian dan
+ * chip kategori), tanpa kontrol yang bisa dipakai. Karena tata letaknya sama, tingginya sama di setiap lebar dan tinggi
+ * layar, jadi panel dan kontrol tidak bergeser saat pencarian asli menggantikannya.
+ */
+export function SearchBarPlaceholder() {
+  const t = useTranslations("Jelajahi");
+  const tp = useTranslations("Peta.cari");
+  const tk = useTranslations("Kategori");
+  return (
+    <div aria-hidden="true" className="peta-cari flex min-w-0 flex-col gap-2">
+      <div className={`relative flex items-center gap-1 rounded-full border-2 border-border-strong bg-surface-raised p-1 ${FLOAT}`}>
+        <span className="grid size-11 shrink-0 place-items-center text-icon-secondary">
+          <Icon icon={IconSearch} />
+        </span>
+        <span className="flex min-h-11 min-w-0 flex-1 items-center truncate text-text-secondary">{tp("placeholder")}</span>
+        <span className="inline-flex min-h-11 shrink-0 items-center gap-2 px-3.5 text-[0.9375rem] font-bold">
+          <Icon icon={IconAdjustmentsHorizontal} />
+          {t("filters.toggle")}
+        </span>
+      </div>
+      <div className="min-w-0">
+        <div className="peta-chip flex gap-2 overflow-x-hidden">
+          {CATEGORIES.map((category) => (
+            <span key={category} className={`${CHOICE} ${FLOAT}`}>
+              <Icon icon={CATEGORY_ICON[category]} className="size-4.5" />
+              {tk(category)}
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }

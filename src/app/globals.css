@@ -359,7 +359,7 @@ body {
   );
 }
 
-/* Peta (FR-05): bingkai memotong isi yang meluber, jadi cincin fokus kanvas Mapbox digambar di sisi dalam. */
+/* Peta di dalam kartu (pemilih lokasi Laporkan, kartu rute): bingkai memotong isi yang meluber, jadi cincin fokus kanvas Mapbox digambar di sisi dalam. */
 .peta-frame .mapboxgl-canvas:focus-visible {
   outline-offset: -4px;
 }
@@ -382,17 +382,256 @@ body {
   border-radius: 0.5rem;
 }
 
-/* Chip kategori Peta: di ponsel satu baris yang bisa digeser sampai tepi layar, di layar lebar membungkus. Ruang atas dan
-   bawah memberi tempat untuk cincin fokus dan bayangan chip, yang terpotong oleh wilayah gulir. */
-.peta-chip {
-  margin-inline: -1rem;
-  padding: 0.25rem 1rem 0.5rem;
-  scrollbar-width: none;
-  @media (width >= 48rem) {
-    flex-wrap: wrap;
-    margin-inline: 0;
-    padding-inline: 0;
+/*
+ * Peta layar penuh (FR-05). Halaman tidak digulir: header lebih ramping dan berlatar, footer disembunyikan, dan main
+ * mengisi sisa layar. Peta ada di lapisan paling bawah; pencarian, lapisan prioritas, kontrol, dan panel daftar
+ * mengambang di atasnya sebagai item grid. Semua permukaan opak (ADR-0027), jadi kontras teks tidak bergantung pada tile.
+ */
+body:has(> .peta-app) {
+  height: 100dvh;
+  padding-bottom: 0;
+  overflow: hidden;
+  & > header {
+    border-bottom-color: var(--color-border-subtle);
+    background-color: var(--color-bg-canvas);
   }
+  & > header > div {
+    min-height: 3.75rem;
+  }
+  & > footer {
+    display: none;
+  }
+}
+
+.peta-app {
+  /* Ruang Bottom nav (70 px dan jarak 8 px dari tepinya) di bawah 1280 px; tinggi kepala panel daftar. */
+  --peta-nav: calc(max(0.75rem, env(safe-area-inset-bottom)) + 4.875rem);
+  --peta-kepala: 5rem;
+  @media (height < 32rem) {
+    --peta-kepala: 4rem;
+  }
+  /* Bagian atas yang terpakai pencarian dan kontrol; diukur ulang oleh komponen peta. */
+  --peta-atas: 9rem;
+  --peta-durasi: 320ms;
+  /* Tinggi panel daftar di ponsel, juga jarak atribusi Mapbox dari bawah peta supaya tidak pernah tertutup. Paling tinggi
+     sampai di bawah kontrol, dengan ruang untuk atribusi Mapbox di antaranya; di layar pendek tidak menutupi pencarian dan
+     kontrol, tetapi kepalanya selalu di atas Bottom nav. */
+  --peta-bawah: max(
+    var(--peta-nav) + var(--peta-kepala),
+    min(
+      var(--peta-nav) + clamp(var(--peta-kepala) + 6rem, 45%, 100% - var(--peta-atas) - var(--peta-nav) - 3.25rem),
+      100% - var(--peta-atas) - 0.5rem
+    )
+  );
+  position: relative;
+  display: grid;
+  flex: 1;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  gap: 0.5rem;
+  min-height: 0;
+  padding: 0.75rem;
+  overflow: hidden;
+  isolation: isolate;
+  @media (width >= 48rem) {
+    --peta-bawah: var(--peta-nav);
+    grid-template-columns: 24rem minmax(0, 1fr) auto;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 0.75rem;
+    padding: 1rem 1rem max(1rem, var(--peta-nav));
+  }
+  @media (width >= 80rem) {
+    --peta-nav: 0px;
+  }
+}
+
+.peta-peta {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: var(--color-bg-sunken);
+}
+
+.peta-cari,
+.peta-lapisan,
+.peta-kontrol {
+  position: relative;
+  z-index: 1;
+}
+
+.peta-cari {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  /* Celah di antara chip tidak menghalangi peta; chip sendiri tetap bisa disentuh dan digeser. */
+  pointer-events: none;
+  & > *,
+  & .peta-chip > * {
+    pointer-events: auto;
+  }
+  & .peta-chip {
+    margin-inline: -0.75rem;
+    padding-inline: 0.75rem;
+  }
+}
+
+.peta-lapisan {
+  grid-column: 1;
+  grid-row: 2;
+  justify-self: start;
+  align-self: start;
+}
+
+.peta-kontrol {
+  grid-column: 2;
+  grid-row: 2;
+  align-self: start;
+}
+
+/* Ponsel landscape: tombol lapisan dan kontrol peta naik ke samping pencarian, supaya tidak masuk ke balik panel daftar
+   yang kecil. Chip kategori tetap di bawah pencarian dan bisa digeser. */
+@media (width < 48rem) and (height < 32rem) {
+  .peta-app {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+  .peta-cari {
+    grid-column: 1;
+  }
+  .peta-lapisan {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .peta-kontrol {
+    grid-column: 3;
+    grid-row: 1;
+  }
+}
+
+@media (width >= 48rem) {
+  .peta-cari {
+    grid-column: 1;
+    /* Empat chip kategori dalam dua kolom yang rapi selebar kotak pencarian. Di layar pendek (ponsel landscape) tetap
+       satu baris yang bisa digeser, supaya panel daftar di bawahnya punya ruang. */
+    & .peta-chip {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      margin-inline: 0;
+      padding-inline: 0;
+      @media (height < 32rem) {
+        display: flex;
+      }
+    }
+  }
+  .peta-lapisan {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .peta-kontrol {
+    grid-column: 3;
+    grid-row: 1 / -1;
+  }
+}
+
+/* Panel daftar: lembar bawah di ponsel, panel samping mulai 768 px. */
+.peta-lembar {
+  position: absolute;
+  inset: auto 0 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  height: var(--peta-bawah);
+  overflow: hidden;
+  border: var(--border-width-default) solid var(--color-border-subtle);
+  border-bottom: 0;
+  border-radius: var(--radius-3xl) var(--radius-3xl) 0 0;
+  background: var(--color-surface-raised);
+  box-shadow: 0 -12px 32px -20px var(--color-shadow-soft);
+  transition: height var(--peta-durasi) var(--ease-out-expo);
+  @media (width >= 48rem) {
+    position: relative;
+    inset: auto;
+    grid-column: 1;
+    grid-row: 2;
+    align-self: stretch;
+    height: auto;
+    border-bottom: var(--border-width-default) solid var(--color-border-subtle);
+    border-radius: var(--radius-3xl);
+    box-shadow: 0 12px 32px -16px var(--color-shadow-soft);
+  }
+}
+
+.peta-lembar-isi {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  /* Lembar ponsel memanjang di balik Bottom nav: isi terakhir bisa digulir ke atasnya, dan elemen yang difokus atau
+     digulir ke tampilan berhenti di atas Bottom nav, tidak di baliknya. */
+  padding-bottom: var(--peta-nav);
+  scroll-padding-bottom: var(--peta-nav);
+  @media (width >= 48rem) {
+    padding-bottom: 0;
+    scroll-padding-bottom: 0;
+  }
+}
+
+/* Cincin fokus kanvas Mapbox digambar di sisi dalam, karena tepi peta adalah tepi layar. */
+.peta-peta .mapboxgl-canvas:focus-visible {
+  outline-offset: -4px;
+}
+
+/* Pesan "memuat" di atas peta, di tengah bagian yang tidak tertutup pencarian dan panel. Pesan galat dan "tidak ada
+   lokasi" ada di panel daftar, karena di layar pendek bagian peta ini bisa lebih pendek dari pesannya. */
+.peta-pesan {
+  position: absolute;
+  inset: var(--peta-atas) 0.75rem var(--peta-bawah);
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  padding-block: 0.5rem;
+  pointer-events: none;
+  transition: bottom var(--peta-durasi) var(--ease-out-expo);
+  & > * {
+    pointer-events: auto;
+  }
+  @media (width >= 48rem) {
+    inset: 1rem 1rem var(--peta-bawah) 25.75rem;
+  }
+}
+
+/* Logo dan atribusi Mapbox selalu di atas panel daftar dan Bottom nav (ADR-0016), dan ikut bergerak bersama panel. Di
+   ponsel atribusi turun ke dua baris di samping logo. Mulai 768 px logo bergeser ke kanan panel samping. */
+.peta-peta .mapboxgl-ctrl-bottom-left,
+.peta-peta .mapboxgl-ctrl-bottom-right {
+  bottom: calc(var(--peta-bawah) + 0.25rem);
+  transition: bottom var(--peta-durasi) var(--ease-out-expo);
+}
+
+.peta-peta .mapboxgl-ctrl-bottom-left {
+  left: 0.5rem;
+  @media (width >= 48rem) {
+    left: 25.75rem;
+  }
+}
+
+.peta-peta .mapboxgl-ctrl-bottom-right {
+  right: 0.5rem;
+  max-width: calc(100% - 7.5rem);
+  text-align: right;
+  @media (width >= 48rem) {
+    max-width: calc(100% - 32.5rem);
+  }
+}
+
+.peta-peta .mapboxgl-ctrl-attrib {
+  border-radius: 0.5rem;
+}
+
+/* Chip kategori Peta: di ponsel satu baris yang bisa digeser sampai tepi layar (lihat .peta-cari). Ruang atas dan bawah
+   memberi tempat untuk cincin fokus dan bayangan chip, yang terpotong oleh wilayah gulir. */
+.peta-chip {
+  padding-block: 0.25rem 0.5rem;
+  scrollbar-width: none;
 }
 
 /* Popover Filter Peta: kartu di bawah layar ponsel, di atas Bottom nav. */
@@ -438,3 +677,4 @@ body {
 :root[data-motion="off"] .peta-memuat {
   background: var(--color-brand-fill);
 }
+
