@@ -396,7 +396,7 @@ export function PlaceMap({
           setHeight("kecil");
           toggle.current?.focus();
         }}
-        title={t(followsView ? "list.inView" : "list.title")}
+        title={t(followsView && places.length > 0 ? "list.inView" : "list.title")}
         status={status}
         headingRef={listHeading}
         toggleRef={toggle}
