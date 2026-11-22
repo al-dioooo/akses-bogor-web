@@ -67,6 +67,15 @@ const subscribeNarrow = (onChange: () => void) => {
   return () => query.removeEventListener("change", onChange);
 };
 
+// Ponsel landscape: panel yang dibuka langsung setinggi layar (globals.css), karena setengah layar hanya menyisakan
+// beberapa piksel isi.
+const SHORT = "(height < 32rem)";
+const subscribeShort = (onChange: () => void) => {
+  const query = matchMedia(SHORT);
+  query.addEventListener("change", onChange);
+  return () => query.removeEventListener("change", onChange);
+};
+
 /**
  * Peta Kota Bogor layar penuh (FR-05, ADR-0016) dengan marker per status, kontrol zoom, dan panel daftar yang berisi
  * ringkasan lokasi yang dipilih, legenda, dan daftar lokasi di bagian peta yang terlihat sebagai alternatif untuk
@@ -111,6 +120,7 @@ export function PlaceMap({
   // CSS, jadi tidak ada lompatan saat halaman selesai dimuat.
   const [chosenHeight, setHeight] = useState<SheetHeight | null>(null);
   const narrow = useSyncExternalStore(subscribeNarrow, () => matchMedia(NARROW).matches, () => true);
+  const short = useSyncExternalStore(subscribeShort, () => matchMedia(SHORT).matches, () => false);
   const height: SheetHeight = chosenHeight ?? (narrow ? "kecil" : "setengah");
   const [layer, setLayer] = useState<"mati" | "memuat" | "nyala" | "galat">("mati");
   const [boundaries, setBoundaries] = useState<DistrictBoundaries | null>(null);
@@ -214,13 +224,13 @@ export function PlaceMap({
     if (main) main.dataset.tinggi = chosenHeight ?? "awal";
   }, [chosenHeight]);
 
-  // Lembar penuh di ponsel menutup pencarian, kontrol, dan peta: bagian itu dibuat inert supaya fokus tidak masuk ke
-  // sesuatu yang tidak terlihat (WCAG 2.4.11).
+  // Lembar penuh di ponsel (juga lembar yang dibuka di ponsel landscape) menutup pencarian, kontrol, dan peta: bagian itu
+  // dibuat inert supaya fokus tidak masuk ke sesuatu yang tidak terlihat (WCAG 2.4.11).
   useLayoutEffect(() => {
     const main = frame.current?.closest("main");
-    const covered = height === "penuh" && narrow;
+    const covered = narrow && (height === "penuh" || (height === "setengah" && short));
     for (const element of main?.querySelectorAll<HTMLElement>(".peta-cari, .peta-lapisan, .peta-kontrol, .peta-peta") ?? []) element.inert = covered;
-  }, [height, narrow, state, priority]);
+  }, [height, narrow, short, state, priority]);
 
   // Ukuran diukur ulang setelah berhenti berubah (mis. selesai animasi panel), lalu perpindahan yang menunggu dijalankan.
   useEffect(() => {

@@ -441,6 +441,12 @@ body:has(> .peta-app) {
   &[data-tinggi="penuh"] {
     --peta-bawah: 100%;
   }
+  /* Ponsel landscape: panel yang dibuka langsung penuh; setengah layar hanya menyisakan beberapa piksel isi. */
+  @media (height < 32rem) {
+    &[data-tinggi="setengah"] {
+      --peta-bawah: 100%;
+    }
+  }
   @media (width >= 48rem) {
     --peta-bawah: var(--peta-nav);
     grid-template-columns: 24rem minmax(0, 1fr) auto;
