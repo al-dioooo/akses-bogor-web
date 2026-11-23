@@ -1,8 +1,8 @@
 import type { AgentTurn, RouteTarget } from "./agen-rute";
 import type { LatLng } from "./laporan";
 
-// Batas isian agen bantu memetakan yang sama dengan API (ADR-0043), dipakai browser dan route handler web. Tanpa
-// next/server supaya bisa diimpor komponen klien.
+// Batas isian agen bantu memetakan (ADR-0043) dan asisten rute publik (ADR-0050) yang sama dengan API, dipakai browser
+// dan route handler web. Tanpa next/server supaya bisa diimpor komponen klien.
 
 export const MAX_QUESTION = 500;
 /** Giliran sebelumnya yang dikirim bersama pertanyaan; sisanya hanya tampil di layar. */
@@ -53,4 +53,23 @@ export function routeTargetFrom(body: unknown): RouteTarget | null {
     return { osm: { type: osm.type as "node" | "way" | "relation", id: osm.id as number } };
   }
   return null;
+}
+
+/**
+ * Pertanyaan asisten rute publik (ADR-0050): isian `askFrom` ditambah titik awal opsional. Titik awal yang bentuknya
+ * salah membuat seluruh badan ditolak, supaya tidak diam-diam diabaikan.
+ */
+export function assistantAskFrom(body: unknown): { question: string; history: AgentTurn[]; placeId?: string; from?: LatLng } | null {
+  const base = askFrom(body);
+  if (!base) return null;
+  const raw = (body as { from?: unknown }).from;
+  if (raw === undefined || raw === null) return base;
+  const from = pointFrom(raw);
+  return from ? { ...base, from } : null;
+}
+
+/** Tujuan rute untuk pengunjung asisten: hanya lokasi AksesBogor (`placeId`); tempat OpenStreetMap butuh akun. */
+export function placeTargetFrom(body: unknown): { placeId: string } | null {
+  const target = routeTargetFrom(body);
+  return target && "placeId" in target ? target : null;
 }

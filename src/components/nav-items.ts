@@ -1,8 +1,10 @@
 import { IconCirclePlus, IconCompass, IconHome, IconMap2, type Glyph } from "@/ui/icons";
 
 // Menu dari nav bar desain (Referensi Figma, Frame DS v1). Semua tujuannya sudah ada. Label "Difabel" di Figma
-// menjadi "Disabilitas" (/disabilitas), sesuai istilah UU No. 8 Tahun 2016 (ADR-0041).
-export type NavKey = "beranda" | "jelajahi" | "peta" | "aksesibilitas" | "disabilitas" | "tips" | "tentang" | "laporkan";
+// menjadi "Disabilitas" (/disabilitas), sesuai istilah UU No. 8 Tahun 2016 (ADR-0041). "Tanya rute" (/tanya-rute),
+// asisten rute publik (ADR-0050), belum ada di Figma. Menu utama desktop tidak muat untuk menu kedelapan, jadi Tanya rute
+// ada di menu Lainnya ponsel, footer, dan Beranda.
+export type NavKey = "beranda" | "jelajahi" | "peta" | "tanyaRute" | "aksesibilitas" | "disabilitas" | "tips" | "tentang" | "laporkan";
 
 export type NavItem = { key: NavKey; href: string };
 
@@ -24,7 +26,10 @@ export const BOTTOM_NAV: (NavItem & { icon: Glyph })[] = [
   { key: "laporkan", href: "/laporkan", icon: IconCirclePlus },
 ];
 
-export const MORE_NAV: NavItem[] = MAIN_NAV.filter((item) => !BOTTOM_NAV.some((tab) => tab.key === item.key));
+export const MORE_NAV: NavItem[] = [
+  { key: "tanyaRute", href: "/tanya-rute" },
+  ...MAIN_NAV.filter((item) => !BOTTOM_NAV.some((tab) => tab.key === item.key)),
+];
 
 /** Detail lokasi termasuk bagian Jelajahi. */
 export function isActive(href: string, pathname: string | null) {
