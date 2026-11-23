@@ -29,12 +29,14 @@ async function Stats() {
     { value: t("stepFreeValue", { count: stats.stepFreeEntrance, total: stats.places }), label: t("stepFree"), highlight: true },
     { value: format.number(stats.contributors), label: t("contributors") },
   ];
+  // Setiap angka dan labelnya di tengah kolom dan di tengah tinggi pita (issue #196). Mulai 1024 px marka jalan
+  // (globals.css) lewat di tengah pita, di belakang angka: setiap blok angka berlatar aspal, jadi marka terputus di sana.
   return (
-    <dl className="grid lg:grid-cols-3">
-      {items.map((item, index) => (
+    <dl className="grid text-center lg:grid-cols-3 lg:py-12">
+      {items.map((item) => (
         <div
           key={item.label}
-          className={`flex flex-col-reverse gap-2.5 border-b-4 border-dashed border-text-on-inverse/25 py-7 last:border-0 lg:border-0 ${index === 1 ? "lg:pt-18 lg:pb-9" : "lg:pt-9 lg:pb-18"}`}
+          className="flex flex-col-reverse items-center gap-2.5 border-b-4 border-dashed border-text-on-inverse/25 py-7 last:border-0 lg:relative lg:justify-self-center lg:border-0 lg:bg-bg-road lg:px-6 lg:py-3"
         >
           <dt className="text-text-on-inverse-secondary">{item.label}</dt>
           <dd className={`display text-[clamp(3rem,2rem+3vw,5rem)] leading-[0.9] tabular-nums ${item.highlight ? "text-text-highlight" : ""}`}>
@@ -51,7 +53,7 @@ function StatsSkeleton({ label }: { label: string }) {
     <div role="status" className="grid gap-6 py-9 lg:grid-cols-3">
       <span className="sr-only">{label}</span>
       {[0, 1, 2].map((key) => (
-        <div key={key} aria-hidden="true" className="flex flex-col gap-3">
+        <div key={key} aria-hidden="true" className="flex flex-col items-center gap-3">
           <span className="h-14 w-32 rounded-lg bg-text-on-inverse/10" />
           <span className="h-4 w-44 rounded-sm bg-text-on-inverse/10" />
         </div>
