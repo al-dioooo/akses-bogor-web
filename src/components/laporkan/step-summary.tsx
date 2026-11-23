@@ -5,6 +5,7 @@ import { useState, type ReactNode } from "react";
 import { FACILITIES } from "@/lib/api";
 import { FieldError } from "@/components/akun/form-parts";
 import { firstIncompleteStep, type ReportDraft, type Step } from "@/lib/isian-laporan";
+import { withoutEvidence } from "@/lib/kelola-tempat";
 import { fieldClass } from "@/ui/field-styles";
 import { buttonClass } from "@/ui/button-styles";
 import { Icon } from "@/ui/icon";
@@ -62,6 +63,8 @@ export function StepSummary({ draft, signedIn, goTo, onDelete, admin = false, up
   const ta = useTranslations("Alasan");
   const tj = useTranslations("Laporkan.fasilitas.answers");
   const tt = useTranslations("Laporkan.foto.tags");
+  // Terbit langsung: fasilitas yang akan disimpan sebagai Belum diketahui karena belum ada foto yang sesuai.
+  const missing = draft.publishDirectly ? withoutEvidence(FACILITIES.map((facility) => ({ facility, answer: draft.facilities[facility].answer })), draft.photos.map((photo) => photo.tag)) : [];
   const format = useFormatter();
   const [confirming, setConfirming] = useState(false);
   const incomplete = firstIncompleteStep(draft);
@@ -151,6 +154,15 @@ export function StepSummary({ draft, signedIn, goTo, onDelete, admin = false, up
           <p id="terbit-langsung-penjelasan" className="text-text-secondary">
             {t("direct.body")}
           </p>
+          {/* Fasilitas yang akan turun menjadi Belum diketahui, seperti peringatan di formulir Kelola tempat. */}
+          <div role="status">
+            {missing.length > 0 && (
+              <p className="flex gap-3 rounded-2xl bg-status-partial-bg p-4 text-status-partial-fg">
+                <Icon icon={IconAlertTriangle} className="mt-0.5 size-5 shrink-0" />
+                <span>{t("direct.evidenceWarning", { facilities: missing.map((f) => tf(f)).join(", ") })}</span>
+              </p>
+            )}
+          </div>
           {draft.publishDirectly && (
             <div className="flex flex-col gap-2">
               <label htmlFor="alasan-terbit" className="font-semibold">
