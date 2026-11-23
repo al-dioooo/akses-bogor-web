@@ -184,7 +184,13 @@ export function handleKelolaTempat(method, url, headers, body, places) {
     const { place: changed, downgraded, problem } = apply(places, user, body, place, place.photos.filter((p) => !removed.includes(p.id)));
     if (problem) return problem;
     save(changed);
-    record(id, user, "diubah_admin", { alasan: body.reason, ...(place.name !== changed.name ? { name: { sebelum: place.name, sesudah: changed.name } } : {}) });
+    const added = body.photos?.length ?? 0;
+    record(id, user, "diubah_admin", {
+      alasan: body.reason,
+      ...(place.name !== changed.name ? { name: { sebelum: place.name, sesudah: changed.name } } : {}),
+      // Seperti API: foto yang ditambah atau dihapus tercatat di riwayat tempat.
+      ...(added > 0 || removed.length > 0 ? { photos: { ditambah: added, dihapus: removed.length } } : {}),
+    });
     return [200, { placeId: id, status: changed.status, downgraded }];
   }
 
