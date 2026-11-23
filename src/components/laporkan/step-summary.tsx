@@ -3,7 +3,9 @@
 import { useFormatter, useTranslations } from "next-intl";
 import { useState, type ReactNode } from "react";
 import { FACILITIES } from "@/lib/api";
+import { FieldError } from "@/components/akun/form-parts";
 import { firstIncompleteStep, type ReportDraft, type Step } from "@/lib/isian-laporan";
+import { fieldClass } from "@/ui/field-styles";
 import { buttonClass } from "@/ui/button-styles";
 import { Icon } from "@/ui/icon";
 import { IconAlertTriangle, IconInfoCircle, IconPencil, IconTrash } from "@/ui/icons";
@@ -14,6 +16,10 @@ type Props = {
   signedIn: boolean;
   goTo: (step: Step) => void;
   onDelete: () => void;
+  /** Akun admin: pilihan terbit langsung (ADR-0050). Peran diperiksa lagi di API. */
+  admin?: boolean;
+  update?: (change: Partial<ReportDraft>) => void;
+  directError?: boolean;
 };
 
 /** Satu bagian ringkasan dengan tombol "Ubah" ke langkahnya. */
@@ -49,7 +55,7 @@ function Row({ term, children }: { term: string; children: ReactNode }) {
  * Ringkasan sebelum dikirim (FR-25): semua isian dengan tombol "Ubah" ke setiap langkah, peringatan bila ada langkah
  * yang belum lengkap, dan "Hapus draf" dengan konfirmasi.
  */
-export function StepSummary({ draft, signedIn, goTo, onDelete }: Props) {
+export function StepSummary({ draft, signedIn, goTo, onDelete, admin = false, update, directError = false }: Props) {
   const t = useTranslations("Laporkan.ringkasan");
   const tk = useTranslations("Kategori");
   const tf = useTranslations("Fasilitas");
@@ -128,6 +134,44 @@ export function StepSummary({ draft, signedIn, goTo, onDelete }: Props) {
           </Row>
         </dl>
       </Section>
+
+      {admin && signedIn && update && (
+        <fieldset className="flex flex-col gap-3 rounded-2xl border-2 border-border-strong p-4 sm:p-5">
+          <legend className="px-1 font-heading text-lg font-bold">{t("direct.legend")}</legend>
+          <label className="flex min-h-11 items-start gap-3 font-semibold">
+            <input
+              type="checkbox"
+              checked={Boolean(draft.publishDirectly)}
+              onChange={(event) => update({ publishDirectly: event.target.checked })}
+              aria-describedby="terbit-langsung-penjelasan"
+              className="mt-0.5 size-6 shrink-0 accent-brand-fill"
+            />
+            {t("direct.label")}
+          </label>
+          <p id="terbit-langsung-penjelasan" className="text-text-secondary">
+            {t("direct.body")}
+          </p>
+          {draft.publishDirectly && (
+            <div className="flex flex-col gap-2">
+              <label htmlFor="alasan-terbit" className="font-semibold">
+                {t("direct.reasonLabel")}
+              </label>
+              <textarea
+                id="alasan-terbit"
+                value={draft.publishReason ?? ""}
+                rows={3}
+                maxLength={500}
+                onChange={(event) => update({ publishReason: event.target.value })}
+                aria-required="true"
+                aria-invalid={directError || undefined}
+                aria-describedby={directError ? "alasan-terbit-galat" : undefined}
+                className={fieldClass(directError, "py-3")}
+              />
+              <FieldError id="alasan-terbit-galat" message={directError ? t("direct.reasonError") : undefined} />
+            </div>
+          )}
+        </fieldset>
+      )}
 
       {!signedIn && (
         <p className="flex items-start gap-2 rounded-2xl bg-bg-sunken p-4">

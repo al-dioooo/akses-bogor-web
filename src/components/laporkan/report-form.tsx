@@ -6,7 +6,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { FormAlert } from "@/components/akun/form-parts";
 import type { PlaceDetail } from "@/lib/api";
 import { deleteDraft, loadDraft, purgeExpiredDrafts, saveDraft } from "@/lib/draf";
-import { checkStep, firstIncompleteStep, newDraft, STEPS, type FieldError, type ReportDraft, type Step } from "@/lib/isian-laporan";
+import { checkStep, directReasonMissing, firstIncompleteStep, newDraft, STEPS, type FieldError, type ReportDraft, type Step } from "@/lib/isian-laporan";
 import { withReturn } from "@/lib/kembali";
 import type { ReportKind } from "@/lib/laporan";
 import { buttonClass } from "@/ui/button-styles";
@@ -29,7 +29,7 @@ const PREVIOUS: Record<Step, Step | null> = { "1": null, "2": "1", "3": "2", rin
  * berpindah langkah. Draf disimpan di IndexedDB setiap kali isian berubah dan dipulihkan saat halaman dibuka lagi,
  * termasuk setelah ke Masuk dan kembali (ADR-0033).
  */
-export function ReportForm({ kind, place, signedIn }: { kind: ReportKind; place: PlaceDetail | null; signedIn: boolean }) {
+export function ReportForm({ kind, place, signedIn, admin = false }: { kind: ReportKind; place: PlaceDetail | null; signedIn: boolean; admin?: boolean }) {
   const t = useTranslations("Laporkan");
   const params = useSearchParams();
   const requested = params.get("langkah");
@@ -50,6 +50,7 @@ export function ReportForm({ kind, place, signedIn }: { kind: ReportKind; place:
   const router = useRouter();
   const [sending, setSending] = useState<Sending | null>(null);
   const [sendProblem, setSendProblem] = useState<SendProblem | null>(null);
+  const [directError, setDirectError] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -186,6 +187,13 @@ export function ReportForm({ kind, place, signedIn }: { kind: ReportKind; place:
       goTo(missing);
       return;
     }
+    // Terbit langsung butuh alasan untuk log audit (ADR-0050).
+    const direct = admin && signedIn && Boolean(draft.publishDirectly);
+    setDirectError(direct && directReasonMissing(draft));
+    if (direct && directReasonMissing(draft)) {
+      document.getElementById("alasan-terbit")?.focus();
+      return;
+    }
     await saveDraft(draft).catch(() => undefined);
     if (!signedIn) return window.location.assign(withReturn("/masuk", returnPath()));
 
@@ -210,7 +218,9 @@ export function ReportForm({ kind, place, signedIn }: { kind: ReportKind; place:
       if (outcome.ok) {
         setSending(null);
         await discard(current.draftKey);
-        router.push(`/laporkan/terkirim?laporan=${outcome.report.id}`);
+        const published = outcome.report.status === "diterbitkan";
+        const lowered = outcome.report.downgraded?.length ? `&belum=${outcome.report.downgraded.join(",")}` : "";
+        router.push(`/laporkan/terkirim?laporan=${outcome.report.id}${published ? `&langsung=1${lowered}` : ""}`);
         return;
       }
       if (outcome.reason === "masuk") return window.location.assign(withReturn("/masuk/sesi-berakhir", returnPath()));
@@ -268,7 +278,7 @@ export function ReportForm({ kind, place, signedIn }: { kind: ReportKind; place:
       {step === "3" && <StepPhotos draft={draft} errors={errors} update={update} />}
       {step === "ringkasan" && (
         <>
-          <StepSummary draft={draft} signedIn={signedIn} goTo={goTo} onDelete={removeDraft} />
+          <StepSummary draft={draft} signedIn={signedIn} goTo={goTo} onDelete={removeDraft} admin={admin} update={update} directError={directError} />
           <SendStatus
             photos={draft.photos}
             sending={sending}
@@ -298,7 +308,7 @@ export function ReportForm({ kind, place, signedIn }: { kind: ReportKind; place:
         ) : (
           <button type="button" onClick={() => void send()} disabled={Boolean(sending)} className={buttonClass("primary", "md", "max-lg:flex-[2] disabled:opacity-70")}>
             <Icon icon={IconSend} />
-            {sending ? t("kirim.sending") : signedIn ? t("kirim.send") : t("kirim.signIn")}
+            {sending ? t("kirim.sending") : signedIn ? t(admin && draft.publishDirectly ? "kirim.publish" : "kirim.send") : t("kirim.signIn")}
           </button>
         )}
       </div>
