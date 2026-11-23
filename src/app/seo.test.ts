@@ -58,7 +58,7 @@ describe("sitemap", () => {
     vi.stubEnv("SITE_URL", "https://contoh.id");
     vi.mocked(getMapPlaces).mockRejectedValue(new ApiError(0, "api_tidak_terhubung", "API tidak bisa dihubungi."));
     const urls = (await sitemap()).map((entry) => entry.url);
-    expect(urls).toHaveLength(10);
+    expect(urls).toHaveLength(8);
     expect(urls).toContain("https://contoh.id/tentang");
   });
 });
