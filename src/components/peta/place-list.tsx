@@ -4,7 +4,7 @@ import { Icon } from "@/ui/icon";
 import { IconMapPin } from "@/ui/icons";
 import { CATEGORY_ICON } from "@/ui/place-icons";
 import { StatusBadge } from "@/ui/status-badge";
-import { StatusPin } from "@/ui/status-pin";
+import { PlacePin } from "@/ui/place-pin";
 import type { MapPlace } from "./places";
 
 /**
@@ -18,7 +18,7 @@ export function PlaceList({ places, labelledBy, onShow }: { places: MapPlace[]; 
     <ul aria-labelledby={labelledBy} className="flex flex-col">
       {places.map((place) => (
         <li key={place.id} className="flex items-center gap-3 border-t border-border-subtle py-3 first:border-t-0">
-          <StatusPin status={place.status} className="size-8" />
+          <PlacePin place={place} className="size-8" />
           <div className="flex min-w-0 flex-1 flex-col items-start gap-1">
             <h3 className="font-heading text-base leading-snug font-bold">
               <Link href={`/lokasi/${place.id}`} className="underline-offset-4 hover:underline">
