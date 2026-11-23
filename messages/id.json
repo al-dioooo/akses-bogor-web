@@ -186,7 +186,8 @@
   "Lokasi": {
     "summary": "{relevant, plural, =0 {Tidak ada fasilitas yang dibutuhkan} other {{available} dari {relevant} fasilitas tersedia}}",
     "unknown": "{count} belum diketahui",
-    "verified": "Diverifikasi {date}"
+    "verified": "Diverifikasi {date}",
+    "verifiedAdmin": "Diterbitkan langsung oleh admin · {date}"
   },
   "Jelajahi": {
     "metaTitle": "Jelajahi Lokasi",
@@ -358,6 +359,7 @@
     "loading": "Memuat lokasi…",
     "metaTitle": "{name}, {district}",
     "metaDescription": "{category} di Kecamatan {district}, Kota Bogor. Status aksesibilitas: {status}. {summary}. Terakhir diverifikasi {date}.",
+    "metaDescriptionAdmin": "{category} di Kecamatan {district}, Kota Bogor. Status aksesibilitas: {status}. {summary}. Diterbitkan langsung oleh admin {date}.",
     "metaRecheck": "Data ini perlu dicek ulang.",
     "landmark": "Patokan",
     "summaryTitle": "Ringkasan fasilitas",
@@ -366,8 +368,11 @@
     "unknown": "{count} fasilitas belum diketahui",
     "allAvailable": "semua fasilitas yang dibutuhkan tersedia",
     "verified": "Terakhir diverifikasi {date}",
+    "verifiedAdmin": "Diterbitkan langsung oleh admin · {date}",
+    "adminNote": "Data ini diisi admin AksesBogor tanpa pemeriksaan verifikator kedua.",
     "recheckTitle": "Perlu dicek ulang",
     "recheckBody": "Data ini diverifikasi lebih dari 12 bulan lalu. Kondisi di lokasi mungkin sudah berubah.",
+    "recheckBodyAdmin": "Data ini diterbitkan admin lebih dari 12 bulan lalu. Kondisi di lokasi mungkin sudah berubah.",
     "facilitiesTitle": "Fasilitas",
     "edit": "Edit lokasi",
     "report": "Laporkan kekurangan",
@@ -1302,6 +1307,7 @@
         "antrean": "Antrean",
         "jawaban": "Menunggu jawaban",
         "cekUlang": "Perlu dicek ulang",
+        "tempat": "Kelola tempat",
         "tim": "Tim verifikator",
         "pengaturan": "Pengaturan akun"
       },
@@ -1415,6 +1421,188 @@
       "eyebrow": "Akun",
       "title": "Pengaturan",
       "accent": "akun."
+    }
+  },
+  "KelolaTempat": {
+    "metaTitle": "Kelola tempat",
+    "eyebrow": "Khusus admin",
+    "title": "Kelola",
+    "accent": "tempat.",
+    "intro": "Semua tempat AksesBogor, termasuk yang diturunkan. Perubahan dari sini tayang langsung dengan label \"Diterbitkan langsung oleh admin\".",
+    "loading": "Memuat tempat…",
+    "adminOnly": "Halaman ini khusus admin.",
+    "add": "Tambah tempat",
+    "new": {
+      "metaTitle": "Tambah tempat",
+      "eyebrow": "Kelola tempat",
+      "title": "Tambah",
+      "accent": "tempat.",
+      "intro": "Tempat baru langsung tayang dengan label \"Diterbitkan langsung oleh admin\". Isi hanya yang Anda periksa sendiri.",
+      "loading": "Memuat formulir…",
+      "fromCandidate": "Nama, kategori, dan titik awal diisi dari OpenStreetMap. Pastikan pin ada di pintu masuk utama sebelum menyimpan."
+    },
+    "edit": {
+      "metaTitle": "Ubah tempat",
+      "eyebrow": "Kelola tempat",
+      "title": "Ubah",
+      "intro": "Perubahan langsung tayang, dan tempat ini akan berlabel \"Diterbitkan langsung oleh admin\".",
+      "back": "Kembali ke {name}",
+      "unpublished": "Tempat ini sedang diturunkan. Tayangkan lagi dulu sebelum mengubahnya."
+    },
+    "form": {
+      "infoTitle": "Informasi tempat",
+      "facilitiesTitle": "Jawaban fasilitas",
+      "evidenceRule": "Tersedia dan Tidak perlu butuh foto fasilitas itu: pintu masuk untuk ramp, lalu toilet difabel, guiding block, dan lift. Tanpa foto, jawaban disimpan sebagai Belum diketahui.",
+      "photosTitle": "Foto dan deskripsi",
+      "photosPrivacy": "Foto langsung tayang tanpa dikaburkan. Jangan unggah wajah, pelat nomor, atau dokumen yang terbaca.",
+      "shownPhotos": "Foto yang tayang",
+      "removePhoto": "Hapus foto ini",
+      "reasonTitle": "Alasan",
+      "reasonLabel": "Alasan perubahan",
+      "reasonHint": "Mis. \"Dicek langsung saat survei tim\". Masuk riwayat tempat, tidak tampil untuk publik.",
+      "reasonError": "Tulis alasan, paling sedikit 5 karakter.",
+      "evidenceWarning": "Belum ada foto yang sesuai, jadi jawaban ini akan disimpan sebagai Belum diketahui: {facilities}.",
+      "uploading": "Mengunggah foto {current} dari {total}…",
+      "saving": "Menyimpan…",
+      "saveNew": "Simpan dan tayangkan",
+      "saveChanges": "Simpan perubahan",
+      "galat": {
+        "foto": "Foto gagal diunggah. Coba lagi.",
+        "server": "Server AksesBogor tidak bisa dihubungi. Coba lagi sebentar lagi."
+      }
+    },
+    "state": {
+      "close": "Tutup",
+      "cancel": "Batal",
+      "reasonLabel": "Alasan",
+      "reasonError": "Tulis alasan, paling sedikit 5 karakter.",
+      "turunkan": {
+        "open": "Turunkan dari tayang",
+        "title": "Turunkan {name}?",
+        "body": "Tempat ini hilang dari Peta, Jelajahi, pencarian, dan angka. Datanya tidak dihapus, dan Anda bisa menayangkannya lagi.",
+        "confirm": "Turunkan"
+      },
+      "tayangkan": {
+        "open": "Tayangkan lagi",
+        "title": "Tayangkan lagi {name}?",
+        "body": "Tempat ini tampil lagi untuk publik dengan data yang sama seperti sebelum diturunkan.",
+        "confirm": "Tayangkan lagi"
+      }
+    },
+    "candidates": {
+      "link": "Kandidat OpenStreetMap",
+      "metaTitle": "Kandidat OpenStreetMap",
+      "eyebrow": "Kelola tempat",
+      "title": "Kandidat",
+      "accent": "OpenStreetMap.",
+      "intro": "Kampus, masjid, halte, dan rumah sakit dari OpenStreetMap yang belum punya data AksesBogor. Kandidat bukan tempat; buat tempat darinya setelah Anda memeriksanya sendiri.",
+      "back": "Kembali ke Kelola tempat",
+      "count": "{count, plural, =0 {Tidak ada kandidat} other {# kandidat}}",
+      "unnamed": "{category} tanpa nama",
+      "create": "Buat tempat",
+      "createLabel": "Buat tempat dari {name}",
+      "osm": "Lihat di OpenStreetMap",
+      "osmLabel": "Lihat di OpenStreetMap: {name} (tab baru)",
+      "empty": "Tidak ada kandidat yang cocok.",
+      "attribution": "Data kandidat © kontributor OpenStreetMap, lisensi ODbL."
+    },
+    "filters": {
+      "label": "Saring tempat",
+      "search": "Cari nama tempat",
+      "category": "Kategori",
+      "allCategories": "Semua kategori",
+      "district": "Kecamatan",
+      "allDistricts": "Semua kecamatan",
+      "status": "Status",
+      "allStatuses": "Semua status",
+      "origin": "Asal",
+      "allOrigins": "Semua asal",
+      "originTim": "Diperiksa tim",
+      "originAdmin": "Langsung oleh admin",
+      "published": "Tayang",
+      "allPublished": "Tayang dan diturunkan",
+      "publishedYa": "Tayang",
+      "publishedTidak": "Diturunkan",
+      "apply": "Terapkan",
+      "reset": "Hapus saringan"
+    },
+    "origin": {
+      "tim": "Diperiksa tim",
+      "admin": "Langsung oleh admin"
+    },
+    "published": {
+      "ya": "Tayang",
+      "tidak": "Diturunkan"
+    },
+    "count": "{count, plural, =0 {Tidak ada tempat} other {# tempat}}",
+    "updated": "Diperbarui {date}",
+    "unpublishedReason": "Alasan diturunkan: {reason}",
+    "emptyTitle": "Tidak ada tempat yang cocok",
+    "emptyBody": "Ubah atau hapus saringan untuk melihat tempat lain.",
+    "noneTitle": "Belum ada tempat",
+    "noneBody": "Tempat yang diterbitkan verifikator atau admin muncul di sini.",
+    "pageEmpty": "Halaman ini kosong.",
+    "firstPage": "Kembali ke halaman pertama",
+    "place": {
+      "metaTitle": "Detail tempat untuk admin",
+      "back": "Kembali ke Kelola tempat",
+      "edit": "Ubah tempat",
+      "saved": "Tersimpan dan tayang dengan label \"Diterbitkan langsung oleh admin\".",
+      "diturunkan": "Tempat ini sudah diturunkan dan tidak tampil untuk publik.",
+      "ditayangkan": "Tempat ini tayang lagi.",
+      "savedUnknown": "Disimpan sebagai Belum diketahui karena belum ada foto yang sesuai: {facilities}.",
+      "summary": "Fasilitas",
+      "summaryValue": "{relevant, plural, =0 {Tidak ada fasilitas yang dibutuhkan} other {{available} dari {relevant} tersedia}}{unknown, plural, =0 {} other {, # belum diketahui}}",
+      "district": "Kecamatan",
+      "landmark": "Patokan",
+      "description": "Deskripsi",
+      "none": "Tidak ada",
+      "published": "Terakhir diterbitkan",
+      "byTeam": "Diverifikasi tim, {date}",
+      "byAdmin": "Langsung oleh admin {name}, {date}",
+      "unknownAdmin": "dengan akun yang sudah dihapus",
+      "down": "Diturunkan {date}. Alasan: {reason}",
+      "public": "Lihat halaman publik",
+      "dataTitle": "Data tempat",
+      "facilitiesTitle": "Jawaban fasilitas",
+      "photosTitle": "{count, plural, =0 {Belum ada foto tayang} other {# foto tayang}}"
+    },
+    "history": {
+      "title": "Riwayat",
+      "empty": "Belum ada riwayat untuk tempat ini.",
+      "failed": "Riwayat gagal dimuat. Muat ulang halaman.",
+      "actorSystem": "Sistem",
+      "actorScript": "Skrip server",
+      "actorDeleted": "Akun yang sudah dihapus",
+      "action": {
+        "dibuat": "Dibuat dari laporan yang diverifikasi",
+        "diubah": "Diubah dari laporan yang diverifikasi",
+        "dibuat_admin": "Dibuat langsung oleh admin",
+        "diubah_admin": "Diubah langsung oleh admin",
+        "diturunkan": "Diturunkan",
+        "ditayangkan_lagi": "Ditayangkan lagi"
+      },
+      "changed": "Yang berubah: {fields}",
+      "reason": "Alasan: {reason}",
+      "reasonDown": "Alasan diturunkan sebelumnya: {reason}",
+      "fromReport": "Dari laporan warga",
+      "field": {
+        "name": "nama",
+        "category": "kategori",
+        "district": "kecamatan",
+        "location": "titik",
+        "landmark": "patokan",
+        "description": "deskripsi",
+        "status": "status",
+        "facilities": "jawaban fasilitas",
+        "photos": "foto"
+      }
+    },
+    "pager": {
+      "label": "Halaman daftar tempat",
+      "previous": "Sebelumnya",
+      "next": "Berikutnya",
+      "page": "Halaman {page} dari {pages}"
     }
   },
   "Laporkan": {
@@ -1591,6 +1779,14 @@
     },
     "ringkasan": {
       "intro": "Periksa lagi isian Anda sebelum dikirim. Laporan masuk antrean verifikasi dan baru tayang setelah diperiksa tim.",
+      "direct": {
+        "legend": "Khusus admin",
+        "label": "Terbitkan langsung (admin)",
+        "body": "Laporan ini tidak masuk antrean verifikasi: tempatnya langsung tayang dengan label \"Diterbitkan langsung oleh admin\". Tersedia atau Tidak perlu tanpa foto fasilitas itu disimpan sebagai Belum diketahui. Pilih ini hanya bila Anda sudah memeriksa tempatnya sendiri.",
+        "reasonLabel": "Alasan terbit langsung",
+        "reasonError": "Tulis alasan, paling sedikit 5 karakter.",
+        "evidenceWarning": "Belum ada foto yang sesuai, jadi jawaban ini akan disimpan sebagai Belum diketahui: {facilities}."
+      },
       "edit": "Ubah {section}",
       "incomplete": "Langkah {step} belum lengkap.",
       "incompleteAction": "Lengkapi langkah {step}",
@@ -1620,6 +1816,7 @@
     },
     "kirim": {
       "send": "Kirim laporan",
+      "publish": "Terbitkan langsung",
       "sending": "Mengirim…",
       "signIn": "Masuk lalu kirim",
       "uploading": "Mengunggah foto {number} dari {total}…",
@@ -1654,6 +1851,15 @@
       ],
       "mine": "Lihat Laporan saya",
       "another": "Laporkan tempat lain",
+      "direct": {
+        "eyebrow": "Terbit langsung",
+        "title": "Tempat ini",
+        "accent": "sudah tayang",
+        "intro": "Laporan ini diterbitkan langsung oleh admin tanpa pemeriksaan verifikator kedua, dan tempatnya tampil dengan label \"Diterbitkan langsung oleh admin\".",
+        "unknown": "Disimpan sebagai Belum diketahui karena belum ada foto yang sesuai: {facilities}.",
+        "view": "Lihat tempat",
+        "manage": "Buka di Kelola tempat"
+      },
       "loading": "Memuat laporan…"
     },
     "peta": {
@@ -2044,6 +2250,7 @@
       "answered": "Agen menjawab: {answer}",
       "sources": "Sumber",
       "sourcePlace": "Data terverifikasi AksesBogor: {name}, diverifikasi {date}",
+      "sourcePlaceAdmin": "Data AksesBogor: {name}, diterbitkan langsung oleh admin {date}",
       "license": "Lisensi {license}",
       "tooShort": "Tulis pertanyaan paling sedikit 2 karakter.",
       "failed": "Pertanyaan tidak bisa dikirim. Coba lagi sebentar lagi.",
@@ -2057,6 +2264,7 @@
       "detail": "Lihat detail lokasi",
       "update": "Perbarui data",
       "verified": "Terakhir diverifikasi {date}",
+      "verifiedAdmin": "Diterbitkan langsung oleh admin · {date}",
       "cardsLabel": "Kartu dari jawaban agen"
     }
   },

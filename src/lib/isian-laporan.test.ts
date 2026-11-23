@@ -2,7 +2,7 @@
 import { describe, expect, it } from "vitest";
 import type { PlaceDetail } from "./api";
 import { isExpired } from "./draf";
-import { checkFacilities, checkInfo, checkPhotos, draftKeyFor, firstIncompleteStep, newDraft, suggestedPhotos, toPayload, type PhotoDraft, type ReportDraft } from "./isian-laporan";
+import { checkFacilities, checkInfo, checkPhotos, directReasonMissing, draftFor, draftKeyFor, firstIncompleteStep, newDraft, suggestedPhotos, toPayload, type PhotoDraft, type ReportDraft } from "./isian-laporan";
 
 const NOW = Date.UTC(2026, 10, 8);
 const uuid = () => "11111111-1111-4111-8111-111111111111";
@@ -173,5 +173,28 @@ describe("newDraft from an OpenStreetMap candidate", () => {
     expect(checkInfo(draft).map((e) => e.message)).toEqual(["lokasiKosong"]);
     const confirmed = { ...draft, location: { point: { lat: -6.6, lng: 106.8 }, district: { slug: "bogor-tengah", name: "Bogor Tengah" } } };
     expect(JSON.stringify(toPayload(confirmed))).not.toContain("way/2");
+  });
+});
+
+describe("direct publishing (ADR-0051)", () => {
+  it("needs a reason of at least five characters only when chosen", () => {
+    expect(directReasonMissing({ publishDirectly: false })).toBe(false);
+    expect(directReasonMissing({ publishDirectly: true, publishReason: " ok " })).toBe(true);
+    expect(directReasonMissing({ publishDirectly: true, publishReason: "Dicek sendiri" })).toBe(false);
+  });
+
+  it("sends the choice only for an admin account", () => {
+    const draft = { ...complete({ photos: [photo()] }), publishDirectly: true, publishReason: " Dicek sendiri " };
+    expect(toPayload(draft, { admin: true })).toMatchObject({ publishDirectly: true, publishReason: "Dicek sendiri" });
+    expect(toPayload(draft)).not.toHaveProperty("publishDirectly");
+    expect(toPayload(draft)).not.toHaveProperty("publishReason");
+  });
+
+  it("drops the choice from a restored draft for an account that is not an admin", () => {
+    const draft = { ...complete(), publishDirectly: true, publishReason: "Dicek sendiri" };
+    expect(draftFor(draft, true)).toBe(draft);
+    expect(draftFor(draft, false)).toMatchObject({ publishDirectly: undefined, publishReason: undefined, name: draft.name });
+    const plain = complete();
+    expect(draftFor(plain, false)).toBe(plain);
   });
 });

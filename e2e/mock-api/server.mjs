@@ -5,12 +5,14 @@
 // GET /districts yang lambat. GET /places/00000000-0000-4000-8000-000000000500 selalu menjawab 500, untuk menguji
 // status halaman Detail saat API galat. Route akun ada di akun.mjs, route
 // Laporkan di laporkan.mjs, route panel verifikator di verifikasi.mjs, route agen rute di agen-rute.mjs, asisten rute
-// publik di tanya-rute.mjs, prioritas kecamatan di prioritas.mjs, dan kandidat "Belum ada data" di kandidat.mjs.
+// publik di tanya-rute.mjs, prioritas kecamatan di prioritas.mjs, kandidat "Belum ada data" di kandidat.mjs, dan kelola
+// tempat oleh admin di kelola-tempat.mjs.
 // GET /_tiruan/pengunjung?ip=...&path=... menjawab rahasia server web terakhir yang dikirim bersama IP pengunjung itu,
 // untuk path API tertentu atau, tanpa path, untuk path mana pun.
 import { readFileSync } from "node:fs";
 import { createServer } from "node:http";
 import { handleAgenRute } from "./agen-rute.mjs";
+import { createdPlace, handleKelolaTempat } from "./kelola-tempat.mjs";
 import { handleAkun } from "./akun.mjs";
 import { handleKandidat } from "./kandidat.mjs";
 import { handleLaporkan } from "./laporkan.mjs";
@@ -28,7 +30,7 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 // Id lokasi yang selalu menjawab galat server (tes status halaman Detail dan gambar berbagi, issue #150).
 const FAILING_PLACE_ID = "00000000-0000-4000-8000-000000000500";
 
-const listItem = ({ id, name, category, district, status, summary, location, lastVerifiedAt, photos }) => ({
+const listItem = ({ id, name, category, district, status, summary, location, lastVerifiedAt, verifiedBy, photos }) => ({
   id,
   name,
   category,
@@ -37,6 +39,7 @@ const listItem = ({ id, name, category, district, status, summary, location, las
   summary,
   location,
   lastVerifiedAt,
+  verifiedBy: verifiedBy ?? "tim",
   coverPhoto: photos.find((photo) => photo.tag === "pintu_masuk") ?? photos[0] ?? null,
 });
 
@@ -99,8 +102,8 @@ function route(url, headers) {
   if (id) {
     if (id === FAILING_PLACE_ID) return [500, { galat: "galat_server", pesan: "Galat tiruan." }];
     if (!UUID.test(id)) return [400, { galat: "permintaan_tidak_valid", pesan: "Id lokasi tidak valid." }];
-    const place = places.find((p) => p.id === id);
-    return place ? [200, place] : [404, { galat: "lokasi_tidak_ditemukan", pesan: "Lokasi tidak ditemukan." }];
+    const place = places.find((p) => p.id === id && !p.unpublishedAt) ?? createdPlace(id);
+    return place ? [200, { verifiedBy: "tim", ...place }] : [404, { galat: "lokasi_tidak_ditemukan", pesan: "Lokasi tidak ditemukan." }];
   }
   return [404, { galat: "tidak_ditemukan", pesan: "Alamat tidak ditemukan." }];
 }
@@ -125,6 +128,8 @@ createServer(async (request, response) => {
   const [status, body, headers = {}] =
     handleAkun(request.method, url.pathname, url.searchParams, request.headers, payload) ??
     handleLaporkan(request.method, url.pathname, request.headers, payload, places) ??
+    // Sebelum route verifikator, yang menjawab semua alamat /admin lain (tim).
+    handleKelolaTempat(request.method, url, request.headers, payload, places) ??
     handleVerifikasi(request.method, url, request.headers, payload, places) ??
     handleAgenRute(request.method, url, request.headers, payload, places) ??
     handleTanyaRute(request.method, url, request.headers, payload, places) ??

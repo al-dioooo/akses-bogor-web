@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useFormatter, useTranslations } from "next-intl";
-import type { PlaceListItem } from "@/lib/api";
+import { byAdmin, type PlaceListItem } from "@/lib/api";
 import { FacilityMeter } from "@/ui/facility-meter";
 import { Icon } from "@/ui/icon";
 import { IconArrowRight, IconMapPin } from "@/ui/icons";
@@ -51,7 +51,7 @@ export function LocationCard({ place }: { place: PlaceListItem }) {
           <FacilityMeter summary={place.summary} status={place.status} />
         </div>
         <p className="flex items-center justify-between border-t border-border-subtle pt-4 font-mono text-xs text-text-secondary">
-          {t("verified", { date: format.dateTime(new Date(place.lastVerifiedAt), { dateStyle: "medium" }) })}
+          {t(byAdmin(place) ? "verifiedAdmin" : "verified", { date: format.dateTime(new Date(place.lastVerifiedAt), { dateStyle: "medium" }) })}
           <Icon icon={IconArrowRight} className="size-4.5 text-icon-primary transition-transform duration-200 group-hover:translate-x-0.5" />
         </p>
       </div>

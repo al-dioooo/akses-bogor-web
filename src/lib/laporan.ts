@@ -29,17 +29,23 @@ export type ReportPayload = {
   description?: string;
   facilities: { facility: Facility; answer: Answer; reason?: Reason; note?: string }[];
   photos: { id: string; tag: PhotoTag; caption?: string }[];
+  /** Khusus admin: terbitkan langsung tanpa pemeriksaan orang kedua, dengan alasan (ADR-0051). */
+  publishDirectly?: true;
+  publishReason?: string;
 };
 
 export type SubmittedReport = {
   id: string;
   kind: ReportKind;
-  status: "menunggu";
+  /** `diterbitkan` hanya untuk terbit langsung oleh admin. */
+  status: "menunggu" | "diterbitkan";
   placeId: string | null;
   name: string;
   district: District;
   photos: number;
   submittedAt: string;
+  /** Terbit langsung: fasilitas Tersedia atau Tidak perlu tanpa foto yang sesuai, disimpan sebagai Belum diketahui. */
+  downgraded?: Facility[];
 };
 
 export type UploadedPhoto = { id: string; width: number; height: number; bytes: number };

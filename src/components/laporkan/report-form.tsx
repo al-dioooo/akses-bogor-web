@@ -6,7 +6,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { FormAlert } from "@/components/akun/form-parts";
 import type { PlaceDetail } from "@/lib/api";
 import { deleteDraft, loadDraft, purgeExpiredDrafts, saveDraft } from "@/lib/draf";
-import { checkStep, firstIncompleteStep, newDraft, STEPS, type FieldError, type ReportDraft, type Step } from "@/lib/isian-laporan";
+import { checkStep, directReasonMissing, draftFor, firstIncompleteStep, newDraft, STEPS, type FieldError, type ReportDraft, type Step } from "@/lib/isian-laporan";
 import type { CandidatePrefill } from "@/lib/kandidat";
 import { withReturn } from "@/lib/kembali";
 import type { ReportKind } from "@/lib/laporan";
@@ -35,12 +35,15 @@ export function ReportForm({
   place,
   prefill = null,
   signedIn,
+  admin = false,
 }: {
   kind: ReportKind;
   place: PlaceDetail | null;
   /** Isian awal dari kandidat OpenStreetMap di Peta (ADR-0049), dengan draf sendiri. */
   prefill?: CandidatePrefill | null;
   signedIn: boolean;
+  /** Akun admin: pilihan terbit langsung di ringkasan (ADR-0051). */
+  admin?: boolean;
 }) {
   const t = useTranslations("Laporkan");
   const params = useSearchParams();
@@ -62,6 +65,7 @@ export function ReportForm({
   const router = useRouter();
   const [sending, setSending] = useState<Sending | null>(null);
   const [sendProblem, setSendProblem] = useState<SendProblem | null>(null);
+  const [directError, setDirectError] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -71,7 +75,7 @@ export function ReportForm({
         await purgeExpiredDrafts();
         const saved = await loadDraft(fresh.draftKey);
         if (cancelled) return;
-        setDraft(saved ?? fresh);
+        setDraft(saved ? draftFor(saved, admin && signedIn) : fresh);
         if (saved) setNotice("restored");
       } catch {
         if (cancelled) return;
@@ -82,7 +86,7 @@ export function ReportForm({
     return () => {
       cancelled = true;
     };
-  }, [kind, place, prefill]);
+  }, [kind, place, prefill, admin, signedIn]);
 
   // Setiap perubahan langsung disimpan. Bila penyimpanan sebelumnya belum selesai, perubahan berikutnya digabung menjadi
   // satu penyimpanan sesudahnya, jadi IndexedDB tidak ditulis lebih sering dari kemampuannya dan perubahan terakhir
@@ -198,6 +202,13 @@ export function ReportForm({
       goTo(missing);
       return;
     }
+    // Terbit langsung butuh alasan untuk log audit (ADR-0051).
+    const direct = admin && signedIn && Boolean(draft.publishDirectly);
+    setDirectError(direct && directReasonMissing(draft));
+    if (direct && directReasonMissing(draft)) {
+      document.getElementById("alasan-terbit")?.focus();
+      return;
+    }
     await saveDraft(draft).catch(() => undefined);
     if (!signedIn) return window.location.assign(withReturn("/masuk", returnPath()));
 
@@ -218,11 +229,13 @@ export function ReportForm({
           setDraft((now) => (now ? { ...now, photos: now.photos.map((photo) => (photo.key === key ? { ...photo, uploadedId: id } : photo)) } : now));
         },
         onSubmitting: () => setSending((now) => (now ? { ...now, phase: "kirim" } : now)),
-      });
+      }, { admin: admin && signedIn });
       if (outcome.ok) {
         setSending(null);
         await discard(current.draftKey);
-        router.push(`/laporkan/terkirim?laporan=${outcome.report.id}`);
+        const published = outcome.report.status === "diterbitkan";
+        const lowered = outcome.report.downgraded?.length ? `&belum=${outcome.report.downgraded.join(",")}` : "";
+        router.push(`/laporkan/terkirim?laporan=${outcome.report.id}${published ? `&langsung=1${lowered}` : ""}`);
         return;
       }
       if (outcome.reason === "masuk") return window.location.assign(withReturn("/masuk/sesi-berakhir", returnPath()));
@@ -280,7 +293,7 @@ export function ReportForm({
       {step === "3" && <StepPhotos draft={draft} errors={errors} update={update} />}
       {step === "ringkasan" && (
         <>
-          <StepSummary draft={draft} signedIn={signedIn} goTo={goTo} onDelete={removeDraft} />
+          <StepSummary draft={draft} signedIn={signedIn} goTo={goTo} onDelete={removeDraft} admin={admin} update={update} directError={directError} />
           <SendStatus
             photos={draft.photos}
             sending={sending}
@@ -310,7 +323,7 @@ export function ReportForm({
         ) : (
           <button type="button" onClick={() => void send()} disabled={Boolean(sending)} className={buttonClass("primary", "md", "max-lg:flex-[2] disabled:opacity-70")}>
             <Icon icon={IconSend} />
-            {sending ? t("kirim.sending") : signedIn ? t("kirim.send") : t("kirim.signIn")}
+            {sending ? t("kirim.sending") : signedIn ? t(admin && draft.publishDirectly ? "kirim.publish" : "kirim.send") : t("kirim.signIn")}
           </button>
         )}
       </div>

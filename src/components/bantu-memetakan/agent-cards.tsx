@@ -30,7 +30,9 @@ function Place({ card }: { card: PlaceCard }) {
       {card.target.kind === "aksesbogor" && "status" in card ? (
         <>
           <StatusBadge status={card.status} size="sm" />
-          <p className="text-sm text-text-secondary">{t("verified", { date: format.dateTime(new Date(card.lastVerifiedAt), { dateStyle: "long" }) })}</p>
+          <p className="text-sm text-text-secondary">
+            {t(card.verifiedBy === "admin" ? "verifiedAdmin" : "verified", { date: format.dateTime(new Date(card.lastVerifiedAt), { dateStyle: "long" }) })}
+          </p>
           <div className="flex flex-wrap gap-2">
             <Link href={`/lokasi/${card.target.placeId}`} className={buttonClass("outline", "sm")}>
               {t("detail")}
