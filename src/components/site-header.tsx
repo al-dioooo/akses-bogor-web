@@ -33,7 +33,9 @@ export async function SiteHeader() {
   const td = await getTranslations("Tampilan");
   return (
     <StickyHeader>
-      <div className="page-width flex min-h-19 items-center justify-between gap-3">
+      {/* Tinggi sama di semua halaman, termasuk Peta (issue #195). Di layar pendek (ponsel landscape) header lebih ramping
+          di semua halaman, supaya peta layar penuh dan panelnya tetap muat. */}
+      <div className="page-width flex min-h-19 items-center justify-between gap-3 [@media(height<32rem)]:min-h-15">
         <Link href="/" aria-label={tl("home")} className="rounded-xl py-1">
           <Logo />
         </Link>
