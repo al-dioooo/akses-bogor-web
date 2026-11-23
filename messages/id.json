@@ -81,7 +81,8 @@
       "accent": "sini?",
       "body": "Laporkan dalam tiga langkah. Setiap laporan membantu orang lain berangkat dengan lebih yakin.",
       "button": "Laporkan tempat"
-    }
+    },
+    "askRoute": "Tanya cara ke sebuah tempat"
   },
   "Rute": {
     "label": "Rute ke pintu",
@@ -134,6 +135,7 @@
     "beranda": "Beranda",
     "jelajahi": "Jelajahi",
     "peta": "Peta",
+    "tanyaRute": "Tanya rute",
     "aksesibilitas": "Aksesibilitas",
     "disabilitas": "Disabilitas",
     "tips": "Tips",
@@ -218,6 +220,7 @@
       "emptyBody": "Coba kata lain, atau kurangi filter yang dipakai.",
       "noDataTitle": "Belum ada lokasi",
       "noDataBody": "Lokasi tampil di sini setelah laporan warga diperiksa tim.",
+      "candidates": "Lihat {count} tempat yang belum ada datanya di Peta",
       "onMap": "Lihat di peta"
     },
     "pagination": {
@@ -302,7 +305,12 @@
       "osmLink": "Lihat di OpenStreetMap",
       "newTab": "(tab baru)",
       "attribution": "© kontributor OpenStreetMap",
-      "emptyBody": "Lingkaran abu-abu adalah tempat dari OpenStreetMap yang belum diperiksa tim."
+      "emptyBody": "Lingkaran abu-abu adalah tempat dari OpenStreetMap yang belum diperiksa tim.",
+      "listTitle": "Belum ada data ({count})",
+      "listBody": "Tempat dari OpenStreetMap yang belum diperiksa tim. Laporkan aksesibilitasnya supaya bisa diverifikasi.",
+      "listNone": "Tidak ada tempat Belum ada data di bagian peta ini.",
+      "reportPlace": "Laporkan tempat ini: {name}",
+      "more": "Tampilkan {count} lagi"
     },
     "list": {
       "title": "Daftar lokasi",
@@ -383,7 +391,8 @@
       "title": "Lokasi ini tidak ada.",
       "body": "Mungkin lokasinya sudah tidak tayang, atau tautannya salah.",
       "explore": "Jelajahi lokasi lain"
-    }
+    },
+    "askRoute": "Tanya rute ke sini"
   },
   "Berbagi": {
     "siteAlt": "AksesBogor, peta aksesibilitas Kota Bogor: cek aksesnya dulu, berangkat lebih tenang. Ramp, toilet difabel, guiding block, dan lift.",
@@ -483,7 +492,7 @@
         "id": "data",
         "title": "Data yang kami kumpulkan",
         "paragraphs": [
-          "Anda bisa menjelajahi AksesBogor tanpa akun. Kami hanya mengumpulkan data pribadi bila Anda membuat akun, melapor, atau memakai Bantu memetakan."
+          "Anda bisa menjelajahi AksesBogor tanpa akun. Kami hanya mengumpulkan data pribadi bila Anda membuat akun, melapor, memakai Bantu memetakan, atau bertanya di Tanya rute."
         ],
         "items": [
           "Akun: alamat email, nama tampilan, peran (pengguna, verifikator, atau admin), serta waktu dan versi Kebijakan Privasi yang Anda setujui.",
@@ -492,6 +501,7 @@
           "Lokasi saya di Peta: lokasi perangkat hanya dibaca setelah Anda menekan Tampilkan lokasi saya. Bila izin lokasi belum diberikan, kami menjelaskan dulu kegunaannya, lalu browser meminta izin Anda. Lokasi itu hanya dipakai di browser Anda untuk menggeser peta dan menaruh titik di posisi Anda. Lokasi tidak dikirim ke server AksesBogor atau ke Anthropic, dan tidak disimpan. Bila Anda berada di luar wilayah peta Kota Bogor, peta tidak digeser. Seperti setiap tampilan peta, Mapbox menerima area peta yang dimuat, jadi setelah peta digeser, Mapbox menerima area di sekitar lokasi Anda.",
           "Pencarian tempat: kata kunci yang Anda ketik di pencarian formulir laporan diteruskan ke Mapbox lewat server kami, tanpa alamat IP Anda, dan tidak kami simpan.",
           "Bantu memetakan: pertanyaan yang Anda ketik ke agen, beserta paling banyak 6 giliran sebelumnya di halaman itu, dikirim lewat server kami ke Anthropic (Claude API) untuk dijawab. Bersama pertanyaan ikut data terverifikasi tempat yang Anda pilih dan hasil pencarian agen di data AksesBogor, OpenStreetMap, dan basis pengetahuan. Kami tidak mengirim posisi, rute, email, nama, atau alamat IP Anda ke Anthropic, dan tidak menyimpan pertanyaan maupun jawabannya. Untuk kartu rute, titik awal yang Anda pilih di peta atau lokasi perangkat Anda dibulatkan sampai sekitar 11 m, lalu dikirim lewat server kami ke Mapbox hanya untuk menghitung rute jalan kaki. Titik dan rutenya tidak kami simpan dan tidak dikirim ke Anthropic.",
+          "Tanya rute: siapa pun, juga tanpa akun, bisa bertanya cara ke tempat yang tercatat di AksesBogor. Pertanyaan Anda, beserta paling banyak 6 giliran sebelumnya di halaman itu, dikirim lewat server kami ke Anthropic (Claude API) untuk dijawab, bersama data tempat yang Anda pilih dan hasil pencarian asisten di data AksesBogor dan basis pengetahuan. Lokasi perangkat hanya dibaca setelah kami menjelaskan kegunaannya dan browser meminta izin Anda; Anda juga bisa memilih titik awal di peta. Titik awal itu dikirim ke server kami bersama pertanyaan, dibulatkan sampai sekitar 11 m, dan hanya dipakai untuk mencari tempat terdekat dan, lewat Mapbox, menghitung rute jalan kaki untuk kartu rute. Anthropic tidak menerima titik awal, rute, email, nama, atau alamat IP Anda; asisten hanya menerima jarak garis lurus dari titik awal ke paling banyak 5 tempat, dibulatkan ke 100 m. Untuk membatasi pemakaian, server kami menghitung jumlah pertanyaan per akun, atau per alamat IP bila Anda tidak masuk; hitungan itu hanya ada di memori server sampai hari berganti. Pertanyaan, jawaban, dan titik awal tidak kami simpan.",
           "Teknis: alamat IP, alamat halaman yang dibuka, dan waktunya tercatat di log server untuk keamanan dan memperbaiki galat.",
           "Di perangkat Anda: pilihan tampilan (mode terang atau gelap, gerak) disimpan di browser Anda dan tidak dikirim ke kami. Draf laporan yang belum dikirim, termasuk fotonya, juga disimpan di browser Anda dan baru dikirim ke kami saat Anda menekan Kirim laporan. Cookie sesi hanya dipakai untuk menjaga Anda tetap masuk. Kami tidak memakai cookie iklan atau analitik."
         ]
@@ -503,12 +513,13 @@
           "Memasukkan Anda ke akun dan menjaga akun tetap aman.",
           "Menampilkan Laporan saya dan mengirim email saat laporan Anda diterbitkan, ditolak beserta alasannya, atau butuh klarifikasi.",
           "Memeriksa laporan sebelum tayang, menghubungi Anda bila verifikator butuh klarifikasi, dan mencegah spam.",
-          "Menjawab pertanyaan Anda di Bantu memetakan dan menghitung rute jalan kaki untuk kartu rute.",
+          "Menjawab pertanyaan Anda di Bantu memetakan dan Tanya rute, mencari tempat terdekat dari titik awal yang Anda pilih, dan menghitung rute jalan kaki untuk kartu rute.",
+          "Membatasi jumlah pertanyaan per akun atau per alamat IP supaya layanan tetap bisa dipakai semua orang.",
           "Mencatat siapa mengubah data tempat dan kapan (log audit), supaya perubahan bisa ditelusuri. Log ini berisi akun verifikator dan perubahan data tempat, tanpa email, nama pelapor, atau isi klarifikasi.",
           "Menjaga layanan tetap berjalan dan aman."
         ],
         "after": [
-          "Dasar pemrosesannya adalah persetujuan yang Anda berikan saat melengkapi akun. Anda bisa menarik persetujuan kapan saja dengan menghapus akun."
+          "Dasar pemrosesannya adalah persetujuan yang Anda berikan saat melengkapi akun. Anda bisa menarik persetujuan kapan saja dengan menghapus akun. Bila Anda memakai Tanya rute tanpa akun, dasarnya adalah persetujuan Anda saat mengirim pertanyaan setelah membaca pemberitahuan di halaman itu; berhenti bertanya berarti tidak ada data lagi yang dikirim."
         ]
       },
       {
@@ -522,8 +533,8 @@
           "Cloudflare: semua halaman dan permintaan ke API AksesBogor melewati jaringan Cloudflare, lalu diteruskan lewat Cloudflare Tunnel ke server kami. Cloudflare menerima alamat IP Anda dan data tentang permintaan, mis. halaman yang dibuka dan waktunya. Cloudflare juga menyimpan foto laporan di Cloudflare R2. Menurut Kebijakan Privasi Cloudflare dan perjanjian pemrosesan datanya, Cloudflare memproses data ini atas nama kami dan tidak boleh memakainya untuk pemasaran atau iklan.",
           "Resend: mengirim email kode masuk dan pemberitahuan.",
           "Google: hanya bila Anda memakai tombol Masuk dengan Google. Halaman Masuk memuat tombol dari Google.",
-          "Mapbox: menampilkan peta, mencari tempat, dan menghitung rute jalan kaki untuk kartu rute. Mapbox menerima alamat IP dan area peta yang dilihat dari browser Anda, termasuk area di sekitar lokasi Anda setelah Tampilkan lokasi saya, serta kata kunci pencarian dan titik awal rute yang sudah dibulatkan dari server kami.",
-          "Anthropic: menjawab pertanyaan di Bantu memetakan lewat Claude API. Anthropic menerima pertanyaan, giliran sebelumnya, data terverifikasi tempat yang dipilih, dan hasil pencarian agen, tanpa posisi, email, nama, atau alamat IP Anda. Menurut Ketentuan Komersial Anthropic, Anthropic tidak boleh memakai data ini untuk melatih model."
+          "Mapbox: menampilkan peta, mencari tempat, dan menghitung rute jalan kaki untuk kartu rute di Bantu memetakan dan Tanya rute. Mapbox menerima alamat IP dan area peta yang dilihat dari browser Anda, termasuk area di sekitar lokasi Anda setelah Tampilkan lokasi saya, serta kata kunci pencarian dan titik awal rute yang sudah dibulatkan dari server kami.",
+          "Anthropic: menjawab pertanyaan di Bantu memetakan dan Tanya rute lewat Claude API. Anthropic menerima pertanyaan, giliran sebelumnya, data tempat yang dipilih, hasil pencarian agen, dan jarak garis lurus yang dibulatkan ke tempat terdekat, tanpa posisi, email, nama, atau alamat IP Anda, juga bila Anda tidak punya akun. Menurut Ketentuan Komersial Anthropic, Anthropic tidak boleh memakai data ini untuk melatih model."
         ],
         "after": [
           "Kami tidak menjual data pribadi dan tidak membagikannya untuk iklan."
@@ -533,7 +544,7 @@
         "id": "luar-negeri",
         "title": "Data yang diproses di luar Indonesia",
         "paragraphs": [
-          "Resend, Google, Mapbox, Cloudflare, dan Anthropic bisa memproses data di luar Indonesia, termasuk di Amerika Serikat. Anthropic menyimpan data di Amerika Serikat dan bisa menjalankan modelnya di negara lain. Situs web, API, database, dan log server kami berjalan di Batam, Indonesia, tetapi menurut kebijakan privasinya, Oracle bisa memproses data di layanannya di negara lain bila diperlukan untuk menjalankan layanan itu. Kami hanya mengirim data yang dibutuhkan layanan itu: email dan isi email ke Resend, lalu lintas situs web dan API lewat Cloudflare, alamat IP, area peta, kata kunci pencarian, dan titik awal rute ke Mapbox, pertanyaan Bantu memetakan ke Anthropic, dan foto laporan ke Cloudflare R2."
+          "Resend, Google, Mapbox, Cloudflare, dan Anthropic bisa memproses data di luar Indonesia, termasuk di Amerika Serikat. Anthropic menyimpan data di Amerika Serikat dan bisa menjalankan modelnya di negara lain. Situs web, API, database, dan log server kami berjalan di Batam, Indonesia, tetapi menurut kebijakan privasinya, Oracle bisa memproses data di layanannya di negara lain bila diperlukan untuk menjalankan layanan itu. Kami hanya mengirim data yang dibutuhkan layanan itu: email dan isi email ke Resend, lalu lintas situs web dan API lewat Cloudflare, alamat IP, area peta, kata kunci pencarian, dan titik awal rute ke Mapbox, pertanyaan Bantu memetakan dan Tanya rute ke Anthropic, dan foto laporan ke Cloudflare R2."
         ]
       },
       {
@@ -585,12 +596,16 @@
               "Sampai terkirim, sampai Anda keluar, atau 7 hari setelah terakhir diubah"
             ],
             [
-              "Pertanyaan dan jawaban Bantu memetakan",
+              "Pertanyaan dan jawaban Bantu memetakan dan Tanya rute",
               "Tidak disimpan di server kami; percakapan hilang saat halaman ditutup. Anthropic menghapusnya paling lama 30 hari setelah diterima, kecuali ditandai melanggar kebijakan penggunaannya (sampai 2 tahun) atau diwajibkan hukum"
             ],
             [
               "Titik awal dan rute jalan kaki",
               "Tidak disimpan"
+            ],
+            [
+              "Jumlah pertanyaan Tanya rute per akun atau alamat IP",
+              "Di memori server sampai hari berganti (WIB)"
             ],
             [
               "Lokasi perangkat untuk Tampilkan lokasi saya di Peta",
@@ -636,14 +651,14 @@
         "id": "anak",
         "title": "Anak",
         "paragraphs": [
-          "Bila Anda berusia di bawah 18 tahun, minta orang tua atau wali Anda membaca kebijakan ini dan menyetujuinya bersama Anda sebelum membuat akun."
+          "Bila Anda berusia di bawah 18 tahun, minta orang tua atau wali Anda membaca kebijakan ini dan menyetujuinya bersama Anda sebelum membuat akun atau bertanya di Tanya rute."
         ]
       },
       {
         "id": "perubahan",
         "title": "Perubahan kebijakan",
         "paragraphs": [
-          "Bila kebijakan ini berubah, kami menaikkan nomor versinya dan meminta persetujuan Anda lagi saat Anda masuk berikutnya."
+          "Bila kebijakan ini berubah, kami menaikkan nomor versinya dan meminta persetujuan Anda lagi saat Anda masuk berikutnya. Bila Anda memakai Tanya rute tanpa akun, versi yang berlaku adalah versi yang tertaut di halaman itu saat Anda bertanya."
         ]
       },
       {
@@ -1481,7 +1496,8 @@
         "cari": "Dari pencarian: {name}",
         "gps": "Dari lokasi perangkat, akurasi sekitar {meters} m",
         "peta": "Dari tengah peta",
-        "awal": "Lokasi saat ini"
+        "awal": "Lokasi saat ini",
+        "osm": "Dari OpenStreetMap, sering di tengah gedung. Geser pin ke pintu masuk."
       },
       "coordinates": "{lat}, {lng}",
       "noCandidate": "Belum ada titik. Cari tempatnya, pakai lokasi Anda, atau geser peta.",
@@ -1548,6 +1564,7 @@
       "tagKosong": "Pilih objek di foto {number}."
     },
     "info": {
+      "fromOsm": "Nama, kategori, dan titik awal diisi dari OpenStreetMap dan belum diperiksa. Periksa semuanya, geser pin ke pintu masuk yang paling mudah diakses, lalu pakai lokasi itu.",
       "nameLabel": "Nama tempat",
       "nameHint": "Nama yang tertulis di papan nama atau yang dikenal warga.",
       "categoryLegend": "Kategori",
@@ -2102,6 +2119,59 @@
       "verifiedAdmin": "Diterbitkan langsung oleh admin · {date}",
       "cardsLabel": "Kartu dari jawaban agen"
     }
+  },
+  "TanyaRute": {
+    "metaTitle": "Tanya rute",
+    "metaDescription": "Tanyakan cara ke kampus, masjid, halte, atau rumah sakit di Kota Bogor yang tercatat di AksesBogor, lalu lihat rute jalan kaki beserta peringatan dan hambatannya.",
+    "loading": "Memuat…",
+    "eyebrow": "Tanya rute",
+    "title": "Tanya cara ke",
+    "accent": "tempat di Kota Bogor",
+    "intro": "Asisten menjawab dari data AksesBogor dan menampilkan rute jalan kaki. Rute itu tidak memperhitungkan tangga, kerb, atau kemiringan jalan, jadi selalu periksa peringatan dan hambatannya.",
+    "unavailable": {
+      "title": "Tanya rute belum dibuka",
+      "body": "Fitur ini masih disiapkan. Anda tetap bisa mencari tempat lewat Jelajahi dan Peta."
+    },
+    "notice": "Pertanyaan Anda dikirim lewat server AksesBogor ke Anthropic (Claude API) untuk dijawab, dan tidak disimpan AksesBogor. Titik awal hanya dipakai server AksesBogor dan Mapbox, tidak pernah dikirim ke Anthropic. Jangan tulis data pribadi, mis. nama, nomor telepon, atau alamat rumah. Baca <link>Kebijakan Privasi</link>.",
+    "awal": {
+      "heading": "Titik awal",
+      "title": "Dari mana Anda berangkat?",
+      "why": "Titik awal dipakai untuk mencari tempat terdekat dan menghitung rute jalan kaki. Anda juga bisa bertanya tanpa titik awal.",
+      "privacy": "Titik awal dibulatkan sampai sekitar 11 m. Server AksesBogor memakainya untuk jarak ke tempat terdekat, dan Mapbox untuk menghitung rute. Titik ini tidak disimpan dan tidak pernah dikirim ke asisten AI.",
+      "chosen": {
+        "perangkat": "Titik awal: lokasi perangkat Anda.",
+        "peta": "Titik awal: titik yang Anda pilih di peta."
+      },
+      "change": "Ganti titik awal",
+      "clear": "Hapus titik awal",
+      "keep": "Tetap pakai titik awal sebelumnya"
+    },
+    "place": {
+      "label": "Tujuan: {name}",
+      "clear": "Hapus tujuan"
+    },
+    "tanya": {
+      "title": "Tanya asisten",
+      "label": "Pertanyaan Anda",
+      "hint": "Paling banyak 500 karakter dan {count} pertanyaan per hari. Percakapan hilang saat halaman ditutup.",
+      "send": "Kirim pertanyaan",
+      "sending": "Asisten sedang menjawab…",
+      "examples": "Contoh pertanyaan",
+      "example": {
+        "place": "Bagaimana cara ke {name}?",
+        "hospital": "Rute ke rumah sakit terdekat dari sini",
+        "mosque": "Masjid terdekat yang aksesibel",
+        "halte": "Apakah halte terdekat ramah kursi roda?"
+      },
+      "conversation": "Percakapan dengan asisten",
+      "you": "Anda",
+      "assistant": "Asisten",
+      "answered": "Asisten menjawab: {answer}",
+      "tooShort": "Tulis pertanyaan paling sedikit 2 karakter.",
+      "failed": "Pertanyaan tidak bisa dikirim. Coba lagi sebentar lagi.",
+      "note": "Jawaban asisten bisa keliru. Periksa peringatan dan hambatan di kartu rute, dan bila ragu, telepon tempatnya dulu."
+    },
+    "cards": "Kartu rute dari jawaban asisten"
   },
   "PrioritasKecamatan": {
     "title": "Prioritas kecamatan {year}",

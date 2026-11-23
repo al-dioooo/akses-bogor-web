@@ -1,6 +1,6 @@
 // Kandidat "Belum ada data" tiruan (GET /places/candidates) untuk tes Playwright, meniru akses-bogor-api (ADR-0049):
 // tempat OpenStreetMap tanpa lokasi AksesBogor, tanpa status, dengan tag wheelchair mentah dan sumber ODbL. Kandidat
-// pertama tepat di tengah Kota Bogor (tengah tampilan awal), supaya tes bisa mengekliknya di peta.
+// pertama tepat di tengah Kota Bogor (tengah tampilan awal), supaya tes bisa mengekliknya di peta. Jumlahnya 24.
 const district = (slug, name) => ({ slug, name });
 const candidate = (osmType, osmId, name, category, [lng, lat], where, wheelchair = null) => ({
   type: "Feature",
@@ -14,6 +14,8 @@ export const CANDIDATES = [
   candidate("way", 9002, "Kampus kandidat B", "kampus", [106.775, -6.555], district("tanah-sareal", "Tanah Sareal")),
   candidate("node", 9003, null, "halte", [106.815, -6.575], district("bogor-utara", "Bogor Utara"), "yes"),
   candidate("node", 9004, "Rumah sakit kandidat C", "rumah_sakit", [106.805, -6.64], district("bogor-selatan", "Bogor Selatan"), "no"),
+  // Dua puluh halte tanpa nama berderet jauh dari tengah, supaya daftar di panel perlu "Tampilkan lagi".
+  ...Array.from({ length: 20 }, (_, i) => candidate("node", 9101 + i, null, "halte", [106.82 + i * 0.001, -6.62], district("bogor-selatan", "Bogor Selatan"))),
 ];
 
 const SOURCE = {

@@ -11,6 +11,7 @@ import { buttonClass } from "@/ui/button-styles";
 import { Icon } from "@/ui/icon";
 import { IconCurrentLocation, IconFocusCentered, IconList, IconMap2, IconMinus, IconPlus, IconUsers, type Glyph } from "@/ui/icons";
 import { StatusPin } from "@/ui/status-pin";
+import { CandidateList } from "./candidate-list";
 import { CandidateSummary } from "./candidate-summary";
 import { MapLegend } from "./legend";
 import { LocatePanel, useLocate } from "./locate";
@@ -352,6 +353,7 @@ export function PlaceMap({
   // penuh), daftar berisi semua lokasi.
   const followsView = ready && inView !== null;
   const shown = followsView ? places.filter((p) => inView.has(p.id)) : places;
+  const shownCandidates = layerCandidates && (followsView ? layerCandidates.filter((c) => inView.has(c.id)) : layerCandidates);
   // Tanpa lokasi sama sekali, kepala panel (yang selalu terlihat) membawa pesannya: belum ada data, atau filter terlalu
   // sempit.
   const empty = tj(filtered ? "results.emptyTitle" : "results.noDataTitle");
@@ -525,6 +527,7 @@ export function PlaceMap({
               ) : (
                 <p className="rounded-2xl bg-bg-sunken p-4 text-text-secondary">{t("list.none")}</p>
               ))}
+            {shownCandidates && <CandidateList candidates={shownCandidates} onShow={ready ? showOnMap : undefined} />}
             {layerShown && <PriorityLegend priority={priority} attribution={boundaries?.attribution ?? null} />}
           </div>
         )}

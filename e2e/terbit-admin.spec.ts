@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { blockingViolations } from "./axe";
 
-// Label publik tempat yang diterbitkan langsung oleh admin (ADR-0050). Di API tiruan, Masjid contoh A berlabel admin dan
+// Label publik tempat yang diterbitkan langsung oleh admin (ADR-0051). Di API tiruan, Masjid contoh A berlabel admin dan
 // tempat lain diverifikasi tim.
 const MASJID_A = "/lokasi/e553b67f-7583-4831-9dbb-29639159517f";
 const HALTE = "/lokasi/4037ba19-b366-45bc-aceb-270944fe9372";

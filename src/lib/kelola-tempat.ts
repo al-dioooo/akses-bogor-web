@@ -2,7 +2,7 @@ import { call } from "./akun";
 import { ApiError, type Answer, type Category, type Facility, type Photo, type PhotoTag, type Reason, type Status } from "./api";
 import type { LatLng } from "./laporan";
 
-// Kelola tempat oleh admin (ADR-0050). Tipe mengikuti docs/openapi.json di akses-bogor-api (route /admin/places dan
+// Kelola tempat oleh admin (ADR-0051). Tipe mengikuti docs/openapi.json di akses-bogor-api (route /admin/places dan
 // /admin/candidates). Semua fungsi di sini hanya dipanggil di server web dengan token sesi (ADR-0029); API memeriksa
 // peran admin di setiap route.
 
@@ -121,7 +121,7 @@ export const EVIDENCE_TAG: Record<Facility, PhotoTag> = { ramp: "pintu_masuk", t
 
 /**
  * Fasilitas yang akan disimpan sebagai Belum tahu karena dijawab Tersedia atau Tidak perlu tanpa foto bertag fasilitas
- * itu (ADR-0050). Dipakai formulir untuk memperingatkan sebelum disimpan; API yang menerapkannya.
+ * itu (ADR-0051). Dipakai formulir untuk memperingatkan sebelum disimpan; API yang menerapkannya.
  */
 export function withoutEvidence(facilities: { facility: Facility; answer: Answer }[], tags: Iterable<PhotoTag | "">): Facility[] {
   const shown = new Set(tags);

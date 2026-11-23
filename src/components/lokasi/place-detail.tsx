@@ -5,7 +5,7 @@ import { byAdmin, type PlaceDetail as Place } from "@/lib/api";
 import { buttonClass } from "@/ui/button-styles";
 import { FacilityMeter } from "@/ui/facility-meter";
 import { Icon } from "@/ui/icon";
-import { IconAlertTriangle, IconMessageReport, IconPencil, IconPhotoOff } from "@/ui/icons";
+import { IconAlertTriangle, IconMessageReport, IconPencil, IconPhotoOff, IconRoute } from "@/ui/icons";
 import { STATUS_ICON, STATUS_TONE } from "@/ui/place-icons";
 import { StatusBadge } from "@/ui/status-badge";
 import { FacilityList } from "./facility-list";
@@ -44,6 +44,11 @@ export async function PlaceDetail({ place }: { place: Place }) {
               <span className="font-semibold text-text-primary">{t("landmark")}:</span> {place.landmark}
             </p>
           )}
+          {/* Tanya rute (ADR-0050) dengan lokasi ini sudah terpilih. */}
+          <Link href={`/tanya-rute?tempat=${place.id}`} className={buttonClass("primary", "sm")}>
+            <Icon icon={IconRoute} />
+            {t("askRoute")}
+          </Link>
           <ShareButton id={place.id} title={place.name} />
         </div>
         <section aria-labelledby="judul-ringkasan" className={`flex flex-col items-start gap-4 rounded-[1.75rem] p-6 sm:p-7 ${STATUS_TONE[place.status]}`}>

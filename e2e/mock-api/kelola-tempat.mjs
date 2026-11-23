@@ -1,4 +1,4 @@
-// Route kelola tempat tiruan (/admin/places, /admin/candidates) untuk tes Playwright, meniru akses-bogor-api (ADR-0050).
+// Route kelola tempat tiruan (/admin/places, /admin/candidates) untuk tes Playwright, meniru akses-bogor-api (ADR-0051).
 //
 // Aturan tiruan:
 // - Hanya akun admin (email diawali "admin"); verifikator dan pengguna mendapat 403 bukan_admin.
