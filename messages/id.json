@@ -1416,6 +1416,46 @@
     "intro": "Semua tempat AksesBogor, termasuk yang diturunkan. Perubahan dari sini tayang langsung dengan label \"Diterbitkan langsung oleh admin\".",
     "loading": "Memuat tempat…",
     "adminOnly": "Halaman ini khusus admin.",
+    "add": "Tambah tempat",
+    "new": {
+      "metaTitle": "Tambah tempat",
+      "eyebrow": "Kelola tempat",
+      "title": "Tambah",
+      "accent": "tempat.",
+      "intro": "Tempat baru langsung tayang dengan label \"Diterbitkan langsung oleh admin\". Isi hanya yang Anda periksa sendiri.",
+      "loading": "Memuat formulir…",
+      "fromCandidate": "Nama, kategori, dan titik awal diisi dari OpenStreetMap. Pastikan pin ada di pintu masuk utama sebelum menyimpan."
+    },
+    "edit": {
+      "metaTitle": "Ubah tempat",
+      "eyebrow": "Kelola tempat",
+      "title": "Ubah",
+      "intro": "Perubahan langsung tayang, dan tempat ini akan berlabel \"Diterbitkan langsung oleh admin\".",
+      "back": "Kembali ke {name}",
+      "unpublished": "Tempat ini sedang diturunkan. Tayangkan lagi dulu sebelum mengubahnya."
+    },
+    "form": {
+      "infoTitle": "Informasi tempat",
+      "facilitiesTitle": "Jawaban fasilitas",
+      "evidenceRule": "Tersedia dan Tidak perlu butuh foto fasilitas itu: pintu masuk untuk ramp, lalu toilet difabel, guiding block, dan lift. Tanpa foto, jawaban disimpan sebagai Belum diketahui.",
+      "photosTitle": "Foto",
+      "photosPrivacy": "Foto langsung tayang tanpa dikaburkan. Jangan unggah wajah, pelat nomor, atau dokumen yang terbaca.",
+      "shownPhotos": "Foto yang tayang",
+      "removePhoto": "Hapus foto ini",
+      "reasonTitle": "Alasan",
+      "reasonLabel": "Alasan perubahan",
+      "reasonHint": "Mis. \"Dicek langsung saat survei tim\". Masuk riwayat tempat, tidak tampil untuk publik.",
+      "reasonError": "Tulis alasan, paling sedikit 5 karakter.",
+      "evidenceWarning": "Belum ada foto yang sesuai, jadi jawaban ini akan disimpan sebagai Belum diketahui: {facilities}.",
+      "uploading": "Mengunggah foto {current} dari {total}…",
+      "saving": "Menyimpan…",
+      "saveNew": "Simpan dan tayangkan",
+      "saveChanges": "Simpan perubahan",
+      "galat": {
+        "foto": "Foto gagal diunggah. Coba lagi.",
+        "server": "Server AksesBogor tidak bisa dihubungi. Coba lagi sebentar lagi."
+      }
+    },
     "filters": {
       "label": "Saring tempat",
       "search": "Cari nama tempat",
@@ -1456,6 +1496,9 @@
     "place": {
       "metaTitle": "Detail tempat untuk admin",
       "back": "Kembali ke Kelola tempat",
+      "edit": "Ubah tempat",
+      "saved": "Tersimpan dan tayang dengan label \"Diterbitkan langsung oleh admin\".",
+      "savedUnknown": "Disimpan sebagai Belum diketahui karena belum ada foto yang sesuai: {facilities}.",
       "summary": "Fasilitas",
       "summaryValue": "{relevant, plural, =0 {Tidak ada fasilitas yang dibutuhkan} other {{available} dari {relevant} tersedia}}{unknown, plural, =0 {} other {, # belum diketahui}}",
       "district": "Kecamatan",
