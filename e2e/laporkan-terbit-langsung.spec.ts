@@ -43,6 +43,7 @@ test("admins publish their own report directly with a reason, and see that the p
   const direct = main(page).getByRole("group", { name: "Khusus admin" });
   await expect(direct).toContainText("tidak masuk antrean verifikasi");
   await direct.getByRole("checkbox", { name: "Terbitkan langsung (admin)" }).check();
+  await expect(direct.getByRole("status")).toHaveText("Belum ada foto yang sesuai, jadi jawaban ini akan disimpan sebagai Belum diketahui: Toilet Difabel.");
   await page.getByRole("button", { name: "Terbitkan langsung" }).click();
   await expect(direct.getByLabel("Alasan terbit langsung")).toBeFocused();
   await expect(direct.getByText("Tulis alasan, paling sedikit 5 karakter.")).toBeVisible();
@@ -65,6 +66,12 @@ test("regular accounts do not see the option and send to the queue as before", a
   await page.getByRole("button", { name: "Kirim laporan" }).click();
   await expect(page).toHaveURL(/\/laporkan\/terkirim\?laporan=[0-9a-f-]+$/);
   await expect(main(page).getByRole("heading", { name: "Apa selanjutnya?" })).toBeVisible();
+
+  // Alamat yang ditulis tangan tidak membuat laporan yang masih menunggu tampak sudah tayang.
+  await page.goto(`${page.url()}&langsung=1`);
+  await expect(main(page).getByRole("heading", { name: "Apa selanjutnya?" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1 })).not.toHaveText("Tempat ini sudah tayang");
+  await expect(main(page).getByRole("link", { name: "Lihat tempat" })).toHaveCount(0);
 });
 
 for (const colorScheme of ["light", "dark"] as const) {
