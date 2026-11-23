@@ -35,7 +35,9 @@ test("still works with a session", async ({ page }, testInfo) => {
 });
 
 test("refuses OpenStreetMap destinations, other sites and malformed input", async ({ request }) => {
-  expect((await request.post("/tanya-rute/rute", { data: { from, osm: { type: "node", id: 9001 } } })).status()).toBe(400);
+  // Kandidat OpenStreetMap (ADR-0049) boleh menjadi tujuan; tujuan yang salah bentuk tetap 400.
+  expect((await request.post("/tanya-rute/rute", { data: { from, osm: { type: "node", id: 9001 } } })).status()).toBe(200);
+  expect((await request.post("/tanya-rute/rute", { data: { from, osm: { type: "area", id: 9001 } } })).status()).toBe(400);
   expect((await request.post("/tanya-rute/tanya", { data: { question: "Rute?" }, headers: { origin: "https://jahat.example" } })).status()).toBe(403);
   for (const [path, data] of [
     ["tanya", { question: "x" }],

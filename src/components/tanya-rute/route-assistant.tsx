@@ -13,7 +13,7 @@ import type { AssistantAnswer, AssistantCard } from "@/lib/tanya-rute";
 import { buttonClass } from "@/ui/button-styles";
 import { fieldClass } from "@/ui/field-styles";
 import { Icon } from "@/ui/icon";
-import { IconAlertTriangle, IconFocusCentered, IconInfoCircle, IconMapPin, IconSend, IconShieldCheck, IconX } from "@/ui/icons";
+import { IconAlertTriangle, IconFocusCentered, IconHelpCircle, IconInfoCircle, IconMapPin, IconPencil, IconSend, IconShieldCheck, IconX } from "@/ui/icons";
 
 type Turn = { role: "user" | "assistant"; content: string; sources?: AgentSource[]; cards?: AssistantCard[]; from?: LatLng };
 type Start = { point: LatLng; source: "perangkat" | "peta" };
@@ -38,6 +38,31 @@ type Props = {
  * awal dipilih sekali di halaman (penjelasan dulu, lalu lokasi perangkat atau titik di peta), dikirim ke server
  * AksesBogor bersama pertanyaan untuk tempat terdekat, dan dipakai kartu rute; server tidak meneruskannya ke model.
  */
+
+/**
+ * Keterangan di atas kartu rute ke kandidat OpenStreetMap (ADR-0049): belum ada data aksesibilitas dari tim, dengan
+ * tautan Laporkan tempat ini yang membuka laporan baru dari kandidat itu.
+ */
+function CandidateNote({ target, name }: { target: { osmType: string; osmId: number }; name: string | null }) {
+  const t = useTranslations("TanyaRute.kandidat");
+  const params = new URLSearchParams({ osm: `${target.osmType}/${target.osmId}` });
+  if (name) params.set("nama", name);
+  return (
+    <div className="mb-2 flex flex-col items-start gap-2 rounded-2xl bg-surface-raised p-3">
+      <p className="inline-flex items-center gap-1.5 rounded-full bg-status-unknown-bg px-2.5 py-1 text-sm font-bold text-status-unknown-fg">
+        <Icon icon={IconHelpCircle} className="size-4" />
+        {t("label")}
+      </p>
+      <p className="text-sm">{t("body")}</p>
+      <Link href={`/laporkan?${params}`} className={buttonClass("outline", "sm")}>
+        <Icon icon={IconPencil} />
+        {t("report")}
+      </Link>
+      <p className="text-sm text-text-secondary">{t("attribution")}</p>
+    </div>
+  );
+}
+
 export function RouteAssistant({ place: initialPlace, questionsPerDay }: Props) {
   const t = useTranslations("TanyaRute");
   const [turns, setTurns] = useState<Turn[]>([]);
@@ -187,6 +212,7 @@ export function RouteAssistant({ place: initialPlace, questionsPerDay }: Props) 
                   <ul aria-label={t("cards")} className="flex w-full flex-col gap-3">
                     {turn.cards.map((card, cardIndex) => (
                       <li key={cardIndex}>
+                        {card.target.kind === "osm" && <CandidateNote target={card.target} name={card.name} />}
                         <RouteCard target={card.target} name={card.name} endpoints={ASSISTANT_ENDPOINTS} from={turn.from} startCopy={startCopy} />
                       </li>
                     ))}
