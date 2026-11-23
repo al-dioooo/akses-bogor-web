@@ -37,6 +37,7 @@ test.describe("with WebGL", () => {
     // Kecamatan dan ringkasan fasilitas dimuat sesudah lokasi dipilih (ADR-0018).
     await expect(summary.getByText("· Bogor Tengah")).toBeVisible();
     await expect(summary.getByText("2 dari 3 fasilitas tersedia")).toBeVisible();
+    await expect(summary.getByRole("link", { name: "Tanya rute ke sini" })).toHaveAttribute("href", "/tanya-rute?tempat=4037ba19-b366-45bc-aceb-270944fe9372");
     await expect(summary.getByRole("link", { name: "Laporkan kekurangan" })).toHaveAttribute(
       "href",
       "/laporkan?lokasi=4037ba19-b366-45bc-aceb-270944fe9372&jenis=kekurangan",
