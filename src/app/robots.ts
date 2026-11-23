@@ -10,7 +10,7 @@ import { absoluteUrl, isIndexable } from "@/lib/situs";
 export default function robots(): MetadataRoute.Robots {
   if (!isIndexable()) return { rules: { userAgent: "*", disallow: "/" } };
   return {
-    rules: { userAgent: "*", allow: "/", disallow: ["/peta/kunci", "/peta/lokasi/"] },
+    rules: { userAgent: "*", allow: "/", disallow: ["/peta/kunci", "/peta/lokasi/", "/peta/petunjuk"] },
     sitemap: absoluteUrl("/sitemap.xml"),
   };
 }

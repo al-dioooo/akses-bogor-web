@@ -30,7 +30,7 @@ describe("robots", () => {
     vi.stubEnv("SITE_URL", "https://contoh.id");
     vi.stubEnv("SITE_INDEXABLE", "true");
     expect(robots()).toEqual({
-      rules: { userAgent: "*", allow: "/", disallow: ["/peta/kunci", "/peta/lokasi/"] },
+      rules: { userAgent: "*", allow: "/", disallow: ["/peta/kunci", "/peta/lokasi/", "/peta/petunjuk"] },
       sitemap: "https://contoh.id/sitemap.xml",
     });
   });

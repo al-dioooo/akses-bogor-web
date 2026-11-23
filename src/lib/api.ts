@@ -74,6 +74,23 @@ export type CandidateFeature = {
 export type CandidateSource = { title: string; license: string; attribution: string; url: string; retrievedAt: string | null };
 export type CandidateMap = { type: "FeatureCollection"; features: CandidateFeature[]; source: CandidateSource };
 
+/**
+ * Petunjuk aksesibilitas langsung dari penyedia peta (ADR-0052): bukan data AksesBogor, belum diperiksa tim, tidak
+ * disimpan, dan tidak pernah mengubah status. Satu baris per penyedia yang menyala; kosong bila petunjuk dimatikan.
+ */
+export type ProviderHint =
+  | { provider: "mapbox"; result: "found"; placeName: string; distanceMeters: number; wheelchairAccessible: boolean }
+  | {
+      provider: "google";
+      result: "found";
+      placeName: string;
+      distanceMeters: number;
+      url: string | null;
+      accessibility: { entrance: boolean | null; restroom: boolean | null; parking: boolean | null; seating: boolean | null };
+    }
+  | { provider: "mapbox" | "google"; result: "none" | "unavailable" };
+export type ProviderHints = { hints: ProviderHint[] };
+
 export type PriorityLevel = "rendah" | "sedang" | "tinggi" | "sangat_tinggi";
 
 /** Prioritas kecamatan dari data penyandang disabilitas terdaftar; sama dengan GET /districts/priority. */
@@ -273,6 +290,20 @@ export async function getCandidates(filters: Pick<PlaceFilters, "q" | "category"
     return await get<CandidateMap>("/places/candidates", { q: filters.q, category: list(filters.category), district: list(filters.district) });
   } catch (error) {
     if (error instanceof ApiError) return null;
+    throw error;
+  }
+}
+
+/**
+ * Petunjuk penyedia untuk lokasi AksesBogor atau kandidat OSM, tidak pernah di-cache. API yang belum punya route ini,
+ * atau tempat yang tidak ditemukan, dijawab seperti petunjuk yang dimatikan (`hints: []`).
+ */
+export async function getProviderHints(target: { lokasi: string } | { osm: { type: string; id: number } }): Promise<ProviderHints> {
+  const path = "lokasi" in target ? `/places/${encodeURIComponent(target.lokasi)}/hints` : `/places/candidates/${target.osm.type}/${target.osm.id}/hints`;
+  try {
+    return await get<ProviderHints>(path);
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404) return { hints: [] };
     throw error;
   }
 }
