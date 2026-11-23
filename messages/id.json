@@ -1474,6 +1474,23 @@
         "confirm": "Tayangkan lagi"
       }
     },
+    "candidates": {
+      "link": "Kandidat OpenStreetMap",
+      "metaTitle": "Kandidat OpenStreetMap",
+      "eyebrow": "Kelola tempat",
+      "title": "Kandidat",
+      "accent": "OpenStreetMap.",
+      "intro": "Kampus, masjid, halte, dan rumah sakit dari OpenStreetMap yang belum punya data AksesBogor. Kandidat bukan tempat; buat tempat darinya setelah Anda memeriksanya sendiri.",
+      "back": "Kembali ke Kelola tempat",
+      "count": "{count, plural, =0 {Tidak ada kandidat} other {# kandidat}}",
+      "unnamed": "{category} tanpa nama",
+      "create": "Buat tempat",
+      "createLabel": "Buat tempat dari {name}",
+      "osm": "Lihat di OpenStreetMap",
+      "osmLabel": "Lihat di OpenStreetMap: {name} (tab baru)",
+      "empty": "Tidak ada kandidat yang cocok.",
+      "attribution": "Data kandidat © kontributor OpenStreetMap, lisensi ODbL."
+    },
     "filters": {
       "label": "Saring tempat",
       "search": "Cari nama tempat",
