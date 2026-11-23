@@ -219,6 +219,7 @@
       "emptyBody": "Coba kata lain, atau kurangi filter yang dipakai.",
       "noDataTitle": "Belum ada lokasi",
       "noDataBody": "Lokasi tampil di sini setelah laporan warga diperiksa tim.",
+      "candidates": "Lihat {count} tempat yang belum ada datanya di Peta",
       "onMap": "Lihat di peta"
     },
     "pagination": {
@@ -303,7 +304,12 @@
       "osmLink": "Lihat di OpenStreetMap",
       "newTab": "(tab baru)",
       "attribution": "© kontributor OpenStreetMap",
-      "emptyBody": "Lingkaran abu-abu adalah tempat dari OpenStreetMap yang belum diperiksa tim."
+      "emptyBody": "Lingkaran abu-abu adalah tempat dari OpenStreetMap yang belum diperiksa tim.",
+      "listTitle": "Belum ada data ({count})",
+      "listBody": "Tempat dari OpenStreetMap yang belum diperiksa tim. Laporkan aksesibilitasnya supaya bisa diverifikasi.",
+      "listNone": "Tidak ada tempat Belum ada data di bagian peta ini.",
+      "reportPlace": "Laporkan tempat ini: {name}",
+      "more": "Tampilkan {count} lagi"
     },
     "list": {
       "title": "Daftar lokasi",
@@ -1432,7 +1438,8 @@
         "cari": "Dari pencarian: {name}",
         "gps": "Dari lokasi perangkat, akurasi sekitar {meters} m",
         "peta": "Dari tengah peta",
-        "awal": "Lokasi saat ini"
+        "awal": "Lokasi saat ini",
+        "osm": "Dari OpenStreetMap, sering di tengah gedung. Geser pin ke pintu masuk."
       },
       "coordinates": "{lat}, {lng}",
       "noCandidate": "Belum ada titik. Cari tempatnya, pakai lokasi Anda, atau geser peta.",
@@ -1499,6 +1506,7 @@
       "tagKosong": "Pilih objek di foto {number}."
     },
     "info": {
+      "fromOsm": "Nama, kategori, dan titik awal diisi dari OpenStreetMap dan belum diperiksa. Periksa semuanya, geser pin ke pintu masuk yang paling mudah diakses, lalu pakai lokasi itu.",
       "nameLabel": "Nama tempat",
       "nameHint": "Nama yang tertulis di papan nama atau yang dikenal warga.",
       "categoryLegend": "Kategori",

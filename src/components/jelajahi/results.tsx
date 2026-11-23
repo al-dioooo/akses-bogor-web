@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { getPlaces } from "@/lib/api";
+import { getCandidates, getPlaces } from "@/lib/api";
 import { PAGE_SIZE, exploreHref, hasFilters, mapHref, type ExploreFilters } from "@/lib/filters";
 import { buttonClass } from "@/ui/button-styles";
 import { Icon } from "@/ui/icon";
@@ -70,9 +70,13 @@ export async function Results({ filters }: { filters: ExploreFilters }) {
   );
 }
 
-/** "Tidak ada hasil" dibedakan dari "belum ada data", dan selalu menawarkan langkah berikutnya. */
+/**
+ * "Tidak ada hasil" dibedakan dari "belum ada data", dan selalu menawarkan langkah berikutnya. Jelajahi hanya berisi
+ * lokasi terverifikasi; selama belum ada, halaman ini menunjuk ke kandidat "Belum ada data" di Peta (ADR-0049).
+ */
 async function Empty({ filtered }: { filtered: boolean }) {
-  const t = await getTranslations("Jelajahi");
+  const [t, candidates] = await Promise.all([getTranslations("Jelajahi"), filtered ? null : getCandidates()]);
+  const waiting = candidates?.features.length ?? 0;
   return (
     <div className="flex flex-col items-start gap-4 rounded-3xl bg-bg-sunken p-8 sm:p-10">
       <span className="grid size-12 place-items-center rounded-full bg-surface-raised text-icon-brand">
@@ -85,6 +89,12 @@ async function Empty({ filtered }: { filtered: boolean }) {
       {filtered && (
         <Link href="/jelajahi" className={buttonClass("outline", "sm")}>
           {t("filters.reset")}
+        </Link>
+      )}
+      {waiting > 0 && (
+        <Link href="/peta" className={buttonClass("outline", "sm")}>
+          <Icon icon={IconMap2} />
+          {t("results.candidates", { count: waiting })}
         </Link>
       )}
     </div>
