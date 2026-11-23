@@ -104,11 +104,10 @@ export async function PlaceDetail({ place }: { place: Place }) {
             {t("report")}
           </Link>
         </div>
-        {/* Petunjuk Mapbox dan Google, terpisah dari fasilitas yang sudah diverifikasi (ADR-0052). */}
-        <div className="max-w-3xl">
-          <ProviderHints source={{ lokasi: place.id }} level={3} />
-        </div>
       </section>
+
+      {/* Petunjuk Mapbox dan Google sebagai bagian tersendiri, terpisah dari fasilitas yang sudah diverifikasi (ADR-0052). */}
+      <ProviderHints source={{ lokasi: place.id }} level={2} className="max-w-3xl" />
 
       {place.description && (
         <section aria-labelledby="judul-deskripsi" className="flex max-w-3xl flex-col gap-3">
