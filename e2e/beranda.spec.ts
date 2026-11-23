@@ -49,3 +49,65 @@ test("the hero motion can be paused and resumed", async ({ page }) => {
   await page.getByRole("button", { name: "Jalankan gerakan" }).click();
   await expect(pause).toBeVisible();
 });
+
+// Pita jalan di bawah hero (issue #196): angka di tengah kolomnya, pita simetris di layar, dan mulai 1024 px setiap
+// blok angka di tengah tinggi pita, menutupi marka jalan yang lewat di belakangnya.
+for (const width of [320, 360, 768, 1024, 1280, 1440]) {
+  test(`the road band under the hero is centred at ${width} px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/");
+    const band = page.getByRole("region", { name: "AksesBogor dalam angka" });
+    await expect(band.getByRole("definition")).toHaveText(["7", "5 dari 7", "3"]);
+    const layout = await band.evaluate((section) => {
+      const center = (rect: DOMRect) => rect.left + rect.width / 2;
+      const text = (element: Element) => {
+        // Lebar teksnya sendiri, bukan lebar kotaknya.
+        const range = document.createRange();
+        range.selectNodeContents(element);
+        return range.getBoundingClientRect();
+      };
+      const list = section.querySelector("dl")!.getBoundingClientRect();
+      const box = section.getBoundingClientRect();
+      const columns = list.width / (getComputedStyle(section.querySelector("dl")!).gridTemplateColumns.split(" ").length);
+      const items = [...section.querySelectorAll("dl > div")].map((item, index) => {
+        const rect = item.getBoundingClientRect();
+        return {
+          column: columns === list.width ? center(list) : list.left + columns * (index + 0.5),
+          block: center(rect),
+          term: center(text(item.querySelector("dt")!)),
+          value: center(text(item.querySelector("dd")!)),
+          top: rect.top,
+          bottom: rect.bottom,
+          background: getComputedStyle(item).backgroundColor,
+        };
+      });
+      const line = getComputedStyle(section, "::before");
+      return {
+        left: list.left,
+        right: document.documentElement.clientWidth - list.right,
+        items,
+        top: box.top,
+        bottom: box.bottom,
+        middle: box.top + box.height / 2,
+        road: getComputedStyle(section).backgroundColor,
+        line: line.content !== "none" ? line.backgroundPosition : null,
+      };
+    });
+    expect(Math.abs(layout.left - layout.right)).toBeLessThanOrEqual(1);
+    for (const item of layout.items) {
+      expect(Math.abs(item.block - item.column)).toBeLessThanOrEqual(1);
+      expect(Math.abs(item.value - item.column)).toBeLessThanOrEqual(1);
+      expect(Math.abs(item.term - item.column)).toBeLessThanOrEqual(1);
+    }
+    if (width >= 1024) {
+      expect(layout.line).toContain("50%");
+      for (const item of layout.items) {
+        // Blok angka di tengah tinggi pita dan menutupi marka dengan warna aspal.
+        expect(Math.abs(item.top - layout.top - (layout.bottom - item.bottom))).toBeLessThanOrEqual(1);
+        expect(item.top).toBeLessThan(layout.middle);
+        expect(item.bottom).toBeGreaterThan(layout.middle);
+        expect(item.background).toBe(layout.road);
+      }
+    }
+  });
+}
