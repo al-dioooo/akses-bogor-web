@@ -55,12 +55,13 @@ test("the place page says when there is no hint and when hints cannot load", asy
 
 test("nothing is shown while hints are switched off in the API, not even while loading or in the server HTML", async ({ browser }) => {
   const { context, page } = await visitor(browser, NO_HINTS_IP);
-  // Crawlers and the first paint never get the section, whatever the API says.
+  // Crawlers and the first paint never get the section, whatever the API says: the server HTML has the facilities
+  // but no rendered hints section (the title text itself also sits in the serialized messages, so look for its id).
   for (const ip of [NO_HINTS_IP, "203.0.113.10"]) {
     const html = await (await page.request.get(`/lokasi/${HALTE}`, { headers: { "x-forwarded-for": ip } })).text();
-    expect(html).toContain("Fasilitas");
-    expect(html).not.toContain(TITLE);
-    expect(html).not.toContain("Memuat petunjuk");
+    expect(html).toContain('id="judul-fasilitas"');
+    expect(html).not.toContain(`id="petunjuk-lokasi-${HALTE}"`);
+    expect(html).not.toMatch(/>Memuat petunjuk/);
   }
   // Hold the answer back to look at the page while it is loading.
   let release = () => {};
@@ -151,7 +152,12 @@ test("a candidate the API no longer knows shows no hints but does not switch hin
   await expect(kampus.getByRole("region", { name: TITLE })).toHaveCount(0);
 
   await kampus.getByRole("button", { name: "Tutup ringkasan" }).click();
-  await main(page).getByRole("button", { name: "Tunjukkan di peta: Masjid kandidat A" }).click();
+  // The list follows the map view: wait until the camera has settled on the candidate, then zoom back out to the city.
+  await expect(main(page).getByRole("heading", { name: "Belum ada data (1)" })).toBeVisible();
+  await main(page).getByRole("button", { name: "Tampilkan seluruh Kota Bogor" }).click();
+  const next = main(page).getByRole("button", { name: "Tunjukkan di peta: Masjid kandidat A" });
+  await expect(next).toBeVisible();
+  await next.click();
   const masjid = main(page).getByRole("region", { name: "Masjid kandidat A" });
   await expect(masjid.getByText("Menurut Mapbox: bisa dimasuki kursi roda")).toBeVisible();
   await context.close();
