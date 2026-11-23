@@ -8,6 +8,14 @@ const nextConfig: NextConfig = {
   // 127.0.0.1 (alamat bind di Evergarden, ADR-0048) dengan localhost, sehingga rewrite ke /lokasi/tidak-ada dianggap
   // eksternal dan diproxy lewat https di balik Cloudflare Tunnel. Header `rsc` juga tidak lagi dibuang dari proxy.
   skipProxyUrlNormalize: true,
+  // Halaman Disabilitas dan Tips dihapus (issue #200). Tautan lama yang sudah dibagikan dialihkan permanen (308) ke
+  // Aksesibilitas, halaman edukasi yang tersisa.
+  async redirects() {
+    return [
+      { source: "/disabilitas", destination: "/aksesibilitas", permanent: true },
+      { source: "/tips", destination: "/aksesibilitas", permanent: true },
+    ];
+  },
   turbopack: {
     rules: {
       "*.css": {
