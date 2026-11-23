@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { absoluteUrl, isIndexable, NOINDEX, publicRobots, siteUrl } from "./situs";
+import { absoluteUrl, configuredSiteUrl, isIndexable, NOINDEX, publicRobots, siteUrl } from "./situs";
 
 describe("siteUrl", () => {
   it("uses SITE_URL and keeps only its origin", () => {
@@ -33,6 +33,18 @@ describe("siteUrl", () => {
   it("ignores the deployment addresses Vercel used to set", () => {
     const env = { VERCEL_ENV: "production", VERCEL_PROJECT_PRODUCTION_URL: "akses-bogor.aldio.dev", VERCEL_URL: "x.vercel.app" };
     expect(siteUrl(env).href).toBe("http://localhost:3000/");
+  });
+});
+
+describe("configuredSiteUrl", () => {
+  it("returns only the origin of SITE_URL, and null without a fallback when it is empty", () => {
+    expect(configuredSiteUrl({ SITE_URL: " https://akses-bogor.aldio.dev/beranda/ " })?.origin).toBe("https://akses-bogor.aldio.dev");
+    expect(configuredSiteUrl({})).toBeNull();
+    expect(configuredSiteUrl({ SITE_URL: "  " })).toBeNull();
+  });
+
+  it("rejects a SITE_URL that is not an http address", () => {
+    expect(() => configuredSiteUrl({ SITE_URL: "akses-bogor.aldio.dev" })).toThrow(/SITE_URL/);
   });
 });
 

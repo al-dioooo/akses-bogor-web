@@ -285,6 +285,26 @@
       "detail": "Lihat detail lokasi",
       "close": "Tutup ringkasan"
     },
+    "kandidat": {
+      "legend": "Belum ada data · OpenStreetMap, belum diperiksa tim",
+      "layer": "Lapisan Belum ada data",
+      "unnamed": "{category} tanpa nama",
+      "noData": "Belum ada data aksesibilitas",
+      "body": "Tempat ini dari OpenStreetMap dan belum diperiksa tim AksesBogor. Laporkan aksesibilitasnya supaya bisa diverifikasi.",
+      "osmSays": "Menurut OpenStreetMap: {value}",
+      "wheelchair": {
+        "yes": "bisa dimasuki kursi roda",
+        "limited": "sebagian bisa dimasuki kursi roda",
+        "no": "tidak bisa dimasuki kursi roda",
+        "designated": "dirancang untuk kursi roda",
+        "other": "tag wheelchair bernilai “{value}”"
+      },
+      "report": "Laporkan tempat ini",
+      "osmLink": "Lihat di OpenStreetMap",
+      "newTab": "(tab baru)",
+      "attribution": "© kontributor OpenStreetMap",
+      "emptyBody": "Lingkaran abu-abu adalah tempat dari OpenStreetMap yang belum diperiksa tim."
+    },
     "list": {
       "title": "Daftar lokasi",
       "inView": "Lokasi di tampilan peta",
