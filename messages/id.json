@@ -1307,6 +1307,7 @@
         "antrean": "Antrean",
         "jawaban": "Menunggu jawaban",
         "cekUlang": "Perlu dicek ulang",
+        "tempat": "Kelola tempat",
         "tim": "Tim verifikator",
         "pengaturan": "Pengaturan akun"
       },
@@ -1420,6 +1421,58 @@
       "eyebrow": "Akun",
       "title": "Pengaturan",
       "accent": "akun."
+    }
+  },
+  "KelolaTempat": {
+    "metaTitle": "Kelola tempat",
+    "eyebrow": "Khusus admin",
+    "title": "Kelola",
+    "accent": "tempat.",
+    "intro": "Semua tempat AksesBogor, termasuk yang diturunkan. Perubahan dari sini tayang langsung dengan label \"Diterbitkan langsung oleh admin\".",
+    "loading": "Memuat tempat…",
+    "adminOnly": "Halaman ini khusus admin.",
+    "filters": {
+      "label": "Saring tempat",
+      "search": "Cari nama tempat",
+      "category": "Kategori",
+      "allCategories": "Semua kategori",
+      "district": "Kecamatan",
+      "allDistricts": "Semua kecamatan",
+      "status": "Status",
+      "allStatuses": "Semua status",
+      "origin": "Asal",
+      "allOrigins": "Semua asal",
+      "originTim": "Diperiksa tim",
+      "originAdmin": "Langsung oleh admin",
+      "published": "Tayang",
+      "allPublished": "Tayang dan diturunkan",
+      "publishedYa": "Tayang",
+      "publishedTidak": "Diturunkan",
+      "apply": "Terapkan",
+      "reset": "Hapus saringan"
+    },
+    "origin": {
+      "tim": "Diperiksa tim",
+      "admin": "Langsung oleh admin"
+    },
+    "published": {
+      "ya": "Tayang",
+      "tidak": "Diturunkan"
+    },
+    "count": "{count, plural, =0 {Tidak ada tempat} other {# tempat}}",
+    "updated": "Diperbarui {date}",
+    "unpublishedReason": "Alasan diturunkan: {reason}",
+    "emptyTitle": "Tidak ada tempat yang cocok",
+    "emptyBody": "Ubah atau hapus saringan untuk melihat tempat lain.",
+    "noneTitle": "Belum ada tempat",
+    "noneBody": "Tempat yang diterbitkan verifikator atau admin muncul di sini.",
+    "pageEmpty": "Halaman ini kosong.",
+    "firstPage": "Kembali ke halaman pertama",
+    "pager": {
+      "label": "Halaman daftar tempat",
+      "previous": "Sebelumnya",
+      "next": "Berikutnya",
+      "page": "Halaman {page} dari {pages}"
     }
   },
   "Laporkan": {
