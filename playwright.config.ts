@@ -11,6 +11,8 @@ export default defineConfig({
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? [["github"], ["html", { open: "never" }]] : "list",
   use: {
+    // Browser tetap membuka localhost: Next.js menulis asal 127.0.0.1 sebagai localhost di `request.nextUrl`, sehingga
+    // asal 127.0.0.1 ditolak pemeriksaan asal di src/lib/laporan-proxy.ts.
     baseURL: `http://localhost:${port}`,
     locale: "id-ID",
     timezoneId: "Asia/Jakarta",
@@ -28,13 +30,16 @@ export default defineConfig({
       reuseExistingServer: !process.env.CI,
     },
     {
-      command: `pnpm build && pnpm start --port ${port}`,
-      url: `http://localhost:${port}`,
+      // Di-bind ke 127.0.0.1 seperti produksi, yang dibuka lewat Cloudflare Tunnel (ADR-0048, issue #156).
+      command: `pnpm build && pnpm start --hostname 127.0.0.1 --port ${port}`,
+      url: `http://127.0.0.1:${port}`,
       // Client ID palsu supaya tombol Google tampil; skripnya diganti tiruan di e2e/google.ts.
       env: {
         API_URL: `http://localhost:${mockApiPort}`,
         NEXT_PUBLIC_GOOGLE_CLIENT_ID: "client-tiruan.apps.googleusercontent.com",
         WEB_SERVER_SECRET: webServerSecret,
+        // Domain publik seperti di produksi. Pemeriksaan asal POST menerima asal ini dan asal server sendiri (issue #165).
+        SITE_URL: "https://akses-bogor.aldio.dev",
       },
       reuseExistingServer: !process.env.CI,
       timeout: 180_000,

@@ -61,6 +61,19 @@ export type MapFeature = {
 
 export type PlaceMap = { type: "FeatureCollection"; features: MapFeature[] };
 
+/**
+ * Kandidat "Belum ada data" dari OpenStreetMap (ADR-0049): tempat yang belum punya lokasi AksesBogor. Bukan lokasi
+ * terverifikasi dan tidak punya status; `wheelchair` adalah nilai mentah tag OSM. Id-nya tipe dan id OSM, mis. `node/1`.
+ */
+export type CandidateFeature = {
+  type: "Feature";
+  id: string;
+  geometry: { type: "Point"; coordinates: [number, number] };
+  properties: { osmType: "node" | "way" | "relation"; osmId: number; name: string | null; category: Category; district: { slug: string; name: string }; wheelchair: string | null };
+};
+export type CandidateSource = { title: string; license: string; attribution: string; url: string; retrievedAt: string | null };
+export type CandidateMap = { type: "FeatureCollection"; features: CandidateFeature[]; source: CandidateSource };
+
 export type PriorityLevel = "rendah" | "sedang" | "tinggi" | "sangat_tinggi";
 
 /** Prioritas kecamatan dari data penyandang disabilitas terdaftar; sama dengan GET /districts/priority. */
@@ -250,6 +263,19 @@ export const getPlaces = (filters: PlaceFilters = {}) =>
 /** Semua titik yang cocok dengan filter, paling banyak 2000 (FR-05). */
 export const getMapPlaces = (filters: Omit<PlaceFilters, "limit" | "offset"> = {}) =>
   get<PlaceMap>("/places/map", filterQuery(filters));
+
+/**
+ * Kandidat yang cocok dengan filter nama, kategori, dan kecamatan, atau `null` bila API belum punya route ini atau
+ * tidak terhubung. Peta tetap tampil tanpa lapisannya.
+ */
+export async function getCandidates(filters: Pick<PlaceFilters, "q" | "category" | "district"> = {}): Promise<CandidateMap | null> {
+  try {
+    return await get<CandidateMap>("/places/candidates", { q: filters.q, category: list(filters.category), district: list(filters.district) });
+  } catch (error) {
+    if (error instanceof ApiError) return null;
+    throw error;
+  }
+}
 
 /** Token peta untuk browser. API menjawab 503 `peta_belum_diatur` bila Mapbox belum diatur di server. */
 export const getMapToken = () => get<MapToken>("/map/token");
