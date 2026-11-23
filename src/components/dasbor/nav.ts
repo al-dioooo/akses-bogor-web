@@ -1,10 +1,10 @@
 import type { Role } from "@/lib/akun";
-import { IconClipboardCheck, IconLayoutDashboard, IconMessage, IconMessageReport, IconRefresh, IconRoute, IconSettings, IconUsers, type Glyph } from "@/ui/icons";
+import { IconBuilding, IconClipboardCheck, IconLayoutDashboard, IconMessage, IconMessageReport, IconRefresh, IconRoute, IconSettings, IconUsers, type Glyph } from "@/ui/icons";
 
 // Menu dasbor akun (ADR-0046). Bagian verifikasi dan admin hanya disusun untuk peran itu; halaman dan API tetap
 // memeriksa peran sendiri (ADR-0035), jadi menu ini hanya memilih apa yang ditampilkan.
 
-export type DashboardKey = "ringkasan" | "laporan" | "bantu" | "antrean" | "jawaban" | "cekUlang" | "tim" | "pengaturan";
+export type DashboardKey = "ringkasan" | "laporan" | "bantu" | "antrean" | "jawaban" | "cekUlang" | "tempat" | "tim" | "pengaturan";
 /** "utama" tidak berlabel: Ringkasan berdiri sendiri di atas bagian lain. */
 export type DashboardGroupKey = "utama" | "kontribusi" | "verifikasi" | "admin" | "akun";
 
@@ -33,7 +33,15 @@ export function dashboardGroups({ role, agent }: { role: Role; agent: boolean })
       ],
     });
   }
-  if (role === "admin") groups.push({ key: "admin", items: [{ key: "tim", href: "/verifikasi/tim", icon: IconUsers }] });
+  if (role === "admin") {
+    groups.push({
+      key: "admin",
+      items: [
+        { key: "tempat", href: "/verifikasi/tempat", icon: IconBuilding },
+        { key: "tim", href: "/verifikasi/tim", icon: IconUsers },
+      ],
+    });
+  }
   groups.push({ key: "akun", items: [{ key: "pengaturan", href: "/akun/pengaturan", icon: IconSettings }] });
   return groups;
 }
@@ -42,6 +50,7 @@ export function dashboardGroups({ role, agent }: { role: Role; agent: boolean })
 const SUBPAGES: Partial<Record<DashboardKey, string[]>> = {
   laporan: ["/akun/laporan/"],
   antrean: ["/verifikasi/laporan/"],
+  tempat: ["/verifikasi/tempat/"],
   pengaturan: ["/akun/hapus"],
 };
 
