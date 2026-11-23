@@ -1832,6 +1832,15 @@
       ],
       "mine": "Lihat Laporan saya",
       "another": "Laporkan tempat lain",
+      "direct": {
+        "eyebrow": "Terbit langsung",
+        "title": "Tempat ini",
+        "accent": "sudah tayang",
+        "intro": "Laporan ini diterbitkan langsung oleh admin tanpa pemeriksaan verifikator kedua, dan tempatnya tampil dengan label \"Diterbitkan langsung oleh admin\".",
+        "unknown": "Disimpan sebagai Belum diketahui karena belum ada foto yang sesuai: {facilities}.",
+        "view": "Lihat tempat",
+        "manage": "Buka di Kelola tempat"
+      },
       "loading": "Memuat laporan…"
     },
     "peta": {
