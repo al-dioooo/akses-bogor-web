@@ -1,7 +1,9 @@
 import mapboxgl, { type GeoJSONSource, type LngLatBoundsLike } from "mapbox-gl";
-import type { DistrictBoundaries, MapToken, PriorityLevel } from "@/lib/api";
+import { CATEGORIES, type Category, type DistrictBoundaries, type MapToken, type PriorityLevel } from "@/lib/api";
 import { LEVEL_COLOR, LEVELS } from "@/components/prioritas/levels";
 import { motionReduced } from "@/lib/preferences";
+import { CATEGORY_VAR } from "@/ui/category-pin";
+import { CATEGORY_ICON } from "@/ui/place-icons";
 import type { MapCandidate, MapPlace } from "../places";
 import { NO_INSETS, cameraPadding, isVisible, visibleRect, type Insets, type Rect } from "./area";
 
@@ -16,6 +18,11 @@ const AREA: LngLatBoundsLike = [
   [107.1, -6.3],
 ];
 const STYLE = { terang: "mapbox://styles/mapbox/light-v11", gelap: "mapbox://styles/mapbox/dark-v11" };
+// Mulai zoom ini lingkaran kandidat cukup besar untuk memuat ikon kategorinya (issue #199).
+const CANDIDATE_ICON_ZOOM = 14;
+// Ikon kategori di dalam lingkaran kandidat: 14 px, digambar dua kali lebih rapat untuk layar tajam.
+const CANDIDATE_ICON_PX = 14;
+const CANDIDATE_ICON_RATIO = 2;
 // Token baru diminta lima menit sebelum kedaluwarsa; bila gagal, dicoba lagi tiap menit.
 const RENEW_BEFORE_MS = 5 * 60_000;
 const RETRY_MS = 60_000;
@@ -89,6 +96,21 @@ function withToken(url: string, token: string) {
   const next = new URL(url);
   next.searchParams.set("access_token", token);
   return next.toString();
+}
+
+/** Ikon kategori (path Tabler 24 × 24, garis 1.75 seperti komponen Icon) sebagai gambar untuk lapisan simbol GL. */
+function categoryIcon(category: Category, color: string): ImageData {
+  const size = CANDIDATE_ICON_PX * CANDIDATE_ICON_RATIO;
+  const canvas = document.createElement("canvas");
+  canvas.width = canvas.height = size;
+  const context = canvas.getContext("2d")!;
+  context.scale(size / 24, size / 24);
+  context.strokeStyle = color;
+  context.lineWidth = 1.75;
+  context.lineCap = "round";
+  context.lineJoin = "round";
+  for (const d of CATEGORY_ICON[category]) context.stroke(new Path2D(d));
+  return context.getImageData(0, 0, size, size);
 }
 
 /** Peta Mapbox GL JS untuk halaman Peta (ADR-0016): marker HTML berupa tombol, tanpa rotasi dan kemiringan. */
@@ -253,8 +275,10 @@ export function mountMap(options: Options): MapHandle {
   };
   map.on("style.load", drawPriority);
 
-  // Kandidat: lingkaran abu-abu berlubang, lebih kecil dari marker dan tanpa warna status. Gaya baru menghapus lapisan,
-  // jadi lapisan digambar ulang setiap kali gaya selesai dimuat; selama gaya belum siap, gambar menunggu peta diam.
+  // Kandidat: lingkaran berlubang bergaris warna kategori (issue #199), lebih kecil dari marker dan tanpa warna status.
+  // Mulai CANDIDATE_ICON_ZOOM lingkarannya membesar dan memuat ikon kategori, supaya kategori tidak ditandai warna saja.
+  // Gaya baru (juga saat tema berganti) menghapus lapisan dan gambar ikon, jadi keduanya digambar ulang setiap kali gaya
+  // selesai dimuat, dengan warna tema saat itu; selama gaya belum siap, gambar menunggu peta diam.
   let waiting = false;
   const drawCandidates = () => {
     if (!map.isStyleLoaded()) {
@@ -268,36 +292,53 @@ export function mountMap(options: Options): MapHandle {
       return;
     }
     if (!candidates) {
-      for (const id of ["kandidat-pilih", "kandidat"]) if (map.getLayer(id)) map.removeLayer(id);
+      for (const id of ["kandidat-ikon", "kandidat-pilih", "kandidat"]) if (map.getLayer(id)) map.removeLayer(id);
       if (map.getSource("kandidat")) map.removeSource("kandidat");
       return;
     }
     const data = {
       type: "FeatureCollection" as const,
-      features: candidates.items.map((c) => ({ type: "Feature" as const, geometry: { type: "Point" as const, coordinates: [c.lng, c.lat] }, properties: { id: c.id } })),
+      features: candidates.items.map((c) => ({ type: "Feature" as const, geometry: { type: "Point" as const, coordinates: [c.lng, c.lat] }, properties: { id: c.id, category: c.category } })),
     };
     const source = map.getSource("kandidat") as GeoJSONSource | undefined;
     if (source) source.setData(data);
     else {
       const css = getComputedStyle(document.documentElement);
       const color = (name: string) => css.getPropertyValue(name).trim();
+      for (const category of CATEGORIES) {
+        const image = categoryIcon(category, color(CATEGORY_VAR[category]));
+        if (map.hasImage(`kategori-${category}`)) map.updateImage(`kategori-${category}`, image);
+        else map.addImage(`kategori-${category}`, image, { pixelRatio: CANDIDATE_ICON_RATIO });
+      }
       map.addSource("kandidat", { type: "geojson", data, attribution: candidates.attribution });
       map.addLayer({
         id: "kandidat",
         type: "circle",
         source: "kandidat",
         paint: {
-          "circle-radius": ["interpolate", ["linear"], ["zoom"], 10, 3.5, 15, 6],
+          "circle-radius": ["interpolate", ["linear"], ["zoom"], 10, 3.5, CANDIDATE_ICON_ZOOM - 0.01, 6, CANDIDATE_ICON_ZOOM, 11],
           "circle-color": color("--color-bg-canvas"),
-          "circle-stroke-color": color("--color-icon-secondary"),
-          "circle-stroke-width": 2.5,
+          "circle-stroke-color": ["match", ["get", "category"], ...CATEGORIES.flatMap((c) => [c, color(CATEGORY_VAR[c])]), color("--color-icon-secondary")] as never,
+          "circle-stroke-width": ["step", ["zoom"], 2.5, CANDIDATE_ICON_ZOOM, 3],
         },
       });
       map.addLayer({
         id: "kandidat-pilih",
         type: "circle",
         source: "kandidat",
-        paint: { "circle-radius": 9, "circle-color": color("--color-bg-canvas"), "circle-stroke-color": color("--color-text-primary"), "circle-stroke-width": 4 },
+        paint: {
+          "circle-radius": ["step", ["zoom"], 9, CANDIDATE_ICON_ZOOM, 14],
+          "circle-color": color("--color-bg-canvas"),
+          "circle-stroke-color": color("--color-text-primary"),
+          "circle-stroke-width": 4,
+        },
+      });
+      map.addLayer({
+        id: "kandidat-ikon",
+        type: "symbol",
+        source: "kandidat",
+        minzoom: CANDIDATE_ICON_ZOOM,
+        layout: { "icon-image": ["concat", "kategori-", ["get", "category"]], "icon-allow-overlap": true, "icon-ignore-placement": true },
       });
     }
     map.setFilter("kandidat-pilih", ["==", ["get", "id"], selected ?? ""]);

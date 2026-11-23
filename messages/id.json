@@ -238,6 +238,8 @@
     "count": "Menampilkan {total} lokasi",
     "asList": "Lihat sebagai daftar",
     "legend": "Legenda status",
+    "legendCategory": "Legenda kategori",
+    "legendCategoryHint": "Lencana kecil di marker dan warna lingkaran Belum ada data. Ikon kategori muncul di lingkaran saat peta diperbesar.",
     "cari": {
       "placeholder": "Cari nama tempat",
       "filterTitle": "Filter lokasi",
@@ -303,7 +305,7 @@
       "osmLink": "Lihat di OpenStreetMap",
       "newTab": "(tab baru)",
       "attribution": "© kontributor OpenStreetMap",
-      "emptyBody": "Lingkaran abu-abu adalah tempat dari OpenStreetMap yang belum diperiksa tim.",
+      "emptyBody": "Lingkaran berlubang adalah tempat dari OpenStreetMap yang belum diperiksa tim.",
       "listTitle": "Belum ada data ({count})",
       "listBody": "Tempat dari OpenStreetMap yang belum diperiksa tim. Laporkan aksesibilitasnya supaya bisa diverifikasi.",
       "listNone": "Tidak ada tempat Belum ada data di bagian peta ini.",

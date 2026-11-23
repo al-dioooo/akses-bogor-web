@@ -32,7 +32,7 @@ export function CandidateSummary({ candidate, headingRef, onClose }: { candidate
         {candidate.name ?? t("kandidat.unnamed", { category: tk(candidate.category) })}
       </h3>
       <p className="inline-flex items-center gap-2 rounded-full border-2 border-dashed border-border-strong px-3 py-1 text-sm font-bold">
-        <CandidateDot />
+        <CandidateDot category={candidate.category} />
         {t("kandidat.noData")}
       </p>
       <p className="text-text-secondary">{t("kandidat.body")}</p>
