@@ -335,7 +335,11 @@ body {
   }
 }
 
-/* Garis putus-putus di tengah pita jalan, seperti marka jalan di ilustrasi. */
+/*
+ * Garis putus-putus di tengah pita jalan, seperti marka jalan di ilustrasi. Satu ruas 44 px di tengah ubin 92 px, dan
+ * ubinnya diulang dari tengah pita, jadi marka simetris di kiri dan kanan dan tepat di tengah tinggi pita (issue #196).
+ * Angka di RoadStats berlatar aspal dan ada di atas marka, jadi marka tidak memotong teks.
+ */
 .road-band {
   position: relative;
   @media (width >= 64rem) {
@@ -344,7 +348,9 @@ body {
       position: absolute;
       inset: 50% 0 auto;
       height: 4px;
-      background: repeating-linear-gradient(90deg, var(--color-text-on-inverse-secondary) 0 44px, transparent 44px 92px);
+      translate: 0 -50%;
+      background: linear-gradient(90deg, transparent 24px, var(--color-text-on-inverse-secondary) 24px 68px, transparent 68px) center / 92px
+        100% repeat-x;
       opacity: 0.6;
     }
   }
@@ -383,9 +389,9 @@ body {
 }
 
 /*
- * Peta layar penuh (FR-05). Halaman tidak digulir: header lebih ramping dan berlatar, footer disembunyikan, dan main
- * mengisi sisa layar. Peta ada di lapisan paling bawah; pencarian, lapisan prioritas, kontrol, dan panel daftar
- * mengambang di atasnya sebagai item grid. Semua permukaan opak (ADR-0027), jadi kontras teks tidak bergantung pada tile.
+ * Peta layar penuh (FR-05). Halaman tidak digulir: header berlatar dan setinggi header halaman lain (issue #195), footer
+ * disembunyikan, dan main mengisi sisa layar. Peta ada di lapisan paling bawah; pencarian, lapisan prioritas, kontrol,
+ * dan panel daftar mengambang di atasnya sebagai item grid. Semua permukaan opak (ADR-0027), jadi kontras teks tidak bergantung pada tile.
  * Rute Peta yang ditinggalkan tetap terpasang tetapi tersembunyi dan diberi data-rute-tersembunyi (RouteHiddenMarker),
  * supaya halaman berikutnya tidak ikut terkunci.
  */
@@ -396,9 +402,6 @@ body:has(> .peta-app:not([data-rute-tersembunyi])) {
   & > header {
     border-bottom-color: var(--color-border-subtle);
     background-color: var(--color-bg-canvas);
-  }
-  & > header > div {
-    min-height: 3.75rem;
   }
   & > footer {
     display: none;

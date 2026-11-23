@@ -46,8 +46,6 @@ type PageNamespace =
   | "Jelajahi"
   | "Peta"
   | "Aksesibilitas"
-  | "Disabilitas"
-  | "Tips"
   | "Tentang"
   | "KebijakanPrivasi"
   | "SyaratLayanan"

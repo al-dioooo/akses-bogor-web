@@ -1,7 +1,8 @@
 import { useTranslations } from "next-intl";
-import { STATUSES } from "@/lib/api";
+import { CATEGORIES, STATUSES } from "@/lib/api";
 import { buttonClass } from "@/ui/button-styles";
 import { Icon } from "@/ui/icon";
+import { CategoryPin } from "@/ui/category-pin";
 import { IconCheck } from "@/ui/icons";
 import { StatusPin } from "@/ui/status-pin";
 import { CandidateDot } from "./candidate-dot";
@@ -40,6 +41,31 @@ export function MapLegend({ candidates }: { candidates?: { on: boolean; onToggle
           </button>
         </div>
       )}
+    </section>
+  );
+}
+
+/**
+ * Legenda kategori (issue #199): lencana yang sama dengan di marker, dengan nama kategorinya. Warna kategori selalu
+ * berpasangan dengan ikon, dan status tetap ditandai warna serta ikon status.
+ */
+export function CategoryLegend() {
+  const t = useTranslations("Peta");
+  const tk = useTranslations("Kategori");
+  return (
+    <section aria-labelledby="judul-legenda-kategori" className="flex flex-col gap-2">
+      <h3 id="judul-legenda-kategori" className="lbl">
+        {t("legendCategory")}
+      </h3>
+      <ul className="grid grid-cols-2 gap-x-4 gap-y-2">
+        {CATEGORIES.map((category) => (
+          <li key={category} className="flex items-center gap-2 text-sm font-semibold">
+            <CategoryPin category={category} className="size-6" />
+            {tk(category)}
+          </li>
+        ))}
+      </ul>
+      <p className="text-sm text-text-secondary">{t("legendCategoryHint")}</p>
     </section>
   );
 }

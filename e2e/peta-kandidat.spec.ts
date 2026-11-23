@@ -62,8 +62,8 @@ test("a candidate on the map opens a card without a status, with Laporkan tempat
   await page.goto("/peta");
   await expect(main(page).getByRole("group", { name: "Kontrol peta" })).toBeVisible({ timeout: 15_000 });
   await expect(credit(page)).toBeVisible();
-  // Tanpa lokasi terverifikasi, panel menjelaskan lingkaran abu-abu itu.
-  await expect(main(page).getByText(/^Lingkaran abu-abu adalah tempat dari OpenStreetMap/)).toBeVisible();
+  // Tanpa lokasi terverifikasi, panel menjelaskan lingkaran berlubang itu.
+  await expect(main(page).getByText(/^Lingkaran berlubang adalah tempat dari OpenStreetMap/)).toBeVisible();
 
   const center = await visibleCenter(page);
   const heading = main(page).getByRole("heading", { level: 3, name: "Masjid kandidat A" });

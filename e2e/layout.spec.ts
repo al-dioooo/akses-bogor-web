@@ -44,7 +44,7 @@ async function expectHeaderFits(page: Page) {
 test.describe("header on desktop widths", () => {
   test.skip(({ isMobile }) => isMobile, "phones always use the bottom nav");
 
-  // Menu utama tampil mulai 1280 px; di bawahnya tujuh menu dan tombol kanan tidak muat, jadi Bottom nav dipakai.
+  // Menu utama tampil mulai 1280 px; di bawahnya Bottom nav dipakai.
   for (const width of [1024, 1152, 1280, 1440]) {
     test(`has no horizontal scroll at ${width} px, signed out and signed in`, async ({ page }) => {
       await page.setViewportSize({ width, height: 800 });
@@ -60,4 +60,15 @@ test.describe("header on desktop widths", () => {
       await expectHeaderFits(page);
     });
   }
+});
+
+// Peta langsung setelah Beranda, sebelum Jelajahi (issue #198), di setiap menu yang memuat keduanya.
+test("menus list Beranda, Peta, then Jelajahi", async ({ page, isMobile }) => {
+  await page.goto("/tentang");
+  const menu = page.getByRole("navigation", { name: isMobile ? "Menu cepat" : "Menu utama" });
+  await expect(menu.getByRole("link").first()).toBeVisible();
+  const names = await menu.getByRole("link").allInnerTexts();
+  expect(names.slice(0, 3).map((name) => name.trim())).toEqual(["Beranda", "Peta", "Jelajahi"]);
+  const footer = page.getByRole("contentinfo").locator("div", { has: page.getByRole("heading", { name: "Jelajahi", exact: true }) }).last();
+  await expect(footer.getByRole("link")).toHaveText(["Beranda", "Peta", "Jelajahi", "Tanya rute", "Laporkan tempat"]);
 });

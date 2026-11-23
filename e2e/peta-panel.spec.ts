@@ -27,7 +27,9 @@ async function openMap(page: Page, path = "/peta") {
   await expect(page.getByRole("status").filter({ hasText: /^(Menampilkan \d+ lokasi|\d+ dari \d+ lokasi)$/ })).toBeVisible();
 }
 
-test("the map fills the screen under a slim header, without the footer or any scrolling", async ({ page }) => {
+test("the map fills the screen under the same header as other pages, without the footer or any scrolling", async ({ page }) => {
+  await page.goto("/tentang");
+  const elsewhere = await page.evaluate(() => document.querySelector("body > header")!.getBoundingClientRect().height);
   await openMap(page);
   await expect(page.getByRole("contentinfo")).toBeHidden();
   const layout = await page.evaluate(() => {
@@ -43,12 +45,35 @@ test("the map fills the screen under a slim header, without the footer or any sc
       width: window.innerWidth,
     };
   });
-  expect(layout.header).toBeLessThanOrEqual(64);
+  // Header setinggi di halaman lain (issue #195).
+  expect(layout.header).toBe(elsewhere);
   expect(layout.mainTop).toBeCloseTo(layout.header, 0);
   expect(layout.mainBottom).toBeCloseTo(layout.height, 0);
   expect(layout.scrollHeight).toBeLessThanOrEqual(layout.height);
   expect(layout.scrollWidth).toBeLessThanOrEqual(layout.width);
 });
+
+// Tinggi header sama di Peta, Beranda, dan Jelajahi di setiap lebar, termasuk ponsel landscape (issue #195).
+for (const [width, height] of [
+  [320, 568],
+  [360, 740],
+  [667, 375],
+  [768, 1024],
+  [1024, 768],
+  [1280, 800],
+  [1440, 900],
+]) {
+  test(`at ${width} × ${height} px the header is as tall on Peta as on Beranda and Jelajahi`, async ({ page }) => {
+    await page.setViewportSize({ width, height });
+    const heights: number[] = [];
+    for (const path of ["/", "/jelajahi", "/peta"]) {
+      await page.goto(path);
+      await expect(page.getByRole("banner")).toBeVisible();
+      heights.push(await page.evaluate(() => document.querySelector("body > header")!.getBoundingClientRect().height));
+    }
+    expect(new Set(heights).size, heights.join(", ")).toBe(1);
+  });
+}
 
 for (const width of [320, 360, 1024, 1280]) {
   test(`at ${width} px nothing scrolls sideways and the panel clears the bottom nav`, async ({ page }) => {
@@ -331,8 +356,8 @@ for (const viewport of [
     await expect.poll(() => status.evaluate(uncovered)).toBe(true);
     await expect(page.getByText(/dari 0 lokasi|Tidak ada lokasi yang cocok/)).toHaveCount(0);
     await openList(page);
-    // Kandidat "Belum ada data" tetap ada (ADR-0049), jadi panel menjelaskan lingkaran abu-abu di peta.
-    const body = page.getByText(/^Lingkaran abu-abu adalah tempat dari OpenStreetMap/);
+    // Kandidat "Belum ada data" tetap ada (ADR-0049), jadi panel menjelaskan lingkaran berlubang di peta.
+    const body = page.getByText(/^Lingkaran berlubang adalah tempat dari OpenStreetMap/);
     await expect.poll(() => body.evaluate(uncovered)).toBe(true);
     // Dengan filter: pesan "tidak ada yang cocok" dan jalan untuk menghapus filter.
     await page.goto("/peta?q=tidak-ada");
