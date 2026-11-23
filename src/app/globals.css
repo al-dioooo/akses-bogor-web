@@ -383,9 +383,9 @@ body {
 }
 
 /*
- * Peta layar penuh (FR-05). Halaman tidak digulir: header lebih ramping dan berlatar, footer disembunyikan, dan main
- * mengisi sisa layar. Peta ada di lapisan paling bawah; pencarian, lapisan prioritas, kontrol, dan panel daftar
- * mengambang di atasnya sebagai item grid. Semua permukaan opak (ADR-0027), jadi kontras teks tidak bergantung pada tile.
+ * Peta layar penuh (FR-05). Halaman tidak digulir: header berlatar dan setinggi header halaman lain (issue #195), footer
+ * disembunyikan, dan main mengisi sisa layar. Peta ada di lapisan paling bawah; pencarian, lapisan prioritas, kontrol,
+ * dan panel daftar mengambang di atasnya sebagai item grid. Semua permukaan opak (ADR-0027), jadi kontras teks tidak bergantung pada tile.
  * Rute Peta yang ditinggalkan tetap terpasang tetapi tersembunyi dan diberi data-rute-tersembunyi (RouteHiddenMarker),
  * supaya halaman berikutnya tidak ikut terkunci.
  */
@@ -396,9 +396,6 @@ body:has(> .peta-app:not([data-rute-tersembunyi])) {
   & > header {
     border-bottom-color: var(--color-border-subtle);
     background-color: var(--color-bg-canvas);
-  }
-  & > header > div {
-    min-height: 3.75rem;
   }
   & > footer {
     display: none;
