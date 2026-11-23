@@ -45,23 +45,28 @@ function warnMissingSiteUrl(env: Env) {
  * Host dari request sengaja tidak dipakai: halaman statis dirender saat build, dan header `Host` bisa dipalsukan.
  */
 export function siteUrl(env: Env = process.env): URL {
-  const configured = env.SITE_URL?.trim();
-  if (configured) {
-    let url: URL;
-    try {
-      url = new URL(configured);
-    } catch {
-      throw new Error(`SITE_URL bukan URL yang valid: "${configured}". Contoh: https://akses-bogor.aldio.dev`);
-    }
-    if (url.protocol !== "https:" && url.protocol !== "http:") {
-      throw new Error(`SITE_URL harus diawali https:// atau http://, bukan "${configured}".`);
-    }
-    return new URL(url.origin);
-  }
+  const configured = configuredSiteUrl(env);
+  if (configured) return configured;
   warnMissingSiteUrl(env);
   // Sengaja tidak membaca PORT: `next start --port` mengisinya hanya saat runtime, sehingga metadata hasil build dan
   // hasil request berbeda dan halaman mendapat dua URL kanonis.
   return new URL("http://localhost:3000");
+}
+
+/** Asal dari `SITE_URL`, atau null bila kosong (tanpa alamat cadangan). Melempar galat bila nilainya tidak valid. */
+export function configuredSiteUrl(env: Env = process.env): URL | null {
+  const configured = env.SITE_URL?.trim();
+  if (!configured) return null;
+  let url: URL;
+  try {
+    url = new URL(configured);
+  } catch {
+    throw new Error(`SITE_URL bukan URL yang valid: "${configured}". Contoh: https://akses-bogor.aldio.dev`);
+  }
+  if (url.protocol !== "https:" && url.protocol !== "http:") {
+    throw new Error(`SITE_URL harus diawali https:// atau http://, bukan "${configured}".`);
+  }
+  return new URL(url.origin);
 }
 
 /** URL lengkap untuk sebuah path di situs, mis. `/lokasi/123` menjadi `https://akses-bogor.aldio.dev/lokasi/123`. */
