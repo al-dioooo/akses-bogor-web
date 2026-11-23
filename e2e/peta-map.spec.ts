@@ -126,7 +126,8 @@ test.describe("with WebGL", () => {
     const summary = page.getByRole("region", { name: "Masjid contoh B" });
     // Hanya bagian ringkasan fasilitas yang ditandai sedang dimuat, bukan seluruh kartu yang judulnya menerima fokus.
     await expect(summary).not.toHaveAttribute("aria-busy", /.*/);
-    await expect(summary.locator("[aria-busy]")).toHaveAttribute("aria-busy", "false");
+    // Bagian petunjuk penyedia (section) punya keadaan memuatnya sendiri (ADR-0052).
+    await expect(summary.locator("div[aria-busy]")).toHaveAttribute("aria-busy", "false");
     await expect(summary.getByText("Tidak aksesibel", { exact: true })).toBeVisible();
     await expect(summary.getByText(/fasilitas tersedia/)).toHaveCount(0);
     await expect(summary.getByRole("link", { name: "Laporkan kekurangan" })).toBeVisible();
