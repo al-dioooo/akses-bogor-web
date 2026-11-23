@@ -1,6 +1,7 @@
 // Petunjuk aksesibilitas tiruan dari Mapbox dan Google (GET /places/:id/hints dan
 // GET /places/candidates/:tipe/:id/hints), meniru akses-bogor-api (ADR-0052). "Halte contoh" punya petunjuk dari
-// kedua penyedia, "Halte contoh B" selalu galat, kandidat node/9001 punya petunjuk Mapbox, dan tempat lain tidak punya.
+// kedua penyedia, "Halte contoh B" selalu galat, kandidat node/9001 punya petunjuk Mapbox serta salinan Google Maps dan
+// keterangan OSM yang tersimpan, dan tempat lain tidak punya.
 // Pengunjung dengan IP 203.0.113.247 melihat petunjuk yang dimatikan. GET /_tiruan/petunjuk?ip=... menjawab berapa
 // kali petunjuk diminta untuk IP itu, supaya tes bisa memastikan petunjuk tidak diminta per marker.
 export const NO_HINTS_IP = "203.0.113.247";
@@ -27,7 +28,26 @@ export function handlePetunjuk(method, url, headers, places) {
   if (candidate) {
     const id = `${candidate[1]}/${candidate[2]}`;
     if (id !== "node/9001") return [200, { hints: none }, headersOut];
-    return [200, { hints: [{ provider: "mapbox", result: "found", placeName: "Masjid Kandidat A", distanceMeters: 9, wheelchairAccessible: true }, none[1]] }, headersOut];
+    return [
+      200,
+      {
+        hints: [
+          { provider: "mapbox", result: "found", placeName: "Masjid Kandidat A", distanceMeters: 9, wheelchairAccessible: true },
+          none[1],
+          {
+            provider: "google",
+            result: "stored",
+            placeName: "Masjid Kandidat A Bogor",
+            distanceMeters: 14,
+            url: "https://maps.google.com/?cid=9001",
+            retrievedAt: "2026-11-23",
+            accessibility: { entrance: true, restroom: null, parking: null, seating: null },
+          },
+          { provider: "openstreetmap", result: "stored", wheelchair: "yes" },
+        ],
+      },
+      headersOut,
+    ];
   }
   if (place === FAILING) return [503, { galat: "galat_server", pesan: "Galat tiruan." }];
   if (!places.some((p) => p.id === place)) return [404, { galat: "lokasi_tidak_ditemukan", pesan: "Lokasi tidak ditemukan." }];

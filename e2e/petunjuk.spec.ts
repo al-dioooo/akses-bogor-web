@@ -87,6 +87,14 @@ test("Peta asks for hints only when a place or candidate card opens, never for e
   await main(page).getByRole("button", { name: "Tunjukkan di peta: Masjid kandidat A" }).click();
   const candidate = main(page).getByRole("region", { name: "Masjid kandidat A" });
   await expect(candidate.getByText("Menurut Mapbox: bisa dimasuki kursi roda")).toBeVisible();
+  // Salinan tersimpan untuk kandidat: Google Maps dengan tanggalnya, dan keterangan OSM yang berbeda dari tag di kartu.
+  const candidateHints = candidate.getByRole("region", { name: TITLE });
+  await expect(
+    candidateHints.getByText("Menurut Google Maps (diambil 23 Nov 2026): pintu masuk ramah kursi roda · toilet: tidak diketahui · parkir: tidak diketahui · tempat duduk: tidak diketahui"),
+  ).toBeVisible();
+  await expect(candidateHints.getByRole("link", { name: "Google Maps (tab baru)" })).toHaveAttribute("href", "https://maps.google.com/?cid=9001");
+  await expect(candidateHints.getByText("Menurut OpenStreetMap: bisa dimasuki kursi roda")).toBeVisible();
+  await expect(candidateHints.getByText("© kontributor OpenStreetMap")).toBeVisible();
   await expect(candidate.getByText("Belum ada data aksesibilitas")).toBeVisible();
   expect(await hintRequests(page, ip)).toBe(2);
   expect(await blockingViolations(page)).toEqual([]);
