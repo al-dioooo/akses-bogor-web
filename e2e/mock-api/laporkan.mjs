@@ -97,6 +97,10 @@ export function handleLaporkan(method, pathname, headers, body, places) {
     const repeat = user.reports.find((r) => r.submissionKey === body?.submissionKey);
     if (repeat) return [201, repeat.response];
     if (!Array.isArray(body?.facilities) || body.facilities.length !== 4) return error(400, "input_tidak_valid", "Data yang dikirim tidak sesuai. Periksa lagi isiannya.");
+    // Terbit langsung khusus admin (ADR-0050), dengan alasan.
+    const direct = Boolean(body.publishDirectly);
+    if (direct && user.role !== "admin") return error(403, "bukan_admin", "Hanya admin AksesBogor yang bisa menerbitkan langsung.");
+    if (direct && (typeof body.publishReason !== "string" || body.publishReason.trim().length < 5)) return error(400, "input_tidak_valid", "Alasan wajib untuk terbit langsung.");
     const place = body.placeId ? places.find((p) => p.id === body.placeId) : null;
     if (body.placeId && !place) return error(404, "lokasi_tidak_ditemukan", "Lokasi ini tidak ditemukan.");
     const location = body.kind === "kekurangan" ? place.location : body.location;
@@ -106,11 +110,15 @@ export function handleLaporkan(method, pathname, headers, body, places) {
     }
     for (const photo of body.photos ?? []) uploads.delete(photo.id);
     const name = body.kind === "kekurangan" ? place.name : body.name;
+    const tags = new Set((body.photos ?? []).map((photo) => photo.tag));
+    const evidence = { ramp: "pintu_masuk", toilet_difabel: "toilet_difabel", guiding_block: "guiding_block", lift: "lift" };
+    const downgraded = body.facilities.filter((f) => ["tersedia", "tidak_perlu"].includes(f.answer) && !tags.has(evidence[f.facility])).map((f) => f.facility);
     const response = {
       id: randomUUID(),
       kind: body.kind,
-      status: "menunggu",
-      placeId: body.placeId ?? null,
+      status: direct ? "diterbitkan" : "menunggu",
+      placeId: body.placeId ?? (direct ? randomUUID() : null),
+      ...(direct ? { downgraded } : {}),
       name,
       district: districtOf(places, location),
       photos: body.photos?.length ?? 0,
