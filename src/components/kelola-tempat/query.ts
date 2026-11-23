@@ -1,7 +1,7 @@
 import { CATEGORIES, STATUSES } from "@/lib/api";
 import type { AdminPlaceQuery } from "@/lib/kelola-tempat";
 
-// Saringan daftar Kelola tempat dari URL (ADR-0050). Nilai yang tidak dikenal diabaikan, jadi alamat yang diubah tangan
+// Saringan daftar Kelola tempat dari URL (ADR-0051). Nilai yang tidak dikenal diabaikan, jadi alamat yang diubah tangan
 // tetap membuka daftar.
 
 export const PAGE_SIZE = 25;

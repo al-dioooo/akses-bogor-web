@@ -7,7 +7,7 @@ import { createPlace, restorePlace, unpublishPlace, updatePlace, type PlaceInput
 import { withReturn } from "@/lib/kembali";
 import { sessionToken } from "@/lib/sesi";
 
-// Simpan dari formulir Kelola tempat (ADR-0050). Server Action memeriksa asal permintaan sendiri; peran admin diperiksa API.
+// Simpan dari formulir Kelola tempat (ADR-0051). Server Action memeriksa asal permintaan sendiri; peran admin diperiksa API.
 
 export type SaveOutcome = { ok: true; placeId: string; downgraded: Facility[] } | { ok: false; message: string; code: string };
 

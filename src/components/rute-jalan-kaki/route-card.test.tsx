@@ -2,6 +2,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { WithIntl } from "@/test/intl";
 import { RouteCard, routeTarget } from "./route-card";
+import { StartPoint } from "./start-point";
 
 const WARNING = "Rute ini rute jalan kaki dari Mapbox. Rute ini tidak memperhitungkan tangga, trotoar, kerb, atau kemiringan jalan, jadi belum tentu bisa dilewati kursi roda.";
 const ROUTE = {
@@ -91,5 +92,37 @@ describe("RouteCard", () => {
     await waitFor(() => expect(screen.getByRole("alert").textContent).toBe("Posisi Anda berada di luar Kota Bogor."));
     fireEvent.click(screen.getByRole("button", { name: "Ganti titik awal" }));
     expect(screen.getByRole("button", { name: "Pakai lokasi saya" })).toBeTruthy();
+  });
+
+  it("loads the route right away from a start point chosen on the page, through the given route handlers", async () => {
+    const fetch = mockFetch({ status: 200, body: ROUTE }, { status: 200, body: OBSTACLES });
+    render(
+      <RouteCard
+        target={{ kind: "aksesbogor", placeId: "4037ba19-b366-45bc-aceb-270944fe9372" }}
+        name="Halte contoh"
+        from={{ lat: -6.5965, lng: 106.7972 }}
+        endpoints={{ route: "/tanya-rute/rute", obstacles: "/tanya-rute/hambatan" }}
+      />,
+      { wrapper: WithIntl },
+    );
+    expect(screen.queryByRole("button", { name: "Pakai lokasi saya" })).toBeNull();
+    await waitFor(() => expect(screen.getByText(WARNING)).toBeTruthy());
+    await waitFor(() => expect(screen.getByText("Tangga, 4 anak tangga")).toBeTruthy());
+    const calls = fetch.mock.calls as unknown as [string, RequestInit][];
+    expect(calls.map(([url]) => url).slice(-2)).toEqual(["/tanya-rute/rute", "/tanya-rute/hambatan"]);
+    expect(JSON.parse(calls.at(-2)![1].body as string)).toEqual({ from: { lat: -6.5965, lng: 106.7972 }, placeId: "4037ba19-b366-45bc-aceb-270944fe9372" });
+  });
+});
+
+describe("StartPoint", () => {
+  it("takes its own copy and heading level, and says where the point came from", () => {
+    grantLocation({ coords: { latitude: -6.56, longitude: 106.76 } });
+    const onStart = vi.fn();
+    render(<StartPoint onStart={onStart} level={3} copy={{ title: "Titik awal", why: "Untuk tempat terdekat.", privacy: "Tidak dikirim ke AI." }} />, { wrapper: WithIntl });
+    expect(screen.getByRole("heading", { level: 3, name: "Titik awal" })).toBeTruthy();
+    expect(screen.getByText("Untuk tempat terdekat.")).toBeTruthy();
+    expect(screen.getByText("Tidak dikirim ke AI.")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Pakai lokasi saya" }));
+    expect(onStart).toHaveBeenCalledWith({ lat: -6.56, lng: 106.76 }, "perangkat");
   });
 });
