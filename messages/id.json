@@ -184,7 +184,8 @@
   "Lokasi": {
     "summary": "{relevant, plural, =0 {Tidak ada fasilitas yang dibutuhkan} other {{available} dari {relevant} fasilitas tersedia}}",
     "unknown": "{count} belum diketahui",
-    "verified": "Diverifikasi {date}"
+    "verified": "Diverifikasi {date}",
+    "verifiedAdmin": "Diterbitkan langsung oleh admin · {date}"
   },
   "Jelajahi": {
     "metaTitle": "Jelajahi Lokasi",
@@ -350,6 +351,7 @@
     "loading": "Memuat lokasi…",
     "metaTitle": "{name}, {district}",
     "metaDescription": "{category} di Kecamatan {district}, Kota Bogor. Status aksesibilitas: {status}. {summary}. Terakhir diverifikasi {date}.",
+    "metaDescriptionAdmin": "{category} di Kecamatan {district}, Kota Bogor. Status aksesibilitas: {status}. {summary}. Diterbitkan langsung oleh admin {date}.",
     "metaRecheck": "Data ini perlu dicek ulang.",
     "landmark": "Patokan",
     "summaryTitle": "Ringkasan fasilitas",
@@ -358,8 +360,11 @@
     "unknown": "{count} fasilitas belum diketahui",
     "allAvailable": "semua fasilitas yang dibutuhkan tersedia",
     "verified": "Terakhir diverifikasi {date}",
+    "verifiedAdmin": "Diterbitkan langsung oleh admin · {date}",
+    "adminNote": "Data ini diisi admin AksesBogor tanpa pemeriksaan verifikator kedua.",
     "recheckTitle": "Perlu dicek ulang",
     "recheckBody": "Data ini diverifikasi lebih dari 12 bulan lalu. Kondisi di lokasi mungkin sudah berubah.",
+    "recheckBodyAdmin": "Data ini diterbitkan admin lebih dari 12 bulan lalu. Kondisi di lokasi mungkin sudah berubah.",
     "facilitiesTitle": "Fasilitas",
     "edit": "Edit lokasi",
     "report": "Laporkan kekurangan",
@@ -2027,6 +2032,7 @@
       "answered": "Agen menjawab: {answer}",
       "sources": "Sumber",
       "sourcePlace": "Data terverifikasi AksesBogor: {name}, diverifikasi {date}",
+      "sourcePlaceAdmin": "Data AksesBogor: {name}, diterbitkan langsung oleh admin {date}",
       "license": "Lisensi {license}",
       "tooShort": "Tulis pertanyaan paling sedikit 2 karakter.",
       "failed": "Pertanyaan tidak bisa dikirim. Coba lagi sebentar lagi.",
@@ -2040,6 +2046,7 @@
       "detail": "Lihat detail lokasi",
       "update": "Perbarui data",
       "verified": "Terakhir diverifikasi {date}",
+      "verifiedAdmin": "Diterbitkan langsung oleh admin · {date}",
       "cardsLabel": "Kartu dari jawaban agen"
     }
   },

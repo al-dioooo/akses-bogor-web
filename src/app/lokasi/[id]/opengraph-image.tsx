@@ -3,7 +3,7 @@ import { getFormatter, getTranslations } from "next-intl/server";
 import messages from "../../../../messages/id.json";
 import { PlaceCard } from "@/components/berbagi/kartu";
 import { OG_SIZE } from "@/components/berbagi/ukuran";
-import { getPlace } from "@/lib/api";
+import { byAdmin, getPlace } from "@/lib/api";
 import { placeFacts } from "@/lib/metadata";
 import { siteUrl } from "@/lib/situs";
 
@@ -37,7 +37,7 @@ export default async function Image({ params }: { params: Promise<{ id: string }
       place={t("place", { category: category(place.category), district: place.district.name })}
       status={place.status}
       statusLabel={status(place.status)}
-      facts={[summary, detail("verified", { date })]}
+      facts={[summary, detail(byAdmin(place) ? "verifiedAdmin" : "verified", { date })]}
     />,
     size,
   );

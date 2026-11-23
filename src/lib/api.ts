@@ -28,9 +28,18 @@ export type PlaceListItem = {
   status: Status;
   summary: FacilitySummary;
   location: { lat: number; lng: number };
+  /** Waktu verifikasi terakhir, atau waktu admin menerbitkan bila `verifiedBy` bernilai `admin`. */
   lastVerifiedAt: string;
+  /**
+   * `admin`: dibuat, diubah, atau diterbitkan langsung oleh admin tanpa pemeriksaan orang kedua; ditulis "Diterbitkan
+   * langsung oleh admin", tidak pernah "Diverifikasi" (ADR-0050). Kosong di API lama, dianggap `tim`.
+   */
+  verifiedBy?: "tim" | "admin";
   coverPhoto: Photo | null;
 };
+
+/** Data terakhir diterbitkan admin, bukan diverifikasi orang kedua (ADR-0050). */
+export const byAdmin = (place: { verifiedBy?: "tim" | "admin" }) => place.verifiedBy === "admin";
 
 export type PlaceDetail = Omit<PlaceListItem, "coverPhoto"> & {
   landmark: string | null;

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getFormatter, getTranslations } from "next-intl/server";
-import type { PlaceDetail as Place } from "@/lib/api";
+import { byAdmin, type PlaceDetail as Place } from "@/lib/api";
 import { buttonClass } from "@/ui/button-styles";
 import { FacilityMeter } from "@/ui/facility-meter";
 import { Icon } from "@/ui/icon";
@@ -66,14 +66,15 @@ export async function PlaceDetail({ place }: { place: Place }) {
             {sentence}
           </p>
           <p className="font-mono text-xs tracking-[0.06em] text-text-secondary uppercase">
-            {t("verified", { date: format.dateTime(new Date(place.lastVerifiedAt), { dateStyle: "long" }) })}
+            {t(byAdmin(place) ? "verifiedAdmin" : "verified", { date: format.dateTime(new Date(place.lastVerifiedAt), { dateStyle: "long" }) })}
           </p>
+          {byAdmin(place) && <p className="text-text-secondary">{t("adminNote")}</p>}
           {place.needsRecheck && (
             <div className="flex gap-3 rounded-2xl bg-surface-raised p-4 text-text-primary">
               <Icon icon={IconAlertTriangle} className="mt-0.5 size-5 text-status-partial-fg" />
               <p>
                 <strong className="block">{t("recheckTitle")}</strong>
-                {t("recheckBody")}
+                {t(byAdmin(place) ? "recheckBodyAdmin" : "recheckBody")}
               </p>
             </div>
           )}
