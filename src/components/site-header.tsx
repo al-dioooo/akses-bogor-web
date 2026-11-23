@@ -18,8 +18,6 @@ async function navLabels() {
     peta: t("peta"),
     tanyaRute: t("tanyaRute"),
     aksesibilitas: t("aksesibilitas"),
-    disabilitas: t("disabilitas"),
-    tips: t("tips"),
     tentang: t("tentang"),
     laporkan: t("laporkan"),
   };
@@ -37,7 +35,7 @@ export async function SiteHeader() {
         <Link href="/" aria-label={tl("home")} className="rounded-xl py-1">
           <Logo />
         </Link>
-        {/* Tujuh menu dan tombol kanan baru muat di kolom halaman mulai 1280 px; di bawahnya menu ada di Bottom nav. */}
+        {/* Menu utama tampil mulai 1280 px; di bawahnya menu ada di Bottom nav. */}
         <nav aria-label={t("label")} className="hidden xl:block">
           <Suspense fallback={<MainNavList labels={labels} pathname={null} />}>
             <ActiveMainNavList labels={labels} />

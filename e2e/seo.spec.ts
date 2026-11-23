@@ -25,7 +25,7 @@ test("the sitemap lists public pages and published places, never account pages",
   expect(response.ok()).toBe(true);
   const locs = [...(await response.text()).matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => new URL(match[1]).pathname);
   expect(locs).toEqual(expect.arrayContaining(["/", "/jelajahi", "/peta", "/aksesibilitas", "/kebijakan-privasi", `/lokasi/${HALTE}`]));
-  expect(locs.filter((path) => /^\/(akun|masuk|laporkan|verifikasi)/.test(path))).toEqual([]);
+  expect(locs.filter((path) => /^\/(akun|masuk|laporkan|verifikasi|disabilitas|tips)/.test(path))).toEqual([]);
 });
 
 // Setiap halaman publik punya judul, deskripsi, URL kanonis, dan kartu berbagi sendiri.
