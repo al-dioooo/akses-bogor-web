@@ -1,6 +1,6 @@
 import { connection } from "next/server";
 import { cache } from "react";
-import type { AgentSource, AgentTurn, RouteObstacles, WalkingRoute } from "./agen-rute";
+import type { AgentSource, AgentTurn, CardTarget, RouteObstacles, RouteTarget, WalkingRoute } from "./agen-rute";
 import { apiHeaders, apiPost, apiUrl } from "./api";
 import type { LatLng } from "./laporan";
 
@@ -10,7 +10,8 @@ import type { LatLng } from "./laporan";
 // Titik awal pengunjung hanya dipakai server API untuk tempat terdekat dan rute; tidak pernah dikirim ke model.
 
 /** Kartu rute dari jawaban asisten: hanya tujuan. Web menghitung rutenya sendiri dari titik awal pengunjung. */
-export type AssistantCard = { type: "rute"; target: { kind: "aksesbogor"; placeId: string }; name: string | null };
+/** Kartu rute ke lokasi AksesBogor, atau ke kandidat OpenStreetMap yang belum punya data aksesibilitas (ADR-0049). */
+export type AssistantCard = { type: "rute"; target: CardTarget; name: string | null };
 
 export type AssistantAnswer = { answer: string; sources: AgentSource[]; model: string | null; cards: AssistantCard[] };
 
@@ -21,7 +22,7 @@ export type AssistantStatus = { enabled: boolean; questionsPerDay: number };
 export const askAssistant = (token: string | null, input: AssistantQuestion) =>
   apiPost<AssistantAnswer>("/route-assistant/ask", { json: input }, token ?? undefined);
 
-export const visitorWalkingRoute = (token: string | null, input: { from: LatLng; placeId: string }) =>
+export const visitorWalkingRoute = (token: string | null, input: { from: LatLng } & RouteTarget) =>
   apiPost<WalkingRoute>("/route/walking", { json: input }, token ?? undefined);
 
 export const visitorRouteObstacles = (token: string | null, input: { polyline: string }) =>
