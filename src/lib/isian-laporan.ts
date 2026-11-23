@@ -46,8 +46,14 @@ export type ReportDraft = {
   location: ConfirmedLocation | null;
   facilities: Record<Facility, FacilityState>;
   photos: PhotoDraft[];
+  /** Khusus admin: terbitkan langsung dengan alasan (ADR-0050). Akun lain tidak melihat pilihannya, dan API menolaknya. */
+  publishDirectly?: boolean;
+  publishReason?: string;
   updatedAt: number;
 };
+
+/** Alasan terbit langsung paling sedikit 5 karakter, sama dengan API. */
+export const directReasonMissing = (draft: Pick<ReportDraft, "publishDirectly" | "publishReason">) => Boolean(draft.publishDirectly) && (draft.publishReason ?? "").trim().length < 5;
 
 export const draftKeyFor = (kind: ReportKind, placeId: string | null) => (kind === "baru" || !placeId ? "baru" : `${kind}:${placeId}`);
 
@@ -149,7 +155,8 @@ export function toPayload(draft: ReportDraft): ReportPayload {
     if (!photo.uploadedId || !photo.tag) throw new Error("foto belum diunggah atau belum bertag");
     return { id: photo.uploadedId, tag: photo.tag, caption: optional(photo.caption) };
   });
-  const common = { submissionKey: draft.submissionKey, kind: draft.kind, facilities, photos, description: optional(draft.description) };
+  const direct = draft.publishDirectly ? { publishDirectly: true as const, publishReason: (draft.publishReason ?? "").trim() } : {};
+  const common = { submissionKey: draft.submissionKey, kind: draft.kind, facilities, photos, description: optional(draft.description), ...direct };
   if (draft.kind === "kekurangan") return { ...common, placeId: draft.placeId! };
   return {
     ...common,

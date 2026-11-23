@@ -2,7 +2,7 @@
 import { describe, expect, it } from "vitest";
 import type { PlaceDetail } from "./api";
 import { isExpired } from "./draf";
-import { checkFacilities, checkInfo, checkPhotos, draftKeyFor, firstIncompleteStep, newDraft, suggestedPhotos, toPayload, type PhotoDraft, type ReportDraft } from "./isian-laporan";
+import { checkFacilities, checkInfo, checkPhotos, directReasonMissing, draftKeyFor, firstIncompleteStep, newDraft, suggestedPhotos, toPayload, type PhotoDraft, type ReportDraft } from "./isian-laporan";
 
 const NOW = Date.UTC(2026, 10, 8);
 const uuid = () => "11111111-1111-4111-8111-111111111111";
@@ -161,5 +161,13 @@ describe("isExpired", () => {
   it("drops drafts after 7 days", () => {
     expect(isExpired({ updatedAt: NOW }, NOW + 6 * 86_400_000)).toBe(false);
     expect(isExpired({ updatedAt: NOW }, NOW + 7 * 86_400_000 + 1)).toBe(true);
+  });
+});
+
+describe("direct publishing (ADR-0050)", () => {
+  it("needs a reason of at least five characters only when chosen", () => {
+    expect(directReasonMissing({ publishDirectly: false })).toBe(false);
+    expect(directReasonMissing({ publishDirectly: true, publishReason: " ok " })).toBe(true);
+    expect(directReasonMissing({ publishDirectly: true, publishReason: "Dicek sendiri" })).toBe(false);
   });
 });
