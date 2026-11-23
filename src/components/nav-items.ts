@@ -8,10 +8,11 @@ export type NavKey = "beranda" | "jelajahi" | "peta" | "tanyaRute" | "aksesibili
 
 export type NavItem = { key: NavKey; href: string };
 
+/** Peta langsung setelah Beranda, sebelum Jelajahi (issue #198), di semua menu. */
 export const MAIN_NAV: NavItem[] = [
   { key: "beranda", href: "/" },
-  { key: "jelajahi", href: "/jelajahi" },
   { key: "peta", href: "/peta" },
+  { key: "jelajahi", href: "/jelajahi" },
   { key: "aksesibilitas", href: "/aksesibilitas" },
   { key: "disabilitas", href: "/disabilitas" },
   { key: "tips", href: "/tips" },
@@ -21,8 +22,8 @@ export const MAIN_NAV: NavItem[] = [
 /** Empat tab pertama Bottom nav; tab kelima, Lainnya, membuka menu sisanya. */
 export const BOTTOM_NAV: (NavItem & { icon: Glyph })[] = [
   { key: "beranda", href: "/", icon: IconHome },
-  { key: "jelajahi", href: "/jelajahi", icon: IconCompass },
   { key: "peta", href: "/peta", icon: IconMap2 },
+  { key: "jelajahi", href: "/jelajahi", icon: IconCompass },
   { key: "laporkan", href: "/laporkan", icon: IconCirclePlus },
 ];
 

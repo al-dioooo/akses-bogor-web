@@ -61,3 +61,14 @@ test.describe("header on desktop widths", () => {
     });
   }
 });
+
+// Peta langsung setelah Beranda, sebelum Jelajahi (issue #198), di setiap menu yang memuat keduanya.
+test("menus list Beranda, Peta, then Jelajahi", async ({ page, isMobile }) => {
+  await page.goto("/tentang");
+  const menu = page.getByRole("navigation", { name: isMobile ? "Menu cepat" : "Menu utama" });
+  await expect(menu.getByRole("link").first()).toBeVisible();
+  const names = await menu.getByRole("link").allInnerTexts();
+  expect(names.slice(0, 3).map((name) => name.trim())).toEqual(["Beranda", "Peta", "Jelajahi"]);
+  const footer = page.getByRole("contentinfo").locator("div", { has: page.getByRole("heading", { name: "Jelajahi", exact: true }) }).last();
+  await expect(footer.getByRole("link")).toHaveText(["Beranda", "Peta", "Jelajahi", "Tanya rute", "Laporkan tempat"]);
+});
