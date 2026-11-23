@@ -3,7 +3,7 @@ import { mockApi, signIn, uniqueEmail } from "./akun-masuk";
 import { blockingViolations } from "./axe";
 import { stubGoogle } from "./google";
 
-// Turunkan, tayangkan lagi, dan kandidat OpenStreetMap di Kelola tempat (ADR-0050) dengan API tiruan.
+// Turunkan, tayangkan lagi, dan kandidat OpenStreetMap di Kelola tempat (ADR-0051) dengan API tiruan.
 const email = (prefix: string) => uniqueEmail(prefix, test.info().project.name);
 const main = (page: Page) => page.getByRole("main");
 const unknown = ["ramp", "toilet_difabel", "guiding_block", "lift"].map((facility) => ({ facility, answer: "belum_tahu" }));

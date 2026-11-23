@@ -35,7 +35,7 @@ export async function savePlace(request: SaveRequest): Promise<SaveOutcome> {
 
 export type StateOutcome = { ok: true } | { ok: false; message: string };
 
-/** Menurunkan atau menayangkan lagi tempat dengan alasan (ADR-0050). */
+/** Menurunkan atau menayangkan lagi tempat dengan alasan (ADR-0051). */
 export async function changeState(id: string, action: "turunkan" | "tayangkan", reason: string): Promise<StateOutcome> {
   const back = `/verifikasi/tempat/${id}`;
   const token = await sessionToken();

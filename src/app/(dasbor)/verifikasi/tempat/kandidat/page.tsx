@@ -30,7 +30,7 @@ const createHref = (c: Candidate) => {
   return `/verifikasi/tempat/baru?${params}`;
 };
 
-/** Kandidat OpenStreetMap untuk dibuat menjadi tempat oleh admin (ADR-0049, ADR-0050). */
+/** Kandidat OpenStreetMap untuk dibuat menjadi tempat oleh admin (ADR-0049, ADR-0051). */
 export default async function Kandidat({ searchParams }: PageProps<"/verifikasi/tempat/kandidat">) {
   const t = await getTranslations("KelolaTempat.candidates");
   return (
