@@ -1456,6 +1456,24 @@
         "server": "Server AksesBogor tidak bisa dihubungi. Coba lagi sebentar lagi."
       }
     },
+    "state": {
+      "close": "Tutup",
+      "cancel": "Batal",
+      "reasonLabel": "Alasan",
+      "reasonError": "Tulis alasan, paling sedikit 5 karakter.",
+      "turunkan": {
+        "open": "Turunkan dari tayang",
+        "title": "Turunkan {name}?",
+        "body": "Tempat ini hilang dari Peta, Jelajahi, pencarian, dan angka. Datanya tidak dihapus, dan Anda bisa menayangkannya lagi.",
+        "confirm": "Turunkan"
+      },
+      "tayangkan": {
+        "open": "Tayangkan lagi",
+        "title": "Tayangkan lagi {name}?",
+        "body": "Tempat ini tampil lagi untuk publik dengan data yang sama seperti sebelum diturunkan.",
+        "confirm": "Tayangkan lagi"
+      }
+    },
     "filters": {
       "label": "Saring tempat",
       "search": "Cari nama tempat",
@@ -1498,6 +1516,8 @@
       "back": "Kembali ke Kelola tempat",
       "edit": "Ubah tempat",
       "saved": "Tersimpan dan tayang dengan label \"Diterbitkan langsung oleh admin\".",
+      "diturunkan": "Tempat ini sudah diturunkan dan tidak tampil untuk publik.",
+      "ditayangkan": "Tempat ini tayang lagi.",
       "savedUnknown": "Disimpan sebagai Belum diketahui karena belum ada foto yang sesuai: {facilities}.",
       "summary": "Fasilitas",
       "summaryValue": "{relevant, plural, =0 {Tidak ada fasilitas yang dibutuhkan} other {{available} dari {relevant} tersedia}}{unknown, plural, =0 {} other {, # belum diketahui}}",
