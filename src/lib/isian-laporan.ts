@@ -168,8 +168,17 @@ export function suggestedPhotos(draft: ReportDraft): { tag: PhotoTag; done: bool
 
 const optional = (value: string) => value.trim() || undefined;
 
-/** Isi `POST /reports`. Foto harus sudah diunggah (`uploadedId`). */
-export function toPayload(draft: ReportDraft): ReportPayload {
+/**
+ * Draf untuk akun yang sedang masuk. Pilihan terbit langsung hanya untuk admin (ADR-0051), jadi dibuang dari draf yang
+ * dipulihkan untuk akun lain, mis. setelah ganti akun atau peran di perangkat yang sama.
+ */
+export function draftFor(draft: ReportDraft, admin: boolean): ReportDraft {
+  if (admin || (draft.publishDirectly === undefined && draft.publishReason === undefined)) return draft;
+  return { ...draft, publishDirectly: undefined, publishReason: undefined };
+}
+
+/** Isi `POST /reports`. Foto harus sudah diunggah (`uploadedId`). Terbit langsung hanya ikut bila `admin` benar. */
+export function toPayload(draft: ReportDraft, { admin = false }: { admin?: boolean } = {}): ReportPayload {
   const facilities = FACILITIES.map((facility) => {
     const { answer, reason, note } = draft.facilities[facility];
     return { facility, answer, reason: answer === "tidak_tersedia" ? (reason ?? undefined) : undefined, note: optional(note) };
@@ -178,7 +187,7 @@ export function toPayload(draft: ReportDraft): ReportPayload {
     if (!photo.uploadedId || !photo.tag) throw new Error("foto belum diunggah atau belum bertag");
     return { id: photo.uploadedId, tag: photo.tag, caption: optional(photo.caption) };
   });
-  const direct = draft.publishDirectly ? { publishDirectly: true as const, publishReason: (draft.publishReason ?? "").trim() } : {};
+  const direct = admin && draft.publishDirectly ? { publishDirectly: true as const, publishReason: (draft.publishReason ?? "").trim() } : {};
   const common = { submissionKey: draft.submissionKey, kind: draft.kind, facilities, photos, description: optional(draft.description), ...direct };
   if (draft.kind === "kekurangan") return { ...common, placeId: draft.placeId! };
   return {

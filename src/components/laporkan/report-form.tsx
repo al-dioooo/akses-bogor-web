@@ -6,7 +6,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { FormAlert } from "@/components/akun/form-parts";
 import type { PlaceDetail } from "@/lib/api";
 import { deleteDraft, loadDraft, purgeExpiredDrafts, saveDraft } from "@/lib/draf";
-import { checkStep, directReasonMissing, firstIncompleteStep, newDraft, STEPS, type FieldError, type ReportDraft, type Step } from "@/lib/isian-laporan";
+import { checkStep, directReasonMissing, draftFor, firstIncompleteStep, newDraft, STEPS, type FieldError, type ReportDraft, type Step } from "@/lib/isian-laporan";
 import type { CandidatePrefill } from "@/lib/kandidat";
 import { withReturn } from "@/lib/kembali";
 import type { ReportKind } from "@/lib/laporan";
@@ -75,7 +75,7 @@ export function ReportForm({
         await purgeExpiredDrafts();
         const saved = await loadDraft(fresh.draftKey);
         if (cancelled) return;
-        setDraft(saved ?? fresh);
+        setDraft(saved ? draftFor(saved, admin && signedIn) : fresh);
         if (saved) setNotice("restored");
       } catch {
         if (cancelled) return;
@@ -86,7 +86,7 @@ export function ReportForm({
     return () => {
       cancelled = true;
     };
-  }, [kind, place, prefill]);
+  }, [kind, place, prefill, admin, signedIn]);
 
   // Setiap perubahan langsung disimpan. Bila penyimpanan sebelumnya belum selesai, perubahan berikutnya digabung menjadi
   // satu penyimpanan sesudahnya, jadi IndexedDB tidak ditulis lebih sering dari kemampuannya dan perubahan terakhir
@@ -229,7 +229,7 @@ export function ReportForm({
           setDraft((now) => (now ? { ...now, photos: now.photos.map((photo) => (photo.key === key ? { ...photo, uploadedId: id } : photo)) } : now));
         },
         onSubmitting: () => setSending((now) => (now ? { ...now, phase: "kirim" } : now)),
-      });
+      }, { admin: admin && signedIn });
       if (outcome.ok) {
         setSending(null);
         await discard(current.draftKey);
