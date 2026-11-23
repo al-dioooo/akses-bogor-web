@@ -3,7 +3,7 @@ import type { HistoryEntry } from "@/lib/kelola-tempat";
 
 /** Kunci `changes` yang bukan kolom tempat; ditampilkan terpisah atau tidak sama sekali. */
 const NOT_FIELDS = new Set(["alasan", "alasanTurun", "laporan", "osm", "tayang"]);
-const FIELDS = ["name", "category", "district", "location", "landmark", "description", "status", "facilities"] as const;
+const FIELDS = ["name", "category", "district", "location", "landmark", "description", "status", "facilities", "photos"] as const;
 const ACTIONS = ["dibuat", "diubah", "dibuat_admin", "diubah_admin", "diturunkan", "ditayangkan_lagi"] as const;
 
 /**

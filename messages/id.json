@@ -1514,7 +1514,8 @@
         "landmark": "patokan",
         "description": "deskripsi",
         "status": "status",
-        "facilities": "jawaban fasilitas"
+        "facilities": "jawaban fasilitas",
+        "photos": "foto"
       }
     },
     "pager": {
