@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 
 // FR-51 (ADR-0041): halaman edukasi bisa dibuka dari footer, terbaca di layar 320 px, punya satu h1, menampilkan tanda
 // draf, dan menutup dengan daftar sumber serta tautan ke Jelajahi dan Laporkan.
@@ -57,17 +57,25 @@ for (const path of ["/disabilitas", "/tips"]) {
   });
 }
 
-test("no menu, footer or education page links to the removed pages", async ({ page, isMobile }) => {
+// Bottom nav dialirkan setelah cookie sesi dibaca dan menggantikan kerangkanya; menu Lainnya yang dibuka sebelum itu ikut
+// hilang. Nav yang sudah dialirkan menandai halaman yang sedang dibuka (lihat akun.spec.ts).
+async function openMoreMenu(page: Page) {
+  await expect(page.getByRole("navigation", { name: "Menu cepat" }).locator('[aria-current="page"]')).toBeVisible();
+  await page.getByRole("button", { name: "Lainnya" }).click();
+}
+
+test("no menu, footer or education page links to the removed pages", async ({ page }) => {
   await page.goto("/aksesibilitas");
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-  if (isMobile) await page.getByRole("button", { name: "Lainnya" }).click();
+  // Tautan menu Lainnya ada di DOM walau menunya tertutup, jadi ikut dihitung.
+  await expect(page.locator("#menu-lainnya").getByRole("link", { name: "Aksesibilitas", exact: true, includeHidden: true })).toHaveCount(1);
   await expect(page.locator('a[href^="/disabilitas"], a[href^="/tips"]')).toHaveCount(0);
   await expect(page.getByRole("region", { name: "Baca juga" })).toHaveCount(0);
 });
 
 test("the main menu and the Lainnya menu reach Aksesibilitas", async ({ page, isMobile }) => {
   await page.goto("/");
-  if (isMobile) await page.getByRole("button", { name: "Lainnya" }).click();
+  if (isMobile) await openMoreMenu(page);
   const menu = isMobile ? page.locator("#menu-lainnya") : page.getByRole("navigation", { name: "Menu utama" });
   await menu.getByRole("link", { name: "Aksesibilitas", exact: true }).click();
   await expect(page).toHaveURL(/\/aksesibilitas$/);
