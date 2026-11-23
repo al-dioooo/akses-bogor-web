@@ -3,7 +3,7 @@ import { mockApi, signIn, uniqueEmail } from "./akun-masuk";
 import { blockingViolations } from "./axe";
 import { stubGoogle } from "./google";
 
-// Satu tempat di Kelola tempat (ADR-0050): data, jawaban, foto, keadaan tayang, dan riwayat. Tempat dibuat langsung lewat
+// Satu tempat di Kelola tempat (ADR-0051): data, jawaban, foto, keadaan tayang, dan riwayat. Tempat dibuat langsung lewat
 // API tiruan, supaya data contoh yang dipakai tes lain tidak berubah.
 const email = (prefix: string) => uniqueEmail(prefix, test.info().project.name);
 const MASJID_A = "e553b67f-7583-4831-9dbb-29639159517f";

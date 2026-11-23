@@ -6,6 +6,7 @@ import { Suspense } from "react";
 import { ReportForm } from "@/components/laporkan/report-form";
 import { agentEnabled } from "@/lib/agen-rute";
 import { getPlace } from "@/lib/api";
+import { parseCandidatePrefill } from "@/lib/kandidat";
 import type { ReportKind } from "@/lib/laporan";
 import { hasSession } from "@/lib/sesi";
 import { buttonClass } from "@/ui/button-styles";
@@ -21,6 +22,7 @@ export async function generateMetadata(): Promise<Metadata> {
 /**
  * Laporkan (FR-20 sampai FR-27). Formulir bisa diisi tanpa akun; masuk diminta saat "Kirim laporan" (ADR-0033).
  * `?lokasi=<id>` membuka Edit lokasi, dan `&jenis=kekurangan` membuka Laporkan kekurangan, terisi data saat ini (FR-27).
+ * `?osm=<tipe>/<id>&nama=&kategori=&lat=&lng=` membuka laporan baru dari kandidat OpenStreetMap di Peta (ADR-0049).
  */
 export default async function LaporkanPage({ searchParams }: PageProps<"/laporkan">) {
   const t = await getTranslations("Laporkan");
@@ -49,6 +51,7 @@ async function Report({ searchParams }: { searchParams: PageProps<"/laporkan">["
   const place = placeId ? await getPlace(placeId) : null;
   if (placeId && !place) notFound();
   const kind: ReportKind = place ? (params.jenis === "kekurangan" ? "kekurangan" : "perubahan") : "baru";
+  const prefill = placeId ? null : parseCandidatePrefill(params);
   // Bantu memetakan hanya ditawarkan untuk laporan baru, kepada akun yang sudah masuk, selama API membuka agen.
   const helper = kind === "baru" && signedIn && (await agentEnabled());
   return (
@@ -62,7 +65,7 @@ async function Report({ searchParams }: { searchParams: PageProps<"/laporkan">["
         <p className="text-lg text-text-secondary">{t(`intro.${kind}`, { name: place?.name ?? "" })}</p>
       </div>
       {helper && <MappingHelper />}
-      <ReportForm kind={kind} place={place} signedIn={signedIn} />
+      <ReportForm kind={kind} place={place} prefill={prefill} signedIn={signedIn} />
     </>
   );
 }

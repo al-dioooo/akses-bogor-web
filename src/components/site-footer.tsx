@@ -18,6 +18,7 @@ export async function SiteFooter() {
         { href: "/", label: nav("beranda") },
         { href: "/jelajahi", label: nav("jelajahi") },
         { href: "/peta", label: nav("peta") },
+        { href: "/tanya-rute", label: nav("tanyaRute") },
         { href: "/laporkan", label: nav("laporkanTempat") },
       ],
     },

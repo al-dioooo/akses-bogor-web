@@ -32,13 +32,13 @@ export type PlaceListItem = {
   lastVerifiedAt: string;
   /**
    * `admin`: dibuat, diubah, atau diterbitkan langsung oleh admin tanpa pemeriksaan orang kedua; ditulis "Diterbitkan
-   * langsung oleh admin", tidak pernah "Diverifikasi" (ADR-0050). Kosong di API lama, dianggap `tim`.
+   * langsung oleh admin", tidak pernah "Diverifikasi" (ADR-0051). Kosong di API lama, dianggap `tim`.
    */
   verifiedBy?: "tim" | "admin";
   coverPhoto: Photo | null;
 };
 
-/** Data terakhir diterbitkan admin, bukan diverifikasi orang kedua (ADR-0050). */
+/** Data terakhir diterbitkan admin, bukan diverifikasi orang kedua (ADR-0051). */
 export const byAdmin = (place: { verifiedBy?: "tim" | "admin" }) => place.verifiedBy === "admin";
 
 export type PlaceDetail = Omit<PlaceListItem, "coverPhoto"> & {

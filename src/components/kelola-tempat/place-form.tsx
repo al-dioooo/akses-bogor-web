@@ -26,7 +26,11 @@ const REASON_MAX = 500;
 /** Draf formulir dari tempat yang diubah, atau dari kandidat OpenStreetMap untuk tempat baru. */
 function startDraft(place: AdminPlace | null, candidate: CandidateStart | null): ReportDraft {
   const draft = newDraft("baru", null);
-  if (!place) return candidate ? { ...draft, name: candidate.name ?? "", category: candidate.category } : draft;
+  if (!place) {
+    if (!candidate) return draft;
+    // Titik kandidat menjadi pin awal yang belum dikonfirmasi, seperti Laporkan dari Peta (ADR-0049).
+    return { ...draft, name: candidate.name ?? "", category: candidate.category, osm: `${candidate.osm.type}/${candidate.osm.id}`, start: candidate.point };
+  }
   const facilities = { ...draft.facilities };
   for (const f of place.facilities) facilities[f.facility] = { answer: f.answer, reason: f.reason, note: f.note ?? "" };
   return {
@@ -136,7 +140,6 @@ export function PlaceForm({ place, candidate }: { place: AdminPlace | null; cand
           update={update}
           onNearbyPending={setNearbyPending}
           map={(point, move) => <PickerMap candidate={point} onMove={move} />}
-          initial={candidate?.point}
         />
       </section>
 
