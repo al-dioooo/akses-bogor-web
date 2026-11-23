@@ -17,7 +17,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t("metaTitle") };
 }
 
-/** Ubah tempat (ADR-0050): data baru langsung tayang, dan tempat berlabel admin. */
+/** Ubah tempat (ADR-0051): data baru langsung tayang, dan tempat berlabel admin. */
 export default async function UbahTempat({ params }: PageProps<"/verifikasi/tempat/[id]/ubah">) {
   const t = await getTranslations("KelolaTempat");
   return (

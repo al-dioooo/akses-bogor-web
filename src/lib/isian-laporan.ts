@@ -1,4 +1,5 @@
 import { CATEGORIES, FACILITIES, type Answer, type Category, type Facility, type PhotoTag, type PlaceDetail, type Reason } from "./api";
+import type { CandidatePrefill } from "./kandidat";
 import type { District, LatLng, ReportKind, ReportPayload } from "./laporan";
 
 // Model formulir Laporkan (FR-21 sampai FR-25): isian yang disimpan di draf perangkat (ADR-0033), pemeriksaan per
@@ -32,7 +33,10 @@ export type PhotoDraft = {
 export type ConfirmedLocation = { point: LatLng; district: District };
 
 export type ReportDraft = {
-  /** "baru", atau "<jenis>:<id lokasi>" untuk Edit lokasi dan Laporkan kekurangan. */
+  /**
+   * "baru", "osm:<tipe>/<id>" untuk laporan baru dari kandidat OpenStreetMap (ADR-0049), atau "<jenis>:<id lokasi>"
+   * untuk Edit lokasi dan Laporkan kekurangan.
+   */
   draftKey: string;
   /** Kunci acak yang dikirim ke API supaya kirim ulang tidak membuat laporan kedua. */
   submissionKey: string;
@@ -44,6 +48,12 @@ export type ReportDraft = {
   description: string;
   /** Pin yang dikonfirmasi pelapor dan sudah dicek kecamatannya; null sampai "Pakai lokasi ini" berhasil. */
   location: ConfirmedLocation | null;
+  /**
+   * Kandidat OpenStreetMap asal laporan baru, mis. "node/1", dan titiknya sebagai pin awal yang belum dikonfirmasi.
+   * Hanya untuk draf dan tampilan, tidak dikirim ke API. Tidak ada di draf lama.
+   */
+  osm?: string | null;
+  start?: LatLng | null;
   facilities: Record<Facility, FacilityState>;
   photos: PhotoDraft[];
   /** Khusus admin: terbitkan langsung dengan alasan (ADR-0050). Akun lain tidak melihat pilihannya, dan API menolaknya. */
@@ -55,25 +65,38 @@ export type ReportDraft = {
 /** Alasan terbit langsung paling sedikit 5 karakter, sama dengan API. */
 export const directReasonMissing = (draft: Pick<ReportDraft, "publishDirectly" | "publishReason">) => Boolean(draft.publishDirectly) && (draft.publishReason ?? "").trim().length < 5;
 
-export const draftKeyFor = (kind: ReportKind, placeId: string | null) => (kind === "baru" || !placeId ? "baru" : `${kind}:${placeId}`);
+export const draftKeyFor = (kind: ReportKind, placeId: string | null, osm: string | null = null) =>
+  kind === "baru" || !placeId ? (osm ? `osm:${osm}` : "baru") : `${kind}:${placeId}`;
 
 const unknownFacilities = () =>
   Object.fromEntries(FACILITIES.map((facility) => [facility, { answer: "belum_tahu", reason: null, note: "" }])) as Record<Facility, FacilityState>;
 
-/** Draf kosong untuk laporan baru, atau terisi data lokasi saat ini untuk Edit lokasi dan Laporkan kekurangan (FR-27). */
-export function newDraft(kind: ReportKind, place: PlaceDetail | null, now = Date.now(), uuid = () => crypto.randomUUID()): ReportDraft {
+/**
+ * Draf kosong untuk laporan baru, laporan baru dari kandidat OpenStreetMap (nama, kategori, dan pin awal dari URL,
+ * ADR-0049), atau draf terisi data lokasi saat ini untuk Edit lokasi dan Laporkan kekurangan (FR-27).
+ */
+export function newDraft(
+  kind: ReportKind,
+  place: PlaceDetail | null,
+  now = Date.now(),
+  uuid = () => crypto.randomUUID(),
+  prefill: CandidatePrefill | null = null,
+): ReportDraft {
   const facilities = unknownFacilities();
   for (const f of place?.facilities ?? []) facilities[f.facility] = { answer: f.answer, reason: f.reason, note: f.note ?? "" };
+  const candidate = place ? null : prefill;
   return {
-    draftKey: draftKeyFor(place ? kind : "baru", place?.id ?? null),
+    draftKey: draftKeyFor(place ? kind : "baru", place?.id ?? null, candidate?.osm),
     submissionKey: uuid(),
     kind: place ? kind : "baru",
     placeId: place?.id ?? null,
-    name: place?.name ?? "",
-    category: place?.category ?? "",
+    name: place?.name ?? candidate?.name ?? "",
+    category: place?.category ?? candidate?.category ?? "",
     landmark: place?.landmark ?? "",
     description: place?.description ?? "",
     location: place ? { point: place.location, district: place.district } : null,
+    osm: candidate?.osm ?? null,
+    start: candidate?.point ?? null,
     facilities,
     photos: [],
     updatedAt: now,

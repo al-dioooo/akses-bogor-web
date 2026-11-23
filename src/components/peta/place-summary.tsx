@@ -7,7 +7,7 @@ import type { PlaceCardDetail } from "@/app/peta/lokasi/[id]/route";
 import { buttonClass } from "@/ui/button-styles";
 import { FacilityMeter } from "@/ui/facility-meter";
 import { Icon } from "@/ui/icon";
-import { IconArrowRight, IconMessageReport, IconX } from "@/ui/icons";
+import { IconArrowRight, IconMessageReport, IconRoute, IconX } from "@/ui/icons";
 import { CATEGORY_ICON } from "@/ui/place-icons";
 import { StatusBadge } from "@/ui/status-badge";
 import type { MapPlace } from "./places";
@@ -16,8 +16,8 @@ type Detail = { id: string; data: PlaceCardDetail | null };
 
 /**
  * Kartu lokasi yang dipilih di peta, di dalam panel daftar: kategori dan kecamatan, status (ADR-0018), ringkasan "X dari
- * Y fasilitas", dan tautan ke Detail dan Laporkan kekurangan. Kecamatan dan ringkasan dimuat sesudahnya; bila gagal,
- * kartu tetap berisi status dan tautan. Judulnya menerima fokus saat lokasi dipilih.
+ * Y fasilitas", dan tautan ke Detail, Tanya rute (ADR-0050), dan Laporkan kekurangan. Kecamatan dan ringkasan dimuat
+ * sesudahnya; bila gagal, kartu tetap berisi status dan tautan. Judulnya menerima fokus saat lokasi dipilih.
  */
 export function PlaceSummary({ place, headingRef, onClose }: { place: MapPlace; headingRef: RefObject<HTMLHeadingElement | null>; onClose: () => void }) {
   const t = useTranslations("Peta");
@@ -65,6 +65,10 @@ export function PlaceSummary({ place, headingRef, onClose }: { place: MapPlace; 
         <Link href={`/lokasi/${place.id}`} className={buttonClass("primary", "sm")}>
           {t("summary.detail")}
           <Icon icon={IconArrowRight} />
+        </Link>
+        <Link href={`/tanya-rute?tempat=${place.id}`} className={buttonClass("outline", "sm")}>
+          <Icon icon={IconRoute} />
+          {td("askRoute")}
         </Link>
         <Link href={`/laporkan?lokasi=${place.id}&jenis=kekurangan`} className={buttonClass("outline", "sm")}>
           <Icon icon={IconMessageReport} />

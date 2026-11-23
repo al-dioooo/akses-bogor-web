@@ -7,7 +7,7 @@ import { createPlace, restorePlace, unpublishPlace, updatePlace, type PlaceInput
 import { withReturn } from "@/lib/kembali";
 import { sessionToken } from "@/lib/sesi";
 
-// Simpan dari formulir Kelola tempat (ADR-0050). Server Action memeriksa asal permintaan sendiri; peran admin diperiksa API.
+// Simpan dari formulir Kelola tempat (ADR-0051). Server Action memeriksa asal permintaan sendiri; peran admin diperiksa API.
 
 export type SaveOutcome = { ok: true; placeId: string; downgraded: Facility[] } | { ok: false; message: string; code: string };
 
@@ -35,7 +35,7 @@ export async function savePlace(request: SaveRequest): Promise<SaveOutcome> {
 
 export type StateOutcome = { ok: true } | { ok: false; message: string };
 
-/** Menurunkan atau menayangkan lagi tempat dengan alasan (ADR-0050). */
+/** Menurunkan atau menayangkan lagi tempat dengan alasan (ADR-0051). */
 export async function changeState(id: string, action: "turunkan" | "tayangkan", reason: string): Promise<StateOutcome> {
   const back = `/verifikasi/tempat/${id}`;
   const token = await sessionToken();

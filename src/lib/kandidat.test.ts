@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { candidateReportHref, knownWheelchair, osmUrl } from "./kandidat";
+import { candidateReportHref, knownWheelchair, osmUrl, parseCandidatePrefill } from "./kandidat";
 
 describe("candidateReportHref", () => {
   it("carries the OSM id, name, category, and point to Laporkan", () => {
@@ -22,5 +22,27 @@ describe("OSM helpers", () => {
 
   it("links to the place on openstreetmap.org", () => {
     expect(osmUrl({ osmType: "relation", osmId: 9 })).toBe("https://www.openstreetmap.org/relation/9");
+  });
+});
+
+describe("parseCandidatePrefill", () => {
+  const params = { osm: "node/9001", nama: " Masjid kandidat A ", kategori: "masjid", lat: "-6.595", lng: "106.79" };
+
+  it("reads the OSM id, name, category, and starting point", () => {
+    expect(parseCandidatePrefill(params)).toEqual({ osm: "node/9001", name: "Masjid kandidat A", category: "masjid", point: { lat: -6.595, lng: 106.79 } });
+  });
+
+  it("needs a well-formed OSM id", () => {
+    for (const osm of [undefined, "", "node/0", "way/-1", "area/1", "node/1/2", ["node/1"]]) expect(parseCandidatePrefill({ ...params, osm })).toBeNull();
+  });
+
+  it("drops values that are not usable instead of rejecting the whole prefill", () => {
+    expect(parseCandidatePrefill({ osm: "way/2", nama: "x".repeat(121), kategori: "gereja", lat: "-6.2", lng: "106.79" })).toEqual({
+      osm: "way/2",
+      name: "",
+      category: "",
+      point: null,
+    });
+    expect(parseCandidatePrefill({ osm: "way/2", nama: "a\u0000b", lat: "", lng: "106.79" })).toMatchObject({ name: "", point: null });
   });
 });

@@ -16,7 +16,7 @@ const DANGER_FILL = "inline-flex min-h-11 items-center justify-center gap-2 roun
 
 /**
  * Turunkan atau tayangkan lagi dengan dialog modal bawaan browser: fokus terkunci di dialog, Escape menutupnya, dan fokus
- * kembali ke tombol pembuka. Alasan wajib dan masuk riwayat (ADR-0050).
+ * kembali ke tombol pembuka. Alasan wajib dan masuk riwayat (ADR-0051).
  */
 export function StateDialog({ id, name, published }: { id: string; name: string; published: boolean }) {
   const t = useTranslations("KelolaTempat.state");
