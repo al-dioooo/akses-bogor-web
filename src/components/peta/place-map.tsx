@@ -10,10 +10,10 @@ import { hasWebGL, readTheme, watchPreferences } from "@/lib/preferences";
 import { buttonClass } from "@/ui/button-styles";
 import { Icon } from "@/ui/icon";
 import { IconCurrentLocation, IconFocusCentered, IconList, IconMap2, IconMinus, IconPlus, IconUsers, type Glyph } from "@/ui/icons";
-import { StatusPin } from "@/ui/status-pin";
+import { PlacePin } from "@/ui/place-pin";
 import { CandidateList } from "./candidate-list";
 import { CandidateSummary } from "./candidate-summary";
-import { MapLegend } from "./legend";
+import { CategoryLegend, MapLegend } from "./legend";
 import { LocatePanel, useLocate } from "./locate";
 import { NO_INSETS, type Insets, type Rect } from "./map/area";
 import type { MapHandle } from "./map/mount";
@@ -521,6 +521,7 @@ export function PlaceMap({
               {t("asList")}
             </Link>
             <MapLegend candidates={candidates.length > 0 ? { on: candidatesOn, onToggle: () => setCandidatesOn(!candidatesOn) } : undefined} />
+            <CategoryLegend />
             {places.length > 0 &&
               (shown.length > 0 ? (
                 <PlaceList places={shown} labelledBy="judul-daftar-peta" onShow={ready ? showOnMap : undefined} />
@@ -559,7 +560,7 @@ function ControlButton({ label, icon, onClick, ref }: { label: string; icon: Gly
 function MarkerFace({ place, selected }: { place: MapPlace; selected: boolean }) {
   return (
     <>
-      <StatusPin status={place.status} className={selected ? "size-10" : "size-8"} />
+      <PlacePin place={place} className={selected ? "size-10" : "size-8"} />
       {selected && (
         <span
           aria-hidden="true"

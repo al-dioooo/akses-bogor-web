@@ -240,6 +240,8 @@
     "count": "Menampilkan {total} lokasi",
     "asList": "Lihat sebagai daftar",
     "legend": "Legenda status",
+    "legendCategory": "Legenda kategori",
+    "legendCategoryHint": "Lencana kecil di marker dan warna lingkaran Belum ada data. Ikon kategori muncul di lingkaran saat peta diperbesar.",
     "cari": {
       "placeholder": "Cari nama tempat",
       "filterTitle": "Filter lokasi",
