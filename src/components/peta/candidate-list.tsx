@@ -48,6 +48,10 @@ export function CandidateList({ candidates, onShow }: { candidates: MapCandidate
             const name = candidate.name ?? t("kandidat.unnamed", { category: tk(candidate.category) });
             return (
               <li key={candidate.id} className="flex items-center gap-3 border-t border-border-subtle py-2 first:border-t-0">
+                {/* Lingkaran yang sama dengan titik kandidat di peta, bergaris warna kategorinya (issue #199). */}
+                <span className="grid size-8 shrink-0 place-items-center self-start pt-1">
+                  <CandidateDot category={candidate.category} className="size-5" />
+                </span>
                 <div className="flex min-w-0 flex-1 flex-col items-start">
                   <h4 className="pt-1 font-heading text-base leading-snug font-bold">{name}</h4>
                   <p className="text-sm text-text-secondary">
