@@ -212,12 +212,15 @@ export function PlaceForm({ place, candidate }: { place: AdminPlace | null; cand
         </div>
       </section>
 
-      {missing.length > 0 && (
-        <p className="flex gap-3 rounded-2xl bg-status-partial-bg p-4 text-status-partial-fg">
-          <Icon icon={IconAlertTriangle} className="mt-0.5 size-5 shrink-0" />
-          <span>{t("evidenceWarning", { facilities: missingText })}</span>
-        </p>
-      )}
+      {/* Live region yang selalu ada, supaya pembaca layar mendengar peringatan saat jawaban atau foto berubah. */}
+      <div id="peringatan-bukti" role="status">
+        {missing.length > 0 && (
+          <p className="flex gap-3 rounded-2xl bg-status-partial-bg p-4 text-status-partial-fg">
+            <Icon icon={IconAlertTriangle} className="mt-0.5 size-5 shrink-0" />
+            <span>{t("evidenceWarning", { facilities: missingText })}</span>
+          </p>
+        )}
+      </div>
       {errors.length > 0 && <p className="text-text-error">{te(errors[0]!.message, errors[0]!.values)}</p>}
       {problem && (
         <div ref={problemRef} tabIndex={-1} role="alert" className="rounded-2xl border-2 border-border-error p-4">
@@ -225,7 +228,7 @@ export function PlaceForm({ place, candidate }: { place: AdminPlace | null; cand
         </div>
       )}
       <div className="flex flex-wrap items-center gap-4">
-        <button disabled={progress !== null} className={buttonClass("primary", "md")}>
+        <button disabled={progress !== null} aria-describedby={missing.length > 0 ? "peringatan-bukti" : undefined} className={buttonClass("primary", "md")}>
           <Icon icon={IconCheck} />
           {place ? t("saveChanges") : t("saveNew")}
         </button>
