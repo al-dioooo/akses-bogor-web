@@ -1,0 +1,45 @@
+// Asisten rute publik tiruan (/route-assistant/status, /route-assistant/ask) untuk tes Playwright, meniru
+// akses-bogor-api (ADR-0050). Data hanya di memori.
+//
+// Aturan tiruan:
+// - Asisten dibuka, kecuali untuk IP pengunjung 203.0.113.247: status menjawab enabled false dan pertanyaan 503
+//   asisten_rute_belum_aktif.
+// - Jawaban biasa menyebut lokasi yang dipilih (placeId) atau Halte contoh, dengan sumber dan satu kartu rute ke sana.
+//   Pertanyaan yang memuat "kuota-tiruan" menjawab 429 kuota_habis, dan "sibuk-tiruan" menjawab 503 agen_sibuk.
+// - GET /_tiruan/asisten-terakhir?ip=... menjawab badan pertanyaan terakhir dari IP itu, untuk memastikan titik awal
+//   dan id lokasi ikut terkirim.
+
+export const ASSISTANT_OFF_IP = "203.0.113.247";
+const HALTE = "4037ba19-b366-45bc-aceb-270944fe9372";
+const STATUS_LABEL = { aksesibel: "Aksesibel", sebagian: "Sebagian", tidak_aksesibel: "Tidak aksesibel", belum_diketahui: "Belum diketahui" };
+const lastQuestion = new Map();
+const error = (status, galat, pesan) => [status, { galat, pesan }];
+
+/** Menjawab route asisten rute publik, atau `null` bila bukan route asisten. */
+export function handleTanyaRute(method, url, headers, body, places) {
+  const { pathname, searchParams } = url;
+  if (method === "GET" && pathname === "/_tiruan/asisten-terakhir") return [200, { body: lastQuestion.get(searchParams.get("ip")) ?? null }];
+  if (!pathname.startsWith("/route-assistant/")) return null;
+  const off = headers["x-visitor-ip"] === ASSISTANT_OFF_IP;
+  if (method === "GET" && pathname === "/route-assistant/status") return [200, { enabled: !off, questionsPerDay: 5 }];
+  if (method !== "POST" || pathname !== "/route-assistant/ask") return error(404, "tidak_ditemukan", "Alamat tidak ditemukan.");
+  if (off) return error(503, "asisten_rute_belum_aktif", "Asisten rute belum dibuka.");
+  lastQuestion.set(headers["x-visitor-ip"] ?? "", body);
+  const question = String(body?.question ?? "");
+  if (question.trim().length < 2) return error(400, "input_tidak_valid", "Data yang dikirim tidak sesuai. Periksa lagi isiannya.");
+  if (question.includes("kuota-tiruan")) {
+    return error(429, "kuota_habis", "Jatah 5 pertanyaan hari ini sudah habis. Coba lagi besok, atau masuk untuk memakai jatah akun Anda.");
+  }
+  if (question.includes("sibuk-tiruan")) return error(503, "agen_sibuk", "Asisten sedang sibuk. Coba lagi nanti.");
+  const place = places.find((p) => p.id === (body?.placeId ?? HALTE));
+  if (!place) return error(404, "lokasi_tidak_ditemukan", "Lokasi tidak ditemukan.");
+  return [
+    200,
+    {
+      answer: `${place.name} berstatus ${STATUS_LABEL[place.status]} menurut data AksesBogor yang diperiksa tim.\nRute jalan kaki ada di kartu di bawah. Periksa peringatan dan hambatannya sebelum berangkat.`,
+      sources: [{ type: "lokasi", placeId: place.id, name: place.name, lastVerifiedAt: place.lastVerifiedAt }],
+      model: "claude-haiku-5-5",
+      cards: [{ type: "rute", target: { kind: "aksesbogor", placeId: place.id }, name: place.name }],
+    },
+  ];
+}

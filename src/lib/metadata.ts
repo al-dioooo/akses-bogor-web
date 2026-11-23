@@ -50,7 +50,8 @@ type PageNamespace =
   | "Tips"
   | "Tentang"
   | "KebijakanPrivasi"
-  | "SyaratLayanan";
+  | "SyaratLayanan"
+  | "TanyaRute";
 
 /** Metadata halaman publik statis dari `metaTitle` dan `metaDescription` di namespace-nya. */
 export async function pageMetadata(namespace: PageNamespace, path: string): Promise<Metadata> {

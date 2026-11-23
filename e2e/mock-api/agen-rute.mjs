@@ -11,7 +11,10 @@
 //   422 di_luar_kota_bogor. Rute tiruan berupa garis lurus tiga langkah dengan dua hambatan OpenStreetMap.
 // - GET /_tiruan/agen-terakhir?email=... menjawab badan /agent/ask terakhir dari akun itu, untuk memastikan posisi
 //   pengguna tidak pernah ikut terkirim.
+// - Selama asisten rute publik dibuka (ADR-0050), /route/walking ke lokasi AksesBogor dan /route/obstacles juga
+//   menjawab permintaan tanpa sesi; tujuan OpenStreetMap tanpa sesi tetap 401.
 import { userFromToken } from "./akun.mjs";
+import { ASSISTANT_OFF_IP } from "./tanya-rute.mjs";
 
 export const AGENT_OFF_IP = "203.0.113.250";
 const BOX = { west: 106.7348, east: 106.8486, south: -6.6813, north: -6.5143 };
@@ -123,10 +126,14 @@ export function handleAgenRute(method, url, headers, body, places) {
   const { pathname, searchParams } = url;
   if (method === "GET" && pathname === "/_tiruan/agen-terakhir") return [200, { body: lastQuestion.get(searchParams.get("email")) ?? null }];
   if (!pathname.startsWith("/agent/") && !pathname.startsWith("/route/")) return null;
-  if (headers["x-visitor-ip"] === AGENT_OFF_IP) return error(503, "agen_rute_belum_aktif", "Agen rute belum dibuka.");
+  const visitorRoute =
+    !headers.authorization && headers["x-visitor-ip"] !== ASSISTANT_OFF_IP && (pathname === "/route/obstacles" || (pathname === "/route/walking" && body?.osm === undefined));
   const user = userFromToken(headers.authorization);
-  if (!user) return error(401, "belum_masuk", "Sesi Anda sudah berakhir. Silakan masuk lagi.");
-  if (!user.completed) return error(403, "akun_belum_lengkap", "Lengkapi akun dulu sebelum memakai agen rute.");
+  if (!visitorRoute) {
+    if (headers["x-visitor-ip"] === AGENT_OFF_IP) return error(503, "agen_rute_belum_aktif", "Agen rute belum dibuka.");
+    if (!user) return error(401, "belum_masuk", "Sesi Anda sudah berakhir. Silakan masuk lagi.");
+    if (!user.completed) return error(403, "akun_belum_lengkap", "Lengkapi akun dulu sebelum memakai agen rute.");
+  }
   const place = places.find((p) => p.id === body?.placeId);
 
   if (method === "GET" && pathname === "/agent/tools") return [200, { tools: [] }];

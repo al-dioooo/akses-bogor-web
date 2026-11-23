@@ -73,7 +73,10 @@ type Options = {
   markerLabel: (place: MapPlace) => string;
   onReady: () => void;
   onFail: () => void;
-  /** Lokasi di bagian peta yang terlihat, atau null bila panel menutup seluruh peta (mis. lembar penuh di ponsel). */
+  /**
+   * Lokasi dan kandidat di bagian peta yang terlihat, atau null bila panel menutup seluruh peta (mis. lembar penuh di
+   * ponsel).
+   */
   onView: (ids: string[] | null) => void;
   onSelect: (id: string) => void;
   /** Dipanggil dengan salinan marker setiap kali lokasi di peta berganti. */
@@ -94,6 +97,9 @@ export function mountMap(options: Options): MapHandle {
   let insets = options.insets ?? NO_INSETS;
   let camera = options.camera ?? insets;
   let covers: Rect[] = [];
+  let candidates: Parameters<MapHandle["setCandidates"]>[0] = null;
+  let candidateById = new Map<string, MapCandidate>();
+  let selected: string | null = null;
   let token = options.token;
   let night = options.night;
   let ready = false;
@@ -183,6 +189,8 @@ export function mountMap(options: Options): MapHandle {
         button.setAttribute("aria-hidden", "true");
       }
     }
+    // Kandidat di bagian yang terlihat ikut daftar "Belum ada data" di panel.
+    for (const candidate of candidates?.items ?? []) if (isVisible(map.project([candidate.lng, candidate.lat]), rect, covers)) ids.push(candidate.id);
     options.onView(rect ? ids : null);
   };
   const padding = () => {
@@ -247,9 +255,6 @@ export function mountMap(options: Options): MapHandle {
 
   // Kandidat: lingkaran abu-abu berlubang, lebih kecil dari marker dan tanpa warna status. Gaya baru menghapus lapisan,
   // jadi lapisan digambar ulang setiap kali gaya selesai dimuat; selama gaya belum siap, gambar menunggu peta diam.
-  let candidates: Parameters<MapHandle["setCandidates"]>[0] = null;
-  let candidateById = new Map<string, MapCandidate>();
-  let selected: string | null = null;
   let waiting = false;
   const drawCandidates = () => {
     if (!map.isStyleLoaded()) {
@@ -404,6 +409,7 @@ export function mountMap(options: Options): MapHandle {
       candidates = value;
       candidateById = new Map(value?.items.map((c) => [c.id, c]));
       drawCandidates();
+      if (ready) updateView();
     },
     setNight(value) {
       if (value === night) return;

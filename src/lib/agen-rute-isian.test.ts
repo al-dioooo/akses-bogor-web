@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { askFrom, historyFor, isPlaceId, MAX_HISTORY, MAX_TURN, pointFrom, routeTargetFrom } from "./agen-rute-isian";
+import { MAX_HISTORY, MAX_TURN, askFrom, assistantAskFrom, historyFor, isPlaceId, placeTargetFrom, pointFrom, routeTargetFrom } from "./agen-rute-isian";
 
 describe("pointFrom", () => {
   it("accepts finite coordinates and refuses the rest", () => {
@@ -57,5 +57,25 @@ describe("routeTargetFrom", () => {
     for (const body of [{}, { placeId: "x" }, { osm: { type: "area", id: 1 } }, { osm: { type: "node", id: -1 } }, { osm: { type: "node", id: 1.5 } }, { placeId: "4037ba19-b366-45bc-aceb-270944fe9372", osm: { type: "node", id: 1 } }]) {
       expect(routeTargetFrom(body)).toBeNull();
     }
+  });
+});
+
+describe("assistantAskFrom", () => {
+  it("adds an optional start point to the question", () => {
+    expect(assistantAskFrom({ question: " Rute ke halte? ", from: { lat: -6.5958, lng: 106.7942 } })).toEqual({ question: "Rute ke halte?", history: [], from: { lat: -6.5958, lng: 106.7942 } });
+    expect(assistantAskFrom({ question: "Rute ke halte?", from: null })).toEqual({ question: "Rute ke halte?", history: [] });
+  });
+
+  it("refuses a broken start point instead of dropping it", () => {
+    for (const from of [{ lat: "x", lng: 106 }, { lat: 91, lng: 106 }, "di sini"]) expect(assistantAskFrom({ question: "Rute ke halte?", from })).toBeNull();
+    expect(assistantAskFrom({ question: "x" })).toBeNull();
+  });
+});
+
+describe("placeTargetFrom", () => {
+  it("accepts only AksesBogor places", () => {
+    expect(placeTargetFrom({ placeId: "4037ba19-b366-45bc-aceb-270944fe9372" })).toEqual({ placeId: "4037ba19-b366-45bc-aceb-270944fe9372" });
+    expect(placeTargetFrom({ osm: { type: "node", id: 9001 } })).toBeNull();
+    expect(placeTargetFrom({})).toBeNull();
   });
 });
