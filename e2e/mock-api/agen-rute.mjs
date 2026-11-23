@@ -12,7 +12,7 @@
 // - GET /_tiruan/agen-terakhir?email=... menjawab badan /agent/ask terakhir dari akun itu, untuk memastikan posisi
 //   pengguna tidak pernah ikut terkirim.
 // - Selama asisten rute publik dibuka (ADR-0050), /route/walking ke lokasi AksesBogor dan /route/obstacles juga
-//   menjawab permintaan tanpa sesi; tujuan OpenStreetMap tanpa sesi tetap 401.
+//   menjawab permintaan tanpa sesi, termasuk rute ke kandidat OpenStreetMap (ADR-0049).
 import { userFromToken } from "./akun.mjs";
 import { ASSISTANT_OFF_IP } from "./tanya-rute.mjs";
 
@@ -127,7 +127,7 @@ export function handleAgenRute(method, url, headers, body, places) {
   if (method === "GET" && pathname === "/_tiruan/agen-terakhir") return [200, { body: lastQuestion.get(searchParams.get("email")) ?? null }];
   if (!pathname.startsWith("/agent/") && !pathname.startsWith("/route/")) return null;
   const visitorRoute =
-    !headers.authorization && headers["x-visitor-ip"] !== ASSISTANT_OFF_IP && (pathname === "/route/obstacles" || (pathname === "/route/walking" && body?.osm === undefined));
+    !headers.authorization && headers["x-visitor-ip"] !== ASSISTANT_OFF_IP && (pathname === "/route/obstacles" || pathname === "/route/walking");
   const user = userFromToken(headers.authorization);
   if (!visitorRoute) {
     if (headers["x-visitor-ip"] === AGENT_OFF_IP) return error(503, "agen_rute_belum_aktif", "Agen rute belum dibuka.");
