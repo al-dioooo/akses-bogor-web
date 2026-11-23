@@ -1,22 +1,31 @@
-import { getDistrictPriority, getMapPlaces } from "@/lib/api";
+import { getCandidates, getDistrictPriority, getMapPlaces } from "@/lib/api";
 import { exploreHref, hasFilters, type ExploreFilters } from "@/lib/filters";
 import { PlaceMap } from "./place-map";
-import { toMapPlaces } from "./places";
+import { toMapCandidates, toMapPlaces } from "./places";
 import { SearchBarPlaceholder } from "./search-bar";
 
-/** Isi Peta untuk filter di URL: lokasi dan prioritas kecamatan, digambar oleh peta layar penuh (FR-05). */
+/**
+ * Isi Peta untuk filter di URL: lokasi, prioritas kecamatan, dan kandidat "Belum ada data" (ADR-0049), digambar oleh peta
+ * layar penuh (FR-05). Kandidat tidak punya status dan fasilitas, jadi tidak ikut selama filter itu aktif.
+ */
 export async function MapResults({ filters }: { filters: ExploreFilters }) {
-  const [{ features }, priority] = await Promise.all([
-    getMapPlaces({
-      q: filters.q || undefined,
-      category: filters.category,
-      district: filters.district,
-      facility: filters.facility,
-      status: filters.status,
-    }),
+  const named = { q: filters.q || undefined, category: filters.category, district: filters.district };
+  const withCandidates = filters.facility.length === 0 && filters.status.length === 0;
+  const [{ features }, priority, candidates] = await Promise.all([
+    getMapPlaces({ ...named, facility: filters.facility, status: filters.status }),
     getDistrictPriority(),
+    withCandidates ? getCandidates(named) : null,
   ]);
-  return <PlaceMap places={toMapPlaces(features)} listHref={exploreHref(filters)} filtered={hasFilters(filters)} priority={priority} />;
+  return (
+    <PlaceMap
+      places={toMapPlaces(features)}
+      listHref={exploreHref(filters)}
+      filtered={hasFilters(filters)}
+      priority={priority}
+      candidates={candidates ? toMapCandidates(candidates.features) : []}
+      candidateSource={candidates?.source ?? null}
+    />
+  );
 }
 
 /** Kerangka selama lokasi dimuat: pesan di atas peta dan panel daftar kosong, dengan ukuran yang sama dengan aslinya. */

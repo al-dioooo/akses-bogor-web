@@ -5,12 +5,13 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type MouseEvent, type Ref } from "react";
 import { createPortal } from "react-dom";
-import type { DistrictBoundaries, DistrictPriority, MapToken } from "@/lib/api";
+import type { CandidateSource, DistrictBoundaries, DistrictPriority, MapToken } from "@/lib/api";
 import { hasWebGL, readTheme, watchPreferences } from "@/lib/preferences";
 import { buttonClass } from "@/ui/button-styles";
 import { Icon } from "@/ui/icon";
 import { IconCurrentLocation, IconFocusCentered, IconList, IconMap2, IconMinus, IconPlus, IconUsers, type Glyph } from "@/ui/icons";
 import { StatusPin } from "@/ui/status-pin";
+import { CandidateSummary } from "./candidate-summary";
 import { MapLegend } from "./legend";
 import { LocatePanel, useLocate } from "./locate";
 import { NO_INSETS, type Insets, type Rect } from "./map/area";
@@ -20,7 +21,7 @@ import { PlaceSheet, type SheetHeight } from "./place-sheet";
 import { PlaceSummary } from "./place-summary";
 import { PriorityKey } from "./priority-key";
 import { PriorityLegend } from "./priority-legend";
-import type { MapPlace } from "./places";
+import type { MapCandidate, MapPlace } from "./places";
 
 type MapState = "awal" | "memuat" | "siap" | "tanpa-webgl" | "galat";
 
@@ -90,6 +91,8 @@ const subscribeNarrow = (onChange: () => void) => {
 // Ponsel landscape: panel yang dibuka langsung setinggi layar (globals.css), karena setengah layar hanya menyisakan
 // beberapa piksel isi.
 const SHORT = "(height < 32rem)";
+/** Teks untuk atribusi peta (HTML Mapbox). */
+const escapeHtml = (text: string) => text.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
 const subscribeShort = (onChange: () => void) => {
   const query = matchMedia(SHORT);
   query.addEventListener("change", onChange);
@@ -107,6 +110,8 @@ export function PlaceMap({
   listHref,
   filtered,
   priority = null,
+  candidates = [],
+  candidateSource = null,
 }: {
   places: MapPlace[];
   listHref: string;
@@ -114,6 +119,9 @@ export function PlaceMap({
   filtered: boolean;
   /** Prioritas kecamatan; null selama API belum membukanya, dan tombol lapisannya tidak tampil. */
   priority?: DistrictPriority | null;
+  /** Kandidat "Belum ada data" dari OpenStreetMap (ADR-0049); kosong selama filter status atau fasilitas aktif. */
+  candidates?: MapCandidate[];
+  candidateSource?: CandidateSource | null;
 }) {
   const t = useTranslations("Peta");
   const tj = useTranslations("Jelajahi");
@@ -146,9 +154,16 @@ export function PlaceMap({
   const [boundaries, setBoundaries] = useState<DistrictBoundaries | null>(null);
   const locateButton = useRef<HTMLButtonElement>(null);
   const locate = useLocate(map);
-  // Lokasi yang dipilih lalu hilang karena filter berganti tidak lagi dianggap terpilih.
+  // Lapisan kandidat menyala selama ada kandidat; tombolnya di legenda.
+  const [candidatesOn, setCandidatesOn] = useState(true);
+  const layerCandidates = candidatesOn && candidates.length > 0 ? candidates : null;
+  // Lokasi atau kandidat yang dipilih lalu hilang karena filter berganti (atau lapisannya dimatikan) tidak lagi dianggap
+  // terpilih.
   const place = chosen ? places.find((p) => p.id === chosen.id) : undefined;
-  const selected = place ? place.id : null;
+  const candidate = chosen && !place ? layerCandidates?.find((c) => c.id === chosen.id) : undefined;
+  const selected = place?.id ?? candidate?.id ?? null;
+  const osmCredit = candidateSource?.attribution ?? t("kandidat.attribution");
+  const osmCopyright = candidateSource?.url ?? "https://www.openstreetmap.org/copyright";
 
   const flushMove = useCallback(() => {
     const move = pendingMove.current;
@@ -239,6 +254,13 @@ export function PlaceMap({
   useEffect(() => {
     map?.setPlaces(places);
   }, [map, places]);
+
+  // Atribusi ODbL ikut di kontrol atribusi peta selama lapisan kandidat tampil. Mapbox membuang `target` dari tautan
+  // atribusi, jadi tautannya terbuka di tab yang sama, seperti tautan atribusi Mapbox lainnya.
+  useEffect(() => {
+    const attribution = `<a href="${escapeHtml(osmCopyright)}">${escapeHtml(osmCredit)}</a>`;
+    map?.setCandidates(layerCandidates && { items: layerCandidates, attribution });
+  }, [map, layerCandidates, osmCredit, osmCopyright]);
 
   // Tinggi panel ditulis di main, karena panel, atribusi Mapbox, dan pesan di atas peta memakai ukuran yang sama.
   useLayoutEffect(() => {
@@ -452,6 +474,8 @@ export function PlaceMap({
       >
         {place ? (
           <PlaceSummary place={place} headingRef={summaryHeading} onClose={closeSummary} />
+        ) : candidate ? (
+          <CandidateSummary candidate={candidate} headingRef={summaryHeading} onClose={closeSummary} />
         ) : (
           <div className="flex flex-col gap-5 px-5 pb-5">
             {/* Pesan peta yang gagal ada di panel, bukan di atas peta, supaya tidak pernah tertutup panel di layar pendek. */}
@@ -479,7 +503,7 @@ export function PlaceMap({
             {places.length === 0 && (
               <div className="flex flex-col items-start gap-2 rounded-2xl bg-bg-sunken p-4">
                 <p className="font-bold">{empty}</p>
-                <p className="text-text-secondary">{tj(filtered ? "results.emptyBody" : "results.noDataBody")}</p>
+                <p className="text-text-secondary">{filtered ? tj("results.emptyBody") : layerCandidates ? t("kandidat.emptyBody") : tj("results.noDataBody")}</p>
                 {filtered && (
                   <Link href="/peta" className={buttonClass("outline", "sm", "mt-1")}>
                     {tj("filters.reset")}
@@ -494,7 +518,7 @@ export function PlaceMap({
               <Icon icon={IconList} />
               {t("asList")}
             </Link>
-            <MapLegend />
+            <MapLegend candidates={candidates.length > 0 ? { on: candidatesOn, onToggle: () => setCandidatesOn(!candidatesOn) } : undefined} />
             {places.length > 0 &&
               (shown.length > 0 ? (
                 <PlaceList places={shown} labelledBy="judul-daftar-peta" onShow={ready ? showOnMap : undefined} />
