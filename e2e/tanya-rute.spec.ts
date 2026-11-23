@@ -159,3 +159,17 @@ for (const colorScheme of ["light", "dark"] as const) {
     await page.context().close();
   });
 }
+
+test("a route to an OpenStreetMap candidate says there is no team data yet and links to Laporkan", async ({ browser }) => {
+  const { page } = await openVisitor(browser, PAGE, { geolocation: DEVICE });
+  const start = main(page).getByRole("region", { name: "Titik awal" });
+  await start.getByRole("button", { name: "Pakai lokasi saya" }).click();
+  await ask(page, "Bagaimana cara ke Masjid Al-Hidayah?");
+  const conversation = main(page).getByRole("list", { name: "Percakapan dengan asisten" });
+  await expect(conversation.getByText("Belum ada data", { exact: true })).toBeVisible();
+  await expect(conversation.getByText("Tempat ini dari OpenStreetMap dan belum punya data aksesibilitas dari tim AksesBogor.")).toBeVisible();
+  await expect(conversation.getByRole("link", { name: "Laporkan tempat ini" })).toHaveAttribute("href", "/laporkan?osm=node%2F9001&nama=Masjid+Al-Hidayah");
+  const route = conversation.getByRole("region", { name: "Rute jalan kaki ke Masjid Al-Hidayah", exact: true });
+  await expect(route.getByRole("region", { name: "Langkah" }).getByRole("listitem")).toHaveCount(3);
+  expect(await blockingViolations(page)).toEqual([]);
+});

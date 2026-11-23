@@ -2300,7 +2300,13 @@
       "failed": "Pertanyaan tidak bisa dikirim. Coba lagi sebentar lagi.",
       "note": "Jawaban asisten bisa keliru. Periksa peringatan dan hambatan di kartu rute, dan bila ragu, telepon tempatnya dulu."
     },
-    "cards": "Kartu rute dari jawaban asisten"
+    "cards": "Kartu rute dari jawaban asisten",
+    "kandidat": {
+      "label": "Belum ada data",
+      "body": "Tempat ini dari OpenStreetMap dan belum punya data aksesibilitas dari tim AksesBogor.",
+      "report": "Laporkan tempat ini",
+      "attribution": "© kontributor OpenStreetMap"
+    }
   },
   "PrioritasKecamatan": {
     "title": "Prioritas kecamatan {year}",
