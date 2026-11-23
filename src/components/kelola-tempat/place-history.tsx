@@ -7,7 +7,7 @@ const FIELDS = ["name", "category", "district", "location", "landmark", "descrip
 const ACTIONS = ["dibuat", "diubah", "dibuat_admin", "diubah_admin", "diturunkan", "ditayangkan_lagi"] as const;
 
 /**
- * Riwayat satu tempat dari log audit (ADR-0038, ADR-0050): tindakan, pelaku dengan nama tampilan anggota tim, waktu,
+ * Riwayat satu tempat dari log audit (ADR-0038, ADR-0051): tindakan, pelaku dengan nama tampilan anggota tim, waktu,
  * kolom yang berubah, dan alasan admin. Log tidak memuat email atau nama pelapor.
  */
 export async function PlaceHistory({ items }: { items: HistoryEntry[] }) {

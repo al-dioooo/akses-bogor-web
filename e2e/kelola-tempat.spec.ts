@@ -4,7 +4,7 @@ import { blockingViolations } from "./axe";
 import { dashboardMenu } from "./dasbor";
 import { stubGoogle } from "./google";
 
-// Kelola tempat untuk admin (ADR-0050) dengan API tiruan (e2e/mock-api/kelola-tempat.mjs). Masjid contoh A di data contoh
+// Kelola tempat untuk admin (ADR-0051) dengan API tiruan (e2e/mock-api/kelola-tempat.mjs). Masjid contoh A di data contoh
 // berlabel admin; tempat lain diperiksa tim.
 const email = (prefix: string) => uniqueEmail(prefix, test.info().project.name);
 const PAGE = "/verifikasi/tempat";

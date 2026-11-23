@@ -12,7 +12,7 @@ import { IconAlertTriangle, IconCircleCheck, IconFocusCentered, IconMapPin } fro
 import { PlaceSearch, type SearchPick } from "./place-search";
 
 /** Titik yang sedang dipilih, sebelum dikonfirmasi dengan "Pakai lokasi ini". */
-export type Candidate = { point: LatLng; source: "cari" | "gps" | "peta" | "awal"; name?: string; accuracy?: number; existingId?: string };
+export type Candidate = { point: LatLng; source: "cari" | "gps" | "peta" | "awal" | "osm"; name?: string; accuracy?: number; existingId?: string };
 
 /** Titik yang berbeda kurang dari ~1 m dianggap sama. */
 /** Tombol berlabel nama tempat boleh turun baris, supaya nama yang panjang tidak melebarkan halaman di layar 320 px. */
@@ -22,6 +22,8 @@ const samePoint = (a: LatLng, b: LatLng) => Math.abs(a.lat - b.lat) < 1e-5 && Ma
 
 type Props = {
   confirmed: ConfirmedLocation | null;
+  /** Titik awal yang belum dikonfirmasi, mis. titik kandidat OpenStreetMap dari Peta (ADR-0049). */
+  start?: LatLng | null;
   /** Nama tempat di langkah 1, untuk mencari lokasi bernama mirip (FR-23). */
   name: string;
   /** Lokasi yang sedang diedit; tidak ikut dianggap mirip. */
@@ -32,19 +34,17 @@ type Props = {
   onNearbyPending: (pending: boolean) => void;
   /** Peta dengan pin di tengah; tanpa peta, titik dipilih lewat pencarian atau lokasi perangkat. */
   map?: (candidate: Candidate | null, move: (candidate: Candidate) => void) => ReactNode;
-  /** Titik awal yang belum dikonfirmasi, mis. dari kandidat OpenStreetMap; pin tetap harus dipastikan di pintu masuk. */
-  initial?: LatLng;
 };
 
 /**
  * Pemilih lokasi langkah 1 (FR-21 sampai FR-23, ADR-0015): pencarian tempat, "Gunakan lokasi saya", dan peta. Yang
  * disimpan hanya titik yang dikonfirmasi dan sudah dicek kecamatannya. Setiap perubahan titik dibacakan pembaca layar.
  */
-export function LocationPicker({ confirmed, name, placeId, error, onConfirm, onNearbyPending, map, initial }: Props) {
+export function LocationPicker({ confirmed, start = null, name, placeId, error, onConfirm, onNearbyPending, map }: Props) {
   const t = useTranslations("Laporkan.lokasi");
   const format = useFormatter();
   const [editing, setEditing] = useState(!confirmed);
-  const [candidate, setCandidate] = useState<Candidate | null>(confirmed ? { point: confirmed.point, source: "awal" } : initial ? { point: initial, source: "awal" } : null);
+  const [candidate, setCandidate] = useState<Candidate | null>(confirmed ? { point: confirmed.point, source: "awal" } : start ? { point: start, source: "osm" } : null);
   const [announcement, setAnnouncement] = useState("");
   const [problem, setProblem] = useState("");
   const [busy, setBusy] = useState<"gps" | "cek" | null>(null);

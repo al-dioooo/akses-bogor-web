@@ -20,7 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t("metaTitle") };
 }
 
-/** Satu tempat di Kelola tempat (ADR-0050): data, jawaban, foto, keadaan tayang, dan riwayat dari log audit. */
+/** Satu tempat di Kelola tempat (ADR-0051): data, jawaban, foto, keadaan tayang, dan riwayat dari log audit. */
 export default async function TempatAdmin({ params, searchParams }: PageProps<"/verifikasi/tempat/[id]">) {
   const t = await getTranslations("KelolaTempat");
   return (

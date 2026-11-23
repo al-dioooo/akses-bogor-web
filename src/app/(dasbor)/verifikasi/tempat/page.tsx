@@ -20,7 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 /**
- * Kelola tempat (ADR-0050): semua tempat untuk admin, termasuk yang diturunkan, dengan saringan dan halaman. Halaman ini
+ * Kelola tempat (ADR-0051): semua tempat untuk admin, termasuk yang diturunkan, dengan saringan dan halaman. Halaman ini
  * hanya memilih apa yang ditampilkan; API memeriksa peran admin di setiap route.
  */
 export default async function KelolaTempat({ searchParams }: PageProps<"/verifikasi/tempat">) {

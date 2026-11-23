@@ -71,6 +71,7 @@ describe("newDraft", () => {
     expect(draft.facilities.guiding_block).toEqual({ answer: "tidak_tersedia", reason: "terhalang", note: "" });
     expect(draft.facilities.ramp.note).toBe("Landai");
     expect(draftKeyFor("perubahan", halte.id)).toBe(`perubahan:${halte.id}`);
+    expect(draftKeyFor("baru", null, "node/1")).toBe("osm:node/1");
     expect(draftKeyFor("baru", null)).toBe("baru");
   });
 });
@@ -161,5 +162,16 @@ describe("isExpired", () => {
   it("drops drafts after 7 days", () => {
     expect(isExpired({ updatedAt: NOW }, NOW + 6 * 86_400_000)).toBe(false);
     expect(isExpired({ updatedAt: NOW }, NOW + 7 * 86_400_000 + 1)).toBe(true);
+  });
+});
+
+describe("newDraft from an OpenStreetMap candidate", () => {
+  it("fills the name and category and keeps the point as an unconfirmed start, in a draft of its own", () => {
+    const draft = newDraft("baru", null, NOW, uuid, { osm: "way/2", name: "Masjid kandidat", category: "masjid", point: { lat: -6.6, lng: 106.8 } });
+    expect(draft).toMatchObject({ draftKey: "osm:way/2", kind: "baru", name: "Masjid kandidat", category: "masjid", location: null, osm: "way/2", start: { lat: -6.6, lng: 106.8 } });
+    // The pin still has to be confirmed, and the OSM id is not sent to the API.
+    expect(checkInfo(draft).map((e) => e.message)).toEqual(["lokasiKosong"]);
+    const confirmed = { ...draft, location: { point: { lat: -6.6, lng: 106.8 }, district: { slug: "bogor-tengah", name: "Bogor Tengah" } } };
+    expect(JSON.stringify(toPayload(confirmed))).not.toContain("way/2");
   });
 });

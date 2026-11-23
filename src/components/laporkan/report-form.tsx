@@ -7,6 +7,7 @@ import { FormAlert } from "@/components/akun/form-parts";
 import type { PlaceDetail } from "@/lib/api";
 import { deleteDraft, loadDraft, purgeExpiredDrafts, saveDraft } from "@/lib/draf";
 import { checkStep, firstIncompleteStep, newDraft, STEPS, type FieldError, type ReportDraft, type Step } from "@/lib/isian-laporan";
+import type { CandidatePrefill } from "@/lib/kandidat";
 import { withReturn } from "@/lib/kembali";
 import type { ReportKind } from "@/lib/laporan";
 import { buttonClass } from "@/ui/button-styles";
@@ -29,7 +30,18 @@ const PREVIOUS: Record<Step, Step | null> = { "1": null, "2": "1", "3": "2", rin
  * berpindah langkah. Draf disimpan di IndexedDB setiap kali isian berubah dan dipulihkan saat halaman dibuka lagi,
  * termasuk setelah ke Masuk dan kembali (ADR-0033).
  */
-export function ReportForm({ kind, place, signedIn }: { kind: ReportKind; place: PlaceDetail | null; signedIn: boolean }) {
+export function ReportForm({
+  kind,
+  place,
+  prefill = null,
+  signedIn,
+}: {
+  kind: ReportKind;
+  place: PlaceDetail | null;
+  /** Isian awal dari kandidat OpenStreetMap di Peta (ADR-0049), dengan draf sendiri. */
+  prefill?: CandidatePrefill | null;
+  signedIn: boolean;
+}) {
   const t = useTranslations("Laporkan");
   const params = useSearchParams();
   const requested = params.get("langkah");
@@ -54,7 +66,7 @@ export function ReportForm({ kind, place, signedIn }: { kind: ReportKind; place:
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const fresh = newDraft(kind, place);
+      const fresh = newDraft(kind, place, Date.now(), () => crypto.randomUUID(), prefill);
       try {
         await purgeExpiredDrafts();
         const saved = await loadDraft(fresh.draftKey);
@@ -70,7 +82,7 @@ export function ReportForm({ kind, place, signedIn }: { kind: ReportKind; place:
     return () => {
       cancelled = true;
     };
-  }, [kind, place]);
+  }, [kind, place, prefill]);
 
   // Setiap perubahan langsung disimpan. Bila penyimpanan sebelumnya belum selesai, perubahan berikutnya digabung menjadi
   // satu penyimpanan sesudahnya, jadi IndexedDB tidak ditulis lebih sering dari kemampuannya dan perubahan terakhir
