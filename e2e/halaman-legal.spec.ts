@@ -43,3 +43,16 @@ test("Kebijakan Privasi stacks the retention table below 400 px and keeps the ta
   await page.setViewportSize({ width: 480, height: 640 });
   await expect(page.getByRole("table", { name: "Masa simpan setiap jenis data" })).toBeVisible();
 });
+
+// Footer tanpa wordmark raksasa (issue #197), tetapi tetap lengkap: logo, judul kolom, tautan kebijakan, dan hak cipta.
+test("the footer has no giant wordmark and keeps its headings, policy links and copyright", async ({ page }) => {
+  await page.goto("/tentang");
+  const footer = page.getByRole("contentinfo");
+  await expect(footer.locator('[aria-hidden="true"]:not(svg):not(svg *)')).toHaveCount(0);
+  await expect(footer.getByRole("heading", { level: 2 })).toHaveText(["Jelajahi", "Informasi", "Kebijakan"]);
+  await expect(footer.getByRole("link", { name: "Kebijakan Privasi" })).toHaveAttribute("href", "/kebijakan-privasi");
+  await expect(footer.getByRole("link", { name: "Syarat Layanan" })).toHaveAttribute("href", "/syarat");
+  await expect(footer.getByText("© 2026 AksesBogor")).toBeVisible();
+  // Nama situs tampil sekali, di logo.
+  await expect(footer.getByText("AksesBogor", { exact: true })).toHaveCount(1);
+});
