@@ -30,7 +30,7 @@ export function Sources({ sources }: { sources: AgentSource[] }) {
           source.type === "lokasi" ? (
             <li key={`lokasi-${source.placeId}`}>
               <Link href={`/lokasi/${source.placeId}`} className={linkClass}>
-                {t("sourcePlace", { name: source.name, date: format.dateTime(new Date(source.lastVerifiedAt), { dateStyle: "long" }) })}
+                {t(source.verifiedBy === "admin" ? "sourcePlaceAdmin" : "sourcePlace", { name: source.name, date: format.dateTime(new Date(source.lastVerifiedAt), { dateStyle: "long" }) })}
               </Link>
             </li>
           ) : (

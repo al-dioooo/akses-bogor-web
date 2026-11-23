@@ -28,7 +28,7 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 // Id lokasi yang selalu menjawab galat server (tes status halaman Detail dan gambar berbagi, issue #150).
 const FAILING_PLACE_ID = "00000000-0000-4000-8000-000000000500";
 
-const listItem = ({ id, name, category, district, status, summary, location, lastVerifiedAt, photos }) => ({
+const listItem = ({ id, name, category, district, status, summary, location, lastVerifiedAt, verifiedBy, photos }) => ({
   id,
   name,
   category,
@@ -37,6 +37,7 @@ const listItem = ({ id, name, category, district, status, summary, location, las
   summary,
   location,
   lastVerifiedAt,
+  verifiedBy: verifiedBy ?? "tim",
   coverPhoto: photos.find((photo) => photo.tag === "pintu_masuk") ?? photos[0] ?? null,
 });
 
@@ -100,7 +101,7 @@ function route(url, headers) {
     if (id === FAILING_PLACE_ID) return [500, { galat: "galat_server", pesan: "Galat tiruan." }];
     if (!UUID.test(id)) return [400, { galat: "permintaan_tidak_valid", pesan: "Id lokasi tidak valid." }];
     const place = places.find((p) => p.id === id);
-    return place ? [200, place] : [404, { galat: "lokasi_tidak_ditemukan", pesan: "Lokasi tidak ditemukan." }];
+    return place ? [200, { verifiedBy: "tim", ...place }] : [404, { galat: "lokasi_tidak_ditemukan", pesan: "Lokasi tidak ditemukan." }];
   }
   return [404, { galat: "tidak_ditemukan", pesan: "Alamat tidak ditemukan." }];
 }

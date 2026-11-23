@@ -49,7 +49,7 @@ export type District = { slug: string; name: string };
 export type { DistrictPriority, PriorityLevel } from "./api";
 
 export type AgentCard =
-  | { type: "tempat"; target: { kind: "aksesbogor"; placeId: string }; name: string; category: Category; district: District; status: Status; lastVerifiedAt: string }
+  | { type: "tempat"; target: { kind: "aksesbogor"; placeId: string }; name: string; category: Category; district: District; status: Status; lastVerifiedAt: string; verifiedBy?: "tim" | "admin" }
   | { type: "tempat"; target: { kind: "osm"; osmType: OsmType; osmId: number }; name: string | null; category: Category; district: District; location: LatLng; osmUrl: string; attribution: string }
   | { type: "rute"; target: CardTarget; name: string | null }
   | ({ type: "prioritas" } & DistrictPriority);
@@ -57,7 +57,7 @@ export type AgentCard =
 export type AgentTurn = { role: "user" | "assistant"; content: string };
 
 export type AgentSource =
-  | { type: "lokasi"; placeId: string; name: string; lastVerifiedAt: string }
+  | { type: "lokasi"; placeId: string; name: string; lastVerifiedAt: string; verifiedBy?: "tim" | "admin" }
   | { type: "pengetahuan"; citation: string; title: string; url: string; license: string; attribution: string | null };
 
 export type AgentAnswer = { answer: string; sources: AgentSource[]; model: string | null; cards: AgentCard[] };
