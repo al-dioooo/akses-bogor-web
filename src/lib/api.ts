@@ -88,6 +88,17 @@ export type ProviderHint =
       url: string | null;
       accessibility: { entrance: boolean | null; restroom: boolean | null; parking: boolean | null; seating: boolean | null };
     }
+  | {
+      /** Salinan Google Maps yang tersimpan di baris kandidat OSM, dengan tanggal pengambilannya (YYYY-MM-DD, WIB). */
+      provider: "google";
+      result: "stored";
+      placeName: string | null;
+      distanceMeters: number | null;
+      url: string | null;
+      retrievedAt: string;
+      accessibility: { entrance: boolean | null; restroom: boolean | null; parking: boolean | null; seating: boolean | null };
+    }
+  | { provider: "openstreetmap"; result: "stored"; wheelchair: "yes" | "limited" | "no" | "designated" }
   | { provider: "mapbox" | "google"; result: "none" | "unavailable" };
 export type ProviderHints = { hints: ProviderHint[] };
 

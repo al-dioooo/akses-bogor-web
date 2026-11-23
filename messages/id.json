@@ -2149,9 +2149,17 @@
     "none": "Tidak ada petunjuk dari sumber lain untuk tempat ini.",
     "mapbox": "Menurut Mapbox: {answer}",
     "google": "Menurut Google: {answers}",
+    "googleStored": "Menurut Google Maps (diambil {date}): {answers}",
+    "osm": "Menurut OpenStreetMap: {answer}",
     "wheelchair": {
       "yes": "bisa dimasuki kursi roda",
       "no": "tidak bisa dimasuki kursi roda"
+    },
+    "osmWheelchair": {
+      "yes": "bisa dimasuki kursi roda",
+      "limited": "sebagian bisa dimasuki kursi roda",
+      "no": "tidak bisa dimasuki kursi roda",
+      "designated": "dirancang untuk kursi roda"
     },
     "flags": {
       "entrance": {
@@ -2176,6 +2184,8 @@
       }
     },
     "match": "Dicocokkan dengan “{name}”, {meters} m dari titik ini.",
+    "matchName": "Dicocokkan dengan “{name}”.",
+    "osmCredit": "© kontributor OpenStreetMap",
     "newTab": "(tab baru)"
   }
 }
