@@ -1,7 +1,8 @@
 // Petunjuk aksesibilitas tiruan dari Mapbox dan Google (GET /places/:id/hints dan
 // GET /places/candidates/:tipe/:id/hints), meniru akses-bogor-api (ADR-0052). "Halte contoh" punya petunjuk dari
-// kedua penyedia, "Halte contoh B" selalu galat, kandidat node/9001 punya petunjuk Mapbox serta salinan Google Maps dan
-// keterangan OSM yang tersimpan, dan tempat lain tidak punya.
+// kedua penyedia, kedua penyedia selalu gagal untuk "Halte contoh B", kandidat node/9001 punya petunjuk Mapbox serta
+// salinan Google Maps dan keterangan OSM yang tersimpan, kandidat way/9002 sudah tidak dikenal API (404), dan tempat
+// lain tidak punya.
 // Pengunjung dengan IP 203.0.113.247 melihat petunjuk yang dimatikan. GET /_tiruan/petunjuk?ip=... menjawab berapa
 // kali petunjuk diminta untuk IP itu, supaya tes bisa memastikan petunjuk tidak diminta per marker.
 export const NO_HINTS_IP = "203.0.113.247";
@@ -27,6 +28,7 @@ export function handlePetunjuk(method, url, headers, places) {
   if (ip === NO_HINTS_IP) return [200, { hints: [] }, headersOut];
   if (candidate) {
     const id = `${candidate[1]}/${candidate[2]}`;
+    if (id === "way/9002") return [404, { galat: "kandidat_tidak_ditemukan", pesan: "Tempat tidak ditemukan." }];
     if (id !== "node/9001") return [200, { hints: none }, headersOut];
     return [
       200,
@@ -49,7 +51,7 @@ export function handlePetunjuk(method, url, headers, places) {
       headersOut,
     ];
   }
-  if (place === FAILING) return [503, { galat: "galat_server", pesan: "Galat tiruan." }];
+  if (place === FAILING) return [200, { hints: none.map((hint) => ({ ...hint, result: "unavailable" })) }, headersOut];
   if (!places.some((p) => p.id === place)) return [404, { galat: "lokasi_tidak_ditemukan", pesan: "Lokasi tidak ditemukan." }];
   if (place !== HALTE) return [200, { hints: none }, headersOut];
   return [

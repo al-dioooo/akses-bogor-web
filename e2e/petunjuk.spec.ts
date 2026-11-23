@@ -28,7 +28,10 @@ const hintRequests = async (page: Page, ip: string) => {
 test("the place page shows Mapbox and Google hints apart from the verified facilities, with their credits", async ({ page }) => {
   await page.goto(`/lokasi/${HALTE}`);
   const section = hints(page);
-  await expect(section.getByRole("heading", { level: 3, name: TITLE })).toBeVisible();
+  await expect(section.getByRole("heading", { level: 2, name: TITLE })).toBeVisible();
+  // Its own section, not part of the verified facilities, with the result in a status region.
+  await expect(main(page).getByRole("region", { name: "Fasilitas" }).getByRole("region", { name: TITLE })).toHaveCount(0);
+  await expect(section.getByRole("status")).toContainText("Menurut Mapbox: bisa dimasuki kursi roda");
   await expect(section.getByText("Menurut Mapbox: bisa dimasuki kursi roda")).toBeVisible();
   await expect(
     section.getByText("Menurut Google: pintu masuk ramah kursi roda · toilet: tidak diketahui · parkir tidak ramah kursi roda · tempat duduk: tidak diketahui"),
@@ -50,14 +53,41 @@ test("the place page says when there is no hint and when hints cannot load", asy
   await expect(hints(page).getByText("Petunjuk dari sumber lain belum bisa dimuat.")).toBeVisible();
 });
 
-test("nothing is shown while hints are switched off in the API", async ({ browser }) => {
+test("nothing is shown while hints are switched off in the API, not even while loading or in the server HTML", async ({ browser }) => {
   const { context, page } = await visitor(browser, NO_HINTS_IP);
+  // Crawlers and the first paint never get the section, whatever the API says.
+  for (const ip of [NO_HINTS_IP, "203.0.113.10"]) {
+    const html = await (await page.request.get(`/lokasi/${HALTE}`, { headers: { "x-forwarded-for": ip } })).text();
+    expect(html).toContain("Fasilitas");
+    expect(html).not.toContain(TITLE);
+    expect(html).not.toContain("Memuat petunjuk");
+  }
+  // Hold the answer back to look at the page while it is loading.
+  let release = () => {};
+  const held = new Promise<void>((resolve) => (release = resolve));
+  await page.route("**/peta/petunjuk?*", async (route) => {
+    await held;
+    await route.continue();
+  });
+  const answered = page.waitForResponse((response) => response.url().includes("/peta/petunjuk?"));
+  await page.goto(`/lokasi/${HALTE}`);
+  await expect(main(page).getByRole("heading", { name: "Fasilitas" }).first()).toBeVisible();
+  await page.waitForTimeout(300);
+  await expect(hints(page)).toHaveCount(0);
+  await expect(page.getByText("Memuat petunjuk")).toHaveCount(0);
+  release();
+  expect(await (await answered).json()).toEqual({ hints: [], off: true });
+  await expect(hints(page)).toHaveCount(0);
+  await context.close();
+});
+
+test("an error before the page knows hints are on shows nothing", async ({ page }) => {
+  await page.route("**/peta/petunjuk?*", (route) => route.fulfill({ status: 503, json: { galat: "galat_api" } }));
   const answered = page.waitForResponse((response) => response.url().includes("/peta/petunjuk?"));
   await page.goto(`/lokasi/${HALTE}`);
   await answered;
   await expect(main(page).getByRole("heading", { name: "Fasilitas" }).first()).toBeVisible();
   await expect(hints(page)).toHaveCount(0);
-  await context.close();
 });
 
 test("Peta asks for hints only when a place or candidate card opens, never for every marker", async ({ browser }, testInfo) => {
@@ -98,5 +128,31 @@ test("Peta asks for hints only when a place or candidate card opens, never for e
   await expect(candidate.getByText("Belum ada data aksesibilitas")).toBeVisible();
   expect(await hintRequests(page, ip)).toBe(2);
   expect(await blockingViolations(page)).toEqual([]);
+  await context.close();
+});
+
+test("a candidate the API no longer knows shows no hints but does not switch hints off for the next card", async ({ browser }, testInfo) => {
+  const ip = testInfo.project.name === "ponsel" ? "203.0.113.233" : "203.0.113.234";
+  const { context, page } = await visitor(browser, ip, testInfo.project.name === "ponsel" ? undefined : { width: 1280, height: 720 });
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/peta");
+  await expect(main(page).getByRole("group", { name: "Kontrol peta" })).toBeVisible({ timeout: 15_000 });
+  await openList(page);
+  if ((page.viewportSize()?.width ?? 0) < 768) {
+    const handle = page.getByRole("slider", { name: "Tinggi panel daftar" });
+    await handle.press("ArrowUp");
+    await expect(handle).toHaveAttribute("aria-valuetext", "penuh");
+  }
+  const stale = page.waitForResponse((response) => response.url().includes("/peta/petunjuk?osm=way%2F9002"));
+  await main(page).getByRole("button", { name: "Tunjukkan di peta: Kampus kandidat B" }).click();
+  const kampus = main(page).getByRole("region", { name: "Kampus kandidat B" });
+  expect(await (await stale).json()).toEqual({ hints: [], off: false });
+  await expect(kampus.getByText("Belum ada data aksesibilitas")).toBeVisible();
+  await expect(kampus.getByRole("region", { name: TITLE })).toHaveCount(0);
+
+  await kampus.getByRole("button", { name: "Tutup ringkasan" }).click();
+  await main(page).getByRole("button", { name: "Tunjukkan di peta: Masjid kandidat A" }).click();
+  const masjid = main(page).getByRole("region", { name: "Masjid kandidat A" });
+  await expect(masjid.getByText("Menurut Mapbox: bisa dimasuki kursi roda")).toBeVisible();
   await context.close();
 });
