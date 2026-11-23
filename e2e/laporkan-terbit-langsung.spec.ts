@@ -5,7 +5,7 @@ import { photo } from "./foto";
 import { stubGoogle } from "./google";
 import { expect, test } from "./mapbox";
 
-// Terbit langsung dari Laporkan, khusus admin (ADR-0050), dengan API tiruan dan Mapbox tiruan.
+// Terbit langsung dari Laporkan, khusus admin (ADR-0051), dengan API tiruan dan Mapbox tiruan.
 const email = (prefix: string) => uniqueEmail(prefix, test.info().project.name);
 const main = (page: Page) => page.getByRole("main");
 

@@ -54,7 +54,7 @@ async function Report({ searchParams }: { searchParams: PageProps<"/laporkan">["
   const prefill = placeId ? null : parseCandidatePrefill(params);
   // Bantu memetakan hanya ditawarkan untuk laporan baru, kepada akun yang sudah masuk, selama API membuka agen.
   const helper = kind === "baru" && signedIn && (await agentEnabled());
-  // Pilihan terbit langsung hanya untuk admin (ADR-0050); API tetap menolak akun lain.
+  // Pilihan terbit langsung hanya untuk admin (ADR-0051); API tetap menolak akun lain.
   const admin = signedIn && (await currentAccount().catch(() => null))?.user.role === "admin";
   return (
     <>

@@ -56,7 +56,7 @@ export type ReportDraft = {
   start?: LatLng | null;
   facilities: Record<Facility, FacilityState>;
   photos: PhotoDraft[];
-  /** Khusus admin: terbitkan langsung dengan alasan (ADR-0050). Akun lain tidak melihat pilihannya, dan API menolaknya. */
+  /** Khusus admin: terbitkan langsung dengan alasan (ADR-0051). Akun lain tidak melihat pilihannya, dan API menolaknya. */
   publishDirectly?: boolean;
   publishReason?: string;
   updatedAt: number;

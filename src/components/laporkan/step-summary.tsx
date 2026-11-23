@@ -16,7 +16,7 @@ type Props = {
   signedIn: boolean;
   goTo: (step: Step) => void;
   onDelete: () => void;
-  /** Akun admin: pilihan terbit langsung (ADR-0050). Peran diperiksa lagi di API. */
+  /** Akun admin: pilihan terbit langsung (ADR-0051). Peran diperiksa lagi di API. */
   admin?: boolean;
   update?: (change: Partial<ReportDraft>) => void;
   directError?: boolean;

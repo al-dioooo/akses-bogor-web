@@ -202,7 +202,7 @@ export function ReportForm({
       goTo(missing);
       return;
     }
-    // Terbit langsung butuh alasan untuk log audit (ADR-0050).
+    // Terbit langsung butuh alasan untuk log audit (ADR-0051).
     const direct = admin && signedIn && Boolean(draft.publishDirectly);
     setDirectError(direct && directReasonMissing(draft));
     if (direct && directReasonMissing(draft)) {

@@ -29,7 +29,7 @@ export type ReportPayload = {
   description?: string;
   facilities: { facility: Facility; answer: Answer; reason?: Reason; note?: string }[];
   photos: { id: string; tag: PhotoTag; caption?: string }[];
-  /** Khusus admin: terbitkan langsung tanpa pemeriksaan orang kedua, dengan alasan (ADR-0050). */
+  /** Khusus admin: terbitkan langsung tanpa pemeriksaan orang kedua, dengan alasan (ADR-0051). */
   publishDirectly?: true;
   publishReason?: string;
 };

@@ -97,7 +97,7 @@ export function handleLaporkan(method, pathname, headers, body, places) {
     const repeat = user.reports.find((r) => r.submissionKey === body?.submissionKey);
     if (repeat) return [201, repeat.response];
     if (!Array.isArray(body?.facilities) || body.facilities.length !== 4) return error(400, "input_tidak_valid", "Data yang dikirim tidak sesuai. Periksa lagi isiannya.");
-    // Terbit langsung khusus admin (ADR-0050), dengan alasan.
+    // Terbit langsung khusus admin (ADR-0051), dengan alasan.
     const direct = Boolean(body.publishDirectly);
     if (direct && user.role !== "admin") return error(403, "bukan_admin", "Hanya admin AksesBogor yang bisa menerbitkan langsung.");
     if (direct && (typeof body.publishReason !== "string" || body.publishReason.trim().length < 5)) return error(400, "input_tidak_valid", "Alasan wajib untuk terbit langsung.");

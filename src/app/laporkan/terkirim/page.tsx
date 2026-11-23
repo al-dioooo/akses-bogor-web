@@ -19,7 +19,7 @@ type Query = PageProps<"/laporkan/terkirim">["searchParams"];
 
 /**
  * Laporan Berhasil (FR-26): konfirmasi, laporan yang baru masuk beserta statusnya, dan langkah selanjutnya. Setelah admin
- * menerbitkan langsung (ADR-0050), halaman yang sama menyebut bahwa tempatnya sudah tayang dengan label admin.
+ * menerbitkan langsung (ADR-0051), halaman yang sama menyebut bahwa tempatnya sudah tayang dengan label admin.
  */
 export default async function Terkirim({ searchParams }: { searchParams: Query }) {
   return (
