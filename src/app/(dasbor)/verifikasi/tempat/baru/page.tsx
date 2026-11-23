@@ -25,7 +25,7 @@ function candidateFrom(params: Params): CandidateStart | null {
   return { osm: { type: type as CandidateStart["osm"]["type"], id: Number(id) }, name: one(params.nama).slice(0, 120) || null, category, point: { lat, lng } };
 }
 
-/** Tambah tempat (ADR-0050): langsung tayang dengan label admin. */
+/** Tambah tempat (ADR-0051): langsung tayang dengan label admin. */
 export default async function TambahTempat({ searchParams }: PageProps<"/verifikasi/tempat/baru">) {
   const t = await getTranslations("KelolaTempat.new");
   return (

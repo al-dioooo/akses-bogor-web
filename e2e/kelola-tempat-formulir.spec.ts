@@ -5,7 +5,7 @@ import { photo } from "./foto";
 import { stubGoogle } from "./google";
 import { expect, test } from "./mapbox";
 
-// Tambah dan ubah tempat di Kelola tempat (ADR-0050) dengan API tiruan dan Mapbox tiruan.
+// Tambah dan ubah tempat di Kelola tempat (ADR-0051) dengan API tiruan dan Mapbox tiruan.
 const email = (prefix: string) => uniqueEmail(prefix, test.info().project.name);
 const main = (page: Page) => page.getByRole("main");
 const unknown = ["ramp", "toilet_difabel", "guiding_block", "lift"].map((facility) => ({ facility, answer: "belum_tahu" }));
