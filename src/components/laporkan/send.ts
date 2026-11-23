@@ -46,12 +46,12 @@ export function uploadPhoto(blob: Blob, onProgress: (fraction: number) => void):
   });
 }
 
-async function postReport(draft: ReportDraft): Promise<ApiAnswer<SubmittedReport>> {
+async function postReport(draft: ReportDraft, admin: boolean): Promise<ApiAnswer<SubmittedReport>> {
   try {
     const response = await fetch("/laporkan/kirim", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify(toPayload(draft)),
+      body: JSON.stringify(toPayload(draft, { admin })),
     });
     return { status: response.status, body: await response.json().catch(() => ({})) };
   } catch {
@@ -62,7 +62,7 @@ async function postReport(draft: ReportDraft): Promise<ApiAnswer<SubmittedReport
 const sessionProblem = (answer: ApiAnswer<unknown>): SendOutcome | null =>
   answer.status === 401 ? { ok: false, reason: "masuk" } : answer.status === 403 && answer.body.galat === "akun_belum_lengkap" ? { ok: false, reason: "lengkapi" } : null;
 
-export async function sendDraft(draft: ReportDraft, hooks: SendHooks): Promise<SendOutcome> {
+export async function sendDraft(draft: ReportDraft, hooks: SendHooks, { admin = false }: { admin?: boolean } = {}): Promise<SendOutcome> {
   const photos = draft.photos.map((photo) => ({ ...photo }));
   for (const [index, photo] of photos.entries()) {
     if (photo.uploadedId) continue;
@@ -78,7 +78,7 @@ export async function sendDraft(draft: ReportDraft, hooks: SendHooks): Promise<S
   }
 
   hooks.onSubmitting();
-  const answer = await postReport({ ...draft, photos });
+  const answer = await postReport({ ...draft, photos }, admin);
   const problem = sessionProblem(answer);
   if (problem) return problem;
   if (answer.status === 201 && "id" in answer.body) return { ok: true, report: answer.body as SubmittedReport };

@@ -1779,6 +1779,14 @@
     },
     "ringkasan": {
       "intro": "Periksa lagi isian Anda sebelum dikirim. Laporan masuk antrean verifikasi dan baru tayang setelah diperiksa tim.",
+      "direct": {
+        "legend": "Khusus admin",
+        "label": "Terbitkan langsung (admin)",
+        "body": "Laporan ini tidak masuk antrean verifikasi: tempatnya langsung tayang dengan label \"Diterbitkan langsung oleh admin\". Tersedia atau Tidak perlu tanpa foto fasilitas itu disimpan sebagai Belum diketahui. Pilih ini hanya bila Anda sudah memeriksa tempatnya sendiri.",
+        "reasonLabel": "Alasan terbit langsung",
+        "reasonError": "Tulis alasan, paling sedikit 5 karakter.",
+        "evidenceWarning": "Belum ada foto yang sesuai, jadi jawaban ini akan disimpan sebagai Belum diketahui: {facilities}."
+      },
       "edit": "Ubah {section}",
       "incomplete": "Langkah {step} belum lengkap.",
       "incompleteAction": "Lengkapi langkah {step}",
@@ -1808,6 +1816,7 @@
     },
     "kirim": {
       "send": "Kirim laporan",
+      "publish": "Terbitkan langsung",
       "sending": "Mengirim…",
       "signIn": "Masuk lalu kirim",
       "uploading": "Mengunggah foto {number} dari {total}…",
@@ -1842,6 +1851,15 @@
       ],
       "mine": "Lihat Laporan saya",
       "another": "Laporkan tempat lain",
+      "direct": {
+        "eyebrow": "Terbit langsung",
+        "title": "Tempat ini",
+        "accent": "sudah tayang",
+        "intro": "Laporan ini diterbitkan langsung oleh admin tanpa pemeriksaan verifikator kedua, dan tempatnya tampil dengan label \"Diterbitkan langsung oleh admin\".",
+        "unknown": "Disimpan sebagai Belum diketahui karena belum ada foto yang sesuai: {facilities}.",
+        "view": "Lihat tempat",
+        "manage": "Buka di Kelola tempat"
+      },
       "loading": "Memuat laporan…"
     },
     "peta": {

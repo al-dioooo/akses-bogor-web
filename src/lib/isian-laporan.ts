@@ -56,8 +56,14 @@ export type ReportDraft = {
   start?: LatLng | null;
   facilities: Record<Facility, FacilityState>;
   photos: PhotoDraft[];
+  /** Khusus admin: terbitkan langsung dengan alasan (ADR-0051). Akun lain tidak melihat pilihannya, dan API menolaknya. */
+  publishDirectly?: boolean;
+  publishReason?: string;
   updatedAt: number;
 };
+
+/** Alasan terbit langsung paling sedikit 5 karakter, sama dengan API. */
+export const directReasonMissing = (draft: Pick<ReportDraft, "publishDirectly" | "publishReason">) => Boolean(draft.publishDirectly) && (draft.publishReason ?? "").trim().length < 5;
 
 export const draftKeyFor = (kind: ReportKind, placeId: string | null, osm: string | null = null) =>
   kind === "baru" || !placeId ? (osm ? `osm:${osm}` : "baru") : `${kind}:${placeId}`;
@@ -162,8 +168,17 @@ export function suggestedPhotos(draft: ReportDraft): { tag: PhotoTag; done: bool
 
 const optional = (value: string) => value.trim() || undefined;
 
-/** Isi `POST /reports`. Foto harus sudah diunggah (`uploadedId`). */
-export function toPayload(draft: ReportDraft): ReportPayload {
+/**
+ * Draf untuk akun yang sedang masuk. Pilihan terbit langsung hanya untuk admin (ADR-0051), jadi dibuang dari draf yang
+ * dipulihkan untuk akun lain, mis. setelah ganti akun atau peran di perangkat yang sama.
+ */
+export function draftFor(draft: ReportDraft, admin: boolean): ReportDraft {
+  if (admin || (draft.publishDirectly === undefined && draft.publishReason === undefined)) return draft;
+  return { ...draft, publishDirectly: undefined, publishReason: undefined };
+}
+
+/** Isi `POST /reports`. Foto harus sudah diunggah (`uploadedId`). Terbit langsung hanya ikut bila `admin` benar. */
+export function toPayload(draft: ReportDraft, { admin = false }: { admin?: boolean } = {}): ReportPayload {
   const facilities = FACILITIES.map((facility) => {
     const { answer, reason, note } = draft.facilities[facility];
     return { facility, answer, reason: answer === "tidak_tersedia" ? (reason ?? undefined) : undefined, note: optional(note) };
@@ -172,7 +187,8 @@ export function toPayload(draft: ReportDraft): ReportPayload {
     if (!photo.uploadedId || !photo.tag) throw new Error("foto belum diunggah atau belum bertag");
     return { id: photo.uploadedId, tag: photo.tag, caption: optional(photo.caption) };
   });
-  const common = { submissionKey: draft.submissionKey, kind: draft.kind, facilities, photos, description: optional(draft.description) };
+  const direct = admin && draft.publishDirectly ? { publishDirectly: true as const, publishReason: (draft.publishReason ?? "").trim() } : {};
+  const common = { submissionKey: draft.submissionKey, kind: draft.kind, facilities, photos, description: optional(draft.description), ...direct };
   if (draft.kind === "kekurangan") return { ...common, placeId: draft.placeId! };
   return {
     ...common,

@@ -8,7 +8,7 @@ import { agentEnabled } from "@/lib/agen-rute";
 import { getPlace } from "@/lib/api";
 import { parseCandidatePrefill } from "@/lib/kandidat";
 import type { ReportKind } from "@/lib/laporan";
-import { hasSession } from "@/lib/sesi";
+import { currentAccount, hasSession } from "@/lib/sesi";
 import { buttonClass } from "@/ui/button-styles";
 import { Icon } from "@/ui/icon";
 import { IconCompass } from "@/ui/icons";
@@ -54,6 +54,8 @@ async function Report({ searchParams }: { searchParams: PageProps<"/laporkan">["
   const prefill = placeId ? null : parseCandidatePrefill(params);
   // Bantu memetakan hanya ditawarkan untuk laporan baru, kepada akun yang sudah masuk, selama API membuka agen.
   const helper = kind === "baru" && signedIn && (await agentEnabled());
+  // Pilihan terbit langsung hanya untuk admin (ADR-0051); API tetap menolak akun lain.
+  const admin = signedIn && (await currentAccount().catch(() => null))?.user.role === "admin";
   return (
     <>
       <div className="flex flex-col items-start gap-3">
@@ -65,7 +67,7 @@ async function Report({ searchParams }: { searchParams: PageProps<"/laporkan">["
         <p className="text-lg text-text-secondary">{t(`intro.${kind}`, { name: place?.name ?? "" })}</p>
       </div>
       {helper && <MappingHelper />}
-      <ReportForm kind={kind} place={place} prefill={prefill} signedIn={signedIn} />
+      <ReportForm kind={kind} place={place} prefill={prefill} signedIn={signedIn} admin={admin} />
     </>
   );
 }
