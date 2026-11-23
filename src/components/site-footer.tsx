@@ -39,12 +39,8 @@ export async function SiteFooter() {
   ];
   return (
     <footer className="mt-(--spacing-4xl) overflow-hidden bg-surface-inverse text-text-on-inverse">
-      {/* Wordmark raksasa hanya hiasan, jadi digambar lewat CSS dan tidak dibaca sebagai teks. */}
-      <div
-        aria-hidden="true"
-        className="page-width pt-16 font-heading text-[clamp(3.5rem,13vw,11rem)] leading-[0.9] font-extrabold tracking-[-0.05em] select-none after:content-['AksesBogor']"
-      />
-      <div className="page-width grid gap-10 pt-12 pb-8 md:grid-cols-[1.4fr_repeat(3,1fr)]">
+      {/* Tanpa wordmark raksasa (issue #197): logo di kolom pertama sudah menamai situs. */}
+      <div className="page-width grid gap-10 pt-16 pb-8 md:grid-cols-[1.4fr_repeat(3,1fr)]">
         <div className="flex flex-col gap-4">
           <Logo inverse />
           <p className="max-w-xs text-text-on-inverse-secondary">{t("tagline")}</p>
