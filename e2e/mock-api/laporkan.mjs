@@ -20,22 +20,29 @@ const uploads = new Map();
 const failingUploads = new Map();
 
 const error = (status, galat, pesan) => [status, { galat, pesan }];
-const inside = ({ lat, lng }) => lng >= BOX.west && lng <= BOX.east && lat >= BOX.south && lat <= BOX.north;
-const meters = (a, b) => {
+export const inside = ({ lat, lng }) => lng >= BOX.west && lng <= BOX.east && lat >= BOX.south && lat <= BOX.north;
+export const meters = (a, b) => {
   const rad = (d) => (d * Math.PI) / 180;
   const x = rad(b.lng - a.lng) * Math.cos(rad((a.lat + b.lat) / 2));
   return Math.round(Math.hypot(x, rad(b.lat - a.lat)) * 6_371_000);
 };
 const similar = (a, b) => a.toLowerCase().includes(b.toLowerCase()) || b.toLowerCase().includes(a.toLowerCase());
-const outside = () =>
+export const outside = () =>
   error(422, "di_luar_kota_bogor", "Titik ini berada di luar Kota Bogor. Untuk saat ini AksesBogor hanya mencatat tempat di enam kecamatan Kota Bogor: Bogor Barat, Bogor Selatan, Bogor Tengah, Bogor Timur, Bogor Utara, dan Tanah Sareal.");
 
-function districtOf(places, point) {
+export function districtOf(places, point) {
   const nearest = [...places].sort((a, b) => meters(a.location, point) - meters(b.location, point))[0];
   return nearest.district;
 }
 
 /** Menjawab route Laporkan, atau `null` bila bukan route Laporkan. */
+/** Memakai foto yang diunggah akun ini sekali, mis. untuk tempat yang dibuat admin (kelola-tempat.mjs). */
+export function claimUpload(id, email) {
+  if (uploads.get(id) !== email) return false;
+  uploads.delete(id);
+  return true;
+}
+
 export function handleLaporkan(method, pathname, headers, body, places) {
   if (method === "POST" && pathname === "/_tiruan/foto-gagal") {
     if (typeof body?.email !== "string") return error(400, "input_tidak_valid", "Sertakan email akun yang unggahannya dibuat gagal.");
