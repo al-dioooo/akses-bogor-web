@@ -3,7 +3,7 @@ import Link from "next/link";
 import { getFormatter, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { ReportStatusBadge } from "@/components/akun/my-reports";
-import { getMyReports } from "@/lib/akun";
+import { getMyReports, type MyReport } from "@/lib/akun";
 import { FACILITIES } from "@/lib/api";
 import { requireAccount } from "@/lib/sesi";
 import { buttonClass } from "@/ui/button-styles";
@@ -22,10 +22,18 @@ type Query = PageProps<"/laporkan/terkirim">["searchParams"];
  * menerbitkan langsung (ADR-0051), halaman yang sama menyebut bahwa tempatnya sudah tayang dengan label admin.
  */
 export default async function Terkirim({ searchParams }: { searchParams: Query }) {
+  const t = await getTranslations("Laporkan.terkirim");
   return (
     <main id="konten" className="page-width flex flex-1 flex-col items-center py-10 sm:py-16">
       <div className="flex w-full max-w-2xl flex-col gap-8">
-        <Suspense fallback={<Heading direct={false} />}>
+        <Suspense
+          fallback={
+            <>
+              <Heading direct={false} />
+              <p role="status">{t("loading")}</p>
+            </>
+          }
+        >
           <Body searchParams={searchParams} />
         </Suspense>
       </div>
@@ -52,15 +60,18 @@ async function Heading({ direct }: { direct: boolean }) {
 
 async function Body({ searchParams }: { searchParams: Query }) {
   const query = await searchParams;
-  const direct = query.langsung === "1";
+  const laporan = typeof query.laporan === "string" ? query.laporan : undefined;
+  const { token } = await requireAccount(`/laporkan/terkirim${laporan ? `?laporan=${encodeURIComponent(laporan)}` : ""}`);
   const t = await getTranslations("Laporkan.terkirim");
+  const report = laporan ? (await getMyReports(token).catch(() => ({ items: [] }))).items.find((item) => item.id === laporan) : undefined;
+  // "Sudah tayang" hanya bila laporannya memang sudah diterbitkan. `langsung=1` dari pengalihan Laporkan hanya
+  // membedakan terbit langsung oleh admin dari laporan yang kemudian diterbitkan verifikator.
+  const direct = report?.status === "diterbitkan" && query.langsung === "1";
   const next = t.raw("next") as string[];
   return (
     <>
       <Heading direct={direct} />
-      <Suspense fallback={<p role="status">{t("loading")}</p>}>
-        <Sent laporan={typeof query.laporan === "string" ? query.laporan : undefined} direct={direct} lowered={String(query.belum ?? "")} />
-      </Suspense>
+      {report && <Sent report={report} direct={direct} lowered={String(query.belum ?? "")} />}
 
       {!direct && (
         <section aria-labelledby="selanjutnya" className="panel flex flex-col gap-4 rounded-3xl p-5 sm:p-7">
@@ -94,12 +105,9 @@ async function Body({ searchParams }: { searchParams: Query }) {
   );
 }
 
-/** Laporan yang baru dikirim, dibaca dari Laporan saya; tidak tampil bila tidak ditemukan. */
-async function Sent({ laporan, direct, lowered }: { laporan?: string; direct: boolean; lowered: string }) {
-  const { token } = await requireAccount(`/laporkan/terkirim${laporan ? `?laporan=${encodeURIComponent(laporan)}` : ""}`);
+/** Laporan yang baru dikirim, dibaca dari Laporan saya. */
+async function Sent({ report, direct, lowered }: { report: MyReport; direct: boolean; lowered: string }) {
   const [t, tl, tf, format] = await Promise.all([getTranslations("Laporkan.terkirim"), getTranslations("LaporanSaya"), getTranslations("Fasilitas"), getFormatter()]);
-  const report = laporan ? (await getMyReports(token).catch(() => ({ items: [] }))).items.find((item) => item.id === laporan) : undefined;
-  if (!report) return null;
   const unknown = lowered.split(",").filter((f): f is (typeof FACILITIES)[number] => (FACILITIES as readonly string[]).includes(f));
   return (
     <div className="flex flex-col items-start gap-2 rounded-3xl bg-bg-sunken p-5">
