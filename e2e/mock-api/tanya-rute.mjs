@@ -6,6 +6,7 @@
 //   asisten_rute_belum_aktif.
 // - Jawaban biasa menyebut lokasi yang dipilih (placeId) atau Halte contoh, dengan sumber dan satu kartu rute ke sana.
 //   Pertanyaan yang memuat "kuota-tiruan" menjawab 429 kuota_habis, dan "sibuk-tiruan" menjawab 503 agen_sibuk.
+//   Pertanyaan yang memuat "Masjid Al-Hidayah" menjawab dengan kartu rute ke kandidat OpenStreetMap node 9001.
 // - GET /_tiruan/asisten-terakhir?ip=... menjawab badan pertanyaan terakhir dari IP itu, untuk memastikan titik awal
 //   dan id lokasi ikut terkirim.
 
@@ -31,6 +32,18 @@ export function handleTanyaRute(method, url, headers, body, places) {
     return error(429, "kuota_habis", "Jatah 5 pertanyaan hari ini sudah habis. Coba lagi besok, atau masuk untuk memakai jatah akun Anda.");
   }
   if (question.includes("sibuk-tiruan")) return error(503, "agen_sibuk", "Asisten sedang sibuk. Coba lagi nanti.");
+  if (question.includes("Masjid Al-Hidayah")) {
+    // Kandidat OpenStreetMap tiruan (node 9001 di agen-rute.mjs), tanpa data aksesibilitas dari tim (ADR-0049).
+    return [
+      200,
+      {
+        answer: "Masjid Al-Hidayah belum ada data aksesibilitas dari tim AksesBogor (© kontributor OpenStreetMap). Rute jalan kaki ada di kartu di bawah. Bila Anda pernah ke sana, Laporkan tempat ini.",
+        sources: [{ type: "pengetahuan", citation: "© kontributor OpenStreetMap", title: "Kampus, masjid, halte, dan rumah sakit di Kota Bogor (OpenStreetMap)", url: "https://www.openstreetmap.org/copyright", license: "Open Database License (ODbL) 1.0", attribution: "© kontributor OpenStreetMap" }],
+        model: "claude-haiku-5-5",
+        cards: [{ type: "rute", target: { kind: "osm", osmType: "node", osmId: 9001 }, name: "Masjid Al-Hidayah" }],
+      },
+    ];
+  }
   const place = places.find((p) => p.id === (body?.placeId ?? HALTE));
   if (!place) return error(404, "lokasi_tidak_ditemukan", "Lokasi tidak ditemukan.");
   return [
