@@ -44,7 +44,7 @@ async function expectHeaderFits(page: Page) {
 test.describe("header on desktop widths", () => {
   test.skip(({ isMobile }) => isMobile, "phones always use the bottom nav");
 
-  // Menu utama tampil mulai 1280 px; di bawahnya tujuh menu dan tombol kanan tidak muat, jadi Bottom nav dipakai.
+  // Menu utama tampil mulai 1280 px; di bawahnya Bottom nav dipakai.
   for (const width of [1024, 1152, 1280, 1440]) {
     test(`has no horizontal scroll at ${width} px, signed out and signed in`, async ({ page }) => {
       await page.setViewportSize({ width, height: 800 });
