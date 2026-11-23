@@ -77,12 +77,14 @@ test("changes a place, and refuses to overwrite a newer version", async ({ page,
   await main(page).getByRole("link", { name: "Ubah tempat" }).click();
   await expect(page).toHaveURL(`/verifikasi/tempat/${id}/ubah`);
   await main(page).getByRole("textbox", { name: "Nama tempat" }).fill(`Halte Juanda ${test.info().project.name}`);
+  await main(page).getByLabel("Pilih foto").setInputFiles([photo("pintu.png")]);
+  await main(page).getByRole("combobox", { name: "Objek di foto 1" }).selectOption("pintu_masuk");
   await main(page).getByLabel("Alasan perubahan").fill("Nama resmi dari papan halte");
   await main(page).getByRole("button", { name: "Simpan perubahan" }).click();
   await expect(page).toHaveURL(`/verifikasi/tempat/${id}?tersimpan=1`);
   const latest = main(page).getByRole("region", { name: "Riwayat" }).getByRole("listitem").first();
   await expect(latest).toContainText("Diubah langsung oleh admin");
-  await expect(latest).toContainText("Yang berubah: nama");
+  await expect(latest).toContainText("Yang berubah: nama, foto");
 
   // Orang lain menyimpan lebih dulu: formulir yang terbuka tidak boleh menimpanya.
   await page.goto(`/verifikasi/tempat/${id}/ubah`);
