@@ -6,11 +6,12 @@ import { Suspense } from "react";
 import { DashboardHeading } from "@/components/dasbor/dashboard-heading";
 import { PlaceHistory } from "@/components/kelola-tempat/place-history";
 import { NoAccess } from "@/components/verifikasi/no-access";
+import { FACILITIES } from "@/lib/api";
 import { getAdminPlace, getPlaceHistory } from "@/lib/kelola-tempat";
 import { verifierSession } from "@/lib/verifikator";
 import { buttonClass } from "@/ui/button-styles";
 import { Icon } from "@/ui/icon";
-import { IconArrowLeft, IconExternalLink } from "@/ui/icons";
+import { IconArrowLeft, IconCircleCheck, IconExternalLink, IconPencil } from "@/ui/icons";
 import { LoadErrorBoundary } from "@/ui/load-error";
 import { StatusBadge } from "@/ui/status-badge";
 
@@ -20,7 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 /** Satu tempat di Kelola tempat (ADR-0050): data, jawaban, foto, keadaan tayang, dan riwayat dari log audit. */
-export default async function TempatAdmin({ params }: PageProps<"/verifikasi/tempat/[id]">) {
+export default async function TempatAdmin({ params, searchParams }: PageProps<"/verifikasi/tempat/[id]">) {
   const t = await getTranslations("KelolaTempat");
   return (
     <>
@@ -30,15 +31,19 @@ export default async function TempatAdmin({ params }: PageProps<"/verifikasi/tem
       </Link>
       <LoadErrorBoundary>
         <Suspense fallback={<p role="status">{t("loading")}</p>}>
-          <Sheet params={params} />
+          <Sheet params={params} searchParams={searchParams} />
         </Suspense>
       </LoadErrorBoundary>
     </>
   );
 }
 
-async function Sheet({ params }: { params: PageProps<"/verifikasi/tempat/[id]">["params"] }) {
-  const { id } = await params;
+async function Sheet({ params, searchParams }: { params: PageProps<"/verifikasi/tempat/[id]">["params"]; searchParams: PageProps<"/verifikasi/tempat/[id]">["searchParams"] }) {
+  const [{ id }, query] = await Promise.all([params, searchParams]);
+  const saved = query.tersimpan === "1";
+  const lowered = String(query.belum ?? "")
+    .split(",")
+    .filter((f): f is (typeof FACILITIES)[number] => (FACILITIES as readonly string[]).includes(f));
   const session = await verifierSession(`/verifikasi/tempat/${id}`);
   if (!session) return <NoAccess />;
   const [t, tk, tf, ta, tr, format] = await Promise.all([
@@ -66,6 +71,15 @@ async function Sheet({ params }: { params: PageProps<"/verifikasi/tempat/[id]">[
   return (
     <>
       <DashboardHeading id="judul-tempat" label={`${tk(place.category)} · ${place.district.name}`} title={place.name} />
+      {saved && (
+        <div role="status" className="flex gap-3 rounded-2xl bg-status-accessible-bg p-4 text-status-accessible-fg">
+          <Icon icon={IconCircleCheck} className="mt-0.5 size-5 shrink-0" />
+          <p>
+            <strong className="block">{t("place.saved")}</strong>
+            {lowered.length > 0 && <span className="text-text-primary">{t("place.savedUnknown", { facilities: lowered.map((f) => tf(f)).join(", ") })}</span>}
+          </p>
+        </div>
+      )}
       <div className="flex flex-wrap items-center gap-2">
         <StatusBadge status={place.status} size="sm" />
         <span className="rounded-full bg-bg-sunken px-3 py-1 text-sm font-bold">{t(`origin.${place.verifiedBy}`)}</span>
@@ -77,6 +91,12 @@ async function Sheet({ params }: { params: PageProps<"/verifikasi/tempat/[id]">[
         </p>
       )}
       <div className="flex flex-wrap gap-3">
+        {place.published && (
+          <Link href={`/verifikasi/tempat/${place.id}/ubah`} className={buttonClass("primary", "sm")}>
+            <Icon icon={IconPencil} />
+            {t("place.edit")}
+          </Link>
+        )}
         {place.published && (
           <Link href={`/lokasi/${place.id}`} className={buttonClass("outline", "sm")}>
             <Icon icon={IconExternalLink} />

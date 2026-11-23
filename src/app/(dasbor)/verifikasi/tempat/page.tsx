@@ -9,6 +9,9 @@ import { NoAccess } from "@/components/verifikasi/no-access";
 import { getDistricts } from "@/lib/api";
 import { listAdminPlaces } from "@/lib/kelola-tempat";
 import { verifierSession } from "@/lib/verifikator";
+import { buttonClass } from "@/ui/button-styles";
+import { Icon } from "@/ui/icon";
+import { IconCirclePlus } from "@/ui/icons";
 import { LoadErrorBoundary } from "@/ui/load-error";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -44,6 +47,12 @@ async function Places({ searchParams }: { searchParams: PageProps<"/verifikasi/t
   const pages = Math.max(1, Math.ceil(list.total / query.limit!));
   return (
     <>
+      <div className="flex flex-wrap gap-3">
+        <Link href="/verifikasi/tempat/baru" className={buttonClass("primary", "sm")}>
+          <Icon icon={IconCirclePlus} />
+          {t("add")}
+        </Link>
+      </div>
       <PlaceFilters filters={filters} districts={districts} active={active} />
       <section aria-labelledby="hasil-tempat" className="flex flex-col gap-4">
         <h2 id="hasil-tempat" className="font-heading text-2xl font-bold">
