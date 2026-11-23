@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { ApiError, type Facility } from "@/lib/api";
-import { createPlace, updatePlace, type PlaceInput } from "@/lib/kelola-tempat";
+import { createPlace, restorePlace, unpublishPlace, updatePlace, type PlaceInput } from "@/lib/kelola-tempat";
 import { withReturn } from "@/lib/kembali";
 import { sessionToken } from "@/lib/sesi";
 
@@ -30,5 +30,24 @@ export async function savePlace(request: SaveRequest): Promise<SaveOutcome> {
     if (error.status === 401) redirect(withReturn("/masuk/sesi-berakhir", back));
     const t = await getTranslations("KelolaTempat.form");
     return { ok: false, message: error.status > 0 ? error.message : t("galat.server"), code: error.galat };
+  }
+}
+
+export type StateOutcome = { ok: true } | { ok: false; message: string };
+
+/** Menurunkan atau menayangkan lagi tempat dengan alasan (ADR-0051). */
+export async function changeState(id: string, action: "turunkan" | "tayangkan", reason: string): Promise<StateOutcome> {
+  const back = `/verifikasi/tempat/${id}`;
+  const token = await sessionToken();
+  if (!token) redirect(withReturn("/masuk", back));
+  try {
+    if (action === "turunkan") await unpublishPlace(token, id, reason);
+    else await restorePlace(token, id, reason);
+    return { ok: true };
+  } catch (error) {
+    if (!(error instanceof ApiError)) throw error;
+    if (error.status === 401) redirect(withReturn("/masuk/sesi-berakhir", back));
+    const t = await getTranslations("KelolaTempat.form");
+    return { ok: false, message: error.status > 0 ? error.message : t("galat.server") };
   }
 }

@@ -5,6 +5,7 @@ import { getFormatter, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { DashboardHeading } from "@/components/dasbor/dashboard-heading";
 import { PlaceHistory } from "@/components/kelola-tempat/place-history";
+import { StateDialog } from "@/components/kelola-tempat/state-dialog";
 import { NoAccess } from "@/components/verifikasi/no-access";
 import { FACILITIES } from "@/lib/api";
 import { getAdminPlace, getPlaceHistory } from "@/lib/kelola-tempat";
@@ -41,6 +42,7 @@ export default async function TempatAdmin({ params, searchParams }: PageProps<"/
 async function Sheet({ params, searchParams }: { params: PageProps<"/verifikasi/tempat/[id]">["params"]; searchParams: PageProps<"/verifikasi/tempat/[id]">["searchParams"] }) {
   const [{ id }, query] = await Promise.all([params, searchParams]);
   const saved = query.tersimpan === "1";
+  const changed = query.tindakan === "diturunkan" || query.tindakan === "ditayangkan" ? query.tindakan : null;
   const lowered = String(query.belum ?? "")
     .split(",")
     .filter((f): f is (typeof FACILITIES)[number] => (FACILITIES as readonly string[]).includes(f));
@@ -85,6 +87,12 @@ async function Sheet({ params, searchParams }: { params: PageProps<"/verifikasi/
         <span className="rounded-full bg-bg-sunken px-3 py-1 text-sm font-bold">{t(`origin.${place.verifiedBy}`)}</span>
         <span className="rounded-full bg-bg-sunken px-3 py-1 text-sm font-bold">{t(place.published ? "published.ya" : "published.tidak")}</span>
       </div>
+      {changed && (
+        <p role="status" className="flex gap-3 rounded-2xl bg-bg-sunken p-4">
+          <Icon icon={IconCircleCheck} className="mt-0.5 size-5 shrink-0" />
+          {t(`place.${changed}`)}
+        </p>
+      )}
       {!place.published && (
         <p className="rounded-2xl bg-status-inaccessible-bg p-4 text-status-inaccessible-fg">
           {t("place.down", { date: date(place.unpublishedAt!), reason: place.unpublishedReason ?? "" })}
@@ -103,6 +111,7 @@ async function Sheet({ params, searchParams }: { params: PageProps<"/verifikasi/
             {t("place.public")}
           </Link>
         )}
+        <StateDialog id={place.id} name={place.name} published={place.published} />
       </div>
       <div className="grid items-start gap-8 xl:grid-cols-2">
         <section aria-labelledby="data-tempat" className="panel flex flex-col gap-4 rounded-3xl p-5 sm:p-6">

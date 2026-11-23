@@ -52,6 +52,9 @@ async function Places({ searchParams }: { searchParams: PageProps<"/verifikasi/t
           <Icon icon={IconCirclePlus} />
           {t("add")}
         </Link>
+        <Link href="/verifikasi/tempat/kandidat" className={buttonClass("outline", "sm")}>
+          {t("candidates.link")}
+        </Link>
       </div>
       <PlaceFilters filters={filters} districts={districts} active={active} />
       <section aria-labelledby="hasil-tempat" className="flex flex-col gap-4">
