@@ -32,17 +32,19 @@ type Props = {
   onNearbyPending: (pending: boolean) => void;
   /** Peta dengan pin di tengah; tanpa peta, titik dipilih lewat pencarian atau lokasi perangkat. */
   map?: (candidate: Candidate | null, move: (candidate: Candidate) => void) => ReactNode;
+  /** Titik awal yang belum dikonfirmasi, mis. dari kandidat OpenStreetMap; pin tetap harus dipastikan di pintu masuk. */
+  initial?: LatLng;
 };
 
 /**
  * Pemilih lokasi langkah 1 (FR-21 sampai FR-23, ADR-0015): pencarian tempat, "Gunakan lokasi saya", dan peta. Yang
  * disimpan hanya titik yang dikonfirmasi dan sudah dicek kecamatannya. Setiap perubahan titik dibacakan pembaca layar.
  */
-export function LocationPicker({ confirmed, name, placeId, error, onConfirm, onNearbyPending, map }: Props) {
+export function LocationPicker({ confirmed, name, placeId, error, onConfirm, onNearbyPending, map, initial }: Props) {
   const t = useTranslations("Laporkan.lokasi");
   const format = useFormatter();
   const [editing, setEditing] = useState(!confirmed);
-  const [candidate, setCandidate] = useState<Candidate | null>(confirmed ? { point: confirmed.point, source: "awal" } : null);
+  const [candidate, setCandidate] = useState<Candidate | null>(confirmed ? { point: confirmed.point, source: "awal" } : initial ? { point: initial, source: "awal" } : null);
   const [announcement, setAnnouncement] = useState("");
   const [problem, setProblem] = useState("");
   const [busy, setBusy] = useState<"gps" | "cek" | null>(null);

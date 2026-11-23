@@ -12,6 +12,7 @@ import { CATEGORY_ICON } from "@/ui/place-icons";
 import { errorFor, TextField } from "./form-parts";
 import { LocationPicker, type Candidate } from "./location-picker";
 import type { ReactNode } from "react";
+import type { LatLng } from "@/lib/laporan";
 
 // Pilihan kategori berupa Radio tile (Frame DS v1): radio asli menutupi seluruh tile supaya sentuhan dan pembaca layar
 // mengenai kontrolnya sendiri; cincin fokus dan tanda pilihan digambar di tile.
@@ -26,10 +27,12 @@ type Props = {
   update: (change: Partial<ReportDraft>) => void;
   onNearbyPending: (pending: boolean) => void;
   map?: (candidate: Candidate | null, move: (candidate: Candidate) => void) => ReactNode;
+  /** Titik awal yang belum dikonfirmasi (Kelola tempat, kandidat OpenStreetMap). */
+  initial?: LatLng;
 };
 
 /** Langkah 1 (FR-21): nama, satu kategori, lokasi, dan patokan opsional. Laporan kekurangan hanya menampilkannya. */
-export function StepInfo({ draft, errors, update, onNearbyPending, map }: Props) {
+export function StepInfo({ draft, errors, update, onNearbyPending, map, initial }: Props) {
   const t = useTranslations("Laporkan.info");
   const te = useTranslations("Laporkan.errors");
   const tk = useTranslations("Kategori");
@@ -107,6 +110,7 @@ export function StepInfo({ draft, errors, update, onNearbyPending, map }: Props)
         onConfirm={(location) => update({ location })}
         onNearbyPending={onNearbyPending}
         map={map}
+        initial={initial}
       />
 
       <TextField

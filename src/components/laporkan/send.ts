@@ -25,8 +25,8 @@ export type SendHooks = {
   onSubmitting: () => void;
 };
 
-/** Unggahan lewat XMLHttpRequest, karena `fetch` belum memberi kemajuan unggah di semua browser. */
-function uploadPhoto(blob: Blob, onProgress: (fraction: number) => void): Promise<ApiAnswer<UploadedPhoto>> {
+/** Unggahan lewat XMLHttpRequest, karena `fetch` belum memberi kemajuan unggah di semua browser. Dipakai juga Kelola tempat. */
+export function uploadPhoto(blob: Blob, onProgress: (fraction: number) => void): Promise<ApiAnswer<UploadedPhoto>> {
   return new Promise((resolve) => {
     const request = new XMLHttpRequest();
     request.open("POST", "/laporkan/foto");
