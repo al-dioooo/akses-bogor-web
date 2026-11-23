@@ -8,7 +8,7 @@ const OSM = /^(node|way|relation)\/([1-9][0-9]{0,15})$/;
 /**
  * Petunjuk aksesibilitas dari Mapbox dan Google untuk Detail lokasi dan kartu Peta (ADR-0052), diteruskan dari API
  * bersama IP pengunjung supaya batas per pengunjung di API berlaku. `?lokasi=<id>` untuk lokasi AksesBogor dan
- * `?osm=<tipe>/<id>` untuk kandidat OSM.
+ * `?osm=<tipe>/<id>` untuk kandidat OSM. Jawabannya `{ hints, off }`; `off` berarti petunjuk dimatikan di API.
  */
 export async function GET(request: Request) {
   const params = new URL(request.url).searchParams;

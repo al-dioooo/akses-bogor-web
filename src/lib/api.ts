@@ -101,6 +101,8 @@ export type ProviderHint =
   | { provider: "openstreetmap"; result: "stored"; wheelchair: "yes" | "limited" | "no" | "designated" }
   | { provider: "mapbox" | "google"; result: "none" | "unavailable" };
 export type ProviderHints = { hints: ProviderHint[] };
+/** Jawaban petunjuk untuk web: `off` bila API mematikan petunjuk atau belum punya route-nya. */
+export type HintsAnswer = ProviderHints & { off: boolean };
 
 export type PriorityLevel = "rendah" | "sedang" | "tinggi" | "sangat_tinggi";
 
@@ -309,12 +311,16 @@ export async function getCandidates(filters: Pick<PlaceFilters, "q" | "category"
  * Petunjuk penyedia untuk lokasi AksesBogor atau kandidat OSM, tidak pernah di-cache. API yang belum punya route ini,
  * atau tempat yang tidak ditemukan, dijawab seperti petunjuk yang dimatikan (`hints: []`).
  */
-export async function getProviderHints(target: { lokasi: string } | { osm: { type: string; id: number } }): Promise<ProviderHints> {
+export async function getProviderHints(target: { lokasi: string } | { osm: { type: string; id: number } }): Promise<HintsAnswer> {
   const path = "lokasi" in target ? `/places/${encodeURIComponent(target.lokasi)}/hints` : `/places/candidates/${target.osm.type}/${target.osm.id}/hints`;
   try {
-    return await get<ProviderHints>(path);
+    // API menjawab `hints: []` hanya selama petunjuk dimatikan.
+    const { hints } = await get<ProviderHints>(path);
+    return { hints, off: hints.length === 0 };
   } catch (error) {
-    if (error instanceof ApiError && error.status === 404) return { hints: [] };
+    // Tempat atau kandidat yang tidak dikenal (mis. kandidat usang) hanya berarti tidak ada petunjuk untuk tempat itu;
+    // route yang tidak ada berarti API ini belum punya petunjuk.
+    if (error instanceof ApiError && error.status === 404) return { hints: [], off: !/^(lokasi|kandidat)_tidak_ditemukan$/.test(error.galat) };
     throw error;
   }
 }

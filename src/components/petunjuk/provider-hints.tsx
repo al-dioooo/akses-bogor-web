@@ -2,22 +2,26 @@
 
 import { useFormatter, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-import type { ProviderHint, ProviderHints as Hints } from "@/lib/api";
+import type { HintsAnswer, ProviderHint } from "@/lib/api";
 import { Icon } from "@/ui/icon";
 import { IconInfoCircle } from "@/ui/icons";
 
 type Found = Extract<ProviderHint, { result: "found" | "stored" }>;
-type State = { key: string; data: Hints | "galat" } | null;
+type State = { key: string; data: HintsAnswer | "galat" } | null;
 const FLAGS = ["entrance", "restroom", "parking", "seating"] as const;
 
-// Selama petunjuk dimatikan di API, halaman ini tidak memintanya lagi sampai dimuat ulang.
-let switchedOff = false;
+/**
+ * Apakah petunjuk menyala di API, menurut jawaban terakhir di halaman ini. Selama belum diketahui, bagian ini tidak
+ * dirender sama sekali (juga di HTML server), supaya tidak ada judul dan "Memuat…" yang muncul lalu hilang saat
+ * petunjuk dimatikan. Setelah "mati", halaman ini tidak memintanya lagi sampai dimuat ulang.
+ */
+let mode: "unknown" | "on" | "off" = "unknown";
 
 /** Petunjuk dari route web, "galat" bila gagal, atau null bila dibatalkan karena kartunya sudah ditutup. */
-async function load(query: string, signal: AbortSignal): Promise<Hints | "galat" | null> {
+async function load(query: string, signal: AbortSignal): Promise<HintsAnswer | "galat" | null> {
   try {
     const response = await fetch(`/peta/petunjuk?${query}`, { signal, cache: "no-store" });
-    return response.ok ? ((await response.json()) as Hints) : "galat";
+    return response.ok ? ((await response.json()) as HintsAnswer) : "galat";
   } catch {
     return signal.aborted ? null : "galat";
   }
@@ -27,26 +31,35 @@ async function load(query: string, signal: AbortSignal): Promise<Hints | "galat"
  * Petunjuk aksesibilitas dari Mapbox dan Google (ADR-0052) di Detail lokasi dan kartu Peta: diambil langsung saat
  * ditampilkan, tidak disimpan, dan selalu diberi label "belum diperiksa tim". Kartu kandidat juga bisa menampilkan
  * salinan Google Maps dan keterangan OSM yang tersimpan, dengan sumbernya. Petunjuk tidak mengubah status atau
- * jawaban fasilitas. Bagian ini tidak tampil selama petunjuk dimatikan. Di Peta, `delay` menunda permintaan supaya
- * kartu yang hanya dilewati tidak memanggil penyedia.
+ * jawaban fasilitas, dan tampil sebagai bagian tersendiri. Bagian ini tidak tampil selama petunjuk dimatikan. Di Peta,
+ * `delay` menunda permintaan supaya kartu yang hanya dilewati tidak memanggil penyedia.
  */
-export function ProviderHints({ source, level, delay = 0 }: { source: { lokasi: string } | { osm: string }; level: 3 | 4; delay?: number }) {
+export function ProviderHints({
+  source,
+  level,
+  delay = 0,
+  className = "",
+}: {
+  source: { lokasi: string } | { osm: string };
+  level: 2 | 4;
+  delay?: number;
+  className?: string;
+}) {
   const t = useTranslations("Petunjuk");
   const format = useFormatter();
   const query = "lokasi" in source ? `lokasi=${encodeURIComponent(source.lokasi)}` : `osm=${encodeURIComponent(source.osm)}`;
   const [state, setState] = useState<State>(null);
-  const [off, setOff] = useState(switchedOff);
+  const [known, setKnown] = useState(mode);
 
   useEffect(() => {
-    if (switchedOff) return;
+    if (mode === "off") return;
     const controller = new AbortController();
     const timer = window.setTimeout(async () => {
       const data = await load(query, controller.signal);
       if (!data || controller.signal.aborted) return;
-      if (data !== "galat" && data.hints.length === 0) {
-        switchedOff = true;
-        setOff(true);
-      }
+      if (data !== "galat" && data.off) mode = "off";
+      else if (data !== "galat" && data.hints.length > 0) mode = "on";
+      setKnown(mode);
       setState({ key: query, data });
     }, delay);
     return () => {
@@ -55,11 +68,12 @@ export function ProviderHints({ source, level, delay = 0 }: { source: { lokasi: 
     };
   }, [query, delay]);
 
-  if (off) return null;
   const loaded = state?.key === query ? state.data : null;
+  // Belum tahu petunjuk menyala, petunjuk mati, atau tempat ini tidak dikenal API: tidak ada apa pun yang dirender.
+  if (known !== "on" || (loaded && loaded !== "galat" && loaded.hints.length === 0)) return null;
   const found = loaded && loaded !== "galat" ? loaded.hints.filter((hint): hint is Found => hint.result === "found" || hint.result === "stored") : [];
   const failed = loaded === "galat" || (loaded && loaded.hints.every((hint) => hint.result === "unavailable"));
-  const Heading = level === 3 ? "h3" : "h4";
+  const Heading = level === 2 ? "h2" : "h4";
   const answers = (accessibility: Extract<Found, { provider: "google" }>["accessibility"]) =>
     FLAGS.map((flag) => t(`flags.${flag}.${String(accessibility[flag]) as "true" | "false" | "null"}`)).join(" · ");
   const line = (hint: Found) => {
@@ -73,47 +87,49 @@ export function ProviderHints({ source, level, delay = 0 }: { source: { lokasi: 
   const id = `petunjuk-${query.replace(/[^a-z0-9]/gi, "-")}`;
 
   return (
-    <section aria-labelledby={id} aria-busy={!loaded} className="flex w-full flex-col gap-2 rounded-2xl border-2 border-dashed border-border-subtle p-4">
+    <section aria-labelledby={id} aria-busy={!loaded} className={`flex w-full flex-col gap-2 rounded-2xl border-2 border-dashed border-border-subtle p-4 ${className}`}>
       <Heading id={id} className="flex items-start gap-2 font-heading text-base font-bold">
         <Icon icon={IconInfoCircle} className="mt-0.5 size-5 shrink-0 text-icon-secondary" />
         {t("title")}
       </Heading>
       <p className="text-sm text-text-secondary">{t("body")}</p>
-      {!loaded ? (
-        <p className="text-sm text-text-secondary">{t("loading")}</p>
-      ) : failed ? (
-        <p className="text-sm">{t("failed")}</p>
-      ) : found.length === 0 ? (
-        <p className="text-sm">{t("none")}</p>
-      ) : (
-        <ul className="flex flex-col gap-3">
-          {found.map((hint) => (
-            <li key={`${hint.provider}-${hint.result}`} className="flex flex-col gap-0.5">
-              <p className="font-semibold">{line(hint)}</p>
-              <p className="text-sm text-text-secondary">
-                {hint.provider === "openstreetmap" ? (
-                  <span>{t("osmCredit")}</span>
-                ) : (
-                  <>
-                    {hint.placeName && (
-                      <>{hint.distanceMeters === null ? t("matchName", { name: hint.placeName }) : t("match", { name: hint.placeName, meters: hint.distanceMeters })} </>
-                    )}
-                    {hint.provider === "mapbox" ? (
-                      <span>© Mapbox</span>
-                    ) : hint.url?.startsWith("https://") ? (
-                      <a href={hint.url} target="_blank" rel="noopener noreferrer" className="font-semibold text-text-primary underline underline-offset-2">
-                        Google Maps<span className="sr-only"> {t("newTab")}</span>
-                      </a>
-                    ) : (
-                      <span>Google Maps</span>
-                    )}
-                  </>
-                )}
-              </p>
-            </li>
-          ))}
-        </ul>
-      )}
+      <div role="status">
+        {!loaded ? (
+          <p className="text-sm text-text-secondary">{t("loading")}</p>
+        ) : failed ? (
+          <p className="text-sm">{t("failed")}</p>
+        ) : found.length === 0 ? (
+          <p className="text-sm">{t("none")}</p>
+        ) : (
+          <ul className="flex flex-col gap-3">
+            {found.map((hint) => (
+              <li key={`${hint.provider}-${hint.result}`} className="flex flex-col gap-0.5">
+                <p className="font-semibold">{line(hint)}</p>
+                <p className="text-sm text-text-secondary">
+                  {hint.provider === "openstreetmap" ? (
+                    <span>{t("osmCredit")}</span>
+                  ) : (
+                    <>
+                      {hint.placeName && (
+                        <>{hint.distanceMeters === null ? t("matchName", { name: hint.placeName }) : t("match", { name: hint.placeName, meters: hint.distanceMeters })} </>
+                      )}
+                      {hint.provider === "mapbox" ? (
+                        <span>© Mapbox</span>
+                      ) : hint.url?.startsWith("https://") ? (
+                        <a href={hint.url} target="_blank" rel="noopener noreferrer" className="font-semibold text-text-primary underline underline-offset-2">
+                          Google Maps<span className="sr-only"> {t("newTab")}</span>
+                        </a>
+                      ) : (
+                        <span>Google Maps</span>
+                      )}
+                    </>
+                  )}
+                </p>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </section>
   );
 }
