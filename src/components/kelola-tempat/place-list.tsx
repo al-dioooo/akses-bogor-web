@@ -28,7 +28,7 @@ export async function PlaceFilters({ filters, districts, active }: { filters: Li
         </label>
         <input id="cari-tempat" name="q" type="search" defaultValue={filters.q ?? ""} maxLength={80} className={select} />
       </div>
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {choices.map((choice) => (
           <div key={choice.name} className="flex min-w-0 flex-col gap-2">
             <label htmlFor={`saring-${choice.name}`} className="font-semibold">
