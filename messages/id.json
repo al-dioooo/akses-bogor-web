@@ -2137,7 +2137,7 @@
   },
   "Petunjuk": {
     "title": "Petunjuk dari sumber lain (belum diperiksa tim)",
-    "body": "Dari penyedia peta, bukan data AksesBogor. Status dan jawaban fasilitas di atas tidak berubah karena petunjuk ini.",
+    "body": "Dari penyedia peta, bukan data AksesBogor. Petunjuk ini tidak mengubah status atau jawaban fasilitas.",
     "loading": "Memuat petunjuk…",
     "failed": "Petunjuk dari sumber lain belum bisa dimuat.",
     "none": "Tidak ada petunjuk dari sumber lain untuk tempat ini.",
