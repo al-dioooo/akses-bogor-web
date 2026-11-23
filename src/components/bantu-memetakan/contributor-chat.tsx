@@ -17,7 +17,8 @@ const linkClass = "font-semibold text-text-brand underline underline-offset-2";
 /** Contoh pertanyaan boleh turun baris, supaya kalimat panjang tidak melebarkan panel di layar 320 px. */
 const EXAMPLE_BUTTON = buttonClass("outline", "sm", "py-2 text-left").replace("whitespace-nowrap ", "");
 
-function Sources({ sources }: { sources: AgentSource[] }) {
+/** Sumber jawaban agen: data terverifikasi AksesBogor dan potongan basis pengetahuan; dipakai juga Tanya rute. */
+export function Sources({ sources }: { sources: AgentSource[] }) {
   const t = useTranslations("BantuMemetakan.tanya");
   const format = useFormatter();
   if (sources.length === 0) return null;
