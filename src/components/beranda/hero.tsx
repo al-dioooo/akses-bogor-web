@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import { CATEGORIES, getStats, type Category } from "@/lib/api";
 import { buttonClass } from "@/ui/button-styles";
 import { Icon } from "@/ui/icon";
-import { IconSearch } from "@/ui/icons";
+import { IconRoute, IconSearch } from "@/ui/icons";
 import { CATEGORY_ICON } from "@/ui/place-icons";
 import { HeroScene } from "./hero-scene";
 
@@ -44,6 +44,11 @@ export async function Hero() {
           <Suspense fallback={<Categories counts={null} />}>
             <CategoriesWithCounts />
           </Suspense>
+          {/* Asisten rute publik (ADR-0050). */}
+          <Link href="/tanya-rute" className="mt-3 inline-flex min-h-11 items-center gap-2 font-semibold text-text-brand underline underline-offset-2">
+            <Icon icon={IconRoute} className="size-5" />
+            {t("askRoute")}
+          </Link>
         </div>
       </div>
       <HeroScene />

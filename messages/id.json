@@ -81,7 +81,8 @@
       "accent": "sini?",
       "body": "Laporkan dalam tiga langkah. Setiap laporan membantu orang lain berangkat dengan lebih yakin.",
       "button": "Laporkan tempat"
-    }
+    },
+    "askRoute": "Tanya cara ke sebuah tempat"
   },
   "Rute": {
     "label": "Rute ke pintu",
@@ -134,6 +135,7 @@
     "beranda": "Beranda",
     "jelajahi": "Jelajahi",
     "peta": "Peta",
+    "tanyaRute": "Tanya rute",
     "aksesibilitas": "Aksesibilitas",
     "disabilitas": "Disabilitas",
     "tips": "Tips",
@@ -378,7 +380,8 @@
       "title": "Lokasi ini tidak ada.",
       "body": "Mungkin lokasinya sudah tidak tayang, atau tautannya salah.",
       "explore": "Jelajahi lokasi lain"
-    }
+    },
+    "askRoute": "Tanya rute ke sini"
   },
   "Berbagi": {
     "siteAlt": "AksesBogor, peta aksesibilitas Kota Bogor: cek aksesnya dulu, berangkat lebih tenang. Ramp, toilet difabel, guiding block, dan lift.",
