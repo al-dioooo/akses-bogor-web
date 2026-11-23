@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useEffect, useState, type RefObject } from "react";
 import type { PlaceCardDetail } from "@/app/peta/lokasi/[id]/route";
+import { ProviderHints } from "@/components/petunjuk/provider-hints";
 import { buttonClass } from "@/ui/button-styles";
 import { FacilityMeter } from "@/ui/facility-meter";
 import { Icon } from "@/ui/icon";
@@ -75,6 +76,8 @@ export function PlaceSummary({ place, headingRef, onClose }: { place: MapPlace; 
           {td("report")}
         </Link>
       </div>
+      {/* Petunjuk penyedia baru diminta setelah kartu terbuka sebentar, tidak per marker (ADR-0052). */}
+      <ProviderHints source={{ lokasi: place.id }} level={4} delay={400} />
       <button
         type="button"
         onClick={onClose}

@@ -16,6 +16,7 @@ import { createdPlace, handleKelolaTempat } from "./kelola-tempat.mjs";
 import { handleAkun } from "./akun.mjs";
 import { handleKandidat } from "./kandidat.mjs";
 import { handleLaporkan } from "./laporkan.mjs";
+import { handlePetunjuk } from "./petunjuk.mjs";
 import { handlePrioritas } from "./prioritas.mjs";
 import { handleTanyaRute } from "./tanya-rute.mjs";
 import { handleVerifikasi } from "./verifikasi.mjs";
@@ -135,6 +136,7 @@ createServer(async (request, response) => {
     handleTanyaRute(request.method, url, request.headers, payload, places) ??
     handlePrioritas(request.method, url.pathname, request.headers) ??
     handleKandidat(request.method, url) ??
+    handlePetunjuk(request.method, url, request.headers, places) ??
     route(url, request.headers);
   response.writeHead(status, { "content-type": "application/json; charset=utf-8", ...headers });
   // Foto dikirim sebagai berkas biner, selebihnya JSON.

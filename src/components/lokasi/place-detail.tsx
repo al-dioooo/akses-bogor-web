@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { getFormatter, getTranslations } from "next-intl/server";
 import { byAdmin, type PlaceDetail as Place } from "@/lib/api";
+import { ProviderHints } from "@/components/petunjuk/provider-hints";
 import { buttonClass } from "@/ui/button-styles";
 import { FacilityMeter } from "@/ui/facility-meter";
 import { Icon } from "@/ui/icon";
@@ -105,6 +106,9 @@ export async function PlaceDetail({ place }: { place: Place }) {
           </Link>
         </div>
       </section>
+
+      {/* Petunjuk Mapbox dan Google sebagai bagian tersendiri, terpisah dari fasilitas yang sudah diverifikasi (ADR-0052). */}
+      <ProviderHints source={{ lokasi: place.id }} level={2} className="max-w-3xl" />
 
       {place.description && (
         <section aria-labelledby="judul-deskripsi" className="flex max-w-3xl flex-col gap-3">

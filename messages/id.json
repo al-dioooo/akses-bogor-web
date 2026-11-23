@@ -2348,5 +2348,52 @@
     "formula": "Cara menghitung skor: {formula}",
     "facilities": "Jumlah fasilitas tanpa data dihitung dari data OpenStreetMap, {attribution}.",
     "facilitiesDated": "Jumlah fasilitas tanpa data dihitung dari data OpenStreetMap, {attribution}, diambil {date}."
+  },
+  "Petunjuk": {
+    "title": "Petunjuk dari sumber lain (belum diperiksa tim)",
+    "body": "Dari penyedia peta, bukan data AksesBogor. Petunjuk ini tidak mengubah status atau jawaban fasilitas.",
+    "loading": "Memuat petunjuk…",
+    "failed": "Petunjuk dari sumber lain belum bisa dimuat.",
+    "none": "Tidak ada petunjuk dari sumber lain untuk tempat ini.",
+    "mapbox": "Menurut Mapbox: {answer}",
+    "google": "Menurut Google: {answers}",
+    "googleStored": "Menurut Google Maps (diambil {date}): {answers}",
+    "osm": "Menurut OpenStreetMap: {answer}",
+    "wheelchair": {
+      "yes": "bisa dimasuki kursi roda",
+      "no": "tidak bisa dimasuki kursi roda"
+    },
+    "osmWheelchair": {
+      "yes": "bisa dimasuki kursi roda",
+      "limited": "sebagian bisa dimasuki kursi roda",
+      "no": "tidak bisa dimasuki kursi roda",
+      "designated": "dirancang untuk kursi roda"
+    },
+    "flags": {
+      "entrance": {
+        "true": "pintu masuk ramah kursi roda",
+        "false": "pintu masuk tidak ramah kursi roda",
+        "null": "pintu masuk: tidak diketahui"
+      },
+      "restroom": {
+        "true": "toilet ramah kursi roda",
+        "false": "toilet tidak ramah kursi roda",
+        "null": "toilet: tidak diketahui"
+      },
+      "parking": {
+        "true": "parkir ramah kursi roda",
+        "false": "parkir tidak ramah kursi roda",
+        "null": "parkir: tidak diketahui"
+      },
+      "seating": {
+        "true": "tempat duduk ramah kursi roda",
+        "false": "tempat duduk tidak ramah kursi roda",
+        "null": "tempat duduk: tidak diketahui"
+      }
+    },
+    "match": "Dicocokkan dengan “{name}”, {meters} m dari titik ini.",
+    "matchName": "Dicocokkan dengan “{name}”.",
+    "osmCredit": "© kontributor OpenStreetMap",
+    "newTab": "(tab baru)"
   }
 }
