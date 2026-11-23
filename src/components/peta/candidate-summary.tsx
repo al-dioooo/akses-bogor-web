@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import type { RefObject } from "react";
 import { candidateReportHref, knownWheelchair, osmUrl } from "@/lib/kandidat";
+import { ProviderHints } from "@/components/petunjuk/provider-hints";
 import { buttonClass } from "@/ui/button-styles";
 import { Icon } from "@/ui/icon";
 import { IconMessageReport, IconX } from "@/ui/icons";
@@ -50,6 +51,8 @@ export function CandidateSummary({ candidate, headingRef, onClose }: { candidate
           <span className="sr-only"> {t("kandidat.newTab")}</span>
         </a>
       </div>
+      {/* Kandidat tanpa nama tidak bisa dicocokkan dengan tempat penyedia (ADR-0052). */}
+      {candidate.name && <ProviderHints source={{ osm: candidate.id }} level={4} delay={400} />}
       <button
         type="button"
         onClick={onClose}
