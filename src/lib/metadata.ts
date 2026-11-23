@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { getFormatter, getTranslations } from "next-intl/server";
 import { OG_SIZE } from "@/components/berbagi/ukuran";
-import type { PlaceDetail } from "@/lib/api";
+import { byAdmin, type PlaceDetail } from "@/lib/api";
 import { publicRobots } from "@/lib/situs";
 
 type PublicPage = {
@@ -90,7 +90,7 @@ export async function placeDescription(place: PlaceDetail) {
     getFormatter(),
   ]);
   const { summary, date } = placeFacts(place, card, format);
-  const description = t("metaDescription", {
+  const description = t(byAdmin(place) ? "metaDescriptionAdmin" : "metaDescription", {
     category: category(place.category),
     district: place.district.name,
     status: status(place.status),

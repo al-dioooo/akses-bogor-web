@@ -23,7 +23,7 @@ describe("dashboardGroups", () => {
   });
 
   it("adds the team page for admins", () => {
-    expect(keys("admin").at(-2)).toEqual(["admin", ["tim"]]);
+    expect(keys("admin").at(-2)).toEqual(["admin", ["tempat", "tim"]]);
   });
 
   it("leaves out Bantu memetakan while the API keeps the agent off", () => {

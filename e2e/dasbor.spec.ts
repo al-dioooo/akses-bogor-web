@@ -104,7 +104,7 @@ for (const colorScheme of ["light", "dark"] as const) {
     // Next 16 mengalirkan <title> setelah redirect dari server action; axe memeriksa judul dokumen.
     await expect(page).toHaveTitle(/^Akun saya/);
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-    await expect(await menuLinks(page)).toHaveCount(8);
+    await expect(await menuLinks(page)).toHaveCount(9);
     expect(await blockingViolations(page)).toEqual([]);
   });
 }

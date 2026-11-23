@@ -33,6 +33,7 @@ export async function DashboardSidebar() {
       antrean: t("items.antrean"),
       jawaban: t("items.jawaban"),
       cekUlang: t("items.cekUlang"),
+      tempat: t("items.tempat"),
       tim: t("items.tim"),
       pengaturan: t("items.pengaturan"),
     },
