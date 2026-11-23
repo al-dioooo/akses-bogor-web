@@ -47,7 +47,7 @@ function startDraft(place: AdminPlace | null, candidate: CandidateStart | null):
 }
 
 /**
- * Formulir tambah dan ubah tempat di Kelola tempat (ADR-0050), memakai bagian formulir Laporkan: informasi dan pemilih
+ * Formulir tambah dan ubah tempat di Kelola tempat (ADR-0051), memakai bagian formulir Laporkan: informasi dan pemilih
  * pin, jawaban fasilitas, dan foto bertag. Jawaban Tersedia atau Tidak perlu tanpa foto yang sesuai diperingatkan di
  * sini dan disimpan API sebagai Belum diketahui. Alasan wajib dan masuk log audit.
  */
