@@ -61,7 +61,7 @@ export function PlaceSummary({ place, headingRef, onClose }: { place: MapPlace; 
             <p className="font-semibold">{td("summary", { available: summary.available, relevant: summary.relevant })}</p>
             <FacilityMeter summary={summary} status={place.status} />
             {summary.unknown > 0 && <p className="text-sm text-text-secondary">{td("unknown", { count: summary.unknown })}</p>}
-            {/* Asal data selalu ikut, supaya tempat Street View tidak terbaca sebagai diperiksa di lokasi (ADR-0057). */}
+            {/* Tanggal verifikasi seperti di kartu Jelajahi; tempat Street View memakai label tim (ADR-0058). */}
             {verified && <p className="font-mono text-xs text-text-secondary">{td(verified.key, verified.values)}</p>}
           </>
         ) : (

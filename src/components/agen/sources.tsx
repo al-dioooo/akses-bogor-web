@@ -16,8 +16,8 @@ const linkClass = "min-h-6 py-0.5 font-semibold text-text-brand underline underl
  */
 export function Sources({ sources }: { sources: AgentSource[] }) {
   const t = useTranslations("Agen.sumber");
-  const label = { verified: "place", verifiedAdmin: "placeAdmin", verifiedStreetView: "placeStreetView" } as const;
-  /** Asal data lokasi, tidak pernah "terverifikasi" saja untuk data Street View (ADR-0057). */
+  const label = { verified: "place", verifiedAdmin: "placeAdmin" } as const;
+  /** Asal data lokasi: terverifikasi tim, atau diterbitkan langsung oleh admin (ADR-0051). */
   const placeLabel = (source: Extract<AgentSource, { type: "lokasi" }>) => {
     const { key, values } = verifiedLabel(source, format, "long");
     return t(label[key], { name: source.name, ...values });

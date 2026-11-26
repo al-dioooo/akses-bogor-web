@@ -20,7 +20,7 @@ export function parseListQuery(params: Params) {
     category: pick(one(params.kategori), CATEGORIES),
     district: one(params.kecamatan)?.slice(0, 40),
     status: pick(one(params.status), STATUSES),
-    origin: pick(one(params.asal), ["tim", "admin"] as const),
+    origin: pick(one(params.asal), ["tim", "admin", "street_view"] as const),
     published: pick(one(params.tayang), ["ya", "tidak"] as const),
   };
   const page = Math.max(1, Math.floor(Number(one(params.halaman)) || 1));

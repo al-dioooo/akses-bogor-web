@@ -17,7 +17,12 @@ export async function PlaceFilters({ filters, districts, active }: { filters: Li
     { name: "kategori", label: t("category"), all: t("allCategories"), value: filters.category, options: CATEGORIES.map((c) => ({ value: c, label: tk(c) })) },
     { name: "kecamatan", label: t("district"), all: t("allDistricts"), value: filters.district, options: districts.map((d) => ({ value: d.slug, label: d.name })) },
     { name: "status", label: t("status"), all: t("allStatuses"), value: filters.status, options: STATUSES.map((s) => ({ value: s, label: ts(s) })) },
-    { name: "asal", label: t("origin"), all: t("allOrigins"), value: filters.origin, options: [{ value: "tim", label: t("originTim") }, { value: "admin", label: t("originAdmin") }] },
+    { name: "asal", label: t("origin"), all: t("allOrigins"), value: filters.origin, options: [
+        { value: "tim", label: t("originTim") },
+        { value: "admin", label: t("originAdmin") },
+        { value: "street_view", label: t("originStreetView") },
+      ],
+    },
     { name: "tayang", label: t("published"), all: t("allPublished"), value: filters.published, options: [{ value: "ya", label: t("publishedYa") }, { value: "tidak", label: t("publishedTidak") }] },
   ];
   return (
