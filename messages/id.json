@@ -2350,13 +2350,6 @@
       "warningsTitle": "Perlu diperhatikan"
     }
   },
-  "BantuMemetakan": {
-    "entry": {
-      "title": "Belum tahu tempat mana yang perlu didata?",
-      "body": "Agen bisa menunjukkan tempat yang belum punya data AksesBogor di kecamatan yang paling perlu.",
-      "link": "Bantu memetakan"
-    }
-  },
   "Agen": {
     "metaTitle": "Agen AI",
     "metaDescription": "Tanya Agen AI cara ke kampus, masjid, halte, atau rumah sakit di Kota Bogor dan apa yang sudah diketahui tentang aksesibilitasnya, lalu lihat rute jalan kaki beserta peringatan dan hambatannya.",

@@ -112,7 +112,7 @@ test("shows a floating key with the levels as text, the caveat and the source wh
   const osm = key.getByRole("link", { name: OSM });
   await expect(osm).toHaveAttribute("href", "https://www.openstreetmap.org/copyright");
   await expect(osm).toHaveAttribute("target", "_blank");
-  await expect(key.getByRole("link", { name: "Bantu memetakan" })).toHaveAttribute("href", "/laporkan/bantu-memetakan");
+  await expect(key.getByRole("link", { name: "Tanya Agen AI" })).toHaveAttribute("href", "/agen");
   expect(await main(page).textContent()).not.toMatch(/cacat/i);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 
@@ -174,7 +174,7 @@ for (const viewport of [
     await choose(page, "Prioritas pemetaan");
     await expandKey(page);
     const key = floatingKey(page);
-    for (const part of [key.getByText(/bukan jumlah seluruh penduduk/), key.getByRole("link", { name: OSM }), key.getByRole("link", { name: "Bantu memetakan" })]) {
+    for (const part of [key.getByText(/bukan jumlah seluruh penduduk/), key.getByRole("link", { name: OSM }), key.getByRole("link", { name: "Tanya Agen AI" })]) {
       await expect.poll(() => part.evaluate(reachable)).toBe(true);
     }
     await expect.poll(() => clippedInKey(page)).toEqual([]);

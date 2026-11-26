@@ -31,7 +31,7 @@ export function PriorityKey({
 }) {
   const t = useTranslations("Peta.prioritas");
   const tp = useTranslations("PrioritasKecamatan");
-  const tb = useTranslations("BantuMemetakan.entry");
+  const tb = useTranslations("Agen.entry");
 
   return (
     <MapKey
@@ -79,7 +79,7 @@ export function PriorityKey({
           </>
         )}
       </p>
-      <Link href="/laporkan/bantu-memetakan" className="inline-flex min-h-11 items-center gap-1.5 self-start text-sm font-bold text-text-brand underline underline-offset-2">
+      <Link href="/agen" className="inline-flex min-h-11 items-center gap-1.5 self-start text-sm font-bold text-text-brand underline underline-offset-2">
         {tb("link")}
         <Icon icon={IconArrowRight} className="size-4" />
       </Link>
