@@ -4,6 +4,7 @@ import { buttonClass } from "@/ui/button-styles";
 import { Icon } from "@/ui/icon";
 import { CategoryPin } from "@/ui/category-pin";
 import { IconCheck } from "@/ui/icons";
+import { PlacePin } from "@/ui/place-pin";
 import { StatusPin } from "@/ui/status-pin";
 import { CandidateDot } from "./candidate-dot";
 
@@ -20,6 +21,11 @@ export function MapLegend({ candidates, border = false }: { candidates?: { on: b
       <h3 id="judul-legenda" className="lbl">
         {t("legend")}
       </h3>
+      {/* Bagian marker: warna dan lencana untuk status, ikon di tengah untuk kategori (ADR-0053). */}
+      <p className="flex items-center gap-3 text-sm text-text-secondary">
+        <PlacePin place={{ status: "aksesibel", category: "masjid" }} className="size-8" />
+        <span>{t("legendMarker")}</span>
+      </p>
       <ul className="grid grid-cols-2 gap-x-4 gap-y-2">
         {STATUSES.map((status) => (
           <li key={status} className="flex items-center gap-2 text-sm font-semibold">

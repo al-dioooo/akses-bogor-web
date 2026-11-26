@@ -21,8 +21,10 @@ const AREA: LngLatBoundsLike = [
 const STYLE = { terang: "mapbox://styles/mapbox/light-v11", gelap: "mapbox://styles/mapbox/dark-v11" };
 /** Lapisan batas kota, dari atas ke bawah. */
 const BORDER_LAYERS = ["kota-garis", "kota-halo", "kota-luar"];
-// Mulai zoom ini lingkaran kandidat cukup besar untuk memuat ikon kategorinya (issue #199).
-const CANDIDATE_ICON_ZOOM = 14;
+// Mulai zoom ini lingkaran kandidat memuat ikon kategorinya (ADR-0053); di bawahnya, tampilan seluruh kota, lingkarannya
+// kecil tanpa ikon supaya ratusan titik tidak saling menutup. Mulai CANDIDATE_FULL_ZOOM lingkaran dan ikonnya penuh.
+const CANDIDATE_ICON_ZOOM = 12;
+const CANDIDATE_FULL_ZOOM = 14;
 // Ikon kategori di dalam lingkaran kandidat: 14 px, digambar dua kali lebih rapat untuk layar tajam.
 const CANDIDATE_ICON_PX = 14;
 const CANDIDATE_ICON_RATIO = 2;
@@ -355,7 +357,8 @@ export function mountMap(options: Options): MapHandle {
   map.on("style.load", drawBorder);
 
   // Kandidat: lingkaran berlubang bergaris warna kategori (issue #199), lebih kecil dari marker dan tanpa warna status.
-  // Mulai CANDIDATE_ICON_ZOOM lingkarannya membesar dan memuat ikon kategori, supaya kategori tidak ditandai warna saja.
+  // Mulai CANDIDATE_ICON_ZOOM lingkarannya membesar dan memuat ikon kategori, supaya kategori tidak ditandai warna saja,
+  // dan mulai CANDIDATE_FULL_ZOOM ukurannya penuh.
   // Gaya baru (juga saat tema berganti) menghapus lapisan dan gambar ikon, jadi keduanya digambar ulang setiap kali gaya
   // selesai dimuat, dengan warna tema saat itu.
   const drawCandidates = () => {
@@ -385,10 +388,10 @@ export function mountMap(options: Options): MapHandle {
         type: "circle",
         source: "kandidat",
         paint: {
-          "circle-radius": ["interpolate", ["linear"], ["zoom"], 10, 3.5, CANDIDATE_ICON_ZOOM - 0.01, 6, CANDIDATE_ICON_ZOOM, 11],
+          "circle-radius": ["interpolate", ["linear"], ["zoom"], 10, 3.5, CANDIDATE_ICON_ZOOM - 0.01, 5, CANDIDATE_ICON_ZOOM, 8.5, CANDIDATE_FULL_ZOOM - 0.01, 9.5, CANDIDATE_FULL_ZOOM, 11],
           "circle-color": color("--color-bg-canvas"),
           "circle-stroke-color": ["match", ["get", "category"], ...CATEGORIES.flatMap((c) => [c, color(CATEGORY_VAR[c])]), color("--color-icon-secondary")] as never,
-          "circle-stroke-width": ["step", ["zoom"], 2.5, CANDIDATE_ICON_ZOOM, 3],
+          "circle-stroke-width": ["step", ["zoom"], 2.5, CANDIDATE_FULL_ZOOM, 3],
         },
       });
       map.addLayer({
@@ -396,7 +399,7 @@ export function mountMap(options: Options): MapHandle {
         type: "circle",
         source: "kandidat",
         paint: {
-          "circle-radius": ["step", ["zoom"], 9, CANDIDATE_ICON_ZOOM, 14],
+          "circle-radius": ["step", ["zoom"], 9, CANDIDATE_ICON_ZOOM, 12, CANDIDATE_FULL_ZOOM, 14],
           "circle-color": color("--color-bg-canvas"),
           "circle-stroke-color": color("--color-text-primary"),
           "circle-stroke-width": 4,
@@ -407,7 +410,13 @@ export function mountMap(options: Options): MapHandle {
         type: "symbol",
         source: "kandidat",
         minzoom: CANDIDATE_ICON_ZOOM,
-        layout: { "icon-image": ["concat", "kategori-", ["get", "category"]], "icon-allow-overlap": true, "icon-ignore-placement": true },
+        layout: {
+          "icon-image": ["concat", "kategori-", ["get", "category"]],
+          // 14 px penuh; di antara kedua zoom 10 px, pas di lingkaran yang lebih kecil.
+          "icon-size": ["step", ["zoom"], 0.72, CANDIDATE_FULL_ZOOM, 1],
+          "icon-allow-overlap": true,
+          "icon-ignore-placement": true,
+        },
       });
     }
     map.setFilter("kandidat-pilih", ["==", ["get", "id"], selected ?? ""]);

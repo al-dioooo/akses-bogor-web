@@ -240,7 +240,8 @@
     "legend": "Legenda status",
     "legendCategory": "Legenda kategori",
     "border": "Batas Kota Bogor (garis putus-putus)",
-    "legendCategoryHint": "Lencana kecil di marker dan warna lingkaran Belum ada data. Ikon kategori muncul di lingkaran saat peta diperbesar.",
+    "legendCategoryHint": "Ikon di tengah marker dan di lingkaran Belum ada data. Lingkaran Belum ada data juga bergaris warna kategorinya; ikonnya muncul saat peta diperbesar.",
+    "legendMarker": "Contoh marker masjid yang aksesibel: warna dan lencana di sudut menunjukkan status, ikon di tengah menunjukkan kategori.",
     "cari": {
       "placeholder": "Cari nama tempat",
       "filterTitle": "Filter lokasi",
