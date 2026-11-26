@@ -5,11 +5,11 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type MouseEvent, type Ref } from "react";
 import { createPortal } from "react-dom";
-import type { CandidateSource, DistrictBoundaries, DistrictPriority, MapToken } from "@/lib/api";
+import type { CandidateSource, DisabilityCounts, DistrictAccessibility, DistrictBoundaries, DistrictPriority, MapToken } from "@/lib/api";
 import { hasWebGL, readTheme, watchPreferences } from "@/lib/preferences";
 import { buttonClass } from "@/ui/button-styles";
 import { Icon } from "@/ui/icon";
-import { IconCurrentLocation, IconFocusCentered, IconList, IconMap2, IconMinus, IconPlus, IconUsers, type Glyph } from "@/ui/icons";
+import { IconCurrentLocation, IconFocusCentered, IconList, IconMap2, IconMinus, IconPlus, type Glyph } from "@/ui/icons";
 import { PlacePin } from "@/ui/place-pin";
 import { CandidateList } from "./candidate-list";
 import { CandidateSummary } from "./candidate-summary";
@@ -22,6 +22,14 @@ import { PlaceSheet, type SheetHeight } from "./place-sheet";
 import { PlaceSummary } from "./place-summary";
 import { PriorityKey } from "./priority-key";
 import { PriorityLegend } from "./priority-legend";
+import { ThematicChooser, type ThemeChoice } from "./thematic-chooser";
+import { LEVEL_COLOR } from "@/components/prioritas/levels";
+import { RAMP, classOf, classWidth, countsFor, type DisabilityFilter } from "./tematik/disabilitas";
+import { DisabilityKey } from "./tematik/disability-key";
+import { DisabilityTable } from "./tematik/disability-table";
+import { AccessibilityKey } from "./tematik/accessibility-key";
+import { AccessibilityList } from "./tematik/accessibility-list";
+import { scoreClass } from "./tematik/aksesibel";
 import type { MapCandidate, MapPlace } from "./places";
 
 type MapState = "awal" | "memuat" | "siap" | "tanpa-webgl" | "galat";
@@ -33,7 +41,7 @@ async function fetchToken(): Promise<MapToken> {
 }
 
 /** Elemen yang mengambang di atas peta. Marker di bawahnya tidak terlihat, jadi tidak boleh bisa difokus (WCAG 2.4.11). */
-const OVERLAYS = ".peta-cari, .peta-lapisan, .peta-kontrol, .peta-kunci, .peta-lokasi";
+const OVERLAYS = ".peta-cari, .peta-lapisan, .peta-kontrol, .peta-kunci, .peta-pilihan, .peta-lokasi";
 /** Tinggi satu baris kunci prioritas yang ringkas (tombol 44 px dan bingkainya). */
 const KEY_LINE = 56;
 
@@ -62,7 +70,10 @@ function measure(main: HTMLElement): { top: number; insets: Insets; covers: Rect
   // Kunci berhenti 8 px di atas lembar bawah, atau di atas padding bawah main (Bottom nav) di layar lebar. Bila satu
   // baris kunci pun tidak muat (lembar setengah di ponsel pendek), kunci disembunyikan, supaya tidak ada tombol atau
   // tautan yang terpotong tetapi masih bisa difokus.
-  const keyRoom = key ? Math.max(0, Math.floor((side || !panel ? box.bottom - paddingBottom : panel.top) - key.top - 8)) : null;
+  // Atribusi peta di atas lembar bawah juga tidak boleh tertutup kunci, supaya tautannya tetap bisa diketuk.
+  const attribution = main.querySelector(".mapboxgl-ctrl-attrib")?.getBoundingClientRect();
+  const floor = Math.min(side || !panel ? box.bottom - paddingBottom : panel.top, attribution && !side && attribution.top > (key?.top ?? 0) ? attribution.top : Infinity);
+  const keyRoom = key ? Math.max(0, Math.floor(floor - key.top - 8)) : null;
   const keyHidden = keyRoom !== null && keyRoom < KEY_LINE;
   const covers = [...main.querySelectorAll(OVERLAYS)]
     .filter((element) => !(keyHidden && element.matches(".peta-kunci")))
@@ -151,8 +162,24 @@ export function PlaceMap({
   const narrow = useSyncExternalStore(subscribeNarrow, () => matchMedia(NARROW).matches, () => true);
   const short = useSyncExternalStore(subscribeShort, () => matchMedia(SHORT).matches, () => false);
   const height: SheetHeight = chosenHeight ?? (narrow ? "kecil" : "setengah");
-  const [layer, setLayer] = useState<"mati" | "memuat" | "nyala" | "galat">("mati");
+  // Peta tematik (ADR-0053): satu lapisan sekaligus. "galat" berarti batas kecamatan gagal dimuat (tabel tetap ada),
+  // "tanpa-data" berarti data lapisan itu sendiri gagal dimuat.
+  const [theme, setTheme] = useState<ThemeChoice>("tidak");
+  const [themeState, setThemeState] = useState<"memuat" | "siap" | "galat" | "tanpa-data">("siap");
+  const [disability, setDisability] = useState<DisabilityCounts | null>(null);
+  const disabilityRequest = useRef<Promise<DisabilityCounts> | null>(null);
+  // Kecamatan paling aksesibel memuat salinan pihak ketiga, jadi diambil ulang setiap kali lapisannya dipilih.
+  const [accessibility, setAccessibility] = useState<DistrictAccessibility | null>(null);
+  // Jenis dan tahun lapisan Persebaran disabilitas; tanpa tahun berarti tahun terbaru.
+  const [disabilityChoice, setDisabilityChoice] = useState<{ category: DisabilityFilter["category"]; year: number | null }>({ category: "semua", year: null });
+  const [chooserOpen, setChooserOpen] = useState(false);
+  // Pesan "disembunyikan" hanya setelah pengguna sendiri memilih Tidak ada.
+  const [themeTouched, setThemeTouched] = useState(false);
+  // Pilihan terakhir yang menunggu datanya, supaya jawaban lama tidak menimpa pilihan yang lebih baru.
+  const themeRequest = useRef(0);
   const [boundaries, setBoundaries] = useState<DistrictBoundaries | null>(null);
+  // Batas kecamatan dimuat sekali untuk batas kota dan lapisan prioritas; permintaan yang gagal boleh diulang.
+  const boundariesRequest = useRef<Promise<DistrictBoundaries> | null>(null);
   const locateButton = useRef<HTMLButtonElement>(null);
   const locate = useLocate(map);
   // Lapisan kandidat menyala selama ada kandidat; tombolnya di legenda.
@@ -296,7 +323,7 @@ export function PlaceMap({
       timer = window.setTimeout(update, 120);
     };
     const observer = new ResizeObserver(schedule);
-    for (const selector of [".peta-lembar", ".peta-cari", ".peta-kontrol", ".peta-lapisan", ".peta-kunci", ".peta-lokasi"]) {
+    for (const selector of [".peta-lembar", ".peta-cari", ".peta-kontrol", ".peta-lapisan", ".peta-kunci", ".peta-pilihan", ".peta-lokasi"]) {
       const element = main.querySelector(selector);
       if (element) observer.observe(element);
     }
@@ -307,7 +334,7 @@ export function PlaceMap({
       window.clearTimeout(timer);
     };
     // Kunci prioritas dan kartu Lokasi saya muncul dan hilang, jadi pengamatnya dipasang ulang.
-  }, [map, state, priority, layer, locate.phase, flushMove]);
+  }, [map, state, priority, theme, themeState, chooserOpen, locate.phase, flushMove]);
 
   // Ringkasan menerima fokus setiap kali lokasi dipilih, supaya pembaca layar langsung membacanya.
   useEffect(() => {
@@ -328,27 +355,91 @@ export function PlaceMap({
     return () => element.removeEventListener("keydown", onKey);
   }, [map, chosen]);
 
-  // Lapisan prioritas mengikuti peta: digambar ulang bila peta dibuat ulang (mis. setelah Coba lagi).
-  useEffect(() => {
-    if (!map || !priority) return;
-    map.setPriority(layer === "nyala" && boundaries ? { boundaries, levels: Object.fromEntries(priority.districts.map((d) => [d.slug, d.level])) } : null);
-  }, [map, priority, layer, boundaries]);
+  // Persebaran disabilitas: jumlah untuk jenis dan tahun yang dipilih, dengan kelas warnanya.
+  const disabilityFilter: DisabilityFilter | null = disability && { category: disabilityChoice.category, year: disabilityChoice.year ?? disability.years.at(-1)! };
+  const disabilityCounts = disability && disabilityFilter ? countsFor(disability, disabilityFilter) : [];
+  const disabilityMax = Math.max(0, ...disabilityCounts.map((d) => d.count));
+  const disabilityWidth = classWidth(disabilityMax);
 
-  async function toggleLayer() {
-    if (layer === "nyala" || layer === "galat") return setLayer("mati");
-    if (boundaries) return setLayer("nyala");
-    setLayer("memuat");
-    try {
-      const response = await fetch("/peta/batas-kecamatan");
-      if (!response.ok) throw new Error("batas kecamatan tidak tersedia");
-      setBoundaries((await response.json()) as DistrictBoundaries);
-      setLayer("nyala");
-    } catch {
-      setLayer("galat");
-    }
-  }
+  // Lapisan tematik mengikuti peta: digambar ulang bila peta dibuat ulang (mis. setelah Coba lagi).
+  const thematicColors =
+    themeState !== "siap"
+      ? null
+      : theme === "prioritas" && priority
+        ? Object.fromEntries(priority.districts.map((d) => [d.slug, LEVEL_COLOR[d.level]]))
+        : theme === "disabilitas" && disability
+          ? Object.fromEntries(disabilityCounts.map((d) => [d.slug, RAMP[classOf(d.count, disabilityWidth)]!]))
+          : theme === "aksesibel" && accessibility
+            ? Object.fromEntries(accessibility.districts.map((d) => [d.slug, d.score === null ? null : RAMP[scoreClass(d.score)]!]))
+            : null;
+  // Kecamatan yang datanya belum cukup diarsir, tanpa warna.
+  const hatched = theme === "aksesibel" && accessibility ? accessibility.districts.filter((d) => d.score === null).map((d) => d.slug) : [];
+  const thematicKey = JSON.stringify([thematicColors, hatched]);
+  useEffect(() => {
+    if (!map) return;
+    const [colors, hatched] = JSON.parse(thematicKey) as [Record<string, string | null> | null, string[]];
+    map.setThematic(colors && boundaries ? { name: theme, boundaries, colors, hatched } : null);
+  }, [map, theme, thematicKey, boundaries]);
 
   const ready = state === "siap";
+  const loadBoundaries = useCallback(() => {
+    boundariesRequest.current ??= (async () => {
+      const response = await fetch("/peta/batas-kecamatan");
+      if (!response.ok) throw new Error("batas kecamatan tidak tersedia");
+      const value = (await response.json()) as DistrictBoundaries;
+      setBoundaries(value);
+      return value;
+    })().catch((error: unknown) => {
+      boundariesRequest.current = null;
+      throw error;
+    });
+    return boundariesRequest.current;
+  }, []);
+
+  // Batas Kota Bogor selalu tampil setelah peta siap (ADR-0053). Bila batasnya gagal dimuat, peta tetap tanpa garis itu.
+  useEffect(() => {
+    if (ready) loadBoundaries().catch(() => {});
+  }, [ready, loadBoundaries]);
+
+  useEffect(() => {
+    map?.setBorder(boundaries?.outline ?? null);
+  }, [map, boundaries]);
+
+  const loadDisability = useCallback(() => {
+    disabilityRequest.current ??= (async () => {
+      const response = await fetch("/peta/data-disabilitas");
+      if (!response.ok) throw new Error("data disabilitas tidak tersedia");
+      const value = (await response.json()) as DisabilityCounts;
+      setDisability(value);
+      return value;
+    })().catch((error: unknown) => {
+      disabilityRequest.current = null;
+      throw error;
+    });
+    return disabilityRequest.current;
+  }, []);
+
+  const loadAccessibility = useCallback(async () => {
+    const response = await fetch("/peta/kecamatan-aksesibel", { cache: "no-store" });
+    if (!response.ok) throw new Error("data kecamatan paling aksesibel tidak tersedia");
+    setAccessibility((await response.json()) as DistrictAccessibility);
+  }, []);
+
+  /** Memilih lapisan tematik, lalu memuat batas kecamatan dan data lapisannya bila belum ada. */
+  async function chooseTheme(value: ThemeChoice) {
+    const request = ++themeRequest.current;
+    setTheme(value);
+    if (value === "tidak") return setThemeState("siap");
+    setThemeState("memuat");
+    const ok = (promise: Promise<unknown>) => promise.then(
+      () => true,
+      () => false,
+    );
+    const data = value === "disabilitas" ? ok(loadDisability()) : value === "aksesibel" ? ok(loadAccessibility()) : true;
+    const [bounds, loaded] = await Promise.all([ok(loadBoundaries()), data]);
+    if (request === themeRequest.current) setThemeState(!loaded ? "tanpa-data" : bounds ? "siap" : "galat");
+  }
+
   // Daftar mengikuti bagian peta yang terlihat. Sebelum peta siap, tanpa peta, atau saat panel menutup seluruh peta (lembar
   // penuh), daftar berisi semua lokasi.
   const followsView = ready && inView !== null;
@@ -358,7 +449,12 @@ export function PlaceMap({
   // sempit.
   const empty = tj(filtered ? "results.emptyTitle" : "results.noDataTitle");
   const status = places.length === 0 ? empty : followsView ? t("list.count", { shown: shown.length, total: places.length }) : t("count", { total: places.length });
-  const layerShown = priority && (layer === "nyala" || layer === "galat");
+  // Pilihan yang ada: Prioritas pemetaan hanya selama API membuka data disabilitas.
+  // Kecamatan paling aksesibel tidak memakai data disabilitas, jadi selalu ada.
+  const themeOptions: ThemeChoice[] = priority ? ["tidak", "prioritas", "disabilitas", "aksesibel"] : ["tidak", "aksesibel"];
+  const themeName = theme === "tidak" ? "" : t(`tematik.pilihan.${theme}.label`);
+  // Kunci dan tabel tampil setelah datanya dimuat, juga bila batas kecamatan gagal (lapisan tanpa warna, tabel tetap ada).
+  const themeShown = themeState !== "memuat" ? theme : "tidak";
 
   /**
    * Menutup ringkasan, lalu fokus kembali ke marker atau ke tombol daftar yang membukanya. Bila marker itu tidak bisa
@@ -384,11 +480,11 @@ export function PlaceMap({
     queueMove(id, "show");
   }
 
-  /** Membuka panel daftar di tabel prioritas, lalu memindahkan fokus ke sana. */
-  function showTable() {
+  /** Membuka panel daftar di tabel atau daftar lapisan tematik, lalu memindahkan fokus ke sana. */
+  function showTable(id: string) {
     setSelected(null);
     setHeight(narrow ? "penuh" : "setengah");
-    requestAnimationFrame(() => requestAnimationFrame(() => document.getElementById("tabel-prioritas")?.focus()));
+    requestAnimationFrame(() => requestAnimationFrame(() => document.getElementById(id)?.focus()));
   }
 
   function skipToList(event: MouseEvent<HTMLAnchorElement>) {
@@ -399,26 +495,70 @@ export function PlaceMap({
 
   return (
     <>
-      {priority && (
+      {themeOptions.length > 1 && (
         <div className="peta-lapisan">
-          <button
-            type="button"
-            aria-label={t("prioritas.toggle")}
-            aria-pressed={layer === "nyala" || layer === "galat"}
-            disabled={layer === "memuat"}
-            onClick={toggleLayer}
-            className={buttonClass(layerShown ? "ink" : "outline", "sm", `shadow-[0_8px_20px_-10px_var(--color-shadow-soft)] disabled:opacity-70 ${layerShown ? "" : "bg-surface-raised"}`)}
-          >
-            <Icon icon={IconUsers} />
-            {/* Di ponsel label pendek, supaya tombol dan kontrol peta muat dalam satu baris (di landscape juga bersama pencarian). */}
-            <span className="max-[22rem]:sr-only md:hidden">{t("prioritas.short")}</span>
-            <span className="max-md:hidden">{t("prioritas.toggle")}</span>
-          </button>
+          <ThematicChooser
+            options={themeOptions}
+            value={theme}
+            onChange={(value) => {
+              setThemeTouched(true);
+              void chooseTheme(value);
+            }}
+            open={chooserOpen}
+            onOpen={setChooserOpen}
+          />
           <p role="status" className="sr-only">
-            {layer === "memuat" ? t("prioritas.loading") : layer === "nyala" ? t("prioritas.on") : ""}
+            {themeState === "memuat"
+              ? t("tematik.loading", { name: themeName })
+              : theme !== "tidak"
+                ? // Galat diumumkan lewat role="alert" di kuncinya.
+                  themeState === "siap"
+                  ? t("tematik.on", { name: themeName })
+                  : ""
+                : themeTouched
+                  ? t("tematik.off")
+                  : ""}
           </p>
-          {layerShown && (
-            <PriorityKey priority={priority} failed={layer === "galat"} attribution={boundaries?.attribution ?? null} compact={narrow} onShowTable={showTable} />
+          {themeShown === "disabilitas" && themeState === "tanpa-data" && (
+            <p role="alert" className="peta-kunci panel-raised rounded-2xl p-4 text-sm">
+              {t("disabilitas.failed")}
+            </p>
+          )}
+          {themeShown === "disabilitas" && disability && disabilityFilter && themeState !== "tanpa-data" && (
+            <DisabilityKey
+              data={disability}
+              filter={disabilityFilter}
+              onFilter={(next) => setDisabilityChoice(next)}
+              width={disabilityWidth}
+              max={disabilityMax}
+              boundariesFailed={themeState === "galat"}
+              attribution={boundaries?.attribution ?? null}
+              compact={narrow}
+              onShowTable={() => showTable("tabel-disabilitas")}
+            />
+          )}
+          {themeShown === "aksesibel" && themeState === "tanpa-data" && (
+            <p role="alert" className="peta-kunci panel-raised rounded-2xl p-4 text-sm">
+              {t("aksesibel.failed")}
+            </p>
+          )}
+          {themeShown === "aksesibel" && accessibility && themeState !== "tanpa-data" && (
+            <AccessibilityKey
+              data={accessibility}
+              boundariesFailed={themeState === "galat"}
+              attribution={boundaries?.attribution ?? null}
+              compact={narrow}
+              onShowTable={() => showTable("daftar-aksesibel")}
+            />
+          )}
+          {themeShown === "prioritas" && priority && (
+            <PriorityKey
+              priority={priority}
+              failed={themeState === "galat"}
+              attribution={boundaries?.attribution ?? null}
+              compact={narrow}
+              onShowTable={() => showTable("tabel-prioritas")}
+            />
           )}
         </div>
       )}
@@ -520,7 +660,10 @@ export function PlaceMap({
               <Icon icon={IconList} />
               {t("asList")}
             </Link>
-            <MapLegend candidates={candidates.length > 0 ? { on: candidatesOn, onToggle: () => setCandidatesOn(!candidatesOn) } : undefined} />
+            <MapLegend
+              candidates={candidates.length > 0 ? { on: candidatesOn, onToggle: () => setCandidatesOn(!candidatesOn) } : undefined}
+              border={ready && !!boundaries?.outline}
+            />
             <CategoryLegend />
             {places.length > 0 &&
               (shown.length > 0 ? (
@@ -529,7 +672,13 @@ export function PlaceMap({
                 <p className="rounded-2xl bg-bg-sunken p-4 text-text-secondary">{t("list.none")}</p>
               ))}
             {shownCandidates && <CandidateList candidates={shownCandidates} onShow={ready ? showOnMap : undefined} />}
-            {layerShown && <PriorityLegend priority={priority} attribution={boundaries?.attribution ?? null} />}
+            {themeShown === "prioritas" && priority && <PriorityLegend priority={priority} attribution={boundaries?.attribution ?? null} />}
+            {themeShown === "disabilitas" && disability && disabilityFilter && themeState !== "tanpa-data" && (
+              <DisabilityTable data={disability} filter={disabilityFilter} width={disabilityWidth} max={disabilityMax} attribution={boundaries?.attribution ?? null} />
+            )}
+            {themeShown === "aksesibel" && accessibility && themeState !== "tanpa-data" && (
+              <AccessibilityList data={accessibility} attribution={boundaries?.attribution ?? null} />
+            )}
           </div>
         )}
       </PlaceSheet>

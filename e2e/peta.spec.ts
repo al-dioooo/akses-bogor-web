@@ -29,7 +29,8 @@ test("the legend names every status in text", async ({ page }) => {
   ]);
 });
 
-// Warna kategori (issue #199) selalu bersama ikon kategori, dan marker tetap berwarna status.
+// Warna kategori (issue #199) selalu bersama ikon kategori. Marker tetap berwarna status, dengan ikon kategori di tengah
+// dan lencana status di sudut (ADR-0053).
 test("the legend and the markers tell categories apart by colour and icon, next to the status", async ({ page }) => {
   await page.goto("/peta");
   await expect(page.getByRole("main").getByRole("group", { name: "Kontrol peta" })).toBeVisible({ timeout: 15_000 });
@@ -37,17 +38,22 @@ test("the legend and the markers tell categories apart by colour and icon, next 
   const legend = page.getByRole("region", { name: "Legenda kategori" });
   await expect(legend.getByRole("listitem")).toHaveText(["Kampus", "Masjid", "Halte", "Rumah Sakit"]);
   const fill = (element: Element) => getComputedStyle(element).backgroundColor;
+  const paths = (element: Element) => [...element.querySelectorAll("path")].map((path) => path.getAttribute("d")).join("|");
   const legendColors = await legend.locator("li > span").evaluateAll((pins) => pins.map((pin) => getComputedStyle(pin).backgroundColor));
   expect(new Set(legendColors).size).toBe(4);
   for (const pin of await legend.locator("li > span").all()) await expect(pin.locator("svg")).toHaveCount(1);
 
   // Marker di balik panel disembunyikan dari pembaca layar, tetapi tetap digambar.
   const marker = page.getByRole("button", { name: /^Kampus contoh A, Kampus, /, includeHidden: true });
-  const [status, badge] = await marker.locator(":scope > span > span").all();
-  await expect(status.locator("svg")).toHaveCount(1);
+  const [disc, badge] = await marker.locator(":scope > span > span").all();
+  await expect(disc.locator("svg")).toHaveCount(1);
   await expect(badge.locator("svg")).toHaveCount(1);
-  expect(await badge.evaluate(fill)).toBe(legendColors[0]);
-  expect(await status.evaluate(fill)).not.toBe(legendColors[0]);
+  // Ikon di tengah sama dengan ikon Kampus di legenda; warnanya warna status, bukan warna kategori.
+  expect(await disc.evaluate(paths)).toBe(await legend.locator("li > span").first().evaluate(paths));
+  expect(await disc.evaluate(fill)).not.toBe(legendColors[0]);
+  // Lencana: warna status yang sama dengan ikon status.
+  expect(await badge.evaluate(fill)).toBe(await disc.evaluate(fill));
+  expect(await badge.evaluate(paths)).not.toBe(await disc.evaluate(paths));
 });
 
 test("filters submit to the map page and carry over to the list view", async ({ page }) => {

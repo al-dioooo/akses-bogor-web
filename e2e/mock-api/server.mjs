@@ -18,6 +18,7 @@ import { handleKandidat } from "./kandidat.mjs";
 import { handleLaporkan } from "./laporkan.mjs";
 import { handlePetunjuk } from "./petunjuk.mjs";
 import { handlePrioritas } from "./prioritas.mjs";
+import { handleRuteAksesibel } from "./rute-aksesibel.mjs";
 import { handleTanyaRute } from "./tanya-rute.mjs";
 import { handleVerifikasi } from "./verifikasi.mjs";
 
@@ -132,6 +133,8 @@ createServer(async (request, response) => {
     // Sebelum route verifikator, yang menjawab semua alamat /admin lain (tim).
     handleKelolaTempat(request.method, url, request.headers, payload, places) ??
     handleVerifikasi(request.method, url, request.headers, payload, places) ??
+    // Sebelum route agen, yang menjawab 404 untuk alamat /route lain.
+    handleRuteAksesibel(request.method, url, request.headers, payload, places) ??
     handleAgenRute(request.method, url, request.headers, payload, places) ??
     handleTanyaRute(request.method, url, request.headers, payload, places) ??
     handlePrioritas(request.method, url.pathname, request.headers) ??

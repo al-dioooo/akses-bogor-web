@@ -1,11 +1,11 @@
 import mapboxgl, { type GeoJSONSource, type LngLatBoundsLike } from "mapbox-gl";
-import { CATEGORIES, type Category, type DistrictBoundaries, type MapToken, type PriorityLevel } from "@/lib/api";
-import { LEVEL_COLOR, LEVELS } from "@/components/prioritas/levels";
+import { CATEGORIES, type Category, type CityOutline, type DistrictBoundaries, type MapToken } from "@/lib/api";
 import { motionReduced } from "@/lib/preferences";
 import { CATEGORY_VAR } from "@/ui/category-pin";
 import { CATEGORY_ICON } from "@/ui/place-icons";
 import type { MapCandidate, MapPlace } from "../places";
 import { NO_INSETS, cameraPadding, isVisible, visibleRect, type Insets, type Rect } from "./area";
+import { outsideCity } from "./city";
 
 /** Tampilan awal: seluruh Kota Bogor (ADR-0010). */
 const KOTA_BOGOR: LngLatBoundsLike = [
@@ -18,14 +18,26 @@ const AREA: LngLatBoundsLike = [
   [107.1, -6.3],
 ];
 const STYLE = { terang: "mapbox://styles/mapbox/light-v11", gelap: "mapbox://styles/mapbox/dark-v11" };
-// Mulai zoom ini lingkaran kandidat cukup besar untuk memuat ikon kategorinya (issue #199).
-const CANDIDATE_ICON_ZOOM = 14;
+/** Lapisan batas kota, dari atas ke bawah. */
+const BORDER_LAYERS = ["kota-garis", "kota-halo", "kota-luar"];
+// Mulai zoom ini lingkaran kandidat memuat ikon kategorinya (ADR-0053); di bawahnya, tampilan seluruh kota, lingkarannya
+// kecil tanpa ikon supaya ratusan titik tidak saling menutup. Mulai CANDIDATE_FULL_ZOOM lingkaran dan ikonnya penuh.
+const CANDIDATE_ICON_ZOOM = 12;
+const CANDIDATE_FULL_ZOOM = 14;
 // Ikon kategori di dalam lingkaran kandidat: 14 px, digambar dua kali lebih rapat untuk layar tajam.
 const CANDIDATE_ICON_PX = 14;
 const CANDIDATE_ICON_RATIO = 2;
 // Token baru diminta lima menit sebelum kedaluwarsa; bila gagal, dicoba lagi tiap menit.
 const RENEW_BEFORE_MS = 5 * 60_000;
 const RETRY_MS = 60_000;
+
+export type Thematic = {
+  name: string;
+  boundaries: DistrictBoundaries;
+  colors: Record<string, string | null>;
+  /** Kecamatan yang diarsir, mis. "Data belum cukup" di lapisan Kecamatan paling aksesibel. */
+  hatched?: string[];
+};
 
 export type MapHandle = {
   /** Tombol marker per id lokasi; isinya digambar komponen React lewat portal. Isinya berganti lewat setPlaces. */
@@ -57,8 +69,18 @@ export type MapHandle = {
    * Kandidat dipilih lewat `onSelect` dengan id-nya, dan `show`, `reveal`, serta `setSelected` menerima id itu juga.
    */
   setCandidates(candidates: { items: MapCandidate[]; attribution: string } | null): void;
-  /** Lapisan prioritas kecamatan: batas dengan tingkatnya, atau null untuk menyembunyikannya. */
-  setPriority(districts: { boundaries: DistrictBoundaries; levels: Record<string, PriorityLevel> } | null): void;
+  /**
+   * Batas Kota Bogor (ADR-0053): garis putus-putus di atas garis halo, dan area di luar kota sedikit dipudarkan, di bawah
+   * label peta dasar, kandidat, dan marker. null menyembunyikannya. Selama garisnya tampil, kontainer peta mendapat
+   * `data-batas-kota` berisi tema gaya yang menggambarnya ("terang" atau "gelap").
+   */
+  setBorder(outline: CityOutline | null): void;
+  /**
+   * Lapisan tematik (ADR-0053): isi setiap kecamatan dengan warnanya (nama variabel CSS, dibaca ulang setiap kali tema
+   * berganti; null tanpa isi) dan garis kecamatan tipis, di bawah batas kota. null menyembunyikannya. Selama tampil,
+   * kontainer peta mendapat `data-tematik` berisi `name`.
+   */
+  setThematic(value: Thematic | null): void;
   destroy(): void;
 };
 
@@ -96,6 +118,24 @@ function withToken(url: string, token: string) {
   const next = new URL(url);
   next.searchParams.set("access_token", token);
   return next.toString();
+}
+
+/** Arsiran diagonal untuk kecamatan tanpa kelas warna, digambar dua kali lebih rapat untuk layar tajam. */
+function hatchPattern(color: string): ImageData {
+  const size = 16;
+  const canvas = document.createElement("canvas");
+  canvas.width = canvas.height = size;
+  const context = canvas.getContext("2d")!;
+  context.strokeStyle = color;
+  context.lineWidth = 2.5;
+  context.beginPath();
+  // Tiga garis supaya polanya menyambung di tepi ubin.
+  for (const offset of [-size, 0, size]) {
+    context.moveTo(offset, size);
+    context.lineTo(offset + size, 0);
+  }
+  context.stroke();
+  return context.getImageData(0, 0, size, size);
 }
 
 /** Ikon kategori (path Tabler 24 × 24, garis 1.75 seperti komponen Icon) sebagai gambar untuk lapisan simbol GL. */
@@ -238,59 +278,126 @@ export function mountMap(options: Options): MapHandle {
     if (!ready && !map.isStyleLoaded()) options.onFail();
   });
 
-  // Lapisan prioritas digambar di bawah label peta dasar dan di bawah marker (marker berupa elemen HTML). Gaya baru
-  // (tema berganti) menghapus semua lapisan, jadi lapisan digambar ulang setiap kali gaya selesai dimuat.
-  let priority: Parameters<MapHandle["setPriority"]>[0] = null;
-  const drawPriority = () => {
-    if (!map.isStyleLoaded()) return;
-    if (!priority) {
-      for (const id of ["prioritas-garis", "prioritas-isi"]) if (map.getLayer(id)) map.removeLayer(id);
-      if (map.getSource("prioritas")) map.removeSource("prioritas");
+  // Gaya yang belum selesai dimuat (juga saat tile atau sumber lain masih dimuat) belum bisa menerima lapisan. Gambar yang
+  // datang saat itu menunggu peta diam, sekali per fungsi gambar, lalu dicoba lagi.
+  const waitingDraws = new Set<() => void>();
+  const styleReady = (draw: () => void) => {
+    if (map.isStyleLoaded()) return true;
+    if (!waitingDraws.has(draw)) {
+      waitingDraws.add(draw);
+      map.once("idle", () => {
+        waitingDraws.delete(draw);
+        draw();
+      });
+    }
+    return false;
+  };
+
+  // Lapisan tematik digambar di bawah batas kota (atau label peta dasar) dan di bawah marker (elemen HTML). Gaya baru
+  // (tema berganti) menghapus semua lapisan, jadi lapisan digambar ulang dengan warna tema saat itu setiap kali gaya
+  // selesai dimuat.
+  let thematic: Thematic | null = null;
+  const drawThematic = () => {
+    if (!styleReady(drawThematic)) return;
+    const container = map.getContainer();
+    if (!thematic) {
+      for (const id of ["tematik-garis", "tematik-arsir", "tematik-isi"]) if (map.getLayer(id)) map.removeLayer(id);
+      if (map.getSource("tematik")) map.removeSource("tematik");
+      delete container.dataset.tematik;
       return;
     }
-    const { boundaries, levels } = priority;
-    const data = {
-      type: "FeatureCollection" as const,
-      features: boundaries.features.map((f) => ({ ...f, properties: { ...f.properties, level: levels[f.properties.slug] ?? "" } })),
-    } as Parameters<GeoJSONSource["setData"]>[0];
-    const source = map.getSource("prioritas") as GeoJSONSource | undefined;
-    if (source) return source.setData(data);
     const css = getComputedStyle(document.documentElement);
     const color = (name: string) => css.getPropertyValue(name).trim();
-    const label = map.getStyle().layers?.find((layer) => layer.type === "symbol")?.id;
-    map.addSource("prioritas", { type: "geojson", data });
-    map.addLayer(
-      {
-        id: "prioritas-isi",
-        type: "fill",
-        source: "prioritas",
-        paint: {
-          "fill-color": ["match", ["get", "level"], ...LEVELS.flatMap((level) => [level, color(LEVEL_COLOR[level])]), "rgba(0,0,0,0)"] as never,
-          "fill-opacity": 0.55,
-        },
-      },
-      label,
-    );
-    map.addLayer({ id: "prioritas-garis", type: "line", source: "prioritas", paint: { "line-color": color("--color-text-primary"), "line-width": 1.5 } }, label);
+    const { boundaries, colors } = thematic;
+    const data = {
+      type: "FeatureCollection" as const,
+      features: boundaries.features.map((f) => {
+        const fill = colors[f.properties.slug];
+        return { ...f, properties: { ...f.properties, warna: fill ? color(fill) : "rgba(0,0,0,0)" } };
+      }),
+    } as Parameters<GeoJSONSource["setData"]>[0];
+    const source = map.getSource("tematik") as GeoJSONSource | undefined;
+    if (source) source.setData(data);
+    else {
+      const below = map.getLayer("kota-luar") ? "kota-luar" : map.getStyle().layers?.find((layer) => layer.type === "symbol")?.id;
+      const hatch = hatchPattern(color("--color-text-secondary"));
+      if (map.hasImage("arsir")) map.updateImage("arsir", hatch);
+      else map.addImage("arsir", hatch, { pixelRatio: 2 });
+      map.addSource("tematik", { type: "geojson", data });
+      map.addLayer({ id: "tematik-isi", type: "fill", source: "tematik", paint: { "fill-color": ["to-color", ["get", "warna"]], "fill-opacity": 0.55 } }, below);
+      map.addLayer({ id: "tematik-arsir", type: "fill", source: "tematik", paint: { "fill-pattern": "arsir", "fill-opacity": 0.6 } }, below);
+      map.addLayer(
+        { id: "tematik-garis", type: "line", source: "tematik", paint: { "line-color": color("--color-text-primary"), "line-width": 1, "line-opacity": 0.7 } },
+        below,
+      );
+    }
+    map.setFilter("tematik-arsir", ["in", ["get", "slug"], ["literal", thematic.hatched ?? []]]);
+    container.dataset.tematik = thematic.name;
   };
-  map.on("style.load", drawPriority);
+  map.on("style.load", drawThematic);
 
-  // Kandidat: lingkaran berlubang bergaris warna kategori (issue #199), lebih kecil dari marker dan tanpa warna status.
-  // Mulai CANDIDATE_ICON_ZOOM lingkarannya membesar dan memuat ikon kategori, supaya kategori tidak ditandai warna saja.
-  // Gaya baru (juga saat tema berganti) menghapus lapisan dan gambar ikon, jadi keduanya digambar ulang setiap kali gaya
-  // selesai dimuat, dengan warna tema saat itu; selama gaya belum siap, gambar menunggu peta diam.
-  let waiting = false;
-  const drawCandidates = () => {
-    if (!map.isStyleLoaded()) {
-      if (!waiting) {
-        waiting = true;
-        map.once("idle", () => {
-          waiting = false;
-          drawCandidates();
-        });
-      }
+  // Batas kota digambar di bawah label peta dasar, tetapi di atas lapisan tematik: lapisan tematik disisipkan di bawah
+  // "kota-luar" bila sudah ada. Seperti lapisan lain, semuanya digambar ulang setiap kali gaya (tema) berganti.
+  let border: CityOutline | null = null;
+  const drawBorder = () => {
+    if (!styleReady(drawBorder)) return;
+    const container = map.getContainer();
+    if (!border) {
+      for (const id of BORDER_LAYERS) if (map.getLayer(id)) map.removeLayer(id);
+      if (map.getSource("kota")) map.removeSource("kota");
+      delete container.dataset.batasKota;
       return;
     }
+    const data = {
+      type: "FeatureCollection" as const,
+      features: [
+        { type: "Feature" as const, properties: { bagian: "luar" }, geometry: outsideCity(border) },
+        { type: "Feature" as const, properties: { bagian: "batas" }, geometry: border },
+      ],
+    } as Parameters<GeoJSONSource["setData"]>[0];
+    const source = map.getSource("kota") as GeoJSONSource | undefined;
+    if (source) source.setData(data);
+    else {
+      const css = getComputedStyle(document.documentElement);
+      const color = (name: string) => css.getPropertyValue(name).trim();
+      const label = map.getStyle().layers?.find((layer) => layer.type === "symbol")?.id;
+      const width = (from: number, to: number) => ["interpolate", ["linear"], ["zoom"], 10, from, 15, to] as never;
+      map.addSource("kota", { type: "geojson", data });
+      map.addLayer({ id: "kota-luar", type: "fill", source: "kota", filter: ["==", ["get", "bagian"], "luar"], paint: { "fill-color": color("--color-bg-canvas"), "fill-opacity": 0.45 } }, label);
+      map.addLayer(
+        {
+          id: "kota-halo",
+          type: "line",
+          source: "kota",
+          filter: ["==", ["get", "bagian"], "batas"],
+          layout: { "line-join": "round" },
+          paint: { "line-color": color("--color-bg-canvas"), "line-width": width(5, 8), "line-opacity": 0.85 },
+        },
+        label,
+      );
+      map.addLayer(
+        {
+          id: "kota-garis",
+          type: "line",
+          source: "kota",
+          filter: ["==", ["get", "bagian"], "batas"],
+          paint: { "line-color": color("--color-text-primary"), "line-width": width(2.5, 4), "line-dasharray": [2, 1.5] },
+        },
+        label,
+      );
+    }
+    // Nilainya tema gaya yang memuat garis ini, jadi terlihat bahwa garisnya digambar ulang setelah tema berganti.
+    container.dataset.batasKota = night ? "gelap" : "terang";
+  };
+  map.on("style.load", drawBorder);
+
+  // Kandidat: lingkaran berlubang bergaris warna kategori (issue #199), lebih kecil dari marker dan tanpa warna status.
+  // Mulai CANDIDATE_ICON_ZOOM lingkarannya membesar dan memuat ikon kategori, supaya kategori tidak ditandai warna saja,
+  // dan mulai CANDIDATE_FULL_ZOOM ukurannya penuh.
+  // Gaya baru (juga saat tema berganti) menghapus lapisan dan gambar ikon, jadi keduanya digambar ulang setiap kali gaya
+  // selesai dimuat, dengan warna tema saat itu.
+  const drawCandidates = () => {
+    if (!styleReady(drawCandidates)) return;
     if (!candidates) {
       for (const id of ["kandidat-ikon", "kandidat-pilih", "kandidat"]) if (map.getLayer(id)) map.removeLayer(id);
       if (map.getSource("kandidat")) map.removeSource("kandidat");
@@ -316,10 +423,10 @@ export function mountMap(options: Options): MapHandle {
         type: "circle",
         source: "kandidat",
         paint: {
-          "circle-radius": ["interpolate", ["linear"], ["zoom"], 10, 3.5, CANDIDATE_ICON_ZOOM - 0.01, 6, CANDIDATE_ICON_ZOOM, 11],
+          "circle-radius": ["interpolate", ["linear"], ["zoom"], 10, 3.5, CANDIDATE_ICON_ZOOM - 0.01, 5, CANDIDATE_ICON_ZOOM, 8.5, CANDIDATE_FULL_ZOOM - 0.01, 9.5, CANDIDATE_FULL_ZOOM, 11],
           "circle-color": color("--color-bg-canvas"),
           "circle-stroke-color": ["match", ["get", "category"], ...CATEGORIES.flatMap((c) => [c, color(CATEGORY_VAR[c])]), color("--color-icon-secondary")] as never,
-          "circle-stroke-width": ["step", ["zoom"], 2.5, CANDIDATE_ICON_ZOOM, 3],
+          "circle-stroke-width": ["step", ["zoom"], 2.5, CANDIDATE_FULL_ZOOM, 3],
         },
       });
       map.addLayer({
@@ -327,7 +434,7 @@ export function mountMap(options: Options): MapHandle {
         type: "circle",
         source: "kandidat",
         paint: {
-          "circle-radius": ["step", ["zoom"], 9, CANDIDATE_ICON_ZOOM, 14],
+          "circle-radius": ["step", ["zoom"], 9, CANDIDATE_ICON_ZOOM, 12, CANDIDATE_FULL_ZOOM, 14],
           "circle-color": color("--color-bg-canvas"),
           "circle-stroke-color": color("--color-text-primary"),
           "circle-stroke-width": 4,
@@ -338,7 +445,13 @@ export function mountMap(options: Options): MapHandle {
         type: "symbol",
         source: "kandidat",
         minzoom: CANDIDATE_ICON_ZOOM,
-        layout: { "icon-image": ["concat", "kategori-", ["get", "category"]], "icon-allow-overlap": true, "icon-ignore-placement": true },
+        layout: {
+          "icon-image": ["concat", "kategori-", ["get", "category"]],
+          // 14 px penuh; di antara kedua zoom 10 px, pas di lingkaran yang lebih kecil.
+          "icon-size": ["step", ["zoom"], 0.72, CANDIDATE_FULL_ZOOM, 1],
+          "icon-allow-overlap": true,
+          "icon-ignore-placement": true,
+        },
       });
     }
     map.setFilter("kandidat-pilih", ["==", ["get", "id"], selected ?? ""]);
@@ -455,11 +568,18 @@ export function mountMap(options: Options): MapHandle {
     setNight(value) {
       if (value === night) return;
       night = value;
-      map.setStyle(night ? STYLE.gelap : STYLE.terang);
+      // Tanpa diff: gaya selalu dimuat ulang penuh dan "style.load" selalu terpanggil, jadi semua lapisan sendiri digambar
+      // ulang dengan warna tema baru. Dengan diff, lapisan sendiri bisa terhapus tanpa "style.load" bila kedua gaya
+      // hanya berbeda di properti yang bisa di-diff.
+      map.setStyle(night ? STYLE.gelap : STYLE.terang, { diff: false } as Parameters<typeof map.setStyle>[1]);
     },
-    setPriority(value) {
-      priority = value;
-      drawPriority();
+    setBorder(value) {
+      border = value;
+      drawBorder();
+    },
+    setThematic(value) {
+      thematic = value;
+      drawThematic();
     },
     destroy() {
       window.clearTimeout(timer);

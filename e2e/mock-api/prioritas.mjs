@@ -1,6 +1,6 @@
-// Route prioritas kecamatan tiruan (/districts/priority, /districts/boundaries) untuk tes Playwright, meniru
+// Route kecamatan tiruan (/districts/priority, /boundaries, /disability, /accessibility) untuk tes Playwright, meniru
 // akses-bogor-api (ADR-0043, ADR-0034). Prioritas dibuka, kecuali untuk IP pengunjung 203.0.113.251 yang mendapat 503
-// data_disabilitas_belum_aktif. Batas kecamatan tiruan berupa enam persegi di sekitar Kota Bogor.
+// data_disabilitas_belum_aktif. Batas kecamatan tiruan berupa enam persegi di sekitar Kota Bogor, dengan garis luarnya.
 import { PRIORITY } from "./agen-rute.mjs";
 
 export const PRIORITY_OFF_IP = "203.0.113.251";
@@ -17,12 +17,96 @@ const BOUNDARIES = {
     ["bogor-selatan", "Bogor Selatan", box(106.77, -6.68, 106.84, -6.61)],
   ].map(([slug, name, geometry]) => ({ type: "Feature", properties: { slug, name }, geometry })),
   attribution: "© kontributor OpenStreetMap",
+  // Garis luar gabungan keenam persegi (ADR-0053).
+  outline: {
+    type: "MultiPolygon",
+    coordinates: [
+      [
+        [
+          [106.76, -6.53],
+          [106.83, -6.53],
+          [106.83, -6.57],
+          [106.85, -6.57],
+          [106.85, -6.61],
+          [106.84, -6.61],
+          [106.84, -6.68],
+          [106.77, -6.68],
+          [106.77, -6.61],
+          [106.73, -6.61],
+          [106.73, -6.57],
+          [106.76, -6.57],
+          [106.76, -6.53],
+        ],
+      ],
+    ],
+  },
 };
 
-/** Menjawab route prioritas kecamatan, atau `null` bila bukan route itu. */
+const SLUGS = BOUNDARIES.features.map((f) => [f.properties.slug, f.properties.name]);
+const CATEGORIES = ["fisik", "netra", "mental", "lainnya"];
+/**
+ * Jumlah terdaftar tiruan (GET /districts/disability, ADR-0053): Bogor Barat terbanyak; tahun 2024 melonjak dari 2023.
+ * Bogor Tengah tanpa angka "lainnya" pada 2022.
+ */
+const DISABILITY = {
+  years: [2022, 2023, 2024],
+  categories: CATEGORIES,
+  districts: SLUGS.map(([slug, name], d) => ({
+    slug,
+    name,
+    counts: [2022, 2023, 2024].flatMap((year, y) =>
+      CATEGORIES.flatMap((category, c) => (slug === "bogor-tengah" && year === 2022 && category === "lainnya" ? [] : [{ year, category, count: (slug === "bogor-barat" ? 300 : 40 * (d + 1)) * (y + 1) + c * 7 }])),
+    ),
+  })),
+  caveat:
+    "Angka ini jumlah penyandang disabilitas yang terdaftar di Dinas Sosial Kota Bogor, bukan jumlah seluruh penyandang disabilitas. Jumlahnya melonjak besar antartahun, jadi angka antartahun belum bisa dibandingkan langsung.",
+  source: PRIORITY.source,
+};
+
+const tally = (withData, accessible) => ({ withData, accessible });
+/**
+ * Kecamatan paling aksesibel tiruan (GET /districts/accessibility, ADR-0053): tiga kecamatan berperingkat, tiga dengan
+ * data belum cukup. Hanya satu keterangan dari data AksesBogor (Bogor Selatan); sisanya OpenStreetMap dan Google Maps.
+ */
+const ACCESSIBILITY = {
+  minimumPlaces: 5,
+  formula: "skor = 100 × tempat yang pintu masuknya bisa dimasuki kursi roda ÷ tempat yang punya keterangan pintu masuk, dibulatkan.",
+  caveat: "Keterangan dari OpenStreetMap dan Google Maps belum diperiksa tim AksesBogor, dan kriterianya berbeda dari data AksesBogor. Hanya tempat yang punya keterangan pintu masuk yang dihitung.",
+  districts: [
+    ["bogor-barat", "Bogor Barat", 120, 9, 7, 1, 78, 1, tally(0, 0), tally(6, 5), tally(3, 2)],
+    ["bogor-tengah", "Bogor Tengah", 95, 7, 4, 0, 57, 2, tally(0, 0), tally(5, 3), tally(2, 1)],
+    ["tanah-sareal", "Tanah Sareal", 88, 5, 1, 1, 20, 3, tally(0, 0), tally(4, 1), tally(1, 0)],
+    ["bogor-selatan", "Bogor Selatan", 101, 4, 3, 0, null, null, tally(1, 1), tally(3, 2), tally(0, 0)],
+    ["bogor-timur", "Bogor Timur", 64, 0, 0, 0, null, null, tally(0, 0), tally(0, 0), tally(0, 0)],
+    ["bogor-utara", "Bogor Utara", 70, 3, 1, 0, null, null, tally(0, 0), tally(2, 1), tally(1, 0)],
+  ].map(([slug, name, places, withData, accessible, limited, score, rank, aksesbogor, openstreetmap, google_maps]) => ({
+    slug,
+    name,
+    places,
+    withData,
+    accessible,
+    limited,
+    notAccessible: withData - accessible - limited,
+    score,
+    rank,
+    bySource: { aksesbogor, openstreetmap, google_maps },
+  })),
+  sources: {
+    aksesbogor: { checkedByTeam: true },
+    openstreetmap: { checkedByTeam: false, attribution: "© kontributor OpenStreetMap", url: "https://www.openstreetmap.org/copyright", retrievedAt: "2026-11-16T00:00:00.000Z" },
+    google_maps: { checkedByTeam: false, attribution: "Google Maps", retrievedAt: "2026-11-23" },
+  },
+};
+
+/** Menjawab route prioritas kecamatan, data disabilitas, dan kecamatan paling aksesibel, atau `null` bila bukan route itu. */
 export function handlePrioritas(method, pathname, headers) {
   if (method !== "GET") return null;
   if (pathname === "/districts/boundaries") return [200, BOUNDARIES, { "cache-control": "public, max-age=86400" }];
+  if (pathname === "/districts/accessibility") return [200, ACCESSIBILITY, { "cache-control": "private, no-store" }];
+  if (pathname === "/districts/disability") {
+    if (headers["x-visitor-ip"] === PRIORITY_OFF_IP) return [503, { galat: "data_disabilitas_belum_aktif", pesan: "Data disabilitas belum dibuka." }];
+    return [200, DISABILITY];
+  }
   if (pathname !== "/districts/priority") return null;
   if (headers["x-visitor-ip"] === PRIORITY_OFF_IP) return [503, { galat: "data_disabilitas_belum_aktif", pesan: "Data prioritas kecamatan belum dibuka." }];
   return [200, PRIORITY];

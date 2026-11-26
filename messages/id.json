@@ -239,7 +239,9 @@
     "asList": "Lihat sebagai daftar",
     "legend": "Legenda status",
     "legendCategory": "Legenda kategori",
-    "legendCategoryHint": "Lencana kecil di marker dan warna lingkaran Belum ada data. Ikon kategori muncul di lingkaran saat peta diperbesar.",
+    "border": "Batas Kota Bogor (garis putus-putus)",
+    "legendCategoryHint": "Ikon di tengah marker dan di lingkaran Belum ada data. Lingkaran Belum ada data juga bergaris warna kategorinya; ikonnya muncul saat peta diperbesar.",
+    "legendMarker": "Contoh marker masjid yang aksesibel: warna dan lencana di sudut menunjukkan status, ikon di tengah menunjukkan kategori.",
     "cari": {
       "placeholder": "Cari nama tempat",
       "filterTitle": "Filter lokasi",
@@ -332,13 +334,114 @@
       "list": "Daftar",
       "map": "Peta"
     },
+    "tematik": {
+      "button": "Peta tematik",
+      "short": "Tematik",
+      "title": "Peta tematik",
+      "intro": "Satu lapisan warna per kecamatan. Tabel atau daftarnya ada di panel daftar.",
+      "loading": "Memuat lapisan {name}…",
+      "on": "Lapisan {name} tampil di peta, dengan kuncinya di atas peta. Tabel atau daftarnya ada di panel daftar.",
+      "off": "Peta tematik disembunyikan.",
+      "pilihan": {
+        "tidak": {
+          "label": "Tidak ada",
+          "body": "Hanya lokasi dan batas Kota Bogor."
+        },
+        "prioritas": {
+          "label": "Prioritas pemetaan",
+          "body": "Kecamatan yang paling perlu didata, dari penyandang disabilitas terdaftar dan tempat yang belum punya data."
+        },
+        "disabilitas": {
+          "label": "Persebaran disabilitas",
+          "body": "Penyandang disabilitas yang terdaftar di Dinas Sosial per kecamatan, menurut jenis dan tahun."
+        },
+        "aksesibel": {
+          "label": "Kecamatan paling aksesibel",
+          "body": "Tempat yang pintu masuknya bisa dimasuki kursi roda, termasuk keterangan yang belum diperiksa tim."
+        }
+      }
+    },
+    "aksesibel": {
+      "title": "Kecamatan paling aksesibel",
+      "keyShort": "Paling aksesibel",
+      "unchecked": "belum diperiksa tim",
+      "table": "Daftar",
+      "showTable": "Daftar peringkat kecamatan paling aksesibel",
+      "more": "Catatan",
+      "moreLabel": "Catatan, sumber, dan legenda kecamatan paling aksesibel",
+      "less": "Ringkas kunci kecamatan paling aksesibel",
+      "measure": "Persentase tempat yang pintu masuknya bisa dimasuki kursi roda, dari tempat yang punya keterangan pintu masuk.",
+      "legend": "Legenda persentase",
+      "range": "{from}–{to}%",
+      "notEnough": "Data belum cukup: kurang dari {minimum} tempat ber-keterangan",
+      "coverage": "Keterangan pintu masuk ada untuk {withData} dari {places} tempat.",
+      "uncheckedCount": "{count} keterangan belum diperiksa tim: OpenStreetMap {osm}, Google Maps {google}.",
+      "uncheckedCountOsm": "{count} keterangan belum diperiksa tim, dari OpenStreetMap.",
+      "caveatLabel": "Catatan:",
+      "sourcesLabel": "Sumber:",
+      "sourceAksesBogor": "data AksesBogor (diperiksa tim)",
+      "sourceOsm": "OpenStreetMap (belum diperiksa tim, <credit>{attribution}</credit>)",
+      "sourceGoogle": "salinan Google Maps diambil {date} (belum diperiksa tim)",
+      "sourceGoogleUndated": "salinan Google Maps (belum diperiksa tim)",
+      "newTab": "(tab baru)",
+      "failed": "Data kecamatan paling aksesibel tidak bisa dimuat, jadi lapisan ini tidak tampil. Coba lagi nanti.",
+      "boundariesFailed": "Batas kecamatan tidak bisa dimuat, jadi warna tidak tampil di peta. Daftar di panel berisi data yang sama.",
+      "listIntro": "Urut dari persentase tertinggi. Setiap angka disertai cakupan datanya dan asal keterangannya.",
+      "rankedLabel": "Peringkat kecamatan",
+      "rankLabel": "Peringkat {rank}:",
+      "score": "{score}% bisa dimasuki",
+      "accessibleOf": "{accessible} dari {withData} tempat ber-keterangan pintu masuknya bisa dimasuki kursi roda",
+      "limited": "{count} terbatas",
+      "districtCoverage": "Keterangan ada untuk {withData} dari {places} tempat",
+      "districtSources": "Data AksesBogor: {team} · belum diperiksa tim: {unverified} (OpenStreetMap {osm}, Google Maps {google})",
+      "districtSourcesOsm": "Data AksesBogor: {team} · belum diperiksa tim: {unverified} (OpenStreetMap {osm})",
+      "noneRanked": "Belum ada kecamatan dengan paling sedikit {minimum} tempat ber-keterangan.",
+      "notEnoughTitle": "Data belum cukup",
+      "notEnoughItem": "{withData} tempat ber-keterangan dari {places} tempat; perlu paling sedikit {minimum}.",
+      "formula": "Cara menghitung: {formula}"
+    },
+    "disabilitas": {
+      "title": "Persebaran disabilitas {year}",
+      "keyShort": "{jenis} {year}",
+      "jenisShort": {
+        "semua": "Disabilitas",
+        "fisik": "Disabilitas fisik",
+        "netra": "Disabilitas netra",
+        "mental": "Disabilitas mental",
+        "lainnya": "Disabilitas jenis lain"
+      },
+      "table": "Tabel",
+      "showTable": "Tabel persebaran disabilitas",
+      "more": "Catatan",
+      "moreLabel": "Catatan, sumber, filter, dan legenda persebaran disabilitas",
+      "less": "Ringkas kunci persebaran disabilitas",
+      "category": "Jenis disabilitas",
+      "year": "Tahun",
+      "jenis": {
+        "semua": "Semua jenis",
+        "fisik": "Disabilitas fisik",
+        "netra": "Disabilitas netra",
+        "mental": "Disabilitas mental",
+        "lainnya": "Jenis lain"
+      },
+      "legend": "Legenda jumlah terdaftar",
+      "range": "{from}–{to}",
+      "caveatLabel": "Catatan:",
+      "source": "Sumber: Open Data Kota Bogor, Dinas Sosial Kota Bogor, data tahun {year}.",
+      "sourceFull": "Sumber: <link>{title}</link>, Open Data Kota Bogor, Dinas Sosial Kota Bogor, data tahun {year}, diambil {date}. {terms}",
+      "newTab": "(tab baru)",
+      "failed": "Data persebaran disabilitas tidak bisa dimuat, jadi lapisan ini tidak tampil. Coba lagi nanti.",
+      "boundariesFailed": "Batas kecamatan tidak bisa dimuat, jadi warna tidak tampil di peta. Tabel di panel daftar berisi data yang sama.",
+      "intro": "Warna kecamatan menunjukkan jumlah penyandang disabilitas yang terdaftar di Dinas Sosial: {jenis}, tahun {year}. Jenis dan tahun dipilih di kunci peta.",
+      "caption": "Penyandang disabilitas terdaftar di Dinas Sosial per kecamatan: {jenis}, tahun {year}, urut dari yang terbanyak",
+      "region": "Tabel persebaran disabilitas, bisa digeser ke samping",
+      "district": "Kecamatan",
+      "registered": "Terdaftar",
+      "class": "Kelas warna",
+      "total": "Kota Bogor"
+    },
     "prioritas": {
-      "toggle": "Lapisan prioritas kecamatan",
-      "short": "Prioritas",
-      "loading": "Memuat batas kecamatan…",
       "failed": "Batas kecamatan tidak bisa dimuat, jadi lapisan tidak tampil di peta. Tabel di panel daftar berisi data yang sama.",
-      "on": "Lapisan prioritas kecamatan tampil di peta, dengan kuncinya di atas peta. Tabelnya ada di panel daftar.",
-      "off": "Lapisan prioritas kecamatan disembunyikan.",
       "title": "Prioritas kecamatan",
       "intro": "Warna kecamatan menunjukkan seberapa perlu fasilitasnya didata, dari penyandang disabilitas terdaftar, fasilitas tanpa data, dan lokasi yang sudah diverifikasi.",
       "legend": "Legenda prioritas",
@@ -2192,7 +2295,7 @@
     "awal": {
       "title": "Dari mana Anda berangkat?",
       "why": "Titik awal dipakai untuk menghitung rute jalan kaki ke tempat ini, mis. untuk datang memotret dan mencatat fasilitasnya.",
-      "privacy": "Titik awal dibulatkan sampai sekitar 11 m dan dikirim lewat server AksesBogor ke Mapbox hanya untuk menghitung rute. Titik ini tidak disimpan dan tidak pernah dikirim ke agen AI.",
+      "privacy": "Titik awal dibulatkan sampai sekitar 11 m dan dikirim ke server AksesBogor hanya untuk menghitung rute, dengan data OpenStreetMap di server kami sendiri atau lewat Mapbox. Titik ini tidak disimpan dan tidak pernah dikirim ke agen AI.",
       "useLocation": "Pakai lokasi saya",
       "locating": "Mencari lokasi Anda…",
       "pickOnMap": "Pilih titik awal di peta",
@@ -2203,9 +2306,17 @@
       "usePoint": "Pakai titik ini",
       "mapUnavailable": "Peta tidak bisa tampil, jadi titik awal hanya bisa diambil dari lokasi perangkat."
     },
+    "profil": {
+      "label": "Profil rute",
+      "kursi_roda": "Kursi roda",
+      "jalan_kaki": "Jalan kaki",
+      "hint": "Profil kursi roda menghindari tangga yang tercatat di OpenStreetMap dan lebih memilih trotoar. Data di peta bisa kurang lengkap, jadi tetap periksa peringatan di bawah.",
+      "noWheelchairPath": "Lihat rute jalan kaki"
+    },
     "rute": {
       "loading": "Menghitung rute…",
       "summary": "{distance} · sekitar {minutes, plural, other {# menit}} jalan kaki",
+      "summaryWheelchair": "{distance} · sekitar {minutes, plural, other {# menit}} dengan kursi roda",
       "warningTitle": "Belum tentu bisa dilewati kursi roda",
       "stepsTitle": "Langkah",
       "changeStart": "Ganti titik awal",
@@ -2215,7 +2326,8 @@
       "mapHint": "Peta hanya gambaran. Langkah dan daftar hambatan di bawah berisi informasi yang sama.",
       "mapLoading": "Memuat peta…",
       "mapUnavailable": "Peta tidak bisa tampil. Langkah dan daftar hambatan di bawah berisi informasi yang sama.",
-      "attribution": "Rute: <mapbox>© Mapbox</mapbox>. Data jalan dan hambatan: <osm>© kontributor OpenStreetMap</osm>."
+      "attribution": "Rute: <mapbox>© Mapbox</mapbox>. Data jalan dan hambatan: <osm>© kontributor OpenStreetMap</osm>.",
+      "attributionOsm": "Rute dan data jalan: <osm>© kontributor OpenStreetMap</osm>."
     },
     "hambatan": {
       "title": "Hambatan yang tercatat di OpenStreetMap",
@@ -2226,6 +2338,16 @@
       "osmLinkTarget": "({description})",
       "truncated": "Hanya 50 hambatan pertama yang ditampilkan.",
       "failed": "Hambatan di rute tidak bisa dimuat. Rute tetap bisa dilihat, tetapi hambatan di jalan tidak ditampilkan."
+    },
+    "cakupan": {
+      "title": "Kelengkapan data di rute ini",
+      "sidewalk": "Trotoar atau jalur pejalan kaki tercatat di {percent}% panjang rute",
+      "surface": "Jenis permukaan tercatat di {percent}% panjang rute",
+      "kerb": "Kerb tercatat di {withKerb} dari {crossings} penyeberangan",
+      "noCrossings": "Tidak ada jalur penyeberangan yang tercatat di rute ini",
+      "unknown": "Kelengkapan data belum bisa dihitung untuk rute ini.",
+      "dataDate": "Data OpenStreetMap per {date}.",
+      "warningsTitle": "Perlu diperhatikan"
     }
   },
   "BantuMemetakan": {
