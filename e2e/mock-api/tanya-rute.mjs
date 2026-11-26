@@ -9,6 +9,12 @@
 //   Pertanyaan yang memuat "Masjid Al-Hidayah" menjawab dengan kartu rute ke kandidat OpenStreetMap node 9001.
 // - GET /_tiruan/asisten-terakhir?ip=... menjawab badan pertanyaan terakhir dari IP itu, untuk memastikan titik awal
 //   dan id lokasi ikut terkirim.
+// - Agen AI (ADR-0054): akun lengkap yang mengirim contributorTools, selama agen kontributor dibuka (bukan IP
+//   203.0.113.250), mendapat jawaban agen kontributor dengan kartu prioritas, tempat, dan rute untuk pertanyaan yang
+//   memuat "didata". Penanya lain tetap mendapat jawaban asisten rute.
+
+import { AGENT_OFF_IP, contributorAnswer } from "./agen-rute.mjs";
+import { userFromToken } from "./akun.mjs";
 
 export const ASSISTANT_OFF_IP = "203.0.113.247";
 const HALTE = "4037ba19-b366-45bc-aceb-270944fe9372";
@@ -32,6 +38,8 @@ export function handleTanyaRute(method, url, headers, body, places) {
     return error(429, "kuota_habis", "Jatah 5 pertanyaan hari ini sudah habis. Coba lagi besok, atau masuk untuk memakai jatah akun Anda.");
   }
   if (question.includes("sibuk-tiruan")) return error(503, "agen_sibuk", "Asisten sedang sibuk. Coba lagi nanti.");
+  const contributor = body?.contributorTools === true && userFromToken(headers.authorization)?.completed && headers["x-visitor-ip"] !== AGENT_OFF_IP;
+  if (contributor && question.includes("didata")) return [200, contributorAnswer(places, question)];
   if (question.includes("Masjid Al-Hidayah")) {
     // Kandidat OpenStreetMap tiruan (node 9001 di agen-rute.mjs), tanpa data aksesibilitas dari tim (ADR-0049).
     return [
