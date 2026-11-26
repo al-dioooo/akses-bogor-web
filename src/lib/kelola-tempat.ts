@@ -13,7 +13,8 @@ export type AdminPlaceQuery = {
   category?: Category;
   district?: string;
   status?: Status;
-  origin?: Origin;
+  /** `street_view`: tempat yang diverifikasi dari bukti Street View (ADR-0058). */
+  origin?: Origin | "street_view";
   published?: "ya" | "tidak";
   limit?: number;
   offset?: number;

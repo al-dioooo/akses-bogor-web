@@ -8,35 +8,25 @@ const card = createTranslator({ locale: "id", messages, namespace: "Lokasi" });
 const detail = createTranslator({ locale: "id", messages, namespace: "Detail" });
 const PLACE = { lastVerifiedAt: "2026-11-03T03:00:00.000Z" };
 
-describe("verifiedLabel (ADR-0057)", () => {
-  it("names Street View and the image month, never a plain Diverifikasi", () => {
-    const label = verifiedLabel({ ...PLACE, lastVerifiedAt: "2026-01-01T00:00:00.000Z", verificationSource: "street_view", streetViewImageDate: "2026-01" }, format, "medium");
-    expect(card(label.key, label.values)).toBe("Diverifikasi dari Street View · gambar Januari 2026");
-    expect(detail(label.key, label.values)).toBe("Diverifikasi dari Street View · gambar Januari 2026");
+describe("verifiedLabel", () => {
+  it("gives a street view place the plain team label with the image month as its date (ADR-0058)", () => {
+    const place = { lastVerifiedAt: "2026-01-01T00:00:00.000Z", verificationSource: "street_view" as const, streetViewImageDate: "2026-01" };
+    const label = verifiedLabel(place, format, "long");
+    expect(detail(label.key, label.values)).toBe("Terakhir diverifikasi 1 Januari 2026");
+    const cards = createTranslator({ locale: "id", messages, namespace: "Agen.kartu" });
+    expect(cards(label.key, label.values)).toBe("Terakhir diverifikasi 1 Januari 2026");
   });
 
-  it("still names Street View when the month is missing or malformed", () => {
-    const label = verifiedLabel({ ...PLACE, verificationSource: "street_view", streetViewImageDate: "Jan 2026" }, format, "medium");
-    expect(card(label.key, label.values)).toBe("Diverifikasi dari Street View");
-  });
-
-  it("keeps the team and admin labels, and treats an older API without the source as a report", () => {
+  it("keeps the team and admin labels", () => {
     const team = verifiedLabel(PLACE, format, "long");
     expect(detail(team.key, team.values)).toBe("Terakhir diverifikasi 3 November 2026");
-    const admin = verifiedLabel({ ...PLACE, verifiedBy: "admin", verificationSource: "laporan" }, format, "medium");
+    const admin = verifiedLabel({ ...PLACE, verifiedBy: "admin" }, format, "medium");
     expect(card(admin.key, admin.values)).toMatch(/^Diterbitkan langsung oleh admin · /);
   });
 
-  it("has a Street View wording for the Agen AI cards and sources", () => {
-    const label = verifiedLabel({ ...PLACE, verificationSource: "street_view", streetViewImageDate: "2026-02" }, format, "long");
-    const cards = createTranslator({ locale: "id", messages, namespace: "Agen.kartu" });
-    const sources = createTranslator({ locale: "id", messages, namespace: "Agen.sumber" });
-    expect(cards(label.key, label.values)).toBe("Diverifikasi dari Street View · gambar Februari 2026");
-    expect(sources("placeStreetView", { name: "IBI Kesatuan", ...label.values })).toBe("Data AksesBogor: IBI Kesatuan, diverifikasi dari Street View, gambar Februari 2026");
-  });
-
-  it("formats the image month in Indonesian", () => {
+  it("formats the image month in Indonesian for Kelola tempat", () => {
     expect(imageMonth("2025-12", format)).toBe("Desember 2025");
+    expect(imageMonth("Jan 2026", format)).toBe("");
     expect(imageMonth(null, format)).toBe("");
   });
 });

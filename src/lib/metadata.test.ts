@@ -90,8 +90,9 @@ describe("placeMetadata", () => {
     expect(metadata.description).toMatch(/Data ini perlu dicek ulang\.$/);
   });
 
-  it("says the data was verified from Street View with the image month (ADR-0057)", async () => {
+  it("describes a street view place like any team-verified place (ADR-0058)", async () => {
     const metadata = await placeMetadata({ ...PLACE, verificationSource: "street_view", streetViewImageDate: "2026-01", lastVerifiedAt: "2026-01-01T00:00:00.000Z" });
-    expect(metadata.description).toMatch(/2 dari 3 fasilitas tersedia\. Diverifikasi dari Street View, gambar Januari 2026\.$/);
+    expect(metadata.description).toMatch(/2 dari 3 fasilitas tersedia\. Terakhir diverifikasi 1 Januari 2026\.$/);
+    expect(metadata.description).not.toMatch(/street view/i);
   });
 });

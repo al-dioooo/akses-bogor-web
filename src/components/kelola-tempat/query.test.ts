@@ -10,6 +10,10 @@ describe("parseListQuery", () => {
     expect(active).toBe(true);
   });
 
+  it("accepts the street view origin (ADR-0058)", () => {
+    expect(parseListQuery({ asal: "street_view" }).filters.origin).toBe("street_view");
+  });
+
   it("ignores unknown values and a broken page number", () => {
     const { filters, page, active } = parseListQuery({ kategori: "mal", status: "x", asal: "warga", halaman: "-2" });
     expect(filters.category).toBeUndefined();
