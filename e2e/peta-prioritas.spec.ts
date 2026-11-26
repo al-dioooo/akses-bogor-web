@@ -66,7 +66,10 @@ const keyMeasured = (page: Page) =>
         const main = document.querySelector<HTMLElement>("main")!;
         const key = document.querySelector(".peta-kunci")?.getBoundingClientRect();
         const sheet = document.querySelector(".peta-lembar")!.getBoundingClientRect();
-        return !!key && main.style.getPropertyValue("--peta-kunci-maks") === `${Math.max(0, Math.floor(sheet.top - key.top - 8))}px`;
+        // Kunci berhenti di atas lembar, atau di atas atribusi peta yang duduk di atas lembar.
+        const attribution = document.querySelector(".mapboxgl-ctrl-attrib")?.getBoundingClientRect();
+        const floor = Math.min(sheet.top, attribution && key && attribution.top > key.top ? attribution.top : Infinity);
+        return !!key && main.style.getPropertyValue("--peta-kunci-maks") === `${Math.max(0, Math.floor(floor - key.top - 8))}px`;
       }),
     )
     .toBe(true);

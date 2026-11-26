@@ -55,7 +55,8 @@ export function ThematicChooser({
     };
   }, [open, onOpen]);
 
-  // Daftar berhenti 8 px di atas Bottom nav (atau tepi bawah layar mulai 1280 px); isi yang tidak muat digulir.
+  // Daftar berhenti 8 px di atas Bottom nav (atau tepi bawah layar mulai 1280 px) dan atribusi peta; isi yang tidak muat
+  // digulir.
   const [maxHeight, setMaxHeight] = useState<number | undefined>(undefined);
   useLayoutEffect(() => {
     const element = panel.current;
@@ -67,7 +68,11 @@ export function ThematicChooser({
       main.append(probe);
       const nav = probe.offsetHeight;
       probe.remove();
-      setMaxHeight(Math.max(132, Math.floor(window.innerHeight - nav - element.getBoundingClientRect().top - 8)));
+      // Atribusi peta tidak boleh tertutup, supaya tautannya tetap bisa diketuk.
+      const top = element.getBoundingClientRect().top;
+      const attribution = main.querySelector(".mapboxgl-ctrl-attrib")?.getBoundingClientRect();
+      const floor = Math.min(window.innerHeight - nav, attribution && attribution.top > top && attribution.left < element.getBoundingClientRect().right ? attribution.top : Infinity);
+      setMaxHeight(Math.max(132, Math.floor(floor - top - 8)));
     };
     update();
     window.addEventListener("resize", update);

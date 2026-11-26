@@ -67,7 +67,10 @@ function measure(main: HTMLElement): { top: number; insets: Insets; covers: Rect
   // Kunci berhenti 8 px di atas lembar bawah, atau di atas padding bawah main (Bottom nav) di layar lebar. Bila satu
   // baris kunci pun tidak muat (lembar setengah di ponsel pendek), kunci disembunyikan, supaya tidak ada tombol atau
   // tautan yang terpotong tetapi masih bisa difokus.
-  const keyRoom = key ? Math.max(0, Math.floor((side || !panel ? box.bottom - paddingBottom : panel.top) - key.top - 8)) : null;
+  // Atribusi peta di atas lembar bawah juga tidak boleh tertutup kunci, supaya tautannya tetap bisa diketuk.
+  const attribution = main.querySelector(".mapboxgl-ctrl-attrib")?.getBoundingClientRect();
+  const floor = Math.min(side || !panel ? box.bottom - paddingBottom : panel.top, attribution && !side && attribution.top > (key?.top ?? 0) ? attribution.top : Infinity);
+  const keyRoom = key ? Math.max(0, Math.floor(floor - key.top - 8)) : null;
   const keyHidden = keyRoom !== null && keyRoom < KEY_LINE;
   const covers = [...main.querySelectorAll(OVERLAYS)]
     .filter((element) => !(keyHidden && element.matches(".peta-kunci")))
