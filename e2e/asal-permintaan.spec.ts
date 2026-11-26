@@ -20,7 +20,6 @@ const PNG = Buffer.from("89504e470d0a1a0a", "hex");
 const ROUTES: { name: string; path: string; data: string | Buffer; type: string }[] = [
   { name: "Laporkan kirim", path: "/laporkan/kirim", data: "{}", type: "application/json" },
   { name: "the photo upload", path: "/laporkan/foto", data: PNG, type: "image/png" },
-  { name: "Bantu memetakan tanya", path: "/laporkan/bantu-memetakan/tanya", data: "{}", type: "application/json" },
   { name: "Bantu memetakan rute", path: "/laporkan/bantu-memetakan/rute", data: "{}", type: "application/json" },
   { name: "Bantu memetakan hambatan", path: "/laporkan/bantu-memetakan/hambatan", data: "{}", type: "application/json" },
 ];

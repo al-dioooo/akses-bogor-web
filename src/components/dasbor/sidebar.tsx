@@ -29,7 +29,7 @@ export async function DashboardSidebar() {
     items: {
       ringkasan: t("items.ringkasan"),
       laporan: t("items.laporan"),
-      bantu: t("items.bantu"),
+      agen: t("items.agen"),
       antrean: t("items.antrean"),
       jawaban: t("items.jawaban"),
       cekUlang: t("items.cekUlang"),

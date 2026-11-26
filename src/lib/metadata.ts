@@ -49,7 +49,6 @@ type PageNamespace =
   | "Tentang"
   | "KebijakanPrivasi"
   | "SyaratLayanan"
-  | "TanyaRute"
   | "Agen";
 
 /** Metadata halaman publik statis dari `metaTitle` dan `metaDescription` di namespace-nya. */

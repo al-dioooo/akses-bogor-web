@@ -14,6 +14,10 @@ const nextConfig: NextConfig = {
     return [
       { source: "/disabilitas", destination: "/aksesibilitas", permanent: true },
       { source: "/tips", destination: "/aksesibilitas", permanent: true },
+      // Tanya rute dan Bantu memetakan digabung menjadi Agen AI (ADR-0054). Query tetap ikut, jadi
+      // /tanya-rute?tempat=<id> membuka Agen AI dengan tempat itu. Route handler di bawah kedua path tidak ikut dialihkan.
+      { source: "/tanya-rute", destination: "/agen", permanent: true },
+      { source: "/laporkan/bantu-memetakan", destination: "/agen", permanent: true },
     ];
   },
   turbopack: {

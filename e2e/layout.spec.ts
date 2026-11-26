@@ -75,5 +75,5 @@ test("menus list Beranda, Peta, then Jelajahi", async ({ page, isMobile }) => {
   const names = await menu.getByRole("link").allInnerTexts();
   expect(names.slice(0, 3).map((name) => name.trim())).toEqual(["Beranda", "Peta", "Jelajahi"]);
   const footer = page.getByRole("contentinfo").locator("div", { has: page.getByRole("heading", { name: "Jelajahi", exact: true }) }).last();
-  await expect(footer.getByRole("link")).toHaveText(["Beranda", "Peta", "Jelajahi", "Tanya rute", "Laporkan tempat"]);
+  await expect(footer.getByRole("link")).toHaveText(["Beranda", "Peta", "Jelajahi", "Agen AI", "Laporkan tempat"]);
 });

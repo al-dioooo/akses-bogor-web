@@ -51,7 +51,7 @@ test("walks a new account through its first route, with the next stop marked", a
   await expect(stops.nth(1)).toContainText("Berikutnya");
   await expect(stops.nth(1)).toContainText("Datangi satu tempat");
   await expect(route.getByRole("link", { name: "Laporkan tempat pertama" })).toHaveAttribute("href", "/laporkan");
-  await expect(route.getByRole("link", { name: "Cari tempat dengan agen" })).toHaveAttribute("href", "/laporkan/bantu-memetakan");
+  await expect(route.getByRole("link", { name: "Cari tempat dengan Agen AI" })).toHaveAttribute("href", "/agen");
   await page.goto("/akun/laporan");
   await expect(page.getByRole("navigation", { name: "Saring menurut status" })).toHaveCount(0);
   await expect(main.getByRole("heading", { level: 2 })).toHaveText("Tidak ada laporan");
@@ -67,7 +67,7 @@ test("suggests the districts that need data most, with the data caveat and its s
   await expect(districts.nth(0)).toContainText("38 tempat belum punya data AksesBogor");
   await expect(next).toContainText("bukan jumlah seluruh penduduk");
   await expect(next).toContainText("Sumber: Open Data Kota Bogor, Dinas Sosial");
-  await expect(next.getByRole("link", { name: "Cari tempat dengan agen" })).toHaveAttribute("href", "/laporkan/bantu-memetakan");
+  await expect(next.getByRole("link", { name: "Cari tempat dengan Agen AI" })).toHaveAttribute("href", "/agen");
   await expect(next.getByRole("link", { name: "Lihat di peta" })).toHaveAttribute("href", "/peta");
 });
 
@@ -93,8 +93,8 @@ test.describe("while the API keeps the agent off", () => {
     const main = page.getByRole("main");
     await expect(main.getByRole("heading", { name: "Dari akun baru ke tempat pertama." })).toBeVisible();
     await expect(main.getByRole("region", { name: "Petakan berikutnya" }).getByRole("link", { name: "Laporkan tempat" })).toHaveAttribute("href", "/laporkan");
-    await expect(page.getByRole("link", { name: "Cari tempat dengan agen" })).toHaveCount(0);
-    await expect(page.locator("#menu-dasbor").getByRole("link", { name: "Bantu memetakan", includeHidden: true })).toHaveCount(0);
+    await expect(page.getByRole("link", { name: "Cari tempat dengan Agen AI" })).toHaveCount(0);
+    await expect(page.locator("#menu-dasbor").getByRole("link", { name: "Agen AI", includeHidden: true })).toHaveCount(0);
   });
 });
 

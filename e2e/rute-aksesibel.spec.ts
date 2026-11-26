@@ -5,7 +5,7 @@ import { expect, stubMapbox, test } from "./mapbox";
 
 // Rute OpenStreetMap di kartu rute (ADR-0055) dengan API tiruan e2e/mock-api/rute-aksesibel.mjs: hanya IP 192.0.2.x
 // yang mendapat rute OSM, IP lain mendapat 503 rute_aksesibel_belum_aktif dan rute Mapbox tiruan. Kartu rute dibuka
-// lewat Tanya rute; bila halaman itu dipindah, cukup ganti `routeCard`.
+// lewat Agen AI (ADR-0054), yang menggantikan Tanya rute; bila halaman itu dipindah, cukup ganti `routeCard`.
 const HALTE = "4037ba19-b366-45bc-aceb-270944fe9372";
 const DEVICE = { latitude: -6.5965, longitude: 106.7972 };
 /** Titik awal yang membuat API tiruan menjawab tidak ada rute kursi roda. */
@@ -16,7 +16,7 @@ let ipCount = 0;
 const onIp = () => `192.0.2.${10 + (ipCount++ % 200)}`;
 const sent = async (page: Page, ip: string) => (await (await page.request.get(`${mockApi()}/_tiruan/rute-aksesibel-terakhir?ip=${ip}`)).json()).body;
 
-/** Kartu rute ke Halte contoh dari lokasi perangkat, lewat Tanya rute. */
+/** Kartu rute ke Halte contoh dari lokasi perangkat, lewat Agen AI. */
 async function routeCard(browser: Browser, ip: string, { geolocation = DEVICE, colorScheme = "light" as "light" | "dark" } = {}) {
   const context = await browser.newContext({
     geolocation,
@@ -27,11 +27,14 @@ async function routeCard(browser: Browser, ip: string, { geolocation = DEVICE, c
   });
   const page = await context.newPage();
   await stubMapbox(page);
-  await page.goto("/tanya-rute");
+  await page.goto("/agen");
   const main = page.getByRole("main");
-  await main.getByRole("region", { name: "Titik awal" }).getByRole("button", { name: "Pakai lokasi saya" }).click();
+  await main.getByRole("button", { name: "Pilih titik awal", exact: true }).click();
+  const dialog = page.getByRole("dialog", { name: "Titik awal" });
+  await dialog.getByRole("button", { name: "Pakai lokasi saya" }).click();
+  await expect(dialog).toBeHidden();
+  // Saran pertanyaan langsung terkirim.
   await main.getByRole("button", { name: "Rute ke rumah sakit terdekat dari sini" }).click();
-  await main.getByRole("button", { name: "Kirim pertanyaan" }).click();
   return { page, card: main.getByRole("region", { name: "Rute jalan kaki ke Halte contoh", exact: true }) };
 }
 
