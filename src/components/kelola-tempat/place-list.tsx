@@ -4,7 +4,7 @@ import { CATEGORIES, STATUSES, type District } from "@/lib/api";
 import type { AdminPlaceItem } from "@/lib/kelola-tempat";
 import { buttonClass } from "@/ui/button-styles";
 import { Icon } from "@/ui/icon";
-import { IconArrowLeft, IconArrowRight, IconCircleCheck, IconEyeOff, IconSearch, IconShieldCheck, IconUser } from "@/ui/icons";
+import { IconArrowLeft, IconArrowRight, IconCircleCheck, IconEyeOff, IconPhoto, IconSearch, IconShieldCheck, IconUser } from "@/ui/icons";
 import { StatusBadge } from "@/ui/status-badge";
 import { listHref, type ListFilters } from "./query";
 
@@ -82,8 +82,8 @@ export async function PlaceRows({ items }: { items: AdminPlaceItem[] }) {
             <div className="flex flex-wrap gap-2">
               <StatusBadge status={place.status} size="sm" />
               <span className={`${chip} ${place.verifiedBy === "admin" ? "bg-surface-brand-subtle text-text-brand" : "bg-bg-sunken text-text-primary"}`}>
-                <Icon icon={place.verifiedBy === "admin" ? IconUser : IconShieldCheck} className="size-4" />
-                {t(`origin.${place.verifiedBy}`)}
+                <Icon icon={place.verifiedBy === "admin" ? IconUser : place.verificationSource === "street_view" ? IconPhoto : IconShieldCheck} className="size-4" />
+                {t(`origin.${place.verificationSource === "street_view" && place.verifiedBy !== "admin" ? "street_view" : place.verifiedBy}`)}
               </span>
               <span className={`${chip} ${place.published ? "bg-status-accessible-bg text-status-accessible-fg" : "bg-status-inaccessible-bg text-status-inaccessible-fg"}`}>
                 <Icon icon={place.published ? IconCircleCheck : IconEyeOff} className="size-4" />

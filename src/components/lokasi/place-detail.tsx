@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getFormatter, getTranslations } from "next-intl/server";
-import { byAdmin, type PlaceDetail as Place } from "@/lib/api";
+import { byAdmin, byStreetView, type PlaceDetail as Place } from "@/lib/api";
+import { verifiedLabel } from "@/lib/verified-label";
 import { ProviderHints } from "@/components/petunjuk/provider-hints";
 import { buttonClass } from "@/ui/button-styles";
 import { FacilityMeter } from "@/ui/facility-meter";
@@ -31,6 +32,7 @@ export async function PlaceDetail({ place }: { place: Place }) {
   );
   const sentence = `${ts(place.status)}: ${reasons.length ? format.list(reasons, { type: "conjunction" }) : t("allAvailable")}`;
   const photos = place.photos.filter((photo) => photo.url);
+  const verified = verifiedLabel(place, format, "long");
 
   return (
     <article className="flex flex-col gap-(--spacing-3xl)">
@@ -72,15 +74,16 @@ export async function PlaceDetail({ place }: { place: Place }) {
             {sentence}
           </p>
           <p className="font-mono text-xs tracking-[0.06em] text-text-secondary uppercase">
-            {t(byAdmin(place) ? "verifiedAdmin" : "verified", { date: format.dateTime(new Date(place.lastVerifiedAt), { dateStyle: "long" }) })}
+            {t(verified.key, verified.values)}
           </p>
           {byAdmin(place) && <p className="text-text-secondary">{t("adminNote")}</p>}
+          {byStreetView(place) && <p className="text-text-secondary">{t("streetViewNote")}</p>}
           {place.needsRecheck && (
             <div className="flex gap-3 rounded-2xl bg-surface-raised p-4 text-text-primary">
               <Icon icon={IconAlertTriangle} className="mt-0.5 size-5 text-status-partial-fg" />
               <p>
                 <strong className="block">{t("recheckTitle")}</strong>
-                {t(byAdmin(place) ? "recheckBodyAdmin" : "recheckBody")}
+                {t(byAdmin(place) ? "recheckBodyAdmin" : byStreetView(place) ? "recheckBodyStreetView" : "recheckBody")}
               </p>
             </div>
           )}
@@ -131,7 +134,10 @@ export async function PlaceDetail({ place }: { place: Place }) {
                   <span className="relative block aspect-[4/3] overflow-hidden rounded-3xl">
                     <Image src={photo.url as string} alt={photo.alt} fill unoptimized className="object-cover" />
                   </span>
-                  {photo.caption && <figcaption className="text-sm text-text-secondary">{photo.caption}</figcaption>}
+                  {/* Foto Street View selalu menyebut sumbernya, juga bila keterangannya kosong (ADR-0057). */}
+                  {(photo.caption ?? (photo.source === "street_view" ? t("photoSourceStreetView") : null)) && (
+                    <figcaption className="text-sm text-text-secondary">{photo.caption ?? t("photoSourceStreetView")}</figcaption>
+                  )}
                 </figure>
               </li>
             ))}

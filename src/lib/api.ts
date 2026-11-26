@@ -15,7 +15,11 @@ export type PhotoTag = "pintu_masuk" | "toilet_difabel" | "guiding_block" | "lif
 
 export type District = { slug: string; name: string; city: string; places: number };
 
-export type Photo = { id: string; url: string | null; alt: string; caption: string | null; tag: PhotoTag };
+/** Asal data tempat atau foto: laporan warga, atau bukti Street View (ADR-0057). */
+export type VerificationSource = "laporan" | "street_view";
+
+/** `source` kosong di API lama, dianggap `laporan`. */
+export type Photo = { id: string; url: string | null; alt: string; caption: string | null; tag: PhotoTag; source?: VerificationSource };
 
 /** Ringkasan "X dari Y fasilitas" (ADR-0018). */
 export type FacilitySummary = { available: number; relevant: number; unknown: number };
@@ -35,11 +39,21 @@ export type PlaceListItem = {
    * langsung oleh admin", tidak pernah "Diverifikasi" (ADR-0051). Kosong di API lama, dianggap `tim`.
    */
   verifiedBy?: "tim" | "admin";
+  /**
+   * `street_view`: diverifikasi dari tangkapan Street View, ditulis "Diverifikasi dari Street View · gambar <bulan tahun>",
+   * tidak pernah "Diverifikasi" saja (ADR-0057). Kosong di API lama, dianggap `laporan`.
+   */
+  verificationSource?: VerificationSource;
+  /** Bulan gambar Street View, `YYYY-MM`; `lastVerifiedAt` tempat Street View adalah awal bulan itu. */
+  streetViewImageDate?: string | null;
   coverPhoto: Photo | null;
 };
 
 /** Data terakhir diterbitkan admin, bukan diverifikasi orang kedua (ADR-0051). */
 export const byAdmin = (place: { verifiedBy?: "tim" | "admin" }) => place.verifiedBy === "admin";
+
+/** Data diverifikasi dari bukti Street View, bukan diperiksa di lokasi (ADR-0057). */
+export const byStreetView = (place: { verificationSource?: VerificationSource }) => place.verificationSource === "street_view";
 
 export type PlaceDetail = Omit<PlaceListItem, "coverPhoto"> & {
   landmark: string | null;

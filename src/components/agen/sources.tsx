@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useFormatter, useTranslations } from "next-intl";
+import { verifiedLabel } from "@/lib/verified-label";
 import type { AgentSource } from "@/lib/agen-rute";
 import { Icon } from "@/ui/icon";
 import { IconChevronRight, IconExternalLink } from "@/ui/icons";
@@ -15,6 +16,12 @@ const linkClass = "min-h-6 py-0.5 font-semibold text-text-brand underline underl
  */
 export function Sources({ sources }: { sources: AgentSource[] }) {
   const t = useTranslations("Agen.sumber");
+  const label = { verified: "place", verifiedAdmin: "placeAdmin", verifiedStreetView: "placeStreetView" } as const;
+  /** Asal data lokasi, tidak pernah "terverifikasi" saja untuk data Street View (ADR-0057). */
+  const placeLabel = (source: Extract<AgentSource, { type: "lokasi" }>) => {
+    const { key, values } = verifiedLabel(source, format, "long");
+    return t(label[key], { name: source.name, ...values });
+  };
   const format = useFormatter();
   if (sources.length === 0) return null;
   return (
@@ -28,7 +35,7 @@ export function Sources({ sources }: { sources: AgentSource[] }) {
           source.type === "lokasi" ? (
             <li key={`lokasi-${source.placeId}`}>
               <Link href={`/lokasi/${source.placeId}`} className={`inline-block ${linkClass}`}>
-                {t(source.verifiedBy === "admin" ? "placeAdmin" : "place", { name: source.name, date: format.dateTime(new Date(source.lastVerifiedAt), { dateStyle: "long" }) })}
+                {placeLabel(source)}
               </Link>
             </li>
           ) : (

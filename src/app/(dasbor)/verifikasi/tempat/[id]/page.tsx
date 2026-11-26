@@ -15,6 +15,7 @@ import { Icon } from "@/ui/icon";
 import { IconArrowLeft, IconCircleCheck, IconExternalLink, IconPencil } from "@/ui/icons";
 import { LoadErrorBoundary } from "@/ui/load-error";
 import { StatusBadge } from "@/ui/status-badge";
+import { imageMonth } from "@/lib/verified-label";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("KelolaTempat.place");
@@ -67,7 +68,12 @@ async function Sheet({ params, searchParams }: { params: PageProps<"/verifikasi/
     { label: t("place.description"), value: place.description ?? t("place.none") },
     {
       label: t("place.published"),
-      value: place.verifiedBy === "admin" ? t("place.byAdmin", { date: date(place.lastVerifiedAt), name: place.adminPublishedBy ?? t("place.unknownAdmin") }) : t("place.byTeam", { date: date(place.lastVerifiedAt) }),
+      value:
+        place.verifiedBy === "admin"
+          ? t("place.byAdmin", { date: date(place.lastVerifiedAt), name: place.adminPublishedBy ?? t("place.unknownAdmin") })
+          : place.verificationSource === "street_view"
+            ? t("place.byStreetView", { month: imageMonth(place.streetViewImageDate, format) || "none" })
+            : t("place.byTeam", { date: date(place.lastVerifiedAt) }),
     },
   ];
   return (
@@ -84,7 +90,9 @@ async function Sheet({ params, searchParams }: { params: PageProps<"/verifikasi/
       )}
       <div className="flex flex-wrap items-center gap-2">
         <StatusBadge status={place.status} size="sm" />
-        <span className="rounded-full bg-bg-sunken px-3 py-1 text-sm font-bold">{t(`origin.${place.verifiedBy}`)}</span>
+        <span className="rounded-full bg-bg-sunken px-3 py-1 text-sm font-bold">
+          {t(`origin.${place.verificationSource === "street_view" && place.verifiedBy !== "admin" ? "street_view" : place.verifiedBy}`)}
+        </span>
         <span className="rounded-full bg-bg-sunken px-3 py-1 text-sm font-bold">{t(place.published ? "published.ya" : "published.tidak")}</span>
       </div>
       {changed && (
