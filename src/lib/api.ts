@@ -49,6 +49,8 @@ export type PlaceDetail = Omit<PlaceListItem, "coverPhoto"> & {
   because: { facility: Facility; answer: Answer; reason: Reason | null }[];
   photos: Photo[];
   needsRecheck: boolean;
+  /** Versi data lokasi; draf Laporkan menyimpannya untuk terbit langsung oleh admin (ADR-0051). API lama tidak mengirimnya. */
+  version?: string;
 };
 
 export type PlaceList = { total: number; limit: number; offset: number; items: PlaceListItem[] };
