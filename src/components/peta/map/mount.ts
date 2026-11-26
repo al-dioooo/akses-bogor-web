@@ -1,6 +1,5 @@
 import mapboxgl, { type GeoJSONSource, type LngLatBoundsLike } from "mapbox-gl";
-import { CATEGORIES, type Category, type CityOutline, type DistrictBoundaries, type MapToken, type PriorityLevel } from "@/lib/api";
-import { LEVEL_COLOR, LEVELS } from "@/components/prioritas/levels";
+import { CATEGORIES, type Category, type CityOutline, type DistrictBoundaries, type MapToken } from "@/lib/api";
 import { motionReduced } from "@/lib/preferences";
 import { CATEGORY_VAR } from "@/ui/category-pin";
 import { CATEGORY_ICON } from "@/ui/place-icons";
@@ -31,6 +30,8 @@ const CANDIDATE_ICON_RATIO = 2;
 // Token baru diminta lima menit sebelum kedaluwarsa; bila gagal, dicoba lagi tiap menit.
 const RENEW_BEFORE_MS = 5 * 60_000;
 const RETRY_MS = 60_000;
+
+export type Thematic = { name: string; boundaries: DistrictBoundaries; colors: Record<string, string | null> };
 
 export type MapHandle = {
   /** Tombol marker per id lokasi; isinya digambar komponen React lewat portal. Isinya berganti lewat setPlaces. */
@@ -68,8 +69,12 @@ export type MapHandle = {
    * `data-batas-kota` berisi tema gaya yang menggambarnya ("terang" atau "gelap").
    */
   setBorder(outline: CityOutline | null): void;
-  /** Lapisan prioritas kecamatan: batas dengan tingkatnya, atau null untuk menyembunyikannya. */
-  setPriority(districts: { boundaries: DistrictBoundaries; levels: Record<string, PriorityLevel> } | null): void;
+  /**
+   * Lapisan tematik (ADR-0053): isi setiap kecamatan dengan warnanya (nama variabel CSS, dibaca ulang setiap kali tema
+   * berganti; null tanpa isi) dan garis kecamatan tipis, di bawah batas kota. null menyembunyikannya. Selama tampil,
+   * kontainer peta mendapat `data-tematik` berisi `name`.
+   */
+  setThematic(value: Thematic | null): void;
   destroy(): void;
 };
 
@@ -249,42 +254,43 @@ export function mountMap(options: Options): MapHandle {
     if (!ready && !map.isStyleLoaded()) options.onFail();
   });
 
-  // Lapisan prioritas digambar di bawah label peta dasar dan di bawah marker (marker berupa elemen HTML). Gaya baru
-  // (tema berganti) menghapus semua lapisan, jadi lapisan digambar ulang setiap kali gaya selesai dimuat.
-  let priority: Parameters<MapHandle["setPriority"]>[0] = null;
-  const drawPriority = () => {
+  // Lapisan tematik digambar di bawah batas kota (atau label peta dasar) dan di bawah marker (elemen HTML). Gaya baru
+  // (tema berganti) menghapus semua lapisan, jadi lapisan digambar ulang dengan warna tema saat itu setiap kali gaya
+  // selesai dimuat.
+  let thematic: Thematic | null = null;
+  const drawThematic = () => {
     if (!map.isStyleLoaded()) return;
-    if (!priority) {
-      for (const id of ["prioritas-garis", "prioritas-isi"]) if (map.getLayer(id)) map.removeLayer(id);
-      if (map.getSource("prioritas")) map.removeSource("prioritas");
+    const container = map.getContainer();
+    if (!thematic) {
+      for (const id of ["tematik-garis", "tematik-isi"]) if (map.getLayer(id)) map.removeLayer(id);
+      if (map.getSource("tematik")) map.removeSource("tematik");
+      delete container.dataset.tematik;
       return;
     }
-    const { boundaries, levels } = priority;
-    const data = {
-      type: "FeatureCollection" as const,
-      features: boundaries.features.map((f) => ({ ...f, properties: { ...f.properties, level: levels[f.properties.slug] ?? "" } })),
-    } as Parameters<GeoJSONSource["setData"]>[0];
-    const source = map.getSource("prioritas") as GeoJSONSource | undefined;
-    if (source) return source.setData(data);
     const css = getComputedStyle(document.documentElement);
     const color = (name: string) => css.getPropertyValue(name).trim();
-    const label = map.getLayer("kota-luar") ? "kota-luar" : map.getStyle().layers?.find((layer) => layer.type === "symbol")?.id;
-    map.addSource("prioritas", { type: "geojson", data });
-    map.addLayer(
-      {
-        id: "prioritas-isi",
-        type: "fill",
-        source: "prioritas",
-        paint: {
-          "fill-color": ["match", ["get", "level"], ...LEVELS.flatMap((level) => [level, color(LEVEL_COLOR[level])]), "rgba(0,0,0,0)"] as never,
-          "fill-opacity": 0.55,
-        },
-      },
-      label,
-    );
-    map.addLayer({ id: "prioritas-garis", type: "line", source: "prioritas", paint: { "line-color": color("--color-text-primary"), "line-width": 1.5 } }, label);
+    const { boundaries, colors } = thematic;
+    const data = {
+      type: "FeatureCollection" as const,
+      features: boundaries.features.map((f) => {
+        const fill = colors[f.properties.slug];
+        return { ...f, properties: { ...f.properties, warna: fill ? color(fill) : "rgba(0,0,0,0)" } };
+      }),
+    } as Parameters<GeoJSONSource["setData"]>[0];
+    const source = map.getSource("tematik") as GeoJSONSource | undefined;
+    if (source) source.setData(data);
+    else {
+      const below = map.getLayer("kota-luar") ? "kota-luar" : map.getStyle().layers?.find((layer) => layer.type === "symbol")?.id;
+      map.addSource("tematik", { type: "geojson", data });
+      map.addLayer({ id: "tematik-isi", type: "fill", source: "tematik", paint: { "fill-color": ["to-color", ["get", "warna"]], "fill-opacity": 0.55 } }, below);
+      map.addLayer(
+        { id: "tematik-garis", type: "line", source: "tematik", paint: { "line-color": color("--color-text-primary"), "line-width": 1, "line-opacity": 0.7 } },
+        below,
+      );
+    }
+    container.dataset.tematik = thematic.name;
   };
-  map.on("style.load", drawPriority);
+  map.on("style.load", drawThematic);
 
   // Batas kota digambar di bawah label peta dasar, tetapi di atas lapisan tematik: lapisan tematik disisipkan di bawah
   // "kota-luar" bila sudah ada. Seperti lapisan lain, semuanya digambar ulang setiap kali gaya (tema) berganti.
@@ -537,9 +543,9 @@ export function mountMap(options: Options): MapHandle {
       border = value;
       drawBorder();
     },
-    setPriority(value) {
-      priority = value;
-      drawPriority();
+    setThematic(value) {
+      thematic = value;
+      drawThematic();
     },
     destroy() {
       window.clearTimeout(timer);
