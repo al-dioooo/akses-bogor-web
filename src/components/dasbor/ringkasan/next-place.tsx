@@ -53,7 +53,7 @@ export async function NextPlace({ agent }: { agent: boolean }) {
         )}
         <div className="flex flex-wrap gap-2">
           {agent ? (
-            <Link href="/laporkan/bantu-memetakan" className={buttonClass("primary", "sm")}>
+            <Link href="/agen" className={buttonClass("primary", "sm", "text-center max-sm:whitespace-normal")}>
               <Icon icon={IconRoute} />
               {t("agent")}
             </Link>

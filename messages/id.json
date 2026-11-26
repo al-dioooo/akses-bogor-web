@@ -82,7 +82,7 @@
       "body": "Laporkan dalam tiga langkah. Setiap laporan membantu orang lain berangkat dengan lebih yakin.",
       "button": "Laporkan tempat"
     },
-    "askRoute": "Tanya cara ke sebuah tempat"
+    "askRoute": "Tanya Agen AI cara ke sebuah tempat"
   },
   "Rute": {
     "label": "Rute ke pintu",
@@ -135,7 +135,7 @@
     "beranda": "Beranda",
     "jelajahi": "Jelajahi",
     "peta": "Peta",
-    "tanyaRute": "Tanya rute",
+    "agen": "Agen AI",
     "aksesibilitas": "Aksesibilitas",
     "tentang": "Tentang",
     "laporkan": "Laporkan",
@@ -1302,7 +1302,7 @@
       "items": {
         "ringkasan": "Ringkasan",
         "laporan": "Laporan saya",
-        "bantu": "Bantu memetakan",
+        "agen": "Agen AI",
         "antrean": "Antrean",
         "jawaban": "Menunggu jawaban",
         "cekUlang": "Perlu dicek ulang",
@@ -1364,7 +1364,7 @@
         "source": "Sumber: {publisher}; jumlah tempat dari OpenStreetMap, {osm}.",
         "sourceDinsos": "Sumber: {publisher}.",
         "fallback": "Mulai dari tempat umum yang sering Anda datangi: kampus, masjid, halte, atau rumah sakit di Kota Bogor.",
-        "agent": "Cari tempat dengan agen",
+        "agent": "Cari tempat dengan Agen AI",
         "report": "Laporkan tempat",
         "map": "Lihat di peta"
       },
@@ -1397,7 +1397,7 @@
           }
         },
         "report": "Laporkan tempat pertama",
-        "agent": "Cari tempat dengan agen"
+        "agent": "Cari tempat dengan Agen AI"
       },
       "tim": {
         "title": "Tim verifikator",
@@ -2229,116 +2229,10 @@
     }
   },
   "BantuMemetakan": {
-    "metaTitle": "Bantu memetakan",
-    "loading": "Memuat…",
-    "eyebrow": "Bantu memetakan",
-    "title": "Cari tempat yang",
-    "accent": "belum punya data",
-    "intro": "Tanyakan kepada agen kampus, masjid, halte, atau rumah sakit mana yang belum punya data AksesBogor, diurutkan menurut kecamatan yang paling perlu didata. Lalu datang, periksa fasilitasnya, dan kirim laporan.",
-    "unavailable": {
-      "title": "Bantu memetakan belum dibuka",
-      "body": "Fitur ini masih disiapkan. Anda tetap bisa melaporkan tempat lewat Laporkan."
-    },
     "entry": {
       "title": "Belum tahu tempat mana yang perlu didata?",
       "body": "Agen bisa menunjukkan tempat yang belum punya data AksesBogor di kecamatan yang paling perlu.",
       "link": "Bantu memetakan"
-    },
-    "tanya": {
-      "title": "Tanya agen",
-      "intro": "Agen hanya tahu data AksesBogor, data tempat dari OpenStreetMap, peraturan, dan prioritas kecamatan. Agen tidak bisa menilai apakah sebuah tempat atau rute aksesibel; bila datanya belum ada, agen akan mengatakannya.",
-      "privacy": "Jangan tulis data pribadi, mis. nama, nomor telepon, atau alamat rumah. Pertanyaan dikirim lewat server AksesBogor ke Anthropic (Claude API) untuk dijawab dan tidak disimpan AksesBogor.",
-      "label": "Pertanyaan Anda",
-      "hint": "Paling banyak 500 karakter. Percakapan hilang saat halaman ditutup.",
-      "send": "Kirim pertanyaan",
-      "sending": "Agen sedang menjawab…",
-      "examples": "Contoh pertanyaan",
-      "example": {
-        "priority": "Kecamatan mana yang paling perlu didata?",
-        "mosque": "Masjid mana di Bogor Barat yang belum punya data?",
-        "near": "Halte mana yang belum didata di Tanah Sareal?"
-      },
-      "conversation": "Percakapan dengan agen",
-      "you": "Anda",
-      "agent": "Agen",
-      "answered": "Agen menjawab: {answer}",
-      "sources": "Sumber",
-      "sourcePlace": "Data terverifikasi AksesBogor: {name}, diverifikasi {date}",
-      "sourcePlaceAdmin": "Data AksesBogor: {name}, diterbitkan langsung oleh admin {date}",
-      "license": "Lisensi {license}",
-      "tooShort": "Tulis pertanyaan paling sedikit 2 karakter.",
-      "failed": "Pertanyaan tidak bisa dikirim. Coba lagi sebentar lagi.",
-      "note": "Jawaban agen bisa keliru. Periksa lagi di tempatnya sebelum mengirim laporan."
-    },
-    "kartu": {
-      "noData": "Belum ada data AksesBogor",
-      "unnamed": "Tanpa nama di OpenStreetMap",
-      "osmLink": "Lihat di OpenStreetMap",
-      "report": "Laporkan tempat ini",
-      "detail": "Lihat detail lokasi",
-      "update": "Perbarui data",
-      "verified": "Terakhir diverifikasi {date}",
-      "verifiedAdmin": "Diterbitkan langsung oleh admin · {date}",
-      "cardsLabel": "Kartu dari jawaban agen"
-    }
-  },
-  "TanyaRute": {
-    "metaTitle": "Tanya rute",
-    "metaDescription": "Tanyakan cara ke kampus, masjid, halte, atau rumah sakit di Kota Bogor yang tercatat di AksesBogor, lalu lihat rute jalan kaki beserta peringatan dan hambatannya.",
-    "loading": "Memuat…",
-    "eyebrow": "Tanya rute",
-    "title": "Tanya cara ke",
-    "accent": "tempat di Kota Bogor",
-    "intro": "Asisten menjawab dari data AksesBogor dan menampilkan rute jalan kaki. Rute itu tidak memperhitungkan tangga, kerb, atau kemiringan jalan, jadi selalu periksa peringatan dan hambatannya.",
-    "unavailable": {
-      "title": "Tanya rute belum dibuka",
-      "body": "Fitur ini masih disiapkan. Anda tetap bisa mencari tempat lewat Jelajahi dan Peta."
-    },
-    "notice": "Pertanyaan Anda dikirim lewat server AksesBogor ke Anthropic (Claude API) untuk dijawab, dan tidak disimpan AksesBogor. Titik awal hanya dipakai server AksesBogor dan Mapbox, tidak pernah dikirim ke Anthropic. Jangan tulis data pribadi, mis. nama, nomor telepon, atau alamat rumah. Baca <link>Kebijakan Privasi</link>.",
-    "awal": {
-      "heading": "Titik awal",
-      "title": "Dari mana Anda berangkat?",
-      "why": "Titik awal dipakai untuk mencari tempat terdekat dan menghitung rute jalan kaki. Anda juga bisa bertanya tanpa titik awal.",
-      "privacy": "Titik awal dibulatkan sampai sekitar 11 m. Server AksesBogor memakainya untuk jarak ke tempat terdekat, dan Mapbox untuk menghitung rute. Titik ini tidak disimpan dan tidak pernah dikirim ke asisten AI.",
-      "chosen": {
-        "perangkat": "Titik awal: lokasi perangkat Anda.",
-        "peta": "Titik awal: titik yang Anda pilih di peta."
-      },
-      "change": "Ganti titik awal",
-      "clear": "Hapus titik awal",
-      "keep": "Tetap pakai titik awal sebelumnya"
-    },
-    "place": {
-      "label": "Tujuan: {name}",
-      "clear": "Hapus tujuan"
-    },
-    "tanya": {
-      "title": "Tanya asisten",
-      "label": "Pertanyaan Anda",
-      "hint": "Paling banyak 500 karakter dan {count} pertanyaan per hari. Percakapan hilang saat halaman ditutup.",
-      "send": "Kirim pertanyaan",
-      "sending": "Asisten sedang menjawab…",
-      "examples": "Contoh pertanyaan",
-      "example": {
-        "place": "Bagaimana cara ke {name}?",
-        "hospital": "Rute ke rumah sakit terdekat dari sini",
-        "mosque": "Masjid terdekat yang aksesibel",
-        "halte": "Apakah halte terdekat ramah kursi roda?"
-      },
-      "conversation": "Percakapan dengan asisten",
-      "you": "Anda",
-      "assistant": "Asisten",
-      "answered": "Asisten menjawab: {answer}",
-      "tooShort": "Tulis pertanyaan paling sedikit 2 karakter.",
-      "failed": "Pertanyaan tidak bisa dikirim. Coba lagi sebentar lagi.",
-      "note": "Jawaban asisten bisa keliru. Periksa peringatan dan hambatan di kartu rute, dan bila ragu, telepon tempatnya dulu."
-    },
-    "cards": "Kartu rute dari jawaban asisten",
-    "kandidat": {
-      "label": "Belum ada data",
-      "body": "Tempat ini dari OpenStreetMap dan belum punya data aksesibilitas dari tim AksesBogor.",
-      "report": "Laporkan tempat ini",
-      "attribution": "© kontributor OpenStreetMap"
     }
   },
   "Agen": {
@@ -2430,6 +2324,11 @@
       "verifiedAdmin": "Diterbitkan langsung oleh admin · {date}",
       "candidate": "Tempat ini dari OpenStreetMap dan belum punya data aksesibilitas dari tim AksesBogor.",
       "attribution": "© kontributor OpenStreetMap"
+    },
+    "entry": {
+      "title": "Belum tahu tempat mana yang perlu didata?",
+      "body": "Agen AI bisa menunjukkan tempat yang belum punya data AksesBogor di kecamatan yang paling perlu.",
+      "link": "Tanya Agen AI"
     }
   },
   "PrioritasKecamatan": {

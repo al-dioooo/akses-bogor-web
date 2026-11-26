@@ -64,7 +64,7 @@ function warnMissingSiteUrl() {
   if (flags[WARNED]) return;
   flags[WARNED] = true;
   console.error(
-    "SITE_URL kosong: kirim laporan, unggah foto, dan Bantu memetakan menolak semua permintaan dari browser (403), " +
+    "SITE_URL kosong: kirim laporan, unggah foto, dan Agen AI menolak semua permintaan dari browser (403), " +
       "karena asal situs tidak diketahui. Isi SITE_URL di /etc/akses-bogor/web.env, lalu deploy ulang.",
   );
 }

@@ -45,8 +45,8 @@ export async function PlaceDetail({ place }: { place: Place }) {
               <span className="font-semibold text-text-primary">{t("landmark")}:</span> {place.landmark}
             </p>
           )}
-          {/* Tanya rute (ADR-0050) dengan lokasi ini sudah terpilih. */}
-          <Link href={`/tanya-rute?tempat=${place.id}`} className={buttonClass("primary", "sm")}>
+          {/* Agen AI (ADR-0054) dengan lokasi ini sudah terpilih. */}
+          <Link href={`/agen?tempat=${place.id}`} className={buttonClass("primary", "sm")}>
             <Icon icon={IconRoute} />
             {t("askRoute")}
           </Link>

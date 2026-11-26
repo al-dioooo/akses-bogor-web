@@ -8,7 +8,7 @@ describe("dashboardGroups", () => {
   it("shows only the contributor section to a regular account", () => {
     expect(keys("pengguna")).toEqual([
       ["utama", ["ringkasan"]],
-      ["kontribusi", ["laporan", "bantu"]],
+      ["kontribusi", ["laporan", "agen"]],
       ["akun", ["pengaturan"]],
     ]);
   });
@@ -16,7 +16,7 @@ describe("dashboardGroups", () => {
   it("adds the verification desk for verifiers, but not the team page", () => {
     expect(keys("verifikator")).toEqual([
       ["utama", ["ringkasan"]],
-      ["kontribusi", ["laporan", "bantu"]],
+      ["kontribusi", ["laporan", "agen"]],
       ["verifikasi", ["antrean", "jawaban", "cekUlang"]],
       ["akun", ["pengaturan"]],
     ]);
@@ -26,7 +26,7 @@ describe("dashboardGroups", () => {
     expect(keys("admin").at(-2)).toEqual(["admin", ["tempat", "tim"]]);
   });
 
-  it("leaves out Bantu memetakan while the API keeps the agent off", () => {
+  it("leaves out Agen AI while the API keeps the contributor agent off", () => {
     expect(keys("pengguna", false)[1]).toEqual(["kontribusi", ["laporan"]]);
   });
 });

@@ -44,8 +44,8 @@ export async function Hero() {
           <Suspense fallback={<Categories counts={null} />}>
             <CategoriesWithCounts />
           </Suspense>
-          {/* Asisten rute publik (ADR-0050). */}
-          <Link href="/tanya-rute" className="mt-3 inline-flex min-h-11 items-center gap-2 font-semibold text-text-brand underline underline-offset-2">
+          {/* Agen AI (ADR-0054). */}
+          <Link href="/agen" className="mt-3 inline-flex min-h-11 items-center gap-2 font-semibold text-text-brand underline underline-offset-2">
             <Icon icon={IconRoute} className="size-5" />
             {t("askRoute")}
           </Link>
