@@ -2341,6 +2341,67 @@
       "attribution": "© kontributor OpenStreetMap"
     }
   },
+  "Agen": {
+    "metaTitle": "Agen AI",
+    "metaDescription": "Tanya Agen AI cara ke kampus, masjid, halte, atau rumah sakit di Kota Bogor dan apa yang sudah diketahui tentang aksesibilitasnya, lalu lihat rute jalan kaki beserta peringatan dan hambatannya.",
+    "title": "Agen AI",
+    "loading": "Memuat Agen AI…",
+    "unavailable": {
+      "title": "Agen AI belum dibuka",
+      "body": "Fitur ini masih disiapkan. Anda tetap bisa mencari tempat lewat Jelajahi dan Peta."
+    },
+    "baru": "Percakapan baru",
+    "baruDone": "Percakapan baru dimulai.",
+    "kosong": {
+      "title": "Tanya soal tempat di",
+      "accent": "Kota Bogor",
+      "intro": "Agen AI menjawab dari data AksesBogor, OpenStreetMap, dan peraturan aksesibilitas, lalu menampilkan rute jalan kaki ke tempatnya.",
+      "introContributor": "Karena Anda masuk, Agen AI juga bisa mencari tempat yang belum punya data dan kecamatan yang paling perlu didata.",
+      "notice": "Pertanyaan dikirim lewat server AksesBogor ke Anthropic (Claude API) dan tidak disimpan AksesBogor. Jangan tulis data pribadi, mis. nama, nomor telepon, atau alamat rumah. Baca <link>Kebijakan Privasi</link>.",
+      "suggestions": "Coba tanyakan",
+      "saran": {
+        "place": "Bagaimana cara ke {name}?",
+        "hospital": "Rute ke rumah sakit terdekat dari sini",
+        "mosque": "Masjid terdekat yang aksesibel",
+        "halte": "Apakah halte terdekat ramah kursi roda?",
+        "rule": "Berapa kemiringan ramp menurut peraturan?",
+        "priority": "Kecamatan mana yang paling perlu didata?",
+        "toMap": "Masjid mana di Bogor Barat yang belum didata?"
+      }
+    },
+    "percakapan": {
+      "label": "Percakapan dengan Agen AI",
+      "you": "Anda",
+      "agent": "Agen AI",
+      "thinking": "Agen AI sedang menyusun jawaban…",
+      "answered": "Agen AI menjawab: {answer}",
+      "copy": "Salin",
+      "copyLabel": "jawaban",
+      "copied": "Jawaban disalin.",
+      "copyFailed": "Jawaban tidak bisa disalin.",
+      "retry": "Coba lagi",
+      "stopped": "Jawaban dihentikan.",
+      "signIn": "Masuk",
+      "failed": "Pertanyaan tidak bisa dikirim. Coba lagi sebentar lagi.",
+      "latest": "Ke pesan terbaru"
+    },
+    "sumber": {
+      "title": "Sumber ({count})",
+      "place": "Data terverifikasi AksesBogor: {name}, diverifikasi {date}",
+      "placeAdmin": "Data AksesBogor: {name}, diterbitkan langsung oleh admin {date}",
+      "license": "Lisensi {license}"
+    },
+    "tulis": {
+      "label": "Pertanyaan untuk Agen AI",
+      "placeholder": "Tanya soal tempat atau rute…",
+      "send": "Kirim pertanyaan",
+      "stop": "Hentikan jawaban",
+      "tooShort": "Tulis pertanyaan paling sedikit 2 karakter.",
+      "remaining": "Sisa {count} karakter",
+      "note": "Agen AI bisa keliru, dan rute tidak memperhitungkan tangga atau kerb. Jatah {count} pertanyaan sehari.",
+      "keys": "Enter untuk kirim, Shift+Enter untuk baris baru."
+    }
+  },
   "PrioritasKecamatan": {
     "title": "Prioritas kecamatan {year}",
     "caption": "Kecamatan diurutkan dari yang paling perlu didata, data tahun {year}",
