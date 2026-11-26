@@ -3,10 +3,12 @@
 import { useFormatter, useTranslations } from "next-intl";
 import { useEffect, useId, useRef } from "react";
 import type { RouteObstacles, WalkingRoute } from "@/lib/agen-rute";
+import { isAccessibleRoute, type AccessibleRoute } from "@/lib/rute-aksesibel";
 import { buttonClass } from "@/ui/button-styles";
 import { Icon } from "@/ui/icon";
 import { IconAlertTriangle, IconExternalLink, IconMapPin } from "@/ui/icons";
 import { distanceText, walkingMinutes } from "./jarak";
+import { RouteCoverage } from "./route-coverage";
 import { RouteMap } from "./route-map";
 
 export type ObstacleState = { kind: "memuat" } | { kind: "siap"; data: RouteObstacles } | { kind: "galat" };
@@ -14,10 +16,21 @@ export type ObstacleState = { kind: "memuat" } | { kind: "siap"; data: RouteObst
 const linkClass = "font-semibold text-text-brand underline underline-offset-2";
 
 /**
- * Rute jalan kaki yang ditampilkan langsung kepada pengguna (ADR-0042): ringkasan, kalimat peringatan tetap dari API,
- * peta, langkah, dan hambatan OpenStreetMap, dengan atribusi Mapbox dan OpenStreetMap. Tidak ada bagian yang lewat model.
+ * Rute yang ditampilkan langsung kepada pengguna: ringkasan, peta, langkah, dan hambatan OpenStreetMap. Rute Mapbox
+ * (ADR-0042) membawa kalimat peringatan tetap dan atribusi Mapbox; rute OpenStreetMap dari Valhalla (ADR-0055) membawa
+ * label tetap, kelengkapan data, dan peringatannya sendiri. Tidak ada bagian yang lewat model.
  */
-export function RouteResult({ route, name, obstacles, onChangeStart }: { route: WalkingRoute; name: string; obstacles: ObstacleState; onChangeStart: () => void }) {
+export function RouteResult({
+  route,
+  name,
+  obstacles,
+  onChangeStart,
+}: {
+  route: WalkingRoute | AccessibleRoute;
+  name: string;
+  obstacles: ObstacleState;
+  onChangeStart: () => void;
+}) {
   const t = useTranslations("RuteJalanKaki.rute");
   const th = useTranslations("RuteJalanKaki.hambatan");
   const format = useFormatter();
@@ -30,16 +43,23 @@ export function RouteResult({ route, name, obstacles, onChangeStart }: { route: 
   return (
     <div className="flex flex-col gap-5">
       <p ref={summary} tabIndex={-1} className="text-lg font-semibold">
-        {t("summary", { distance: distanceText(format, route.distanceMeters), minutes: walkingMinutes(route.durationSeconds) })}
+        {t(isAccessibleRoute(route) && route.profil === "kursi_roda" ? "summaryWheelchair" : "summary", {
+          distance: distanceText(format, route.distanceMeters),
+          minutes: walkingMinutes(route.durationSeconds),
+        })}
       </p>
 
-      <div className="flex gap-3 rounded-2xl border-2 border-status-partial-fg bg-status-partial-bg p-4 text-text-primary">
-        <Icon icon={IconAlertTriangle} className="mt-0.5 size-6 shrink-0 text-status-partial-fg" />
-        <p>
-          <strong className="block">{t("warningTitle")}</strong>
-          {route.warning}
-        </p>
-      </div>
+      {isAccessibleRoute(route) ? (
+        <RouteCoverage route={route} />
+      ) : (
+        <div className="flex gap-3 rounded-2xl border-2 border-status-partial-fg bg-status-partial-bg p-4 text-text-primary">
+          <Icon icon={IconAlertTriangle} className="mt-0.5 size-6 shrink-0 text-status-partial-fg" />
+          <p>
+            <strong className="block">{t("warningTitle")}</strong>
+            {route.warning}
+          </p>
+        </div>
+      )}
 
       <RouteMap route={route} name={name} obstacles={obstacles.kind === "siap" ? obstacles.data.features : []} />
 
@@ -103,7 +123,7 @@ export function RouteResult({ route, name, obstacles, onChangeStart }: { route: 
       </section>
 
       <p className="text-sm text-text-secondary">
-        {t.rich("attribution", {
+        {t.rich(isAccessibleRoute(route) ? "attributionOsm" : "attribution", {
           mapbox: (chunks) => (
             <a href="https://www.mapbox.com/about/maps/" target="_blank" rel="noopener noreferrer" className={linkClass}>
               {chunks}
