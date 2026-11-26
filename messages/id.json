@@ -185,7 +185,8 @@
     "summary": "{relevant, plural, =0 {Tidak ada fasilitas yang dibutuhkan} other {{available} dari {relevant} fasilitas tersedia}}",
     "unknown": "{count} belum diketahui",
     "verified": "Diverifikasi {date}",
-    "verifiedAdmin": "Diterbitkan langsung oleh admin · {date}"
+    "verifiedAdmin": "Diterbitkan langsung oleh admin · {date}",
+    "verifiedStreetView": "{month, select, none {Diverifikasi dari Street View} other {Diverifikasi dari Street View · gambar {month}}}"
   },
   "Jelajahi": {
     "metaTitle": "Jelajahi Lokasi",
@@ -463,6 +464,7 @@
     "metaTitle": "{name}, {district}",
     "metaDescription": "{category} di Kecamatan {district}, Kota Bogor. Status aksesibilitas: {status}. {summary}. Terakhir diverifikasi {date}.",
     "metaDescriptionAdmin": "{category} di Kecamatan {district}, Kota Bogor. Status aksesibilitas: {status}. {summary}. Diterbitkan langsung oleh admin {date}.",
+    "metaDescriptionStreetView": "{category} di Kecamatan {district}, Kota Bogor. Status aksesibilitas: {status}. {summary}. {month, select, none {Diverifikasi dari Street View} other {Diverifikasi dari Street View, gambar {month}}}.",
     "metaRecheck": "Data ini perlu dicek ulang.",
     "landmark": "Patokan",
     "summaryTitle": "Ringkasan fasilitas",
@@ -473,9 +475,13 @@
     "verified": "Terakhir diverifikasi {date}",
     "verifiedAdmin": "Diterbitkan langsung oleh admin · {date}",
     "adminNote": "Data ini diisi admin AksesBogor tanpa pemeriksaan verifikator kedua.",
+    "verifiedStreetView": "{month, select, none {Diverifikasi dari Street View} other {Diverifikasi dari Street View · gambar {month}}}",
+    "streetViewNote": "Jawaban ini dinilai tim dari tangkapan Google Street View, bukan diperiksa di lokasi. Hanya yang terlihat jelas di gambar yang dihitung, jadi toilet difabel dan lift belum diketahui.",
     "recheckTitle": "Perlu dicek ulang",
     "recheckBody": "Data ini diverifikasi lebih dari 12 bulan lalu. Kondisi di lokasi mungkin sudah berubah.",
     "recheckBodyAdmin": "Data ini diterbitkan admin lebih dari 12 bulan lalu. Kondisi di lokasi mungkin sudah berubah.",
+    "recheckBodyStreetView": "Gambar Street View ini dibuat lebih dari 12 bulan lalu. Kondisi di lokasi mungkin sudah berubah.",
+    "photoSourceStreetView": "Sumber: Google Street View",
     "facilitiesTitle": "Fasilitas",
     "edit": "Edit lokasi",
     "report": "Laporkan kekurangan",
@@ -1631,7 +1637,8 @@
     },
     "origin": {
       "tim": "Diperiksa tim",
-      "admin": "Langsung oleh admin"
+      "admin": "Langsung oleh admin",
+      "street_view": "Dari Street View"
     },
     "published": {
       "ya": "Tayang",
@@ -1662,6 +1669,7 @@
       "none": "Tidak ada",
       "published": "Terakhir diterbitkan",
       "byTeam": "Diverifikasi tim, {date}",
+      "byStreetView": "{month, select, none {Diverifikasi dari Street View} other {Diverifikasi dari Street View, gambar {month}}}",
       "byAdmin": "Langsung oleh admin {name}, {date}",
       "unknownAdmin": "dengan akun yang sudah dihapus",
       "down": "Diturunkan {date}. Alasan: {reason}",
@@ -1683,7 +1691,10 @@
         "dibuat_admin": "Dibuat langsung oleh admin",
         "diubah_admin": "Diubah langsung oleh admin",
         "diturunkan": "Diturunkan",
-        "ditayangkan_lagi": "Ditayangkan lagi"
+        "ditayangkan_lagi": "Ditayangkan lagi",
+        "dibuat_street_view": "Dibuat dari bukti Street View",
+        "diubah_street_view": "Diubah dari bukti Street View",
+        "street_view_dibatalkan": "Hasil Street View dibatalkan"
       },
       "changed": "Yang berubah: {fields}",
       "reason": "Alasan: {reason}",
