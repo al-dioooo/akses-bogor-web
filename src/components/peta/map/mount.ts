@@ -254,12 +254,27 @@ export function mountMap(options: Options): MapHandle {
     if (!ready && !map.isStyleLoaded()) options.onFail();
   });
 
+  // Gaya yang belum selesai dimuat (juga saat tile atau sumber lain masih dimuat) belum bisa menerima lapisan. Gambar yang
+  // datang saat itu menunggu peta diam, sekali per fungsi gambar, lalu dicoba lagi.
+  const waitingDraws = new Set<() => void>();
+  const styleReady = (draw: () => void) => {
+    if (map.isStyleLoaded()) return true;
+    if (!waitingDraws.has(draw)) {
+      waitingDraws.add(draw);
+      map.once("idle", () => {
+        waitingDraws.delete(draw);
+        draw();
+      });
+    }
+    return false;
+  };
+
   // Lapisan tematik digambar di bawah batas kota (atau label peta dasar) dan di bawah marker (elemen HTML). Gaya baru
   // (tema berganti) menghapus semua lapisan, jadi lapisan digambar ulang dengan warna tema saat itu setiap kali gaya
   // selesai dimuat.
   let thematic: Thematic | null = null;
   const drawThematic = () => {
-    if (!map.isStyleLoaded()) return;
+    if (!styleReady(drawThematic)) return;
     const container = map.getContainer();
     if (!thematic) {
       for (const id of ["tematik-garis", "tematik-isi"]) if (map.getLayer(id)) map.removeLayer(id);
@@ -296,7 +311,7 @@ export function mountMap(options: Options): MapHandle {
   // "kota-luar" bila sudah ada. Seperti lapisan lain, semuanya digambar ulang setiap kali gaya (tema) berganti.
   let border: CityOutline | null = null;
   const drawBorder = () => {
-    if (!map.isStyleLoaded()) return;
+    if (!styleReady(drawBorder)) return;
     const container = map.getContainer();
     if (!border) {
       for (const id of BORDER_LAYERS) if (map.getLayer(id)) map.removeLayer(id);
@@ -351,19 +366,9 @@ export function mountMap(options: Options): MapHandle {
   // Mulai CANDIDATE_ICON_ZOOM lingkarannya membesar dan memuat ikon kategori, supaya kategori tidak ditandai warna saja,
   // dan mulai CANDIDATE_FULL_ZOOM ukurannya penuh.
   // Gaya baru (juga saat tema berganti) menghapus lapisan dan gambar ikon, jadi keduanya digambar ulang setiap kali gaya
-  // selesai dimuat, dengan warna tema saat itu; selama gaya belum siap, gambar menunggu peta diam.
-  let waiting = false;
+  // selesai dimuat, dengan warna tema saat itu.
   const drawCandidates = () => {
-    if (!map.isStyleLoaded()) {
-      if (!waiting) {
-        waiting = true;
-        map.once("idle", () => {
-          waiting = false;
-          drawCandidates();
-        });
-      }
-      return;
-    }
+    if (!styleReady(drawCandidates)) return;
     if (!candidates) {
       for (const id of ["kandidat-ikon", "kandidat-pilih", "kandidat"]) if (map.getLayer(id)) map.removeLayer(id);
       if (map.getSource("kandidat")) map.removeSource("kandidat");
