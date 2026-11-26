@@ -1,7 +1,10 @@
-import { ApiError, getPlace, type FacilitySummary } from "@/lib/api";
+import { ApiError, getPlace, type FacilitySummary, type PlaceListItem } from "@/lib/api";
 
-/** Isi tambahan kartu lokasi di Peta: kecamatan dan ringkasan "X dari Y fasilitas" (ADR-0018). */
-export type PlaceCardDetail = { district: string; summary: FacilitySummary };
+/**
+ * Isi tambahan kartu lokasi di Peta: kecamatan, ringkasan "X dari Y fasilitas" (ADR-0018), dan asal datanya untuk
+ * label verifikasi (ADR-0051, ADR-0057).
+ */
+export type PlaceCardDetail = { district: string; summary: FacilitySummary } & Pick<PlaceListItem, "lastVerifiedAt" | "verifiedBy" | "verificationSource" | "streetViewImageDate">;
 
 const NO_STORE = { "cache-control": "no-store" };
 
@@ -14,7 +17,14 @@ export async function GET(_request: Request, { params }: RouteContext<"/peta/lok
   try {
     const place = await getPlace(id);
     if (!place) return Response.json({ galat: "lokasi_tidak_ditemukan" }, { status: 404, headers: NO_STORE });
-    const detail: PlaceCardDetail = { district: place.district.name, summary: place.summary };
+    const detail: PlaceCardDetail = {
+      district: place.district.name,
+      summary: place.summary,
+      lastVerifiedAt: place.lastVerifiedAt,
+      verifiedBy: place.verifiedBy,
+      verificationSource: place.verificationSource,
+      streetViewImageDate: place.streetViewImageDate,
+    };
     return Response.json(detail, { headers: { "cache-control": "public, max-age=60" } });
   } catch (error) {
     const galat = error instanceof ApiError ? error.galat : "galat_api";

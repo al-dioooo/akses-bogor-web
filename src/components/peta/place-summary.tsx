@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { useEffect, useState, type RefObject } from "react";
 import type { PlaceCardDetail } from "@/app/peta/lokasi/[id]/route";
 import { ProviderHints } from "@/components/petunjuk/provider-hints";
+import { verifiedLabel } from "@/lib/verified-label";
 import { buttonClass } from "@/ui/button-styles";
 import { FacilityMeter } from "@/ui/facility-meter";
 import { Icon } from "@/ui/icon";
@@ -24,6 +25,7 @@ export function PlaceSummary({ place, headingRef, onClose }: { place: MapPlace; 
   const t = useTranslations("Peta");
   const td = useTranslations("Detail");
   const tk = useTranslations("Kategori");
+  const format = useFormatter();
   const [detail, setDetail] = useState<Detail | null>(null);
   const loaded = detail?.id === place.id ? detail : null;
 
@@ -39,6 +41,8 @@ export function PlaceSummary({ place, headingRef, onClose }: { place: MapPlace; 
   }, [place.id]);
 
   const summary = loaded?.data?.summary;
+  // API lama tidak mengirim tanggal verifikasi di kartu ini; labelnya baru tampil bila ada.
+  const verified = loaded?.data?.lastVerifiedAt ? verifiedLabel(loaded.data, format, "medium") : null;
   return (
     <section aria-labelledby="judul-ringkasan" className="relative flex flex-col items-start gap-3 px-5 pt-1 pb-5">
       <p className="inline-flex flex-wrap items-center gap-x-1.5 pr-12 text-sm font-semibold">
@@ -57,6 +61,8 @@ export function PlaceSummary({ place, headingRef, onClose }: { place: MapPlace; 
             <p className="font-semibold">{td("summary", { available: summary.available, relevant: summary.relevant })}</p>
             <FacilityMeter summary={summary} status={place.status} />
             {summary.unknown > 0 && <p className="text-sm text-text-secondary">{td("unknown", { count: summary.unknown })}</p>}
+            {/* Asal data selalu ikut, supaya tempat Street View tidak terbaca sebagai diperiksa di lokasi (ADR-0057). */}
+            {verified && <p className="font-mono text-xs text-text-secondary">{td(verified.key, verified.values)}</p>}
           </>
         ) : (
           !loaded && <span aria-hidden="true" className="h-12 w-full rounded-xl bg-bg-sunken" />
