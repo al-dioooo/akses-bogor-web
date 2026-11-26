@@ -2,11 +2,26 @@ import type { Page } from "@playwright/test";
 import { blockingViolations } from "./axe";
 import { expect, openList, stubMapbox, test } from "./mapbox";
 
-// Lapisan prioritas kecamatan di Peta (ADR-0043) dengan API tiruan (e2e/mock-api/prioritas.mjs) dan Mapbox tiruan.
+// Lapisan Prioritas pemetaan di Peta (ADR-0043, ADR-0053) dengan API tiruan (e2e/mock-api/prioritas.mjs) dan Mapbox
+// tiruan. Lapisannya dipilih lewat pemilih Peta tematik.
 /** IP pengunjung yang membuat API tiruan menjawab data_disabilitas_belum_aktif. */
 const PRIORITY_OFF_IP = "203.0.113.251";
 const main = (page: Page) => page.getByRole("main");
-const toggle = (page: Page) => main(page).getByRole("button", { name: "Lapisan prioritas kecamatan" });
+const chooser = (page: Page) => main(page).getByRole("button", { name: "Peta tematik" });
+const option = (page: Page, name: string) => main(page).getByRole("button", { name, exact: true });
+/** Membuka pemilih; ketukan sebelum halaman selesai di-hydrate tidak berbuat apa-apa, jadi diulang. */
+async function openChooser(page: Page) {
+  await expect(async () => {
+    if ((await chooser(page).getAttribute("aria-expanded")) !== "true") await chooser(page).click();
+    await expect(chooser(page)).toHaveAttribute("aria-expanded", "true", { timeout: 1000 });
+  }).toPass();
+}
+/** Membuka pemilih Peta tematik dan memilih satu lapisan; pemilihnya tertutup lagi dan fokus kembali ke tombolnya. */
+async function choose(page: Page, name: "Prioritas pemetaan" | "Tidak ada") {
+  await openChooser(page);
+  await option(page, name).click();
+  await expect(chooser(page)).toBeFocused();
+}
 /** Kunci yang mengambang di atas peta (judulnya sama dengan tabel di panel daftar). */
 const floatingKey = (page: Page) => main(page).locator("section.peta-kunci");
 const isPhone = (page: Page) => (page.viewportSize()?.width ?? 0) < 768;
@@ -73,10 +88,16 @@ const coveredMarkers = (page: Page) =>
 test("shows a floating key with the levels as text, the caveat and the source while the layer is on", async ({ page }) => {
   await page.goto("/peta");
   await expect(main(page).getByText("Memuat peta…")).toHaveCount(0);
-  await expect(toggle(page)).toHaveAttribute("aria-pressed", "false");
-  await toggle(page).click();
-  await expect(toggle(page)).toHaveAttribute("aria-pressed", "true");
-  await expect(main(page).getByRole("status").filter({ hasText: "Lapisan prioritas kecamatan tampil di peta" })).toBeAttached();
+  await openChooser(page);
+  await expect(option(page, "Tidak ada")).toHaveAttribute("aria-pressed", "true");
+  await option(page, "Prioritas pemetaan").click();
+  await expect(chooser(page)).toHaveAttribute("aria-expanded", "false");
+  await chooser(page).click();
+  await expect(option(page, "Prioritas pemetaan")).toHaveAttribute("aria-pressed", "true");
+  await page.keyboard.press("Escape");
+  await expect(chooser(page)).toBeFocused();
+  await expect(main(page).getByRole("status").filter({ hasText: "Lapisan Prioritas pemetaan tampil di peta" })).toBeAttached();
+  await expect(page.locator(".mapboxgl-map")).toHaveAttribute("data-tematik", "prioritas");
 
   // Kunci mengambang di atas peta, tanpa membuka panel daftar; di ponsel mulai ringkas.
   const key = floatingKey(page);
@@ -92,8 +113,9 @@ test("shows a floating key with the levels as text, the caveat and the source wh
   expect(await main(page).textContent()).not.toMatch(/cacat/i);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 
-  await toggle(page).click();
-  await expect(toggle(page)).toHaveAttribute("aria-pressed", "false");
+  await choose(page, "Tidak ada");
+  await expect(main(page).getByRole("status").filter({ hasText: "Peta tematik disembunyikan." })).toBeAttached();
+  await expect(page.locator(".mapboxgl-map")).not.toHaveAttribute("data-tematik");
   await expect(key).toHaveCount(0);
   await expect(main(page).getByRole("table")).toHaveCount(0);
 });
@@ -109,7 +131,7 @@ for (const viewport of [
       await page.emulateMedia({ reducedMotion: "reduce" });
       await page.goto("/peta");
       await expect(main(page).getByRole("group", { name: "Kontrol peta" })).toBeVisible({ timeout: 15_000 });
-      await toggle(page).click();
+      await choose(page, "Prioritas pemetaan");
       if (sheet === "setengah") await openList(page);
       await keyMeasured(page);
       const key = floatingKey(page);
@@ -146,7 +168,7 @@ for (const viewport of [
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/peta");
     await expect(main(page).getByRole("group", { name: "Kontrol peta" })).toBeVisible({ timeout: 15_000 });
-    await toggle(page).click();
+    await choose(page, "Prioritas pemetaan");
     await expandKey(page);
     const key = floatingKey(page);
     for (const part of [key.getByText(/bukan jumlah seluruh penduduk/), key.getByRole("link", { name: OSM }), key.getByRole("link", { name: "Bantu memetakan" })]) {
@@ -159,7 +181,7 @@ for (const viewport of [
 
 test("the table button opens the list panel at the ranked table with its source", async ({ page }) => {
   await page.goto("/peta");
-  await toggle(page).click();
+  await choose(page, "Prioritas pemetaan");
   await expandKey(page);
   await main(page).getByRole("button", { name: "Tabel prioritas kecamatan" }).click();
   await expect(page.locator("#tabel-prioritas")).toBeFocused();
@@ -173,21 +195,21 @@ test("the table button opens the list panel at the ranked table with its source"
   await expect(table.getByText("Batas kecamatan: © kontributor OpenStreetMap (tab baru).")).toBeVisible();
 });
 
-test("hides the layer button while the API keeps the disability data off", async ({ browser }) => {
+test("hides the thematic map chooser while the API keeps the disability data off", async ({ browser }) => {
   const context = await browser.newContext({ extraHTTPHeaders: { "x-forwarded-for": PRIORITY_OFF_IP } });
   const page = await context.newPage();
   await stubMapbox(page);
   await page.goto("/peta");
   await expect(main(page).getByRole("heading", { level: 1 })).toBeVisible();
   await expect(main(page).getByRole("status").first()).toBeVisible();
-  await expect(toggle(page)).toHaveCount(0);
+  await expect(chooser(page)).toHaveCount(0);
   await context.close();
 });
 
 test("keeps the table when the boundaries cannot load", async ({ page }) => {
   await page.route("**/peta/batas-kecamatan", (route) => route.fulfill({ status: 503, json: { galat: "galat_api" } }));
   await page.goto("/peta");
-  await toggle(page).click();
+  await choose(page, "Prioritas pemetaan");
   await expect(main(page).getByRole("alert")).toContainText("Batas kecamatan tidak bisa dimuat");
   await main(page).getByRole("button", { name: "Tabel prioritas kecamatan" }).click();
   await expect(main(page).getByRole("table")).toBeVisible();
@@ -197,7 +219,7 @@ for (const colorScheme of ["light", "dark"] as const) {
   test(`the priority layer has no serious or critical WCAG 2.2 AA violations (${colorScheme})`, async ({ page }) => {
     await page.emulateMedia({ colorScheme, reducedMotion: "reduce" });
     await page.goto("/peta");
-    await toggle(page).click();
+    await choose(page, "Prioritas pemetaan");
     await openList(page);
     await expect(main(page).getByRole("table")).toBeVisible();
     expect(await blockingViolations(page)).toEqual([]);
