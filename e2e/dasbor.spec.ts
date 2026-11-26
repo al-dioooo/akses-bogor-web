@@ -20,14 +20,14 @@ test("shows a regular account only its own menu, with the open page marked", asy
   await signIn(page, email("lama"));
   await expect(page).toHaveURL(/\/akun$/);
   const links = await menuLinks(page);
-  await expect(links).toHaveText(["Ringkasan", "Laporan saya", "Bantu memetakan", "Pengaturan akun"]);
+  await expect(links).toHaveText(["Ringkasan", "Laporan saya", "Agen AI", "Pengaturan akun"]);
   await expect(links.first()).toHaveAttribute("aria-current", "page");
   await expect(page.getByText("Verifikasi", { exact: true })).toHaveCount(0);
 });
 
 test("adds the verification desk for verifiers and the team page for admins", async ({ page }) => {
   await signIn(page, email("verifikator"));
-  await expect(await menuLinks(page)).toHaveText(["Ringkasan", "Laporan saya", "Bantu memetakan", "Antrean", "Menunggu jawaban", "Perlu dicek ulang", "Pengaturan akun"]);
+  await expect(await menuLinks(page)).toHaveText(["Ringkasan", "Laporan saya", "Agen AI", "Antrean", "Menunggu jawaban", "Perlu dicek ulang", "Pengaturan akun"]);
 
   await page.context().clearCookies();
   await signIn(page, email("admin"));
@@ -81,7 +81,7 @@ test.describe("menu on phones", () => {
 });
 
 // Halaman paling lebar di dasbor: meja, pemeriksaan laporan dengan foto dan pembanding, dan percakapan agen.
-const WIDE_PAGES = ["/akun", "/verifikasi", "/verifikasi/laporan/10000000-0000-4000-8000-000000000002", "/laporkan/bantu-memetakan"];
+const WIDE_PAGES = ["/akun", "/verifikasi", "/verifikasi/laporan/10000000-0000-4000-8000-000000000002", "/agen"];
 
 test("has no horizontal scroll from 320 px up", async ({ page }) => {
   await signIn(page, email("admin"));
