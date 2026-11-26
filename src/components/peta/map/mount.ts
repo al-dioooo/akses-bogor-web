@@ -1,11 +1,12 @@
 import mapboxgl, { type GeoJSONSource, type LngLatBoundsLike } from "mapbox-gl";
-import { CATEGORIES, type Category, type DistrictBoundaries, type MapToken, type PriorityLevel } from "@/lib/api";
+import { CATEGORIES, type Category, type CityOutline, type DistrictBoundaries, type MapToken, type PriorityLevel } from "@/lib/api";
 import { LEVEL_COLOR, LEVELS } from "@/components/prioritas/levels";
 import { motionReduced } from "@/lib/preferences";
 import { CATEGORY_VAR } from "@/ui/category-pin";
 import { CATEGORY_ICON } from "@/ui/place-icons";
 import type { MapCandidate, MapPlace } from "../places";
 import { NO_INSETS, cameraPadding, isVisible, visibleRect, type Insets, type Rect } from "./area";
+import { outsideCity } from "./city";
 
 /** Tampilan awal: seluruh Kota Bogor (ADR-0010). */
 const KOTA_BOGOR: LngLatBoundsLike = [
@@ -18,6 +19,8 @@ const AREA: LngLatBoundsLike = [
   [107.1, -6.3],
 ];
 const STYLE = { terang: "mapbox://styles/mapbox/light-v11", gelap: "mapbox://styles/mapbox/dark-v11" };
+/** Lapisan batas kota, dari atas ke bawah. */
+const BORDER_LAYERS = ["kota-garis", "kota-halo", "kota-luar"];
 // Mulai zoom ini lingkaran kandidat cukup besar untuk memuat ikon kategorinya (issue #199).
 const CANDIDATE_ICON_ZOOM = 14;
 // Ikon kategori di dalam lingkaran kandidat: 14 px, digambar dua kali lebih rapat untuk layar tajam.
@@ -57,6 +60,12 @@ export type MapHandle = {
    * Kandidat dipilih lewat `onSelect` dengan id-nya, dan `show`, `reveal`, serta `setSelected` menerima id itu juga.
    */
   setCandidates(candidates: { items: MapCandidate[]; attribution: string } | null): void;
+  /**
+   * Batas Kota Bogor (ADR-0053): garis putus-putus di atas garis halo, dan area di luar kota sedikit dipudarkan, di bawah
+   * label peta dasar, kandidat, dan marker. null menyembunyikannya. Selama garisnya tampil, kontainer peta mendapat
+   * `data-batas-kota` berisi tema gaya yang menggambarnya ("terang" atau "gelap").
+   */
+  setBorder(outline: CityOutline | null): void;
   /** Lapisan prioritas kecamatan: batas dengan tingkatnya, atau null untuk menyembunyikannya. */
   setPriority(districts: { boundaries: DistrictBoundaries; levels: Record<string, PriorityLevel> } | null): void;
   destroy(): void;
@@ -238,11 +247,26 @@ export function mountMap(options: Options): MapHandle {
     if (!ready && !map.isStyleLoaded()) options.onFail();
   });
 
+  // Gaya yang belum selesai dimuat (juga saat tile atau sumber lain masih dimuat) belum bisa menerima lapisan. Gambar yang
+  // datang saat itu menunggu peta diam, sekali per fungsi gambar, lalu dicoba lagi.
+  const waitingDraws = new Set<() => void>();
+  const styleReady = (draw: () => void) => {
+    if (map.isStyleLoaded()) return true;
+    if (!waitingDraws.has(draw)) {
+      waitingDraws.add(draw);
+      map.once("idle", () => {
+        waitingDraws.delete(draw);
+        draw();
+      });
+    }
+    return false;
+  };
+
   // Lapisan prioritas digambar di bawah label peta dasar dan di bawah marker (marker berupa elemen HTML). Gaya baru
   // (tema berganti) menghapus semua lapisan, jadi lapisan digambar ulang setiap kali gaya selesai dimuat.
   let priority: Parameters<MapHandle["setPriority"]>[0] = null;
   const drawPriority = () => {
-    if (!map.isStyleLoaded()) return;
+    if (!styleReady(drawPriority)) return;
     if (!priority) {
       for (const id of ["prioritas-garis", "prioritas-isi"]) if (map.getLayer(id)) map.removeLayer(id);
       if (map.getSource("prioritas")) map.removeSource("prioritas");
@@ -257,7 +281,7 @@ export function mountMap(options: Options): MapHandle {
     if (source) return source.setData(data);
     const css = getComputedStyle(document.documentElement);
     const color = (name: string) => css.getPropertyValue(name).trim();
-    const label = map.getStyle().layers?.find((layer) => layer.type === "symbol")?.id;
+    const label = map.getLayer("kota-luar") ? "kota-luar" : map.getStyle().layers?.find((layer) => layer.type === "symbol")?.id;
     map.addSource("prioritas", { type: "geojson", data });
     map.addLayer(
       {
@@ -275,22 +299,67 @@ export function mountMap(options: Options): MapHandle {
   };
   map.on("style.load", drawPriority);
 
+  // Batas kota digambar di bawah label peta dasar, tetapi di atas lapisan tematik: lapisan tematik disisipkan di bawah
+  // "kota-luar" bila sudah ada. Seperti lapisan lain, semuanya digambar ulang setiap kali gaya (tema) berganti.
+  let border: CityOutline | null = null;
+  const drawBorder = () => {
+    if (!styleReady(drawBorder)) return;
+    const container = map.getContainer();
+    if (!border) {
+      for (const id of BORDER_LAYERS) if (map.getLayer(id)) map.removeLayer(id);
+      if (map.getSource("kota")) map.removeSource("kota");
+      delete container.dataset.batasKota;
+      return;
+    }
+    const data = {
+      type: "FeatureCollection" as const,
+      features: [
+        { type: "Feature" as const, properties: { bagian: "luar" }, geometry: outsideCity(border) },
+        { type: "Feature" as const, properties: { bagian: "batas" }, geometry: border },
+      ],
+    } as Parameters<GeoJSONSource["setData"]>[0];
+    const source = map.getSource("kota") as GeoJSONSource | undefined;
+    if (source) source.setData(data);
+    else {
+      const css = getComputedStyle(document.documentElement);
+      const color = (name: string) => css.getPropertyValue(name).trim();
+      const label = map.getStyle().layers?.find((layer) => layer.type === "symbol")?.id;
+      const width = (from: number, to: number) => ["interpolate", ["linear"], ["zoom"], 10, from, 15, to] as never;
+      map.addSource("kota", { type: "geojson", data });
+      map.addLayer({ id: "kota-luar", type: "fill", source: "kota", filter: ["==", ["get", "bagian"], "luar"], paint: { "fill-color": color("--color-bg-canvas"), "fill-opacity": 0.45 } }, label);
+      map.addLayer(
+        {
+          id: "kota-halo",
+          type: "line",
+          source: "kota",
+          filter: ["==", ["get", "bagian"], "batas"],
+          layout: { "line-join": "round" },
+          paint: { "line-color": color("--color-bg-canvas"), "line-width": width(5, 8), "line-opacity": 0.85 },
+        },
+        label,
+      );
+      map.addLayer(
+        {
+          id: "kota-garis",
+          type: "line",
+          source: "kota",
+          filter: ["==", ["get", "bagian"], "batas"],
+          paint: { "line-color": color("--color-text-primary"), "line-width": width(2.5, 4), "line-dasharray": [2, 1.5] },
+        },
+        label,
+      );
+    }
+    // Nilainya tema gaya yang memuat garis ini, jadi terlihat bahwa garisnya digambar ulang setelah tema berganti.
+    container.dataset.batasKota = night ? "gelap" : "terang";
+  };
+  map.on("style.load", drawBorder);
+
   // Kandidat: lingkaran berlubang bergaris warna kategori (issue #199), lebih kecil dari marker dan tanpa warna status.
   // Mulai CANDIDATE_ICON_ZOOM lingkarannya membesar dan memuat ikon kategori, supaya kategori tidak ditandai warna saja.
   // Gaya baru (juga saat tema berganti) menghapus lapisan dan gambar ikon, jadi keduanya digambar ulang setiap kali gaya
-  // selesai dimuat, dengan warna tema saat itu; selama gaya belum siap, gambar menunggu peta diam.
-  let waiting = false;
+  // selesai dimuat, dengan warna tema saat itu.
   const drawCandidates = () => {
-    if (!map.isStyleLoaded()) {
-      if (!waiting) {
-        waiting = true;
-        map.once("idle", () => {
-          waiting = false;
-          drawCandidates();
-        });
-      }
-      return;
-    }
+    if (!styleReady(drawCandidates)) return;
     if (!candidates) {
       for (const id of ["kandidat-ikon", "kandidat-pilih", "kandidat"]) if (map.getLayer(id)) map.removeLayer(id);
       if (map.getSource("kandidat")) map.removeSource("kandidat");
@@ -455,7 +524,14 @@ export function mountMap(options: Options): MapHandle {
     setNight(value) {
       if (value === night) return;
       night = value;
-      map.setStyle(night ? STYLE.gelap : STYLE.terang);
+      // Tanpa diff: gaya selalu dimuat ulang penuh dan "style.load" selalu terpanggil, jadi semua lapisan sendiri digambar
+      // ulang dengan warna tema baru. Dengan diff, lapisan sendiri bisa terhapus tanpa "style.load" bila kedua gaya
+      // hanya berbeda di properti yang bisa di-diff.
+      map.setStyle(night ? STYLE.gelap : STYLE.terang, { diff: false } as Parameters<typeof map.setStyle>[1]);
+    },
+    setBorder(value) {
+      border = value;
+      drawBorder();
     },
     setPriority(value) {
       priority = value;

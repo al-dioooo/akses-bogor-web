@@ -9,9 +9,10 @@ import { CandidateDot } from "./candidate-dot";
 
 /**
  * Legenda marker (FR-05): bentuk yang sama dengan marker di peta, ditambah label teks setiap status. Selama ada kandidat
- * "Belum ada data" (ADR-0049), bentuknya ikut di legenda, terpisah dari status, bersama tombol lapisannya.
+ * "Belum ada data" (ADR-0049), bentuknya ikut di legenda, terpisah dari status, bersama tombol lapisannya. Selama batas
+ * Kota Bogor tampil (ADR-0053), garisnya juga dijelaskan.
  */
-export function MapLegend({ candidates }: { candidates?: { on: boolean; onToggle: () => void } }) {
+export function MapLegend({ candidates, border = false }: { candidates?: { on: boolean; onToggle: () => void }; border?: boolean }) {
   const t = useTranslations("Peta");
   const ts = useTranslations("Status");
   return (
@@ -27,6 +28,12 @@ export function MapLegend({ candidates }: { candidates?: { on: boolean; onToggle
           </li>
         ))}
       </ul>
+      {border && (
+        <p className="flex items-center gap-2 text-sm font-semibold">
+          <BorderLine />
+          {t("border")}
+        </p>
+      )}
       {candidates && (
         <div className="mt-1 flex flex-col items-start gap-2 border-t border-border-subtle pt-3">
           <p className="flex items-center gap-2 text-sm font-semibold">
@@ -67,5 +74,15 @@ export function CategoryLegend() {
       </ul>
       <p className="text-sm text-text-secondary">{t("legendCategoryHint")}</p>
     </section>
+  );
+}
+
+/** Contoh garis batas Kota Bogor: putus-putus berwarna teks di atas halo berwarna latar, seperti di peta. */
+function BorderLine() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 8" className="h-2 w-6 shrink-0 overflow-visible">
+      <line x1="0" y1="4" x2="24" y2="4" stroke="var(--color-bg-canvas)" strokeWidth="6" />
+      <line x1="0" y1="4" x2="24" y2="4" stroke="var(--color-text-primary)" strokeWidth="2.5" strokeDasharray="5 3.75" />
+    </svg>
   );
 }

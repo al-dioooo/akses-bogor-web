@@ -136,7 +136,12 @@ export type DistrictBoundaries = {
   type: "FeatureCollection";
   features: { type: "Feature"; properties: { slug: string; name: string }; geometry: { type: "Polygon" | "MultiPolygon"; coordinates: unknown } }[];
   attribution: string;
+  /** Batas Kota Bogor dari gabungan keenam batas (ADR-0053); tidak ada di API versi lama. */
+  outline?: CityOutline | null;
 };
+
+/** Garis luar Kota Bogor: satu cincin luar per bagian, tanpa lubang. */
+export type CityOutline = { type: "MultiPolygon"; coordinates: [number, number][][][] };
 
 /** Token Mapbox sementara dari API (ADR-0016). */
 export type MapToken = { token: string; expiresAt: string };
