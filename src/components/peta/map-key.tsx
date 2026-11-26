@@ -6,7 +6,7 @@ import { Icon } from "@/ui/icon";
 import { IconChevronRight, IconList } from "@/ui/icons";
 
 /** Lapisan tematik yang punya kunci; nama ini juga namespace teksnya di `Peta.<nama>`. */
-export type KeyName = "prioritas" | "disabilitas";
+export type KeyName = "prioritas" | "disabilitas" | "aksesibel";
 
 /**
  * Kunci lapisan tematik yang mengambang di atas peta (ADR-0053): judul, tombol ke tabel atau daftar di panel, dan isi
@@ -27,7 +27,8 @@ export function MapKey({
   children,
 }: {
   name: KeyName;
-  title: string;
+  /** Judul, termasuk label seperti "belum diperiksa tim" yang harus ikut dibacakan juga saat kunci ringkas. */
+  title: ReactNode;
   /** Baris ringkas di ponsel, mis. skala warna dan judul pendek. Dekoratif: judul lengkap tetap ada untuk pembaca layar. */
   summary: ReactNode;
   /** Ponsel: kunci mulai ringkas. */

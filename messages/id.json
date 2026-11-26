@@ -354,8 +354,51 @@
         "disabilitas": {
           "label": "Persebaran disabilitas",
           "body": "Penyandang disabilitas yang terdaftar di Dinas Sosial per kecamatan, menurut jenis dan tahun."
+        },
+        "aksesibel": {
+          "label": "Kecamatan paling aksesibel",
+          "body": "Tempat yang pintu masuknya bisa dimasuki kursi roda, termasuk keterangan yang belum diperiksa tim."
         }
       }
+    },
+    "aksesibel": {
+      "title": "Kecamatan paling aksesibel",
+      "keyShort": "Paling aksesibel",
+      "unchecked": "belum diperiksa tim",
+      "table": "Daftar",
+      "showTable": "Daftar peringkat kecamatan paling aksesibel",
+      "more": "Catatan",
+      "moreLabel": "Catatan, sumber, dan legenda kecamatan paling aksesibel",
+      "less": "Ringkas kunci kecamatan paling aksesibel",
+      "measure": "Persentase tempat yang pintu masuknya bisa dimasuki kursi roda, dari tempat yang punya keterangan pintu masuk.",
+      "legend": "Legenda persentase",
+      "range": "{from}–{to}%",
+      "notEnough": "Data belum cukup: kurang dari {minimum} tempat ber-keterangan",
+      "coverage": "Keterangan pintu masuk ada untuk {withData} dari {places} tempat.",
+      "uncheckedCount": "{count} keterangan belum diperiksa tim: OpenStreetMap {osm}, Google Maps {google}.",
+      "uncheckedCountOsm": "{count} keterangan belum diperiksa tim, dari OpenStreetMap.",
+      "caveatLabel": "Catatan:",
+      "sourcesLabel": "Sumber:",
+      "sourceAksesBogor": "data AksesBogor (diperiksa tim)",
+      "sourceOsm": "OpenStreetMap (belum diperiksa tim, <credit>{attribution}</credit>)",
+      "sourceGoogle": "salinan Google Maps diambil {date} (belum diperiksa tim)",
+      "sourceGoogleUndated": "salinan Google Maps (belum diperiksa tim)",
+      "newTab": "(tab baru)",
+      "failed": "Data kecamatan paling aksesibel tidak bisa dimuat, jadi lapisan ini tidak tampil. Coba lagi nanti.",
+      "boundariesFailed": "Batas kecamatan tidak bisa dimuat, jadi warna tidak tampil di peta. Daftar di panel berisi data yang sama.",
+      "listIntro": "Urut dari persentase tertinggi. Setiap angka disertai cakupan datanya dan asal keterangannya.",
+      "rankedLabel": "Peringkat kecamatan",
+      "rankLabel": "Peringkat {rank}:",
+      "score": "{score}% bisa dimasuki",
+      "accessibleOf": "{accessible} dari {withData} tempat ber-keterangan pintu masuknya bisa dimasuki kursi roda",
+      "limited": "{count} terbatas",
+      "districtCoverage": "Keterangan ada untuk {withData} dari {places} tempat",
+      "districtSources": "Data AksesBogor: {team} · belum diperiksa tim: {unverified} (OpenStreetMap {osm}, Google Maps {google})",
+      "districtSourcesOsm": "Data AksesBogor: {team} · belum diperiksa tim: {unverified} (OpenStreetMap {osm})",
+      "noneRanked": "Belum ada kecamatan dengan paling sedikit {minimum} tempat ber-keterangan.",
+      "notEnoughTitle": "Data belum cukup",
+      "notEnoughItem": "{withData} tempat ber-keterangan dari {places} tempat; perlu paling sedikit {minimum}.",
+      "formula": "Cara menghitung: {formula}"
     },
     "disabilitas": {
       "title": "Persebaran disabilitas {year}",
