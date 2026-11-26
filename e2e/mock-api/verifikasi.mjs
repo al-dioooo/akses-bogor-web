@@ -98,7 +98,16 @@ function seed(places) {
 const shown = ({ id, tag, caption, alt, width, height, hidden, blur, clarificationId }) => ({ id, tag, caption, alt, width, height, hidden, blur, clarificationId });
 
 const worlds = new Map();
-const worldOf = (user, places) => worlds.get(user.email) ?? worlds.set(user.email, seed(places)).get(user.email);
+// Verifikator dengan email diawali "verifikator-sendiri" hanya punya laporannya sendiri: antreannya kosong, tetapi
+// `ownWaiting` berisi 1, seperti verifikator yang baru mengirim laporan dan belum ada laporan orang lain.
+const worldOf = (user, places) => {
+  if (!worlds.has(user.email)) {
+    const world = seed(places);
+    if (user.email.startsWith("verifikator-sendiri")) world.reports = world.reports.filter((r) => r.own);
+    worlds.set(user.email, world);
+  }
+  return worlds.get(user.email);
+};
 
 const queueItem = (report, photos) => ({
   id: report.id,
@@ -166,7 +175,9 @@ export function handleVerifikasi(method, url, headers, body, places) {
   if (method === "GET" && pathname === "/verifier/reports") {
     const status = url.searchParams.get("status") ?? "menunggu";
     const items = reports.filter((r) => !r.own && r.status === status).sort((a, b) => a.submittedAt.localeCompare(b.submittedAt));
-    return [200, { total: items.length, items: items.map((r) => queueItem(r, photos)) }];
+    // Seperti API: laporan sendiri tidak ikut antrean (FR-37), tetapi jumlahnya disebut.
+    const ownWaiting = reports.filter((r) => r.own && r.status === status).length;
+    return [200, { total: items.length, ownWaiting, items: items.map((r) => queueItem(r, photos)) }];
   }
   if (method === "GET" && pathname === "/verifier/places/recheck") {
     const before = new Date();
