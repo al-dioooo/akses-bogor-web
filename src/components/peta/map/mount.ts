@@ -519,7 +519,10 @@ export function mountMap(options: Options): MapHandle {
     setNight(value) {
       if (value === night) return;
       night = value;
-      map.setStyle(night ? STYLE.gelap : STYLE.terang);
+      // Tanpa diff: gaya selalu dimuat ulang penuh dan "style.load" selalu terpanggil, jadi semua lapisan sendiri digambar
+      // ulang dengan warna tema baru. Dengan diff, lapisan sendiri bisa terhapus tanpa "style.load" bila kedua gaya
+      // hanya berbeda di properti yang bisa di-diff.
+      map.setStyle(night ? STYLE.gelap : STYLE.terang, { diff: false } as Parameters<typeof map.setStyle>[1]);
     },
     setBorder(value) {
       border = value;
