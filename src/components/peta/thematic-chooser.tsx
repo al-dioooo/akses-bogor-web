@@ -7,7 +7,7 @@ import { Icon } from "@/ui/icon";
 import { IconStack2 } from "@/ui/icons";
 
 /** Lapisan tematik di Peta (ADR-0053); hanya satu yang tampil sekaligus. */
-export type ThemeChoice = "tidak" | "prioritas";
+export type ThemeChoice = "tidak" | "prioritas" | "disabilitas";
 
 /**
  * Pemilih Peta tematik (ADR-0053): tombol yang membuka daftar pilihan di bawahnya. Setiap pilihan tombol `aria-pressed`;
