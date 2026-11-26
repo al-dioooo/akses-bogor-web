@@ -13,10 +13,12 @@ const main = (page: Page) => page.getByRole("main");
 const field = (page: Page) => main(page).getByRole("textbox", { name: "Pertanyaan untuk Agen AI" });
 const conversation = (page: Page) => main(page).getByRole("list", { name: "Percakapan dengan Agen AI" });
 let ipCount = 0;
+/** IP tiruan yang unik per worker, supaya permintaan terakhir di API tiruan tidak tertukar antartes yang berjalan bersamaan. */
+const nextIp = () => `198.18.${100 + (test.info().workerIndex % 150)}.${1 + (ipCount++ % 250)}`;
 
 /** Halaman baru tanpa akun dari IP sendiri. */
 async function openVisitor(browser: Browser, path = PAGE, options: BrowserContextOptions & { ip?: string } = {}) {
-  const { ip = `198.51.100.${150 + (ipCount++ % 100)}`, ...contextOptions } = options;
+  const { ip = nextIp(), ...contextOptions } = options;
   const context = await browser.newContext({ ...contextOptions, extraHTTPHeaders: { "x-forwarded-for": ip } });
   const page = await context.newPage();
   await stubMapbox(page);
