@@ -26,7 +26,7 @@ export function RouteCoverage({ route }: { route: AccessibleRoute }) {
     <>
       <div className="flex gap-3 rounded-2xl border-2 border-border-subtle bg-bg-sunken p-4 text-text-primary">
         <Icon icon={IconInfoCircle} className="mt-0.5 size-6 shrink-0 text-icon-brand" />
-        <p className="font-semibold">{route.note}</p>
+        <p className="min-w-0 font-semibold break-words">{route.note}</p>
       </div>
 
       <section aria-labelledby={coverageId} className="flex flex-col gap-2">
@@ -53,7 +53,7 @@ export function RouteCoverage({ route }: { route: AccessibleRoute }) {
         <section aria-labelledby={warningsId} className="flex flex-col gap-2 rounded-2xl border-2 border-status-partial-fg bg-status-partial-bg p-4 text-text-primary">
           <h4 id={warningsId} className="flex items-center gap-2 font-heading text-lg font-bold">
             <Icon icon={IconAlertTriangle} className="size-6 shrink-0 text-status-partial-fg" />
-            {t("warningsTitle")}
+            <span className="min-w-0 break-words">{t("warningsTitle")}</span>
           </h4>
           <ul className="flex list-disc flex-col gap-1 pl-6">
             {warnings.map((warning) => (
