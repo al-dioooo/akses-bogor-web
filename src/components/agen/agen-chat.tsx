@@ -2,13 +2,16 @@
 
 import { useTranslations } from "next-intl";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import type { StartPointCopy } from "@/components/rute-jalan-kaki/start-point";
 import type { AgenAnswer } from "@/lib/agen";
 import { historyOf, loadConversation, messageId, saveConversation, type AgentMessage, type Message } from "@/lib/percakapan";
 import { buttonClass } from "@/ui/button-styles";
 import { Icon } from "@/ui/icon";
 import { IconArrowDown, IconMessagePlus } from "@/ui/icons";
 import { AgenBar } from "./agen-bar";
+import { AgenCards } from "./agen-cards";
 import { Composer, type ComposerHandle } from "./composer";
+import { ContextChips, type Start } from "./context-chips";
 import { EmptyState } from "./empty-state";
 import { AgentReply, ProblemRow, Thinking, UserBubble, type Problem } from "./messages";
 
@@ -37,8 +40,11 @@ type Pending = { id: string; content: string; problem?: Problem };
  * di kanan, lalu indikator mengetik sampai jawaban utuh tiba (API belum mengalirkan jawaban). Live region halaman hanya
  * membacakan jawaban terbaru, dan fokus tetap di kotak tulis.
  */
-export function AgenChat({ questionsPerDay, contributor, signedIn, place }: Props) {
+export function AgenChat({ questionsPerDay, contributor, signedIn, place: initialPlace }: Props) {
   const t = useTranslations("Agen");
+  const [place, setPlace] = useState(initialPlace);
+  /** Titik awal hanya di memori halaman: dikirim bersama pertanyaan dan dipakai kartu rute, tidak pernah disimpan. */
+  const [start, setStart] = useState<Start | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [pending, setPending] = useState<Pending | null>(null);
@@ -92,9 +98,13 @@ export function AgenChat({ questionsPerDay, contributor, signedIn, place }: Prop
       restored.current = false;
       scrollToEnd("auto");
     }
-    if (reveal.current) {
-      scroller.current?.querySelector(`[data-pesan="${reveal.current}"]`)?.scrollIntoView({ block: "start", behavior: motion() });
-      reveal.current = null;
+    const element = scroller.current;
+    const question = reveal.current ? element?.querySelector(`[data-pesan="${reveal.current}"]`) : null;
+    reveal.current = null;
+    // Hanya wadah percakapan yang digulir. scrollIntoView juga menggeser halaman yang dikunci, sehingga judul tertutup header.
+    if (element && question) {
+      const top = question.getBoundingClientRect().top - element.getBoundingClientRect().top + element.scrollTop - 16;
+      element.scrollTo({ top, behavior: motion() });
     }
   }, [messages]);
 
@@ -102,7 +112,10 @@ export function AgenChat({ questionsPerDay, contributor, signedIn, place }: Prop
     if (pending && !pending.problem) scrollToEnd();
   }, [pending]);
 
+  const startCopy: StartPointCopy = { title: t("awal.title"), why: t("awal.why"), privacy: t("awal.privacy") };
+
   async function ask(question: string, id = messageId()) {
+    const from = start?.point;
     const controller = new AbortController();
     request.current = controller;
     setPending({ id, content: question });
@@ -112,7 +125,7 @@ export function AgenChat({ questionsPerDay, contributor, signedIn, place }: Prop
       const response = await fetch("/agen/tanya", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ question, history: historyOf(messages), ...(place ? { placeId: place.id } : {}) }),
+        body: JSON.stringify({ question, history: historyOf(messages), ...(place ? { placeId: place.id } : {}), ...(from ? { from } : {}) }),
         signal: controller.signal,
       });
       const body = (await response.json().catch(() => ({}))) as Partial<AgenAnswer> & { galat?: string; pesan?: string };
@@ -123,7 +136,7 @@ export function AgenChat({ questionsPerDay, contributor, signedIn, place }: Prop
         setAnnouncement("");
         return;
       }
-      const reply: AgentMessage = { id: messageId(), role: "agent", content: body.answer, sources: body.sources ?? [], cards: body.cards ?? [] };
+      const reply: AgentMessage = { id: messageId(), role: "agent", content: body.answer, sources: body.sources ?? [], cards: body.cards ?? [], from };
       reveal.current = id;
       setMessages((current) => [...current, { id, role: "user", content: question }, reply]);
       setPending(null);
@@ -157,6 +170,13 @@ export function AgenChat({ questionsPerDay, contributor, signedIn, place }: Prop
   function retry() {
     if (!pending || answering) return;
     void ask(pending.content, pending.id);
+    composer.current?.focus();
+  }
+
+  /** Tujuan dari "Tanya rute ke sini" dihapus, juga dari alamat, supaya tidak kembali saat halaman dimuat ulang. */
+  function clearPlace() {
+    setPlace(undefined);
+    window.history.replaceState(null, "", "/agen");
     composer.current?.focus();
   }
 
@@ -196,7 +216,12 @@ export function AgenChat({ questionsPerDay, contributor, signedIn, place }: Prop
                 message.role === "user" ? (
                   <UserBubble key={message.id} id={message.id} content={message.content} />
                 ) : (
-                  <AgentReply key={message.id} message={message} onAnnounce={setAnnouncement} />
+                  <AgentReply
+                    key={message.id}
+                    message={message}
+                    onAnnounce={setAnnouncement}
+                    cards={<AgenCards cards={message.cards} from={message.from} startCopy={startCopy} />}
+                  />
                 ),
               )}
               {pending && <UserBubble id={pending.id} content={pending.content} />}
@@ -221,6 +246,7 @@ export function AgenChat({ questionsPerDay, contributor, signedIn, place }: Prop
               <span className="sr-only">{t("percakapan.latest")}</span>
             </button>
           )}
+          <ContextChips start={start} onStart={setStart} place={place} onClearPlace={clearPlace} copy={startCopy} />
           <Composer ref={composer} answering={answering} onSend={send} onStop={stop} describedBy="agen-catatan" onWriting={setWriting} />
           <p id="agen-catatan" className="px-4 text-center text-xs text-text-secondary">
             {t("tulis.note", { count: questionsPerDay })}
