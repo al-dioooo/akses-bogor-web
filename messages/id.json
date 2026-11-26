@@ -1832,6 +1832,11 @@
       "photosAgain": "Sebagian foto perlu diunggah ulang. Mencoba lagi…",
       "locationProblem": "{message}",
       "fixLocation": "Perbaiki lokasi",
+      "staleDraft": "Data lokasi ini sudah berubah sejak draf dibuat. Muat data terbaru ke draf, periksa lagi isiannya, lalu terbitkan.",
+      "reloadPlace": "Muat data terbaru",
+      "reloading": "Memuat data terbaru…",
+      "reloadFailed": "Data terbaru lokasi ini gagal dimuat. Muat ulang halaman, lalu coba lagi.",
+      "reloaded": "Data terbaru lokasi ini sudah dimuat ke draf. Periksa lagi isiannya, lalu terbitkan.",
       "failed": "Laporan belum terkirim: {message} Isian tetap tersimpan di perangkat ini.",
       "offline": "Server tidak bisa dihubungi. Periksa koneksi, lalu tekan Kirim laporan lagi. Isian tetap tersimpan di perangkat ini."
     },

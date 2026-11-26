@@ -98,6 +98,8 @@ describe("sendDraft", () => {
     expect(await sendDraft(noPhotos, hooks())).toEqual({ ok: false, reason: "foto-hilang" });
     report = { status: 422, body: { galat: "di_luar_kota_bogor", pesan: "Di luar Kota Bogor." } };
     expect(await sendDraft(noPhotos, hooks())).toEqual({ ok: false, reason: "lokasi", message: "Di luar Kota Bogor." });
+    report = { status: 409, body: { galat: "draf_usang", pesan: "Data lokasi ini sudah berubah sejak draf dibuat." } };
+    expect(await sendDraft(noPhotos, hooks())).toEqual({ ok: false, reason: "usang", message: "Data lokasi ini sudah berubah sejak draf dibuat." });
     report = { status: 429, body: { galat: "laporan_terlalu_sering", pesan: "Coba lagi besok." } };
     expect(await sendDraft(noPhotos, hooks())).toEqual({ ok: false, reason: "galat", message: "Coba lagi besok." });
   });
