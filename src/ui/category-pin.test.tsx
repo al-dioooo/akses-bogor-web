@@ -69,12 +69,13 @@ describe("CategoryPin", () => {
 });
 
 describe("PlacePin", () => {
-  it("keeps the status colour and icon, and adds the category badge", () => {
+  it("fills the status colour with the category icon, and keeps the status icon on a badge", () => {
     const { container } = render(<PlacePin place={{ status: "tidak_aksesibel", category: "halte" }} />);
-    const [status, badge] = [...container.firstElementChild!.children];
-    expect(status.className).toContain("bg-status-inaccessible-solid");
-    expect(paths(status)).toEqual([...STATUS_ICON.tidak_aksesibel]);
-    expect(badge.className).toContain("bg-category-halte");
-    expect(paths(badge)).toEqual([...CATEGORY_ICON.halte]);
+    const [marker, badge] = [...container.firstElementChild!.children];
+    expect(marker.className).toContain("bg-status-inaccessible-solid");
+    expect(paths(marker)).toEqual([...CATEGORY_ICON.halte]);
+    expect(badge.className).toContain("bg-status-inaccessible-solid");
+    expect(paths(badge)).toEqual([...STATUS_ICON.tidak_aksesibel]);
+    expect(container.firstElementChild!.getAttribute("aria-hidden")).toBe("true");
   });
 });
