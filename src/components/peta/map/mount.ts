@@ -31,7 +31,13 @@ const CANDIDATE_ICON_RATIO = 2;
 const RENEW_BEFORE_MS = 5 * 60_000;
 const RETRY_MS = 60_000;
 
-export type Thematic = { name: string; boundaries: DistrictBoundaries; colors: Record<string, string | null> };
+export type Thematic = {
+  name: string;
+  boundaries: DistrictBoundaries;
+  colors: Record<string, string | null>;
+  /** Kecamatan yang diarsir, mis. "Data belum cukup" di lapisan Kecamatan paling aksesibel. */
+  hatched?: string[];
+};
 
 export type MapHandle = {
   /** Tombol marker per id lokasi; isinya digambar komponen React lewat portal. Isinya berganti lewat setPlaces. */
@@ -112,6 +118,24 @@ function withToken(url: string, token: string) {
   const next = new URL(url);
   next.searchParams.set("access_token", token);
   return next.toString();
+}
+
+/** Arsiran diagonal untuk kecamatan tanpa kelas warna, digambar dua kali lebih rapat untuk layar tajam. */
+function hatchPattern(color: string): ImageData {
+  const size = 16;
+  const canvas = document.createElement("canvas");
+  canvas.width = canvas.height = size;
+  const context = canvas.getContext("2d")!;
+  context.strokeStyle = color;
+  context.lineWidth = 2.5;
+  context.beginPath();
+  // Tiga garis supaya polanya menyambung di tepi ubin.
+  for (const offset of [-size, 0, size]) {
+    context.moveTo(offset, size);
+    context.lineTo(offset + size, 0);
+  }
+  context.stroke();
+  return context.getImageData(0, 0, size, size);
 }
 
 /** Ikon kategori (path Tabler 24 × 24, garis 1.75 seperti komponen Icon) sebagai gambar untuk lapisan simbol GL. */
@@ -277,7 +301,7 @@ export function mountMap(options: Options): MapHandle {
     if (!styleReady(drawThematic)) return;
     const container = map.getContainer();
     if (!thematic) {
-      for (const id of ["tematik-garis", "tematik-isi"]) if (map.getLayer(id)) map.removeLayer(id);
+      for (const id of ["tematik-garis", "tematik-arsir", "tematik-isi"]) if (map.getLayer(id)) map.removeLayer(id);
       if (map.getSource("tematik")) map.removeSource("tematik");
       delete container.dataset.tematik;
       return;
@@ -296,13 +320,18 @@ export function mountMap(options: Options): MapHandle {
     if (source) source.setData(data);
     else {
       const below = map.getLayer("kota-luar") ? "kota-luar" : map.getStyle().layers?.find((layer) => layer.type === "symbol")?.id;
+      const hatch = hatchPattern(color("--color-text-secondary"));
+      if (map.hasImage("arsir")) map.updateImage("arsir", hatch);
+      else map.addImage("arsir", hatch, { pixelRatio: 2 });
       map.addSource("tematik", { type: "geojson", data });
       map.addLayer({ id: "tematik-isi", type: "fill", source: "tematik", paint: { "fill-color": ["to-color", ["get", "warna"]], "fill-opacity": 0.55 } }, below);
+      map.addLayer({ id: "tematik-arsir", type: "fill", source: "tematik", paint: { "fill-pattern": "arsir", "fill-opacity": 0.6 } }, below);
       map.addLayer(
         { id: "tematik-garis", type: "line", source: "tematik", paint: { "line-color": color("--color-text-primary"), "line-width": 1, "line-opacity": 0.7 } },
         below,
       );
     }
+    map.setFilter("tematik-arsir", ["in", ["get", "slug"], ["literal", thematic.hatched ?? []]]);
     container.dataset.tematik = thematic.name;
   };
   map.on("style.load", drawThematic);

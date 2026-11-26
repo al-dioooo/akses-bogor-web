@@ -143,6 +143,37 @@ export type DisabilityCounts = {
   source: DistrictPriority["source"];
 };
 
+export type EntranceSource = "aksesbogor" | "openstreetmap" | "google_maps";
+
+/**
+ * Kecamatan paling aksesibel menurut keterangan pintu masuk; sama dengan GET /districts/accessibility (ADR-0053). Hanya
+ * `aksesbogor` yang diperiksa tim; sumber lain selalu ditampilkan sebagai belum diperiksa tim.
+ */
+export type DistrictAccessibility = {
+  minimumPlaces: number;
+  formula: string;
+  caveat: string;
+  districts: {
+    slug: string;
+    name: string;
+    places: number;
+    withData: number;
+    accessible: number;
+    limited: number;
+    notAccessible: number;
+    /** null: data belum cukup. */
+    score: number | null;
+    rank: number | null;
+    bySource: Record<EntranceSource, { withData: number; accessible: number }>;
+  }[];
+  sources: {
+    aksesbogor: { checkedByTeam: true };
+    openstreetmap: { checkedByTeam: false; attribution: string; url: string; retrievedAt: string | null };
+    /** null selama petunjuk penyedia mati: Google Maps tidak dihitung. */
+    google_maps: { checkedByTeam: false; attribution: string; retrievedAt: string | null } | null;
+  };
+};
+
 /** Batas kecamatan dari OpenStreetMap (ADR-0034), disederhanakan untuk peta; data ODbL. */
 export type DistrictBoundaries = {
   type: "FeatureCollection";
@@ -371,6 +402,9 @@ export async function getDistrictPriority(): Promise<DistrictPriority | null> {
 
 /** Jumlah terdaftar untuk lapisan Persebaran disabilitas; 503 selama API belum membuka data disabilitas. */
 export const getDisabilityCounts = () => get<DisabilityCounts>("/districts/disability");
+
+/** Kecamatan paling aksesibel untuk lapisan tematiknya; berisi angka dari petunjuk pihak ketiga, jadi tidak di-cache. */
+export const getDistrictAccessibility = () => get<DistrictAccessibility>("/districts/accessibility");
 
 /** Batas keenam kecamatan untuk lapisan peta. Publik dan jarang berubah. */
 export const getDistrictBoundaries = () => get<DistrictBoundaries>("/districts/boundaries");
