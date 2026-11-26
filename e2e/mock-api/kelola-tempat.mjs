@@ -30,7 +30,10 @@ export function createdPlace(id) {
   const place = created.get(id);
   return place && !place.unpublishedAt ? place : null;
 }
-const versionOf = (place) => place.updatedAt ?? place.lastVerifiedAt;
+/** Versi data tempat, seperti `version` di API: berubah setiap kali tempat diubah, diturunkan, atau ditayangkan lagi. */
+export function versionOf(place) {
+  return place.updatedAt ?? place.lastVerifiedAt;
+}
 
 const item = (place) => ({
   id: place.id,
