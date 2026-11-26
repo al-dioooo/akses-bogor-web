@@ -1,4 +1,4 @@
-// Route prioritas kecamatan tiruan (/districts/priority, /districts/boundaries) untuk tes Playwright, meniru
+// Route prioritas kecamatan tiruan (/districts/priority, /districts/boundaries, /districts/disability) untuk tes Playwright, meniru
 // akses-bogor-api (ADR-0043, ADR-0034). Prioritas dibuka, kecuali untuk IP pengunjung 203.0.113.251 yang mendapat 503
 // data_disabilitas_belum_aktif. Batas kecamatan tiruan berupa enam persegi di sekitar Kota Bogor, dengan garis luarnya.
 import { PRIORITY } from "./agen-rute.mjs";
@@ -42,10 +42,35 @@ const BOUNDARIES = {
   },
 };
 
-/** Menjawab route prioritas kecamatan, atau `null` bila bukan route itu. */
+const SLUGS = BOUNDARIES.features.map((f) => [f.properties.slug, f.properties.name]);
+const CATEGORIES = ["fisik", "netra", "mental", "lainnya"];
+/**
+ * Jumlah terdaftar tiruan (GET /districts/disability, ADR-0053): Bogor Barat terbanyak; tahun 2024 melonjak dari 2023.
+ * Bogor Tengah tanpa angka "lainnya" pada 2022.
+ */
+const DISABILITY = {
+  years: [2022, 2023, 2024],
+  categories: CATEGORIES,
+  districts: SLUGS.map(([slug, name], d) => ({
+    slug,
+    name,
+    counts: [2022, 2023, 2024].flatMap((year, y) =>
+      CATEGORIES.flatMap((category, c) => (slug === "bogor-tengah" && year === 2022 && category === "lainnya" ? [] : [{ year, category, count: (slug === "bogor-barat" ? 300 : 40 * (d + 1)) * (y + 1) + c * 7 }])),
+    ),
+  })),
+  caveat:
+    "Angka ini jumlah penyandang disabilitas yang terdaftar di Dinas Sosial Kota Bogor, bukan jumlah seluruh penyandang disabilitas. Jumlahnya melonjak besar antartahun, jadi angka antartahun belum bisa dibandingkan langsung.",
+  source: PRIORITY.source,
+};
+
+/** Menjawab route prioritas kecamatan dan data disabilitas, atau `null` bila bukan route itu. */
 export function handlePrioritas(method, pathname, headers) {
   if (method !== "GET") return null;
   if (pathname === "/districts/boundaries") return [200, BOUNDARIES, { "cache-control": "public, max-age=86400" }];
+  if (pathname === "/districts/disability") {
+    if (headers["x-visitor-ip"] === PRIORITY_OFF_IP) return [503, { galat: "data_disabilitas_belum_aktif", pesan: "Data disabilitas belum dibuka." }];
+    return [200, DISABILITY];
+  }
   if (pathname !== "/districts/priority") return null;
   if (headers["x-visitor-ip"] === PRIORITY_OFF_IP) return [503, { galat: "data_disabilitas_belum_aktif", pesan: "Data prioritas kecamatan belum dibuka." }];
   return [200, PRIORITY];
