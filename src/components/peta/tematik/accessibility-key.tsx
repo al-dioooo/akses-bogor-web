@@ -65,14 +65,15 @@ export function AccessibilityKey({
       onShowTable={onShowTable}
       summary={
         <>
-          <span className="flex shrink-0 gap-0.5">
+          {/* Di layar sangat sempit skala warna diberikan ke label, yang tidak boleh terpotong. */}
+          <span className="flex shrink-0 gap-0.5 max-[22rem]:hidden">
             {RAMP.map((color) => (
               <Swatch key={color} color={color} className="size-3.5" />
             ))}
           </span>
           <span className="flex min-w-0 flex-col leading-tight">
             <span className="truncate">{t("keyShort")}</span>
-            {unchecked && <span className="truncate text-xs font-semibold text-text-secondary">{t("unchecked")}</span>}
+            {unchecked && <span className="text-xs font-semibold text-text-secondary">{t("unchecked")}</span>}
           </span>
         </>
       }

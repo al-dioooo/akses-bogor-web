@@ -101,6 +101,9 @@ test("on a 320 px phone the one-line key keeps the label, and the list opens on 
   await chooseAccessible(page, { expand: false });
   await expect(key(page)).toContainText("Paling aksesibel");
   await expect(key(page)).toContainText("belum diperiksa tim");
+  // Label "belum diperiksa tim" di baris ringkas tidak boleh terpotong.
+  const label = key(page).locator("p[aria-hidden] span", { hasText: /^belum diperiksa tim$/ });
+  expect(await label.evaluate((element) => element.scrollWidth <= element.clientWidth && element.getBoundingClientRect().right <= window.innerWidth)).toBe(true);
   expect((await key(page).boundingBox())!.height).toBeLessThanOrEqual(64);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await key(page).getByRole("button", { name: /^Catatan, sumber, dan legenda kecamatan/ }).click();
