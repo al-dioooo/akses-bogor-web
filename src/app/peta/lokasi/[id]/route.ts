@@ -2,9 +2,9 @@ import { ApiError, getPlace, type FacilitySummary, type PlaceListItem } from "@/
 
 /**
  * Isi tambahan kartu lokasi di Peta: kecamatan, ringkasan "X dari Y fasilitas" (ADR-0018), dan asal datanya untuk
- * label verifikasi (ADR-0051, ADR-0057).
+ * label verifikasi (ADR-0051, ADR-0058).
  */
-export type PlaceCardDetail = { district: string; summary: FacilitySummary } & Pick<PlaceListItem, "lastVerifiedAt" | "verifiedBy" | "verificationSource" | "streetViewImageDate">;
+export type PlaceCardDetail = { district: string; summary: FacilitySummary } & Pick<PlaceListItem, "lastVerifiedAt" | "verifiedBy">;
 
 const NO_STORE = { "cache-control": "no-store" };
 
@@ -22,8 +22,6 @@ export async function GET(_request: Request, { params }: RouteContext<"/peta/lok
       summary: place.summary,
       lastVerifiedAt: place.lastVerifiedAt,
       verifiedBy: place.verifiedBy,
-      verificationSource: place.verificationSource,
-      streetViewImageDate: place.streetViewImageDate,
     };
     return Response.json(detail, { headers: { "cache-control": "public, max-age=60" } });
   } catch (error) {

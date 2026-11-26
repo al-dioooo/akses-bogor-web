@@ -40,8 +40,8 @@ export type PlaceListItem = {
    */
   verifiedBy?: "tim" | "admin";
   /**
-   * `street_view`: diverifikasi dari tangkapan Street View, ditulis "Diverifikasi dari Street View · gambar <bulan tahun>",
-   * tidak pernah "Diverifikasi" saja (ADR-0057). Kosong di API lama, dianggap `laporan`.
+   * `street_view`: diverifikasi tim dari tangkapan Street View. Tampilan publik memakai label tim biasa (ADR-0058); asal
+   * ini hanya dipakai Kelola tempat. Kosong di API lama.
    */
   verificationSource?: VerificationSource;
   /** Bulan gambar Street View, `YYYY-MM`; `lastVerifiedAt` tempat Street View adalah awal bulan itu. */
@@ -52,8 +52,6 @@ export type PlaceListItem = {
 /** Data terakhir diterbitkan admin, bukan diverifikasi orang kedua (ADR-0051). */
 export const byAdmin = (place: { verifiedBy?: "tim" | "admin" }) => place.verifiedBy === "admin";
 
-/** Data diverifikasi dari bukti Street View, bukan diperiksa di lokasi (ADR-0057). */
-export const byStreetView = (place: { verificationSource?: VerificationSource }) => place.verificationSource === "street_view";
 
 export type PlaceDetail = Omit<PlaceListItem, "coverPhoto"> & {
   landmark: string | null;

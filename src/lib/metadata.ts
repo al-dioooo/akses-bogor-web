@@ -88,15 +88,14 @@ export async function placeDescription(place: PlaceDetail) {
     getTranslations("Lokasi"),
     getFormatter(),
   ]);
-  const { summary, date } = placeFacts(place, card, format);
+  const { summary } = placeFacts(place, card, format);
   const { key, values } = verifiedLabel(place, format, "long");
-  const description = t(key === "verifiedAdmin" ? "metaDescriptionAdmin" : key === "verifiedStreetView" ? "metaDescriptionStreetView" : "metaDescription", {
+  const description = t(key === "verifiedAdmin" ? "metaDescriptionAdmin" : "metaDescription", {
     category: category(place.category),
     district: place.district.name,
     status: status(place.status),
     summary,
-    date,
-    month: values.month,
+    date: values.date,
   });
   return place.needsRecheck ? `${description} ${t("metaRecheck")}` : description;
 }
