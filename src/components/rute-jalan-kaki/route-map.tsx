@@ -24,7 +24,8 @@ async function fetchToken(): Promise<MapToken> {
 /** Warna token desain dalam bentuk yang dibaca Mapbox, mis. "#6440e8". */
 const token = (name: string, fallback: string) => getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
 
-type Props = { route: WalkingRoute; obstacles: Obstacle[]; /** Nama tujuan untuk label peta. */ name: string };
+/** Rute Mapbox atau rute OpenStreetMap (ADR-0055); peta hanya memakai garis dan tujuannya. */
+type Props = { route: Pick<WalkingRoute, "geometry" | "destination">; obstacles: Obstacle[]; /** Nama tujuan untuk label peta. */ name: string };
 
 /** Jarak dua titik [bujur, lintang] dalam meter (haversine). */
 function meters([lng1, lat1]: [number, number], [lng2, lat2]: [number, number]) {

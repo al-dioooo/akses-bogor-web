@@ -2206,6 +2206,7 @@
     "rute": {
       "loading": "Menghitung rute…",
       "summary": "{distance} · sekitar {minutes, plural, other {# menit}} jalan kaki",
+      "summaryWheelchair": "{distance} · sekitar {minutes, plural, other {# menit}} dengan kursi roda",
       "warningTitle": "Belum tentu bisa dilewati kursi roda",
       "stepsTitle": "Langkah",
       "changeStart": "Ganti titik awal",
@@ -2215,7 +2216,8 @@
       "mapHint": "Peta hanya gambaran. Langkah dan daftar hambatan di bawah berisi informasi yang sama.",
       "mapLoading": "Memuat peta…",
       "mapUnavailable": "Peta tidak bisa tampil. Langkah dan daftar hambatan di bawah berisi informasi yang sama.",
-      "attribution": "Rute: <mapbox>© Mapbox</mapbox>. Data jalan dan hambatan: <osm>© kontributor OpenStreetMap</osm>."
+      "attribution": "Rute: <mapbox>© Mapbox</mapbox>. Data jalan dan hambatan: <osm>© kontributor OpenStreetMap</osm>.",
+      "attributionOsm": "Rute dan data jalan: <osm>© kontributor OpenStreetMap</osm>."
     },
     "hambatan": {
       "title": "Hambatan yang tercatat di OpenStreetMap",
@@ -2226,6 +2228,16 @@
       "osmLinkTarget": "({description})",
       "truncated": "Hanya 50 hambatan pertama yang ditampilkan.",
       "failed": "Hambatan di rute tidak bisa dimuat. Rute tetap bisa dilihat, tetapi hambatan di jalan tidak ditampilkan."
+    },
+    "cakupan": {
+      "title": "Kelengkapan data di rute ini",
+      "sidewalk": "Trotoar atau jalur pejalan kaki tercatat di {percent}% panjang rute",
+      "surface": "Jenis permukaan tercatat di {percent}% panjang rute",
+      "kerb": "Kerb tercatat di {withKerb} dari {crossings} penyeberangan",
+      "noCrossings": "Tidak ada jalur penyeberangan yang tercatat di rute ini",
+      "unknown": "Kelengkapan data belum bisa dihitung untuk rute ini.",
+      "dataDate": "Data OpenStreetMap per {date}.",
+      "warningsTitle": "Perlu diperhatikan"
     }
   },
   "BantuMemetakan": {
