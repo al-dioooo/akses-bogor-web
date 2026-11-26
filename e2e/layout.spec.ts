@@ -52,7 +52,12 @@ test.describe("header on desktop widths", () => {
       await expectHeaderFits(page);
       const [shown, hidden] = width >= 1280 ? ["Menu utama", "Menu cepat"] : ["Menu cepat", "Menu utama"];
       await expect(page.getByRole("navigation", { name: shown })).toBeVisible();
-      await expect(page.getByRole("navigation", { name: hidden, includeHidden: true })).toBeHidden();
+      // Bottom nav ada di Suspense: sampai React menukar fallback-nya dengan nav yang sudah dialirkan (paling lambat
+      // sekitar 300 ms, lebih lama di runner yang sibuk), keduanya ada di DOM. Pelanggaran strict mode langsung gagal tanpa
+      // diulang, jadi tes menunggu sampai tinggal satu nav.
+      const hiddenNav = page.getByRole("navigation", { name: hidden, includeHidden: true });
+      await expect(hiddenNav).toHaveCount(1);
+      await expect(hiddenNav).toBeHidden();
 
       await signIn(page, uniqueEmail("lama", test.info().project.name));
       await page.goto("/tentang");

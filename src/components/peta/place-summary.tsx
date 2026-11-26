@@ -67,7 +67,7 @@ export function PlaceSummary({ place, headingRef, onClose }: { place: MapPlace; 
           {t("summary.detail")}
           <Icon icon={IconArrowRight} />
         </Link>
-        <Link href={`/tanya-rute?tempat=${place.id}`} className={buttonClass("outline", "sm")}>
+        <Link href={`/agen?tempat=${place.id}`} className={buttonClass("outline", "sm")}>
           <Icon icon={IconRoute} />
           {td("askRoute")}
         </Link>

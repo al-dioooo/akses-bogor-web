@@ -23,6 +23,22 @@ test.describe("with WebGL", () => {
     await expect(count(page)).toHaveText("7 dari 7 lokasi");
   });
 
+  test("every marker shows its category with the filter chip's icon, and its status on a badge", async ({ page }) => {
+    const paths = (svg: SVGElement) => [...svg.querySelectorAll("path")].map((path) => path.getAttribute("d")).join("|");
+    const chipIcon = (name: string) =>
+      page.getByRole("group", { name: "Kategori" }).locator("label").filter({ hasText: name }).locator("svg").last().evaluate(paths);
+    for (const [marker, category] of [
+      ["Halte contoh, Halte, Sebagian", "Halte"],
+      ["Masjid contoh A, Masjid, Aksesibel", "Masjid"],
+    ]) {
+      const icons = page.getByRole("button", { name: marker }).locator("svg");
+      // Ikon di tengah lingkaran status adalah ikon kategori; lencana kecil membawa ikon status.
+      await expect(icons).toHaveCount(2);
+      expect(await icons.first().evaluate(paths)).toBe(await chipIcon(category));
+      expect(await icons.nth(1).evaluate(paths)).not.toBe(await chipIcon(category));
+    }
+  });
+
   test("a marker opens a summary that links to the place and closes with Escape", async ({ page }) => {
     const marker = page.getByRole("button", { name: "Halte contoh, Halte, Sebagian" });
     await marker.click();
@@ -37,7 +53,7 @@ test.describe("with WebGL", () => {
     // Kecamatan dan ringkasan fasilitas dimuat sesudah lokasi dipilih (ADR-0018).
     await expect(summary.getByText("· Bogor Tengah")).toBeVisible();
     await expect(summary.getByText("2 dari 3 fasilitas tersedia")).toBeVisible();
-    await expect(summary.getByRole("link", { name: "Tanya rute ke sini" })).toHaveAttribute("href", "/tanya-rute?tempat=4037ba19-b366-45bc-aceb-270944fe9372");
+    await expect(summary.getByRole("link", { name: "Tanya rute ke sini" })).toHaveAttribute("href", "/agen?tempat=4037ba19-b366-45bc-aceb-270944fe9372");
     await expect(summary.getByRole("link", { name: "Laporkan kekurangan" })).toHaveAttribute(
       "href",
       "/laporkan?lokasi=4037ba19-b366-45bc-aceb-270944fe9372&jenis=kekurangan",
