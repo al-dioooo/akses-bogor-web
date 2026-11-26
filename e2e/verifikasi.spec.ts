@@ -37,6 +37,28 @@ test("shows the queue oldest first without the verifier's own report", async ({ 
   await expect((await dashboardMenu(page)).getByRole("link", { name: "Tim verifikator" })).toHaveCount(0);
 });
 
+test("says that the verifier's own waiting report is checked by someone else, instead of an empty queue", async ({ page }) => {
+  // Antrean verifikator biasa: laporan sendiri tidak ikut, tetapi disebut di atas daftar.
+  await signIn(page, email("verifikator"));
+  await page.goto("/verifikasi");
+  const queue = page.getByRole("main").getByRole("region", { name: "2 laporan" });
+  await expect(queue).toContainText("1 laporan Anda sendiri tidak ada di daftar ini karena diperiksa verifikator lain (pemeriksaan orang kedua).");
+
+  // Hanya laporan sendiri yang menunggu: bukan "Antrean kosong / Semua laporan sudah diperiksa".
+  await page.context().clearCookies();
+  await signIn(page, email("verifikator-sendiri"));
+  const desk = page.getByRole("main").getByRole("region", { name: "Meja verifikasi" });
+  await expect(desk.getByRole("link", { name: /Antrean/ })).toContainText("1 laporan Anda menunggu verifikator lain.");
+  await expect(desk).not.toContainText("Semua laporan sudah diperiksa.");
+  await page.goto("/verifikasi");
+  const empty = page.getByRole("main").getByRole("region", { name: "Tidak ada laporan" });
+  await expect(empty).toContainText("Tidak ada laporan untuk Anda periksa");
+  await expect(empty).toContainText("1 laporan Anda sendiri sedang menunggu. Laporan sendiri diperiksa verifikator lain (pemeriksaan orang kedua)");
+  await expect(empty).not.toContainText("Semua laporan sudah diperiksa");
+  await expect(empty.getByRole("link", { name: "Lihat di Laporan saya" })).toHaveAttribute("href", "/akun/laporan");
+  expect(await blockingViolations(page)).toEqual([]);
+});
+
 test("tells reporters that the desk is for verifiers only", async ({ page }) => {
   await signIn(page, email("lama"));
   await page.goto("/verifikasi");

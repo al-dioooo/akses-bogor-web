@@ -27,7 +27,15 @@ export type QueueItem = {
   worsens: boolean;
 };
 
-export type Queue = { total: number; items: QueueItem[] };
+export type Queue = {
+  total: number;
+  /**
+   * Laporan milik verifikator ini dengan status yang sama. Tidak ikut antrean karena diperiksa verifikator lain (FR-37).
+   * API lama tidak mengirimnya.
+   */
+  ownWaiting?: number;
+  items: QueueItem[];
+};
 
 export type FacilityValue = { facility: Facility; answer: Answer; reason: Reason | null; note: string | null };
 export type StatusPreview = { status: Status; available: number; relevant: number; unknown: number };

@@ -29,8 +29,8 @@ export function openClarifications(reports: MyReport[], now: Date): OpenClarific
 }
 
 export type DeskSummary = {
-  queue: { total: number; oldest: { id: string; name: string; workingDays: number } | null; overdue: number; answered: number };
-  waiting: { total: number; nextDueAt: string | null };
+  queue: { total: number; oldest: { id: string; name: string; workingDays: number } | null; overdue: number; answered: number; own: number };
+  waiting: { total: number; nextDueAt: string | null; own: number };
   recheck: { total: number; oldestVerifiedAt: string | null };
 };
 
@@ -48,8 +48,9 @@ export function deskSummary(queue: Queue, waiting: Queue, recheck: { total: numb
       oldest: oldest ? { id: oldest.id, name: oldest.name, workingDays: workingDaysWaiting(oldest.submittedAt, now) } : null,
       overdue: queue.items.filter((item) => workingDaysWaiting(item.submittedAt, now) > TARGET_WORKING_DAYS).length,
       answered: queue.items.filter((item) => item.answered).length,
+      own: queue.ownWaiting ?? 0,
     },
-    waiting: { total: waiting.total, nextDueAt: earliest(waiting.items.map((item) => item.clarificationDueAt)) },
+    waiting: { total: waiting.total, nextDueAt: earliest(waiting.items.map((item) => item.clarificationDueAt)), own: waiting.ownWaiting ?? 0 },
     recheck: { total: recheck.total, oldestVerifiedAt: earliest(recheck.items.map((item) => item.lastVerifiedAt)) },
   };
 }
