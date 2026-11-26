@@ -2192,7 +2192,7 @@
     "awal": {
       "title": "Dari mana Anda berangkat?",
       "why": "Titik awal dipakai untuk menghitung rute jalan kaki ke tempat ini, mis. untuk datang memotret dan mencatat fasilitasnya.",
-      "privacy": "Titik awal dibulatkan sampai sekitar 11 m dan dikirim lewat server AksesBogor ke Mapbox hanya untuk menghitung rute. Titik ini tidak disimpan dan tidak pernah dikirim ke agen AI.",
+      "privacy": "Titik awal dibulatkan sampai sekitar 11 m dan dikirim ke server AksesBogor hanya untuk menghitung rute, dengan data OpenStreetMap di server kami sendiri atau lewat Mapbox. Titik ini tidak disimpan dan tidak pernah dikirim ke agen AI.",
       "useLocation": "Pakai lokasi saya",
       "locating": "Mencari lokasi Anda…",
       "pickOnMap": "Pilih titik awal di peta",
@@ -2202,6 +2202,13 @@
       "pickTitle": "Pilih titik awal di peta",
       "usePoint": "Pakai titik ini",
       "mapUnavailable": "Peta tidak bisa tampil, jadi titik awal hanya bisa diambil dari lokasi perangkat."
+    },
+    "profil": {
+      "label": "Profil rute",
+      "kursi_roda": "Kursi roda",
+      "jalan_kaki": "Jalan kaki",
+      "hint": "Profil kursi roda menghindari tangga yang tercatat di OpenStreetMap dan lebih memilih trotoar. Data di peta bisa kurang lengkap, jadi tetap periksa peringatan di bawah.",
+      "noWheelchairPath": "Lihat rute jalan kaki"
     },
     "rute": {
       "loading": "Menghitung rute…",
