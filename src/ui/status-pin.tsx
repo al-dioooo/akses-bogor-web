@@ -1,5 +1,6 @@
 import type { Status } from "@/lib/api";
 import { Icon } from "./icon";
+import type { Glyph } from "./icons";
 import { STATUS_ICON } from "./place-icons";
 
 /** Warna isi marker per status, dengan warna ikon pasangannya (ADR-0027). */
@@ -12,15 +13,16 @@ const STATUS_SOLID: Record<Status, string> = {
 
 /**
  * Bentuk Map marker: lingkaran berwarna status dengan ikon status, cincin putih, dan garis luar tipis supaya tetap
- * terpisah dari peta terang maupun gelap. Dekoratif: nama status ditulis di teks sebelahnya atau di nama tombol.
+ * terpisah dari peta terang maupun gelap. `icon` mengganti ikon status, mis. dengan ikon kategori di marker lokasi
+ * (ADR-0053); ikon status lalu ada di lencananya. Dekoratif: nama status ditulis di teks sebelahnya atau di nama tombol.
  */
-export function StatusPin({ status, className = "size-8" }: { status: Status; className?: string }) {
+export function StatusPin({ status, icon = STATUS_ICON[status], className = "size-8" }: { status: Status; icon?: Glyph; className?: string }) {
   return (
     <span
       aria-hidden="true"
       className={`grid shrink-0 place-items-center rounded-full border-2 border-marker-ring shadow-[0_0_0_1px_var(--color-border-strong)] ${STATUS_SOLID[status]} ${className}`}
     >
-      <Icon icon={STATUS_ICON[status]} className="size-[62%]" />
+      <Icon icon={icon} className="size-[62%]" />
     </span>
   );
 }
