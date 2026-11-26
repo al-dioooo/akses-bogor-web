@@ -71,8 +71,8 @@ describe("deskSummary", () => {
     const waiting = { total: 2, items: [item("w1", { clarificationDueAt: "2026-11-27T03:00:00.000Z" }), item("w2", { clarificationDueAt: "2026-11-25T03:00:00.000Z" })] };
     const recheck = { total: 1, items: [{ id: "p", name: "Halte", category: "halte" as const, district: { slug: "bogor-tengah", name: "Bogor Tengah" }, status: "aksesibel" as const, lastVerifiedAt: "2025-09-01T00:00:00.000Z" }] };
     expect(deskSummary(queue, waiting, recheck, now)).toEqual({
-      queue: { total: 120, oldest: { id: "old", name: "Laporan old", workingDays: 6 }, overdue: 2, answered: 1 },
-      waiting: { total: 2, nextDueAt: "2026-11-25T03:00:00.000Z" },
+      queue: { total: 120, oldest: { id: "old", name: "Laporan old", workingDays: 6 }, overdue: 2, answered: 1, own: 0 },
+      waiting: { total: 2, nextDueAt: "2026-11-25T03:00:00.000Z", own: 0 },
       recheck: { total: 1, oldestVerifiedAt: "2025-09-01T00:00:00.000Z" },
     });
   });
@@ -80,10 +80,17 @@ describe("deskSummary", () => {
   it("reports an empty desk without an oldest report", () => {
     const empty = { total: 0, items: [] };
     expect(deskSummary(empty, empty, empty, now)).toEqual({
-      queue: { total: 0, oldest: null, overdue: 0, answered: 0 },
-      waiting: { total: 0, nextDueAt: null },
+      queue: { total: 0, oldest: null, overdue: 0, answered: 0, own: 0 },
+      waiting: { total: 0, nextDueAt: null, own: 0 },
       recheck: { total: 0, oldestVerifiedAt: null },
     });
+  });
+
+  it("counts the verifier's own waiting reports, which the queue leaves out (FR-37)", () => {
+    const empty = { total: 0, items: [] };
+    const desk = deskSummary({ total: 0, ownWaiting: 1, items: [] }, { total: 0, ownWaiting: 2, items: [] }, empty, now);
+    expect(desk.queue).toMatchObject({ total: 0, oldest: null, own: 1 });
+    expect(desk.waiting).toMatchObject({ total: 0, own: 2 });
   });
 });
 

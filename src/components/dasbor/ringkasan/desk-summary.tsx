@@ -30,7 +30,8 @@ export async function DeskSummary({ token, now }: { token: string; now: Date }) 
       icon: IconClipboardCheck,
       label: t("queue"),
       total: desk.queue.total,
-      detail: desk.queue.oldest ? t("oldest", { days: desk.queue.oldest.workingDays }) : t("queueEmpty"),
+      // Laporan sendiri tidak ada di antrean (FR-37), jadi antrean kosong belum tentu berarti semuanya sudah diperiksa.
+      detail: desk.queue.oldest ? t("oldest", { days: desk.queue.oldest.workingDays }) : desk.queue.own > 0 ? t("queueOwn", { count: desk.queue.own }) : t("queueEmpty"),
       alert: desk.queue.overdue > 0 ? t("overdue", { count: desk.queue.overdue, target: TARGET_WORKING_DAYS }) : undefined,
     },
     {
@@ -39,7 +40,7 @@ export async function DeskSummary({ token, now }: { token: string; now: Date }) 
       icon: IconMessage,
       label: t("waiting"),
       total: desk.waiting.total,
-      detail: desk.waiting.nextDueAt ? t("nextDue", { date: date(desk.waiting.nextDueAt) }) : t("waitingEmpty"),
+      detail: desk.waiting.nextDueAt ? t("nextDue", { date: date(desk.waiting.nextDueAt) }) : desk.waiting.own > 0 ? t("waitingOwn", { count: desk.waiting.own }) : t("waitingEmpty"),
     },
     {
       key: "cek-ulang",
