@@ -50,6 +50,9 @@ export type AdminPlace = AdminPlaceItem & {
 
 export type HistoryEntry = {
   id: number;
+  /** `foto`: foto tayang tempat ini yang dihapus; `changes` berisi `tag` dan `alasan`. API lama tidak mengirimnya. */
+  entity?: "lokasi" | "foto";
+  photoId?: string | null;
   action: string;
   actor: { name: string | null; label: "sistem" | "skrip" | null };
   at: string;
