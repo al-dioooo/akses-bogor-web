@@ -198,14 +198,15 @@ test("the table button opens the list panel at the ranked table with its source"
   await expect(table.getByText("Batas kecamatan: © kontributor OpenStreetMap (tab baru).")).toBeVisible();
 });
 
-test("hides the thematic map chooser while the API keeps the disability data off", async ({ browser }) => {
+test("offers no Prioritas pemetaan while the API keeps the disability data off", async ({ browser }) => {
   const context = await browser.newContext({ extraHTTPHeaders: { "x-forwarded-for": PRIORITY_OFF_IP } });
   const page = await context.newPage();
   await stubMapbox(page);
   await page.goto("/peta");
   await expect(main(page).getByRole("heading", { level: 1 })).toBeVisible();
-  await expect(main(page).getByRole("status").first()).toBeVisible();
-  await expect(chooser(page)).toHaveCount(0);
+  await openChooser(page);
+  await expect(option(page, "Prioritas pemetaan")).toHaveCount(0);
+  await expect(option(page, "Persebaran disabilitas")).toHaveCount(0);
   await context.close();
 });
 
