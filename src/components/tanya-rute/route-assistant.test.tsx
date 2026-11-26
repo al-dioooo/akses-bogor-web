@@ -3,6 +3,8 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { WithIntl } from "@/test/intl";
 import { RouteAssistant } from "./route-assistant";
 
+/** API tanpa rute OpenStreetMap (ADR-0055). */
+const OSM_ROUTE_OFF = { status: 503, body: { galat: "rute_aksesibel_belum_aktif", pesan: "Rute dari data OpenStreetMap belum diatur di server." } };
 const HALTE = "4037ba19-b366-45bc-aceb-270944fe9372";
 const ANSWER = {
   answer: "Halte contoh berstatus Sebagian menurut data AksesBogor yang diperiksa tim.",
@@ -52,7 +54,7 @@ afterEach(() => {
 describe("RouteAssistant", () => {
   it("sends the start point and chosen place with the question, then draws the route card from that start point", async () => {
     grantLocation({ latitude: -6.5965, longitude: 106.7972 });
-    const fetch = mockFetch({ "/tanya-rute/tanya": [{ status: 200, body: ANSWER }], "/tanya-rute/rute": [{ status: 200, body: ROUTE }], "/tanya-rute/hambatan": [{ status: 200, body: OBSTACLES }] });
+    const fetch = mockFetch({ "/tanya-rute/tanya": [{ status: 200, body: ANSWER }], "/tanya-rute/rute": [OSM_ROUTE_OFF, { status: 200, body: ROUTE }], "/tanya-rute/hambatan": [{ status: 200, body: OBSTACLES }] });
     render(<RouteAssistant place={{ id: HALTE, name: "Halte contoh" }} questionsPerDay={5} />, { wrapper: WithIntl });
     expect(screen.getByRole("link", { name: "Kebijakan Privasi" }).getAttribute("href")).toBe("/kebijakan-privasi");
     expect(screen.getByText("Tujuan: Halte contoh")).toBeTruthy();
@@ -65,7 +67,11 @@ describe("RouteAssistant", () => {
     expect(bodyOf(fetch, "/tanya-rute/tanya")[0]).toEqual({ question: "Bagaimana cara ke Halte contoh?", history: [], placeId: HALTE, from: { lat: -6.5965, lng: 106.7972 } });
     expect(screen.getByRole("link", { name: /Data terverifikasi AksesBogor: Halte contoh/ }).getAttribute("href")).toBe(`/lokasi/${HALTE}`);
     await waitFor(() => expect(screen.getByText(ROUTE.warning)).toBeTruthy());
-    expect(bodyOf(fetch, "/tanya-rute/rute")[0]).toEqual({ from: { lat: -6.5965, lng: 106.7972 }, placeId: HALTE });
+    // Rute OpenStreetMap diminta dulu (ADR-0055); API tiruan menjawab belum aktif, lalu kartu memakai rute Mapbox.
+    expect(bodyOf(fetch, "/tanya-rute/rute")).toEqual([
+      { from: { lat: -6.5965, lng: 106.7972 }, placeId: HALTE, profil: "kursi_roda" },
+      { from: { lat: -6.5965, lng: 106.7972 }, placeId: HALTE },
+    ]);
     expect((screen.getByRole("textbox", { name: "Pertanyaan Anda" }) as HTMLTextAreaElement).value).toBe("");
   });
 
