@@ -153,6 +153,8 @@ export function PlaceMap({
   const height: SheetHeight = chosenHeight ?? (narrow ? "kecil" : "setengah");
   const [layer, setLayer] = useState<"mati" | "memuat" | "nyala" | "galat">("mati");
   const [boundaries, setBoundaries] = useState<DistrictBoundaries | null>(null);
+  // Batas kecamatan dimuat sekali untuk batas kota dan lapisan prioritas; permintaan yang gagal boleh diulang.
+  const boundariesRequest = useRef<Promise<DistrictBoundaries> | null>(null);
   const locateButton = useRef<HTMLButtonElement>(null);
   const locate = useLocate(map);
   // Lapisan kandidat menyala selama ada kandidat; tombolnya di legenda.
@@ -334,21 +336,42 @@ export function PlaceMap({
     map.setPriority(layer === "nyala" && boundaries ? { boundaries, levels: Object.fromEntries(priority.districts.map((d) => [d.slug, d.level])) } : null);
   }, [map, priority, layer, boundaries]);
 
+  const ready = state === "siap";
+  const loadBoundaries = useCallback(() => {
+    boundariesRequest.current ??= (async () => {
+      const response = await fetch("/peta/batas-kecamatan");
+      if (!response.ok) throw new Error("batas kecamatan tidak tersedia");
+      const value = (await response.json()) as DistrictBoundaries;
+      setBoundaries(value);
+      return value;
+    })().catch((error: unknown) => {
+      boundariesRequest.current = null;
+      throw error;
+    });
+    return boundariesRequest.current;
+  }, []);
+
+  // Batas Kota Bogor selalu tampil setelah peta siap (ADR-0053). Bila batasnya gagal dimuat, peta tetap tanpa garis itu.
+  useEffect(() => {
+    if (ready) loadBoundaries().catch(() => {});
+  }, [ready, loadBoundaries]);
+
+  useEffect(() => {
+    map?.setBorder(boundaries?.outline ?? null);
+  }, [map, boundaries]);
+
   async function toggleLayer() {
     if (layer === "nyala" || layer === "galat") return setLayer("mati");
     if (boundaries) return setLayer("nyala");
     setLayer("memuat");
     try {
-      const response = await fetch("/peta/batas-kecamatan");
-      if (!response.ok) throw new Error("batas kecamatan tidak tersedia");
-      setBoundaries((await response.json()) as DistrictBoundaries);
+      await loadBoundaries();
       setLayer("nyala");
     } catch {
       setLayer("galat");
     }
   }
 
-  const ready = state === "siap";
   // Daftar mengikuti bagian peta yang terlihat. Sebelum peta siap, tanpa peta, atau saat panel menutup seluruh peta (lembar
   // penuh), daftar berisi semua lokasi.
   const followsView = ready && inView !== null;
@@ -520,7 +543,10 @@ export function PlaceMap({
               <Icon icon={IconList} />
               {t("asList")}
             </Link>
-            <MapLegend candidates={candidates.length > 0 ? { on: candidatesOn, onToggle: () => setCandidatesOn(!candidatesOn) } : undefined} />
+            <MapLegend
+              candidates={candidates.length > 0 ? { on: candidatesOn, onToggle: () => setCandidatesOn(!candidatesOn) } : undefined}
+              border={ready && !!boundaries?.outline}
+            />
             <CategoryLegend />
             {places.length > 0 &&
               (shown.length > 0 ? (

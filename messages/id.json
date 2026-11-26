@@ -239,6 +239,7 @@
     "asList": "Lihat sebagai daftar",
     "legend": "Legenda status",
     "legendCategory": "Legenda kategori",
+    "border": "Batas Kota Bogor (garis putus-putus)",
     "legendCategoryHint": "Lencana kecil di marker dan warna lingkaran Belum ada data. Ikon kategori muncul di lingkaran saat peta diperbesar.",
     "cari": {
       "placeholder": "Cari nama tempat",
