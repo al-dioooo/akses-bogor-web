@@ -16,6 +16,8 @@ export type SendOutcome =
   /** API tidak lagi menyimpan foto yang pernah diunggah (lebih dari 24 jam). */
   | { ok: false; reason: "foto-hilang" }
   | { ok: false; reason: "lokasi"; message: string }
+  /** Terbit langsung admin ditolak: lokasi sudah berubah sejak draf dibuat (ADR-0051). */
+  | { ok: false; reason: "usang"; message: string }
   | { ok: false; reason: "galat"; message: string | null };
 
 export type SendHooks = {
@@ -84,5 +86,6 @@ export async function sendDraft(draft: ReportDraft, hooks: SendHooks, { admin = 
   if (answer.status === 201 && "id" in answer.body) return { ok: true, report: answer.body as SubmittedReport };
   if (answer.body.galat === "foto_tidak_ditemukan") return { ok: false, reason: "foto-hilang" };
   if (answer.body.galat === "di_luar_kota_bogor") return { ok: false, reason: "lokasi", message: answer.body.pesan ?? "" };
+  if (answer.body.galat === "draf_usang") return { ok: false, reason: "usang", message: answer.body.pesan ?? "" };
   return { ok: false, reason: "galat", message: answer.status === 0 ? null : (answer.body.pesan ?? null) };
 }

@@ -1,5 +1,5 @@
 import type { Page } from "@playwright/test";
-import { signIn, uniqueEmail } from "./akun-masuk";
+import { mockApi, signIn, uniqueEmail } from "./akun-masuk";
 import { blockingViolations } from "./axe";
 import { photo } from "./foto";
 import { stubGoogle } from "./google";
@@ -57,6 +57,38 @@ test("admins publish their own report directly with a reason, and see that the p
   await expect(main(page).getByRole("link", { name: "Lihat tempat" })).toHaveAttribute("href", /^\/lokasi\//);
   await expect(main(page).getByRole("link", { name: "Buka di Kelola tempat" })).toHaveAttribute("href", /^\/verifikasi\/tempat\//);
   await expect(main(page).getByRole("heading", { name: "Apa selanjutnya?" })).toHaveCount(0);
+});
+
+test("refuses a draft made before the place changed, and publishes after loading the current data", async ({ page, request }) => {
+  const admin = email("admin");
+  const headers = { authorization: `Bearer akun:${admin}` };
+  const name = `Halte draf lama ${test.info().project.name}`;
+  const facilities = ["ramp", "toilet_difabel", "guiding_block", "lift"].map((facility) => ({ facility, answer: "belum_tahu" }));
+  const created = await request.post(`${mockApi()}/admin/places`, { headers, data: { name, category: "halte", location: { lat: -6.6, lng: 106.8 }, facilities, photos: [], reason: "Dibuat untuk tes" } });
+  const { placeId } = (await created.json()) as { placeId: string };
+
+  await signIn(page, admin);
+  await page.goto(`/laporkan?lokasi=${placeId}&jenis=perubahan&langkah=ringkasan`);
+  const direct = main(page).getByRole("group", { name: "Khusus admin" });
+  await direct.getByRole("checkbox", { name: "Terbitkan langsung (admin)" }).check();
+  await direct.getByLabel("Alasan terbit langsung").fill("Saya periksa sendiri kemarin");
+
+  // Tim lain menerbitkan perubahan setelah draf ini dibuat.
+  const current = await (await request.get(`${mockApi()}/admin/places/${placeId}`, { headers })).json();
+  await request.patch(`${mockApi()}/admin/places/${placeId}`, { headers, data: { ...current, name: `${name} baru`, facilities, photos: [], removePhotos: [], reason: "Perubahan dari tab lain" } });
+
+  await page.getByRole("button", { name: "Terbitkan langsung" }).click();
+  const alert = main(page).getByRole("alert");
+  await expect(alert).toContainText("Data lokasi ini sudah berubah sejak draf dibuat.");
+  await expect(page).toHaveURL(/langkah=ringkasan/);
+  expect(await blockingViolations(page)).toEqual([]);
+  await alert.getByRole("button", { name: "Muat data terbaru" }).click();
+  await expect(main(page).getByRole("status").filter({ hasText: "Data terbaru lokasi ini sudah dimuat ke draf." })).toBeVisible();
+  await expect(main(page).getByText(`${name} baru`, { exact: true })).toBeVisible();
+  await expect(direct.getByLabel("Alasan terbit langsung")).toHaveValue("Saya periksa sendiri kemarin");
+
+  await page.getByRole("button", { name: "Terbitkan langsung" }).click();
+  await expect(page).toHaveURL(/\/laporkan\/terkirim\?laporan=[0-9a-f-]+&langsung=1/);
 });
 
 test("regular accounts do not see the option and send to the queue as before", async ({ page }) => {

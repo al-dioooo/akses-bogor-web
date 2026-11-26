@@ -9,6 +9,7 @@
 //   Penghitungnya per akun karena tes Playwright berjalan paralel: unggahan dari tes lain tidak boleh memakai galatnya.
 import { randomUUID } from "node:crypto";
 import { userFromToken } from "./akun.mjs";
+import { createdPlace, versionOf } from "./kelola-tempat.mjs";
 
 const BOX = { west: 106.7348, east: 106.8486, south: -6.6813, north: -6.5143 };
 const MAPBOX = [
@@ -101,8 +102,12 @@ export function handleLaporkan(method, pathname, headers, body, places) {
     const direct = Boolean(body.publishDirectly);
     if (direct && user.role !== "admin") return error(403, "bukan_admin", "Hanya admin AksesBogor yang bisa menerbitkan langsung.");
     if (direct && (typeof body.publishReason !== "string" || body.publishReason.trim().length < 5)) return error(400, "input_tidak_valid", "Alasan wajib untuk terbit langsung.");
-    const place = body.placeId ? places.find((p) => p.id === body.placeId) : null;
+    const place = body.placeId ? (places.find((p) => p.id === body.placeId) ?? createdPlace(body.placeId)) : null;
     if (body.placeId && !place) return error(404, "lokasi_tidak_ditemukan", "Lokasi ini tidak ditemukan.");
+    // Seperti API: terbit langsung dari draf yang dibuat sebelum tempat berubah ditolak, tanpa menyimpan apa pun.
+    if (direct && place && body.placeVersion !== versionOf(place)) {
+      return error(409, "draf_usang", "Data lokasi ini sudah berubah sejak draf dibuat. Muat data terbaru ke draf, periksa lagi isiannya, lalu terbitkan.");
+    }
     const location = body.kind === "kekurangan" ? place.location : body.location;
     if (!location || !inside(location)) return outside();
     for (const photo of body.photos ?? []) {

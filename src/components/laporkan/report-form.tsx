@@ -6,7 +6,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { FormAlert } from "@/components/akun/form-parts";
 import type { PlaceDetail } from "@/lib/api";
 import { deleteDraft, loadDraft, purgeExpiredDrafts, saveDraft } from "@/lib/draf";
-import { checkStep, directReasonMissing, draftFor, firstIncompleteStep, newDraft, STEPS, type FieldError, type ReportDraft, type Step } from "@/lib/isian-laporan";
+import { currentPlace } from "@/app/laporkan/actions";
+import { checkStep, directReasonMissing, draftFor, firstIncompleteStep, newDraft, STEPS, withCurrentPlace, type FieldError, type ReportDraft, type Step } from "@/lib/isian-laporan";
 import type { CandidatePrefill } from "@/lib/kandidat";
 import { withReturn } from "@/lib/kembali";
 import type { ReportKind } from "@/lib/laporan";
@@ -52,7 +53,7 @@ export function ReportForm({
 
   const [draft, setDraft] = useState<ReportDraft | null>(null);
   const [storage, setStorage] = useState<"ok" | "tidak-ada">("ok");
-  const [notice, setNotice] = useState<"restored" | "deleted" | null>(null);
+  const [notice, setNotice] = useState<"restored" | "deleted" | "reloaded" | null>(null);
   const [checkedStep, setCheckedStep] = useState<Step | null>(null);
   const [nearbyPending, setNearbyPending] = useState(false);
   const changed = useRef(false);
@@ -66,6 +67,7 @@ export function ReportForm({
   const [sending, setSending] = useState<Sending | null>(null);
   const [sendProblem, setSendProblem] = useState<SendProblem | null>(null);
   const [directError, setDirectError] = useState(false);
+  const [reloading, setReloading] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -249,9 +251,31 @@ export function ReportForm({
       setSending(null);
       if (outcome.reason === "foto") setSendProblem({ kind: "foto", key: outcome.key, message: outcome.message });
       else if (outcome.reason === "lokasi") setSendProblem({ kind: "lokasi", message: outcome.message });
+      else if (outcome.reason === "usang") setSendProblem({ kind: "usang", message: outcome.message });
       else setSendProblem({ kind: "galat", message: outcome.reason === "galat" ? outcome.message : null });
     };
     await attempt(draft, false);
+  }
+
+  /**
+   * Terbit langsung ditolak karena lokasi sudah berubah sejak draf dibuat (ADR-0051): data tempat, jawaban, dan versinya
+   * diganti data terbaru, lalu admin memeriksa ringkasan lagi sebelum menerbitkan. Foto baru dan alasan tetap.
+   */
+  async function reloadPlace() {
+    if (!draft?.placeId || reloading) return;
+    setReloading(true);
+    const place = await currentPlace(draft.placeId).catch(() => null);
+    setReloading(false);
+    if (!place) {
+      setSendProblem((problem) => (problem?.kind === "usang" ? { ...problem, reloadFailed: true } : problem));
+      return;
+    }
+    changed.current = true;
+    saveBlocked.current = false;
+    setDraft((current) => (current ? withCurrentPlace(current, place) : current));
+    setSendProblem(null);
+    setNotice("reloaded");
+    focusAfterRender.current = "judul";
   }
 
   function next() {
@@ -273,7 +297,7 @@ export function ReportForm({
       <Stepper step={step} complete={(target) => checkStep(target, draft).length === 0} />
       {storage !== "ok" && <FormAlert message={t("storageWarning")} />}
       <p role="status" className="empty:hidden">
-        {notice === "restored" ? t("restored") : notice === "deleted" ? t("ringkasan.deleted") : ""}
+        {notice === "restored" ? t("restored") : notice === "deleted" ? t("ringkasan.deleted") : notice === "reloaded" ? t("kirim.reloaded") : ""}
       </p>
       <h2 ref={heading} tabIndex={-1} className="display text-[clamp(1.75rem,1.3rem+1.4vw,2.5rem)] leading-tight">
         {number ? t("steps.heading", { number, name: t(`steps.${number}`) }) : t("steps.ringkasan")}
@@ -303,6 +327,8 @@ export function ReportForm({
               setSendProblem(null);
             }}
             onFixLocation={() => goTo("1")}
+            onReloadPlace={() => void reloadPlace()}
+            reloading={reloading}
           />
         </>
       )}

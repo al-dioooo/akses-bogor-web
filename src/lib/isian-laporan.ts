@@ -59,6 +59,11 @@ export type ReportDraft = {
   /** Khusus admin: terbitkan langsung dengan alasan (ADR-0051). Akun lain tidak melihat pilihannya, dan API menolaknya. */
   publishDirectly?: boolean;
   publishReason?: string;
+  /**
+   * Versi lokasi (`version` dari Detail) saat draf dibuat atau terakhir dimuat ulang. Dikirim hanya untuk terbit langsung,
+   * supaya API menolak draf yang dibuat dari data lama (`draf_usang`). Tidak ada di draf lama.
+   */
+  placeVersion?: string | null;
   updatedAt: number;
 };
 
@@ -99,8 +104,19 @@ export function newDraft(
     start: candidate?.point ?? null,
     facilities,
     photos: [],
+    placeVersion: place?.version ?? null,
     updatedAt: now,
   };
+}
+
+/**
+ * Draf Edit lokasi atau Laporkan kekurangan yang isiannya diganti data lokasi saat ini, setelah API menolak terbit
+ * langsung karena lokasi sudah berubah sejak draf dibuat (`draf_usang`, ADR-0051). Data tempat, jawaban, dan versinya
+ * diganti data terbaru; foto baru, kunci kiriman, dan pilihan terbit langsung beserta alasannya tetap.
+ */
+export function withCurrentPlace(draft: ReportDraft, place: PlaceDetail, now = Date.now()): ReportDraft {
+  const current = newDraft(draft.kind, place, now, () => draft.submissionKey);
+  return { ...current, draftKey: draft.draftKey, photos: draft.photos, publishDirectly: draft.publishDirectly, publishReason: draft.publishReason };
 }
 
 /** Kunci pesan galat di `Laporkan.errors` (messages/id.json). */
@@ -187,7 +203,10 @@ export function toPayload(draft: ReportDraft, { admin = false }: { admin?: boole
     if (!photo.uploadedId || !photo.tag) throw new Error("foto belum diunggah atau belum bertag");
     return { id: photo.uploadedId, tag: photo.tag, caption: optional(photo.caption) };
   });
-  const direct = admin && draft.publishDirectly ? { publishDirectly: true as const, publishReason: (draft.publishReason ?? "").trim() } : {};
+  const direct =
+    admin && draft.publishDirectly
+      ? { publishDirectly: true as const, publishReason: (draft.publishReason ?? "").trim(), ...(draft.placeId && draft.placeVersion ? { placeVersion: draft.placeVersion } : {}) }
+      : {};
   const common = { submissionKey: draft.submissionKey, kind: draft.kind, facilities, photos, description: optional(draft.description), ...direct };
   if (draft.kind === "kekurangan") return { ...common, placeId: draft.placeId! };
   return {

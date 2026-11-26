@@ -12,7 +12,7 @@
 import { readFileSync } from "node:fs";
 import { createServer } from "node:http";
 import { handleAgenRute } from "./agen-rute.mjs";
-import { createdPlace, handleKelolaTempat } from "./kelola-tempat.mjs";
+import { createdPlace, handleKelolaTempat, versionOf } from "./kelola-tempat.mjs";
 import { handleAkun } from "./akun.mjs";
 import { handleKandidat } from "./kandidat.mjs";
 import { handleLaporkan } from "./laporkan.mjs";
@@ -104,7 +104,7 @@ function route(url, headers) {
     if (id === FAILING_PLACE_ID) return [500, { galat: "galat_server", pesan: "Galat tiruan." }];
     if (!UUID.test(id)) return [400, { galat: "permintaan_tidak_valid", pesan: "Id lokasi tidak valid." }];
     const place = places.find((p) => p.id === id && !p.unpublishedAt) ?? createdPlace(id);
-    return place ? [200, { verifiedBy: "tim", ...place }] : [404, { galat: "lokasi_tidak_ditemukan", pesan: "Lokasi tidak ditemukan." }];
+    return place ? [200, { verifiedBy: "tim", ...place, version: versionOf(place) }] : [404, { galat: "lokasi_tidak_ditemukan", pesan: "Lokasi tidak ditemukan." }];
   }
   return [404, { galat: "tidak_ditemukan", pesan: "Alamat tidak ditemukan." }];
 }

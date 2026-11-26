@@ -32,6 +32,8 @@ export type ReportPayload = {
   /** Khusus admin: terbitkan langsung tanpa pemeriksaan orang kedua, dengan alasan (ADR-0051). */
   publishDirectly?: true;
   publishReason?: string;
+  /** Versi lokasi saat draf dibuat, hanya untuk terbit langsung Edit lokasi dan Laporkan kekurangan. */
+  placeVersion?: string;
 };
 
 export type SubmittedReport = {
