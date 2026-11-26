@@ -2,7 +2,7 @@
 import { describe, expect, it } from "vitest";
 import type { PlaceDetail } from "./api";
 import { isExpired } from "./draf";
-import { checkFacilities, checkInfo, checkPhotos, directReasonMissing, draftFor, draftKeyFor, firstIncompleteStep, newDraft, suggestedPhotos, toPayload, type PhotoDraft, type ReportDraft } from "./isian-laporan";
+import { checkFacilities, checkInfo, checkPhotos, directReasonMissing, draftFor, draftKeyFor, firstIncompleteStep, newDraft, suggestedPhotos, toPayload, withCurrentPlace, type PhotoDraft, type ReportDraft } from "./isian-laporan";
 
 const NOW = Date.UTC(2026, 10, 8);
 const uuid = () => "11111111-1111-4111-8111-111111111111";
@@ -27,6 +27,7 @@ const halte: PlaceDetail = {
   because: [],
   photos: [],
   needsRecheck: false,
+  version: "2026-10-01T00:00:00.000Z",
 };
 
 const photo = (extra: Partial<PhotoDraft> = {}): PhotoDraft => ({
@@ -196,5 +197,39 @@ describe("direct publishing (ADR-0051)", () => {
     expect(draftFor(draft, false)).toMatchObject({ publishDirectly: undefined, publishReason: undefined, name: draft.name });
     const plain = complete();
     expect(draftFor(plain, false)).toBe(plain);
+  });
+
+  it("keeps the place version of an edit or gap draft and sends it only with a direct publish", () => {
+    const draft = { ...newDraft("perubahan", halte, NOW, uuid), publishDirectly: true, publishReason: "Dicek sendiri" };
+    expect(draft.placeVersion).toBe(halte.version);
+    expect(toPayload(draft, { admin: true })).toMatchObject({ publishDirectly: true, placeVersion: halte.version });
+    expect(toPayload(draft)).not.toHaveProperty("placeVersion");
+    expect(toPayload({ ...draft, publishDirectly: false }, { admin: true })).not.toHaveProperty("placeVersion");
+    // Laporan baru tidak punya lokasi, jadi tidak punya versi.
+    expect(newDraft("baru", null, NOW, uuid).placeVersion).toBeNull();
+    expect(toPayload({ ...complete(), publishDirectly: true, publishReason: "Dicek sendiri" }, { admin: true })).not.toHaveProperty("placeVersion");
+  });
+
+  it("reloads the current place into a stale draft, keeping the new photos, the key and the reason", () => {
+    const stale = { ...newDraft("kekurangan", halte, NOW, uuid), photos: [photo()], publishDirectly: true, publishReason: "Dicek sendiri" };
+    const current: PlaceDetail = {
+      ...halte,
+      name: "Halte contoh (baru)",
+      facilities: halte.facilities.map((f) => (f.facility === "lift" ? { ...f, answer: "tersedia" } : f)),
+      version: "2026-11-20T00:00:00.000Z",
+    };
+    const reloaded = withCurrentPlace(stale, current, NOW + 1);
+    expect(reloaded).toMatchObject({
+      draftKey: stale.draftKey,
+      submissionKey: stale.submissionKey,
+      kind: "kekurangan",
+      name: "Halte contoh (baru)",
+      placeVersion: "2026-11-20T00:00:00.000Z",
+      photos: stale.photos,
+      publishDirectly: true,
+      publishReason: "Dicek sendiri",
+      updatedAt: NOW + 1,
+    });
+    expect(reloaded.facilities.lift.answer).toBe("tersedia");
   });
 });

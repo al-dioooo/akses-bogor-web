@@ -4,11 +4,16 @@ import { useTranslations } from "next-intl";
 import type { PhotoDraft } from "@/lib/isian-laporan";
 import { buttonClass } from "@/ui/button-styles";
 import { Icon } from "@/ui/icon";
-import { IconAlertTriangle, IconCircleCheck, IconClock, IconTrash } from "@/ui/icons";
+import { IconAlertTriangle, IconCircleCheck, IconClock, IconRefresh, IconTrash } from "@/ui/icons";
 
 export type UploadState = { state: "menunggu" | "mengunggah" | "terunggah" | "gagal"; fraction: number };
 export type Sending = { phase: "foto" | "kirim"; current: number; uploads: Record<string, UploadState> };
-export type SendProblem = { kind: "foto"; key: string; message: string } | { kind: "lokasi"; message: string } | { kind: "galat"; message: string | null };
+export type SendProblem =
+  | { kind: "foto"; key: string; message: string }
+  | { kind: "lokasi"; message: string }
+  /** Terbit langsung ditolak karena lokasi sudah berubah sejak draf dibuat; `reloadFailed` bila data terbaru gagal dimuat. */
+  | { kind: "usang"; message: string; reloadFailed?: boolean }
+  | { kind: "galat"; message: string | null };
 
 type Props = {
   photos: PhotoDraft[];
@@ -16,6 +21,9 @@ type Props = {
   problem: SendProblem | null;
   onRemovePhoto: (key: string) => void;
   onFixLocation: () => void;
+  /** Memuat data terbaru lokasi ke draf, untuk masalah `usang`. */
+  onReloadPlace?: () => void;
+  reloading?: boolean;
 };
 
 const ICON = { menunggu: IconClock, mengunggah: IconClock, terunggah: IconCircleCheck, gagal: IconAlertTriangle };
@@ -24,7 +32,7 @@ const ICON = { menunggu: IconClock, mengunggah: IconClock, terunggah: IconCircle
  * Kemajuan "Kirim laporan" (ADR-0033): satu baris per foto dengan `progress` dan teks keadaannya, keadaan keseluruhan
  * yang dibacakan pembaca layar, dan pilihan bila ada yang gagal. Isian tetap di draf apa pun hasilnya.
  */
-export function SendStatus({ photos, sending, problem, onRemovePhoto, onFixLocation }: Props) {
+export function SendStatus({ photos, sending, problem, onRemovePhoto, onFixLocation, onReloadPlace, reloading = false }: Props) {
   const t = useTranslations("Laporkan.kirim");
   const failedIndex = problem?.kind === "foto" ? photos.findIndex((photo) => photo.key === problem.key) : -1;
   const uploads = sending?.uploads ?? {};
@@ -69,7 +77,9 @@ export function SendStatus({ photos, sending, problem, onRemovePhoto, onFixLocat
               ? t("photoFailed", { number: failedIndex + 1, message: problem.message })
               : problem.kind === "lokasi"
                 ? t("locationProblem", { message: problem.message })
-                : problem.message
+                : problem.kind === "usang"
+                  ? problem.message || t("staleDraft")
+                  : problem.message
                   ? t("failed", { message: problem.message })
                   : t("offline")}
           </p>
@@ -77,6 +87,13 @@ export function SendStatus({ photos, sending, problem, onRemovePhoto, onFixLocat
             <button type="button" onClick={() => onRemovePhoto(problem.key)} className={buttonClass("outline", "sm")}>
               <Icon icon={IconTrash} />
               {t("removePhoto", { number: failedIndex + 1 })}
+            </button>
+          )}
+          {problem.kind === "usang" && problem.reloadFailed && <p>{t("reloadFailed")}</p>}
+          {problem.kind === "usang" && onReloadPlace && (
+            <button type="button" onClick={onReloadPlace} disabled={reloading} className={buttonClass("outline", "sm", "disabled:opacity-70")}>
+              <Icon icon={IconRefresh} />
+              {reloading ? t("reloading") : t("reloadPlace")}
             </button>
           )}
           {problem.kind === "lokasi" && (
