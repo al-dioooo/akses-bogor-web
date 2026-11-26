@@ -1,6 +1,6 @@
 // Route prioritas kecamatan tiruan (/districts/priority, /districts/boundaries) untuk tes Playwright, meniru
 // akses-bogor-api (ADR-0043, ADR-0034). Prioritas dibuka, kecuali untuk IP pengunjung 203.0.113.251 yang mendapat 503
-// data_disabilitas_belum_aktif. Batas kecamatan tiruan berupa enam persegi di sekitar Kota Bogor.
+// data_disabilitas_belum_aktif. Batas kecamatan tiruan berupa enam persegi di sekitar Kota Bogor, dengan garis luarnya.
 import { PRIORITY } from "./agen-rute.mjs";
 
 export const PRIORITY_OFF_IP = "203.0.113.251";
@@ -17,6 +17,29 @@ const BOUNDARIES = {
     ["bogor-selatan", "Bogor Selatan", box(106.77, -6.68, 106.84, -6.61)],
   ].map(([slug, name, geometry]) => ({ type: "Feature", properties: { slug, name }, geometry })),
   attribution: "© kontributor OpenStreetMap",
+  // Garis luar gabungan keenam persegi (ADR-0053).
+  outline: {
+    type: "MultiPolygon",
+    coordinates: [
+      [
+        [
+          [106.76, -6.53],
+          [106.83, -6.53],
+          [106.83, -6.57],
+          [106.85, -6.57],
+          [106.85, -6.61],
+          [106.84, -6.61],
+          [106.84, -6.68],
+          [106.77, -6.68],
+          [106.77, -6.61],
+          [106.73, -6.61],
+          [106.73, -6.57],
+          [106.76, -6.57],
+          [106.76, -6.53],
+        ],
+      ],
+    ],
+  },
 };
 
 /** Menjawab route prioritas kecamatan, atau `null` bila bukan route itu. */
