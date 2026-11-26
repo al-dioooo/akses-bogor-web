@@ -2400,6 +2400,36 @@
       "remaining": "Sisa {count} karakter",
       "note": "Agen AI bisa keliru, dan rute tidak memperhitungkan tangga atau kerb. Jatah {count} pertanyaan sehari.",
       "keys": "Enter untuk kirim, Shift+Enter untuk baris baru."
+    },
+    "awal": {
+      "heading": "Titik awal",
+      "title": "Dari mana Anda berangkat?",
+      "why": "Titik awal dipakai untuk mencari tempat terdekat dan menghitung rute jalan kaki. Anda juga bisa bertanya tanpa titik awal.",
+      "privacy": "Titik awal dibulatkan sampai sekitar 11 m. Server AksesBogor memakainya untuk jarak ke tempat terdekat, dan Mapbox untuk menghitung rute. Titik ini tidak disimpan dan tidak pernah dikirim ke model AI.",
+      "none": "Pilih titik awal",
+      "chosen": {
+        "perangkat": "Dari lokasi Anda",
+        "peta": "Dari titik di peta"
+      },
+      "clear": "Hapus titik awal",
+      "close": "Tutup"
+    },
+    "tempat": {
+      "label": "Tujuan: {name}",
+      "clear": "Hapus tujuan {name}"
+    },
+    "kartu": {
+      "label": "Kartu dari jawaban Agen AI",
+      "noData": "Belum ada data",
+      "unnamed": "Tanpa nama di OpenStreetMap",
+      "osmLink": "Lihat di OpenStreetMap",
+      "report": "Laporkan tempat ini",
+      "detail": "Lihat detail lokasi",
+      "update": "Perbarui data",
+      "verified": "Terakhir diverifikasi {date}",
+      "verifiedAdmin": "Diterbitkan langsung oleh admin · {date}",
+      "candidate": "Tempat ini dari OpenStreetMap dan belum punya data aksesibilitas dari tim AksesBogor.",
+      "attribution": "© kontributor OpenStreetMap"
     }
   },
   "PrioritasKecamatan": {
