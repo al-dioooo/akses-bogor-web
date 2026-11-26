@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useFormatter, useTranslations } from "next-intl";
-import { byAdmin, type PlaceListItem } from "@/lib/api";
+import type { PlaceListItem } from "@/lib/api";
+import { verifiedLabel } from "@/lib/verified-label";
 import { FacilityMeter } from "@/ui/facility-meter";
 import { Icon } from "@/ui/icon";
 import { IconArrowRight, IconMapPin } from "@/ui/icons";
@@ -13,6 +14,7 @@ export function LocationCard({ place }: { place: PlaceListItem }) {
   const t = useTranslations("Lokasi");
   const tk = useTranslations("Kategori");
   const format = useFormatter();
+  const verified = verifiedLabel(place, format, "medium");
   return (
     <article className="group card-lift relative flex h-full flex-col overflow-hidden rounded-3xl border border-border-subtle bg-surface-raised">
       {place.coverPhoto?.url && (
@@ -51,7 +53,7 @@ export function LocationCard({ place }: { place: PlaceListItem }) {
           <FacilityMeter summary={place.summary} status={place.status} />
         </div>
         <p className="flex items-center justify-between border-t border-border-subtle pt-4 font-mono text-xs text-text-secondary">
-          {t(byAdmin(place) ? "verifiedAdmin" : "verified", { date: format.dateTime(new Date(place.lastVerifiedAt), { dateStyle: "medium" }) })}
+          {t(verified.key, verified.values)}
           <Icon icon={IconArrowRight} className="size-4.5 text-icon-primary transition-transform duration-200 group-hover:translate-x-0.5" />
         </p>
       </div>
