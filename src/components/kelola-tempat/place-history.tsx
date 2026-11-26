@@ -4,7 +4,7 @@ import type { HistoryEntry } from "@/lib/kelola-tempat";
 /** Kunci `changes` yang bukan kolom tempat; ditampilkan terpisah atau tidak sama sekali. */
 const NOT_FIELDS = new Set(["alasan", "alasanTurun", "laporan", "osm", "tayang"]);
 const FIELDS = ["name", "category", "district", "location", "landmark", "description", "status", "facilities", "photos"] as const;
-const ACTIONS = ["dibuat", "diubah", "dibuat_admin", "diubah_admin", "diturunkan", "ditayangkan_lagi"] as const;
+const ACTIONS = ["dibuat", "diubah", "dibuat_admin", "diubah_admin", "diturunkan", "ditayangkan_lagi", "dibuat_street_view", "diubah_street_view", "street_view_dibatalkan"] as const;
 const PHOTO_TAGS = ["pintu_masuk", "toilet_difabel", "guiding_block", "lift", "lainnya"] as const;
 
 /**

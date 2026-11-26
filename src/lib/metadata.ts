@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { getFormatter, getTranslations } from "next-intl/server";
 import { OG_SIZE } from "@/components/berbagi/ukuran";
-import { byAdmin, type PlaceDetail } from "@/lib/api";
+import type { PlaceDetail } from "@/lib/api";
 import { publicRobots } from "@/lib/situs";
+import { verifiedLabel } from "@/lib/verified-label";
 
 type PublicPage = {
   /** Judul halaman tanpa nama situs; template root layout menambahkan " · AksesBogor". */
@@ -88,12 +89,14 @@ export async function placeDescription(place: PlaceDetail) {
     getFormatter(),
   ]);
   const { summary, date } = placeFacts(place, card, format);
-  const description = t(byAdmin(place) ? "metaDescriptionAdmin" : "metaDescription", {
+  const { key, values } = verifiedLabel(place, format, "long");
+  const description = t(key === "verifiedAdmin" ? "metaDescriptionAdmin" : key === "verifiedStreetView" ? "metaDescriptionStreetView" : "metaDescription", {
     category: category(place.category),
     district: place.district.name,
     status: status(place.status),
     summary,
     date,
+    month: values.month,
   });
   return place.needsRecheck ? `${description} ${t("metaRecheck")}` : description;
 }

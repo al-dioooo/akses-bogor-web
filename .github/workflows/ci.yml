@@ -16,14 +16,19 @@ concurrency:
 
 jobs:
   check:
-    runs-on: ubuntu-latest
+    # Push ke main dan PR dari cabang repo ini berjalan di runner self-hosted Evergarden (issue #240). PR dari fork
+    # tetap di runner GitHub-hosted: repo ini publik, persetujuan workflow fork hanya diminta untuk kontributor
+    # pertama kali, dan kode dari fork tidak boleh berjalan di server yang juga menjalankan layanan lain. Runner
+    # self-hosted juga menolak sendiri job PR dari fork sebelum langkah pertamanya berjalan.
+    runs-on: ${{ (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository) && fromJSON('["self-hosted","Linux","X64","akses-bogor-web"]') || 'ubuntu-latest' }}
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
-          cache: pnpm
+          # Runner self-hosted menyimpan store pnpm di disknya sendiri; mengunduh cache GitHub hanya memperlambat.
+          cache: ${{ runner.environment == 'github-hosted' && 'pnpm' || '' }}
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint
       - run: pnpm typecheck
@@ -34,7 +39,9 @@ jobs:
           pnpm tokens
           git diff --exit-code src/app/tokens.css design-tokens/figma-variables.json
       - name: Pasang Chromium untuk Playwright
-        run: pnpm exec playwright install --with-deps chromium
+        # Paket sistem Chromium sudah dipasang root di runner self-hosted, yang tidak punya sudo. Chromium sendiri
+        # tersimpan di antara job, jadi langkah ini cepat di sana.
+        run: pnpm exec playwright install ${{ runner.environment == 'github-hosted' && '--with-deps' || '' }} chromium
       - name: Build dan tes aksesibilitas
         run: pnpm test:a11y
       - uses: actions/upload-artifact@v4

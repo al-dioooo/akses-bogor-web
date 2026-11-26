@@ -3,9 +3,10 @@ import { getFormatter, getTranslations } from "next-intl/server";
 import messages from "../../../../messages/id.json";
 import { PlaceCard } from "@/components/berbagi/kartu";
 import { OG_SIZE } from "@/components/berbagi/ukuran";
-import { byAdmin, getPlace } from "@/lib/api";
+import { getPlace } from "@/lib/api";
 import { placeFacts } from "@/lib/metadata";
 import { siteUrl } from "@/lib/situs";
+import { verifiedLabel } from "@/lib/verified-label";
 
 /**
  * Gambar berbagi Detail lokasi (issue #114), dibuat saat request dari data tempat yang sudah diverifikasi: nama,
@@ -28,7 +29,8 @@ export default async function Image({ params }: { params: Promise<{ id: string }
     getTranslations("Lokasi"),
     getFormatter(),
   ]);
-  const { summary, date } = placeFacts(place, card, format);
+  const { summary } = placeFacts(place, card, format);
+  const verified = verifiedLabel(place, format, "long");
   return new ImageResponse(
     <PlaceCard
       siteName={site("title")}
@@ -37,7 +39,7 @@ export default async function Image({ params }: { params: Promise<{ id: string }
       place={t("place", { category: category(place.category), district: place.district.name })}
       status={place.status}
       statusLabel={status(place.status)}
-      facts={[summary, detail(byAdmin(place) ? "verifiedAdmin" : "verified", { date })]}
+      facts={[summary, detail(verified.key, verified.values)]}
     />,
     size,
   );

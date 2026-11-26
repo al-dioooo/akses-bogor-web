@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useFormatter, useTranslations } from "next-intl";
+import { verifiedLabel } from "@/lib/verified-label";
 import type { AgenCard } from "@/lib/agen";
 import type { CardTarget } from "@/lib/agen-rute";
 import type { LatLng } from "@/lib/laporan";
@@ -48,6 +49,7 @@ function Place({ card }: { card: PlaceCard }) {
   const tk = useTranslations("Kategori");
   const format = useFormatter();
   const name = card.name ?? t("unnamed");
+  const verified = "lastVerifiedAt" in card ? verifiedLabel(card, format, "long") : null;
   return (
     <article aria-label={name} className={cardClass}>
       <p className="lbl flex items-center gap-2">
@@ -59,7 +61,7 @@ function Place({ card }: { card: PlaceCard }) {
         <>
           <StatusBadge status={card.status} size="sm" />
           <p className="text-sm text-text-secondary">
-            {t(card.verifiedBy === "admin" ? "verifiedAdmin" : "verified", { date: format.dateTime(new Date(card.lastVerifiedAt), { dateStyle: "long" }) })}
+            {verified && t(verified.key, verified.values)}
           </p>
           <div className="flex flex-wrap gap-2">
             <Link href={`/lokasi/${card.target.placeId}`} className={buttonClass("outline", "sm")}>

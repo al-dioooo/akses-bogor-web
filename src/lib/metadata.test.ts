@@ -89,4 +89,9 @@ describe("placeMetadata", () => {
     expect(metadata.description).toContain("Status aksesibilitas: Belum diketahui. 1 dari 3 fasilitas tersedia, 2 belum diketahui.");
     expect(metadata.description).toMatch(/Data ini perlu dicek ulang\.$/);
   });
+
+  it("says the data was verified from Street View with the image month (ADR-0057)", async () => {
+    const metadata = await placeMetadata({ ...PLACE, verificationSource: "street_view", streetViewImageDate: "2026-01", lastVerifiedAt: "2026-01-01T00:00:00.000Z" });
+    expect(metadata.description).toMatch(/2 dari 3 fasilitas tersedia\. Diverifikasi dari Street View, gambar Januari 2026\.$/);
+  });
 });
