@@ -1,5 +1,5 @@
 import { call } from "./akun";
-import { ApiError, type Answer, type Category, type Facility, type Photo, type PhotoTag, type Reason, type Status } from "./api";
+import { ApiError, type Answer, type Category, type Facility, type Photo, type PhotoTag, type Reason, type Status, type VerificationSource } from "./api";
 import type { LatLng } from "./laporan";
 
 // Kelola tempat oleh admin (ADR-0051). Tipe mengikuti docs/openapi.json di akses-bogor-api (route /admin/places dan
@@ -27,6 +27,10 @@ export type AdminPlaceItem = {
   status: Status;
   summary: { available: number; relevant: number; unknown: number };
   verifiedBy: Origin;
+  /** `street_view`: diverifikasi dari bukti Street View (ADR-0057). Kosong di API lama. */
+  verificationSource?: VerificationSource;
+  /** Bulan gambar Street View, `YYYY-MM`. */
+  streetViewImageDate?: string | null;
   lastVerifiedAt: string;
   updatedAt: string;
   published: boolean;
