@@ -86,6 +86,17 @@ test("changes a place, and refuses to overwrite a newer version", async ({ page,
   await expect(latest).toContainText("Diubah langsung oleh admin");
   await expect(latest).toContainText("Yang berubah: nama, foto");
 
+  // Foto yang dihapus tampil di riwayat sebagai entri sendiri, dengan objek di foto dan alasannya.
+  await page.goto(`/verifikasi/tempat/${id}/ubah`);
+  await main(page).getByRole("checkbox", { name: "Hapus foto ini" }).check();
+  await main(page).getByLabel("Alasan perubahan").fill("Foto memperlihatkan wajah orang");
+  await main(page).getByRole("button", { name: "Simpan perubahan" }).click();
+  await expect(page).toHaveURL(`/verifikasi/tempat/${id}?tersimpan=1`);
+  const removedEntry = main(page).getByRole("region", { name: "Riwayat" }).getByRole("listitem").first();
+  await expect(removedEntry).toContainText("Foto dihapus: Pintu masuk dan ramp");
+  await expect(removedEntry).toContainText("Alasan: Foto memperlihatkan wajah orang");
+  await expect(removedEntry).not.toContainText("Yang berubah");
+
   // Orang lain menyimpan lebih dulu: formulir yang terbuka tidak boleh menimpanya.
   await page.goto(`/verifikasi/tempat/${id}/ubah`);
   const current = await (await request.get(`${mockApi()}/admin/places/${id}`, { headers: { authorization: `Bearer akun:${admin}` } })).json();
