@@ -334,13 +334,27 @@
       "list": "Daftar",
       "map": "Peta"
     },
+    "tematik": {
+      "button": "Peta tematik",
+      "short": "Tematik",
+      "title": "Peta tematik",
+      "intro": "Satu lapisan warna per kecamatan. Tabel atau daftarnya ada di panel daftar.",
+      "loading": "Memuat lapisan {name}…",
+      "on": "Lapisan {name} tampil di peta, dengan kuncinya di atas peta. Tabel atau daftarnya ada di panel daftar.",
+      "off": "Peta tematik disembunyikan.",
+      "pilihan": {
+        "tidak": {
+          "label": "Tidak ada",
+          "body": "Hanya lokasi dan batas Kota Bogor."
+        },
+        "prioritas": {
+          "label": "Prioritas pemetaan",
+          "body": "Kecamatan yang paling perlu didata, dari penyandang disabilitas terdaftar dan tempat yang belum punya data."
+        }
+      }
+    },
     "prioritas": {
-      "toggle": "Lapisan prioritas kecamatan",
-      "short": "Prioritas",
-      "loading": "Memuat batas kecamatan…",
       "failed": "Batas kecamatan tidak bisa dimuat, jadi lapisan tidak tampil di peta. Tabel di panel daftar berisi data yang sama.",
-      "on": "Lapisan prioritas kecamatan tampil di peta, dengan kuncinya di atas peta. Tabelnya ada di panel daftar.",
-      "off": "Lapisan prioritas kecamatan disembunyikan.",
       "title": "Prioritas kecamatan",
       "intro": "Warna kecamatan menunjukkan seberapa perlu fasilitasnya didata, dari penyandang disabilitas terdaftar, fasilitas tanpa data, dan lokasi yang sudah diverifikasi.",
       "legend": "Legenda prioritas",

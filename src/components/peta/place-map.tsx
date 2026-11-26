@@ -9,7 +9,7 @@ import type { CandidateSource, DistrictBoundaries, DistrictPriority, MapToken } 
 import { hasWebGL, readTheme, watchPreferences } from "@/lib/preferences";
 import { buttonClass } from "@/ui/button-styles";
 import { Icon } from "@/ui/icon";
-import { IconCurrentLocation, IconFocusCentered, IconList, IconMap2, IconMinus, IconPlus, IconUsers, type Glyph } from "@/ui/icons";
+import { IconCurrentLocation, IconFocusCentered, IconList, IconMap2, IconMinus, IconPlus, type Glyph } from "@/ui/icons";
 import { PlacePin } from "@/ui/place-pin";
 import { CandidateList } from "./candidate-list";
 import { CandidateSummary } from "./candidate-summary";
@@ -22,6 +22,8 @@ import { PlaceSheet, type SheetHeight } from "./place-sheet";
 import { PlaceSummary } from "./place-summary";
 import { PriorityKey } from "./priority-key";
 import { PriorityLegend } from "./priority-legend";
+import { ThematicChooser, type ThemeChoice } from "./thematic-chooser";
+import { LEVEL_COLOR } from "@/components/prioritas/levels";
 import type { MapCandidate, MapPlace } from "./places";
 
 type MapState = "awal" | "memuat" | "siap" | "tanpa-webgl" | "galat";
@@ -33,7 +35,7 @@ async function fetchToken(): Promise<MapToken> {
 }
 
 /** Elemen yang mengambang di atas peta. Marker di bawahnya tidak terlihat, jadi tidak boleh bisa difokus (WCAG 2.4.11). */
-const OVERLAYS = ".peta-cari, .peta-lapisan, .peta-kontrol, .peta-kunci, .peta-lokasi";
+const OVERLAYS = ".peta-cari, .peta-lapisan, .peta-kontrol, .peta-kunci, .peta-pilihan, .peta-lokasi";
 /** Tinggi satu baris kunci prioritas yang ringkas (tombol 44 px dan bingkainya). */
 const KEY_LINE = 56;
 
@@ -151,7 +153,14 @@ export function PlaceMap({
   const narrow = useSyncExternalStore(subscribeNarrow, () => matchMedia(NARROW).matches, () => true);
   const short = useSyncExternalStore(subscribeShort, () => matchMedia(SHORT).matches, () => false);
   const height: SheetHeight = chosenHeight ?? (narrow ? "kecil" : "setengah");
-  const [layer, setLayer] = useState<"mati" | "memuat" | "nyala" | "galat">("mati");
+  // Peta tematik (ADR-0053): satu lapisan sekaligus. "galat" berarti batas kecamatan gagal dimuat; tabel tetap ada.
+  const [theme, setTheme] = useState<ThemeChoice>("tidak");
+  const [themeState, setThemeState] = useState<"memuat" | "siap" | "galat">("siap");
+  const [chooserOpen, setChooserOpen] = useState(false);
+  // Pesan "disembunyikan" hanya setelah pengguna sendiri memilih Tidak ada.
+  const [themeTouched, setThemeTouched] = useState(false);
+  // Pilihan terakhir yang menunggu datanya, supaya jawaban lama tidak menimpa pilihan yang lebih baru.
+  const themeRequest = useRef(0);
   const [boundaries, setBoundaries] = useState<DistrictBoundaries | null>(null);
   // Batas kecamatan dimuat sekali untuk batas kota dan lapisan prioritas; permintaan yang gagal boleh diulang.
   const boundariesRequest = useRef<Promise<DistrictBoundaries> | null>(null);
@@ -298,7 +307,7 @@ export function PlaceMap({
       timer = window.setTimeout(update, 120);
     };
     const observer = new ResizeObserver(schedule);
-    for (const selector of [".peta-lembar", ".peta-cari", ".peta-kontrol", ".peta-lapisan", ".peta-kunci", ".peta-lokasi"]) {
+    for (const selector of [".peta-lembar", ".peta-cari", ".peta-kontrol", ".peta-lapisan", ".peta-kunci", ".peta-pilihan", ".peta-lokasi"]) {
       const element = main.querySelector(selector);
       if (element) observer.observe(element);
     }
@@ -309,7 +318,7 @@ export function PlaceMap({
       window.clearTimeout(timer);
     };
     // Kunci prioritas dan kartu Lokasi saya muncul dan hilang, jadi pengamatnya dipasang ulang.
-  }, [map, state, priority, layer, locate.phase, flushMove]);
+  }, [map, state, priority, theme, themeState, chooserOpen, locate.phase, flushMove]);
 
   // Ringkasan menerima fokus setiap kali lokasi dipilih, supaya pembaca layar langsung membacanya.
   useEffect(() => {
@@ -330,11 +339,13 @@ export function PlaceMap({
     return () => element.removeEventListener("keydown", onKey);
   }, [map, chosen]);
 
-  // Lapisan prioritas mengikuti peta: digambar ulang bila peta dibuat ulang (mis. setelah Coba lagi).
+  // Lapisan tematik mengikuti peta: digambar ulang bila peta dibuat ulang (mis. setelah Coba lagi).
   useEffect(() => {
-    if (!map || !priority) return;
-    map.setPriority(layer === "nyala" && boundaries ? { boundaries, levels: Object.fromEntries(priority.districts.map((d) => [d.slug, d.level])) } : null);
-  }, [map, priority, layer, boundaries]);
+    if (!map) return;
+    if (theme === "prioritas" && priority && boundaries && themeState === "siap") {
+      map.setThematic({ name: theme, boundaries, colors: Object.fromEntries(priority.districts.map((d) => [d.slug, LEVEL_COLOR[d.level]])) });
+    } else map.setThematic(null);
+  }, [map, priority, theme, themeState, boundaries]);
 
   const ready = state === "siap";
   const loadBoundaries = useCallback(() => {
@@ -360,15 +371,16 @@ export function PlaceMap({
     map?.setBorder(boundaries?.outline ?? null);
   }, [map, boundaries]);
 
-  async function toggleLayer() {
-    if (layer === "nyala" || layer === "galat") return setLayer("mati");
-    if (boundaries) return setLayer("nyala");
-    setLayer("memuat");
+  async function chooseTheme(value: ThemeChoice) {
+    const request = ++themeRequest.current;
+    setTheme(value);
+    if (value === "tidak") return setThemeState("siap");
+    setThemeState("memuat");
     try {
       await loadBoundaries();
-      setLayer("nyala");
+      if (request === themeRequest.current) setThemeState("siap");
     } catch {
-      setLayer("galat");
+      if (request === themeRequest.current) setThemeState("galat");
     }
   }
 
@@ -381,7 +393,11 @@ export function PlaceMap({
   // sempit.
   const empty = tj(filtered ? "results.emptyTitle" : "results.noDataTitle");
   const status = places.length === 0 ? empty : followsView ? t("list.count", { shown: shown.length, total: places.length }) : t("count", { total: places.length });
-  const layerShown = priority && (layer === "nyala" || layer === "galat");
+  // Pilihan yang ada: Prioritas pemetaan hanya selama API membuka data disabilitas.
+  const themeOptions: ThemeChoice[] = priority ? ["tidak", "prioritas"] : [];
+  const themeName = theme === "tidak" ? "" : t(`tematik.pilihan.${theme}.label`);
+  // Kunci dan tabel tampil setelah datanya dimuat, juga bila batas kecamatan gagal (lapisan tanpa warna, tabel tetap ada).
+  const themeShown = themeState !== "memuat" ? theme : "tidak";
 
   /**
    * Menutup ringkasan, lalu fokus kembali ke marker atau ke tombol daftar yang membukanya. Bila marker itu tidak bisa
@@ -407,11 +423,11 @@ export function PlaceMap({
     queueMove(id, "show");
   }
 
-  /** Membuka panel daftar di tabel prioritas, lalu memindahkan fokus ke sana. */
-  function showTable() {
+  /** Membuka panel daftar di tabel atau daftar lapisan tematik, lalu memindahkan fokus ke sana. */
+  function showTable(id: string) {
     setSelected(null);
     setHeight(narrow ? "penuh" : "setengah");
-    requestAnimationFrame(() => requestAnimationFrame(() => document.getElementById("tabel-prioritas")?.focus()));
+    requestAnimationFrame(() => requestAnimationFrame(() => document.getElementById(id)?.focus()));
   }
 
   function skipToList(event: MouseEvent<HTMLAnchorElement>) {
@@ -422,26 +438,35 @@ export function PlaceMap({
 
   return (
     <>
-      {priority && (
+      {themeOptions.length > 1 && (
         <div className="peta-lapisan">
-          <button
-            type="button"
-            aria-label={t("prioritas.toggle")}
-            aria-pressed={layer === "nyala" || layer === "galat"}
-            disabled={layer === "memuat"}
-            onClick={toggleLayer}
-            className={buttonClass(layerShown ? "ink" : "outline", "sm", `shadow-[0_8px_20px_-10px_var(--color-shadow-soft)] disabled:opacity-70 ${layerShown ? "" : "bg-surface-raised"}`)}
-          >
-            <Icon icon={IconUsers} />
-            {/* Di ponsel label pendek, supaya tombol dan kontrol peta muat dalam satu baris (di landscape juga bersama pencarian). */}
-            <span className="max-[22rem]:sr-only md:hidden">{t("prioritas.short")}</span>
-            <span className="max-md:hidden">{t("prioritas.toggle")}</span>
-          </button>
+          <ThematicChooser
+            options={themeOptions}
+            value={theme}
+            onChange={(value) => {
+              setThemeTouched(true);
+              void chooseTheme(value);
+            }}
+            open={chooserOpen}
+            onOpen={setChooserOpen}
+          />
           <p role="status" className="sr-only">
-            {layer === "memuat" ? t("prioritas.loading") : layer === "nyala" ? t("prioritas.on") : ""}
+            {themeState === "memuat"
+              ? t("tematik.loading", { name: themeName })
+              : theme !== "tidak"
+                ? t("tematik.on", { name: themeName })
+                : themeTouched
+                  ? t("tematik.off")
+                  : ""}
           </p>
-          {layerShown && (
-            <PriorityKey priority={priority} failed={layer === "galat"} attribution={boundaries?.attribution ?? null} compact={narrow} onShowTable={showTable} />
+          {themeShown === "prioritas" && priority && (
+            <PriorityKey
+              priority={priority}
+              failed={themeState === "galat"}
+              attribution={boundaries?.attribution ?? null}
+              compact={narrow}
+              onShowTable={() => showTable("tabel-prioritas")}
+            />
           )}
         </div>
       )}
@@ -555,7 +580,7 @@ export function PlaceMap({
                 <p className="rounded-2xl bg-bg-sunken p-4 text-text-secondary">{t("list.none")}</p>
               ))}
             {shownCandidates && <CandidateList candidates={shownCandidates} onShow={ready ? showOnMap : undefined} />}
-            {layerShown && <PriorityLegend priority={priority} attribution={boundaries?.attribution ?? null} />}
+            {themeShown === "prioritas" && priority && <PriorityLegend priority={priority} attribution={boundaries?.attribution ?? null} />}
           </div>
         )}
       </PlaceSheet>
