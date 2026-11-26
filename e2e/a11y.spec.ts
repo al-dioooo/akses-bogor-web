@@ -25,6 +25,8 @@ const PAGES = [
   "/aksesibilitas",
   "/tanya-rute",
   "/tanya-rute?tempat=4037ba19-b366-45bc-aceb-270944fe9372",
+  "/agen",
+  "/agen?tempat=4037ba19-b366-45bc-aceb-270944fe9372",
   "/laporkan",
   "/laporkan?lokasi=4037ba19-b366-45bc-aceb-270944fe9372&jenis=kekurangan",
 ];
