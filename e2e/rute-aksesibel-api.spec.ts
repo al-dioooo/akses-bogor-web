@@ -31,6 +31,13 @@ test("route handlers pass the profile to the API and keep the Mapbox route witho
   expect((await refused.json()).galat).toBe("rute_aksesibel_belum_aktif");
   await off.dispose();
 
+  // API yang belum punya POST /route/accessible: dijawab "belum aktif", jadi kartu tetap memakai rute Mapbox.
+  const old = await playwright.request.newContext({ baseURL: testInfo.project.use.baseURL, extraHTTPHeaders: { "x-forwarded-for": "203.0.113.99" } });
+  const missing = await old.post("/tanya-rute/rute", { data: { from, placeId: HALTE, profil: "kursi_roda" } });
+  expect(missing.status()).toBe(503);
+  expect((await missing.json()).galat).toBe("rute_aksesibel_belum_aktif");
+  await old.dispose();
+
   const member = await browser.newContext({ extraHTTPHeaders: { "x-forwarded-for": onIp() } });
   const page = await member.newPage();
   await signIn(page, uniqueEmail("rute-aksesibel", testInfo.project.name));
