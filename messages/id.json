@@ -82,7 +82,7 @@
       "body": "Laporkan dalam tiga langkah. Setiap laporan membantu orang lain berangkat dengan lebih yakin.",
       "button": "Laporkan tempat"
     },
-    "askRoute": "Tanya cara ke sebuah tempat"
+    "askRoute": "Tanya Agen AI cara ke sebuah tempat"
   },
   "Rute": {
     "label": "Rute ke pintu",
@@ -135,7 +135,7 @@
     "beranda": "Beranda",
     "jelajahi": "Jelajahi",
     "peta": "Peta",
-    "tanyaRute": "Tanya rute",
+    "agen": "Agen AI",
     "aksesibilitas": "Aksesibilitas",
     "tentang": "Tentang",
     "laporkan": "Laporkan",
@@ -239,7 +239,9 @@
     "asList": "Lihat sebagai daftar",
     "legend": "Legenda status",
     "legendCategory": "Legenda kategori",
-    "legendCategoryHint": "Lencana kecil di marker dan warna lingkaran Belum ada data. Ikon kategori muncul di lingkaran saat peta diperbesar.",
+    "border": "Batas Kota Bogor (garis putus-putus)",
+    "legendCategoryHint": "Ikon di tengah marker dan di lingkaran Belum ada data. Lingkaran Belum ada data juga bergaris warna kategorinya; ikonnya muncul saat peta diperbesar.",
+    "legendMarker": "Contoh marker masjid yang aksesibel: warna dan lencana di sudut menunjukkan status, ikon di tengah menunjukkan kategori.",
     "cari": {
       "placeholder": "Cari nama tempat",
       "filterTitle": "Filter lokasi",
@@ -332,13 +334,114 @@
       "list": "Daftar",
       "map": "Peta"
     },
+    "tematik": {
+      "button": "Peta tematik",
+      "short": "Tematik",
+      "title": "Peta tematik",
+      "intro": "Satu lapisan warna per kecamatan. Tabel atau daftarnya ada di panel daftar.",
+      "loading": "Memuat lapisan {name}…",
+      "on": "Lapisan {name} tampil di peta, dengan kuncinya di atas peta. Tabel atau daftarnya ada di panel daftar.",
+      "off": "Peta tematik disembunyikan.",
+      "pilihan": {
+        "tidak": {
+          "label": "Tidak ada",
+          "body": "Hanya lokasi dan batas Kota Bogor."
+        },
+        "prioritas": {
+          "label": "Prioritas pemetaan",
+          "body": "Kecamatan yang paling perlu didata, dari penyandang disabilitas terdaftar dan tempat yang belum punya data."
+        },
+        "disabilitas": {
+          "label": "Persebaran disabilitas",
+          "body": "Penyandang disabilitas yang terdaftar di Dinas Sosial per kecamatan, menurut jenis dan tahun."
+        },
+        "aksesibel": {
+          "label": "Kecamatan paling aksesibel",
+          "body": "Tempat yang pintu masuknya bisa dimasuki kursi roda, termasuk keterangan yang belum diperiksa tim."
+        }
+      }
+    },
+    "aksesibel": {
+      "title": "Kecamatan paling aksesibel",
+      "keyShort": "Paling aksesibel",
+      "unchecked": "belum diperiksa tim",
+      "table": "Daftar",
+      "showTable": "Daftar peringkat kecamatan paling aksesibel",
+      "more": "Catatan",
+      "moreLabel": "Catatan, sumber, dan legenda kecamatan paling aksesibel",
+      "less": "Ringkas kunci kecamatan paling aksesibel",
+      "measure": "Persentase tempat yang pintu masuknya bisa dimasuki kursi roda, dari tempat yang punya keterangan pintu masuk.",
+      "legend": "Legenda persentase",
+      "range": "{from}–{to}%",
+      "notEnough": "Data belum cukup: kurang dari {minimum} tempat ber-keterangan",
+      "coverage": "Keterangan pintu masuk ada untuk {withData} dari {places} tempat.",
+      "uncheckedCount": "{count} keterangan belum diperiksa tim: OpenStreetMap {osm}, Google Maps {google}.",
+      "uncheckedCountOsm": "{count} keterangan belum diperiksa tim, dari OpenStreetMap.",
+      "caveatLabel": "Catatan:",
+      "sourcesLabel": "Sumber:",
+      "sourceAksesBogor": "data AksesBogor (diperiksa tim)",
+      "sourceOsm": "OpenStreetMap (belum diperiksa tim, <credit>{attribution}</credit>)",
+      "sourceGoogle": "salinan Google Maps diambil {date} (belum diperiksa tim)",
+      "sourceGoogleUndated": "salinan Google Maps (belum diperiksa tim)",
+      "newTab": "(tab baru)",
+      "failed": "Data kecamatan paling aksesibel tidak bisa dimuat, jadi lapisan ini tidak tampil. Coba lagi nanti.",
+      "boundariesFailed": "Batas kecamatan tidak bisa dimuat, jadi warna tidak tampil di peta. Daftar di panel berisi data yang sama.",
+      "listIntro": "Urut dari persentase tertinggi. Setiap angka disertai cakupan datanya dan asal keterangannya.",
+      "rankedLabel": "Peringkat kecamatan",
+      "rankLabel": "Peringkat {rank}:",
+      "score": "{score}% bisa dimasuki",
+      "accessibleOf": "{accessible} dari {withData} tempat ber-keterangan pintu masuknya bisa dimasuki kursi roda",
+      "limited": "{count} terbatas",
+      "districtCoverage": "Keterangan ada untuk {withData} dari {places} tempat",
+      "districtSources": "Data AksesBogor: {team} · belum diperiksa tim: {unverified} (OpenStreetMap {osm}, Google Maps {google})",
+      "districtSourcesOsm": "Data AksesBogor: {team} · belum diperiksa tim: {unverified} (OpenStreetMap {osm})",
+      "noneRanked": "Belum ada kecamatan dengan paling sedikit {minimum} tempat ber-keterangan.",
+      "notEnoughTitle": "Data belum cukup",
+      "notEnoughItem": "{withData} tempat ber-keterangan dari {places} tempat; perlu paling sedikit {minimum}.",
+      "formula": "Cara menghitung: {formula}"
+    },
+    "disabilitas": {
+      "title": "Persebaran disabilitas {year}",
+      "keyShort": "{jenis} {year}",
+      "jenisShort": {
+        "semua": "Disabilitas",
+        "fisik": "Disabilitas fisik",
+        "netra": "Disabilitas netra",
+        "mental": "Disabilitas mental",
+        "lainnya": "Disabilitas jenis lain"
+      },
+      "table": "Tabel",
+      "showTable": "Tabel persebaran disabilitas",
+      "more": "Catatan",
+      "moreLabel": "Catatan, sumber, filter, dan legenda persebaran disabilitas",
+      "less": "Ringkas kunci persebaran disabilitas",
+      "category": "Jenis disabilitas",
+      "year": "Tahun",
+      "jenis": {
+        "semua": "Semua jenis",
+        "fisik": "Disabilitas fisik",
+        "netra": "Disabilitas netra",
+        "mental": "Disabilitas mental",
+        "lainnya": "Jenis lain"
+      },
+      "legend": "Legenda jumlah terdaftar",
+      "range": "{from}–{to}",
+      "caveatLabel": "Catatan:",
+      "source": "Sumber: Open Data Kota Bogor, Dinas Sosial Kota Bogor, data tahun {year}.",
+      "sourceFull": "Sumber: <link>{title}</link>, Open Data Kota Bogor, Dinas Sosial Kota Bogor, data tahun {year}, diambil {date}. {terms}",
+      "newTab": "(tab baru)",
+      "failed": "Data persebaran disabilitas tidak bisa dimuat, jadi lapisan ini tidak tampil. Coba lagi nanti.",
+      "boundariesFailed": "Batas kecamatan tidak bisa dimuat, jadi warna tidak tampil di peta. Tabel di panel daftar berisi data yang sama.",
+      "intro": "Warna kecamatan menunjukkan jumlah penyandang disabilitas yang terdaftar di Dinas Sosial: {jenis}, tahun {year}. Jenis dan tahun dipilih di kunci peta.",
+      "caption": "Penyandang disabilitas terdaftar di Dinas Sosial per kecamatan: {jenis}, tahun {year}, urut dari yang terbanyak",
+      "region": "Tabel persebaran disabilitas, bisa digeser ke samping",
+      "district": "Kecamatan",
+      "registered": "Terdaftar",
+      "class": "Kelas warna",
+      "total": "Kota Bogor"
+    },
     "prioritas": {
-      "toggle": "Lapisan prioritas kecamatan",
-      "short": "Prioritas",
-      "loading": "Memuat batas kecamatan…",
       "failed": "Batas kecamatan tidak bisa dimuat, jadi lapisan tidak tampil di peta. Tabel di panel daftar berisi data yang sama.",
-      "on": "Lapisan prioritas kecamatan tampil di peta, dengan kuncinya di atas peta. Tabelnya ada di panel daftar.",
-      "off": "Lapisan prioritas kecamatan disembunyikan.",
       "title": "Prioritas kecamatan",
       "intro": "Warna kecamatan menunjukkan seberapa perlu fasilitasnya didata, dari penyandang disabilitas terdaftar, fasilitas tanpa data, dan lokasi yang sudah diverifikasi.",
       "legend": "Legenda prioritas",
@@ -492,7 +595,7 @@
         "id": "data",
         "title": "Data yang kami kumpulkan",
         "paragraphs": [
-          "Anda bisa menjelajahi AksesBogor tanpa akun. Kami hanya mengumpulkan data pribadi bila Anda membuat akun, melapor, memakai Bantu memetakan, atau bertanya di Tanya rute."
+          "Anda bisa menjelajahi AksesBogor tanpa akun. Kami hanya mengumpulkan data pribadi bila Anda membuat akun, melapor, atau bertanya kepada Agen AI."
         ],
         "items": [
           "Akun: alamat email, nama tampilan, peran (pengguna, verifikator, atau admin), serta waktu dan versi Kebijakan Privasi yang Anda setujui.",
@@ -500,8 +603,7 @@
           "Laporan: isian laporan (nama tempat, kategori, patokan, jawaban fasilitas, catatan, dan deskripsi), titik yang Anda konfirmasi di peta, dan foto yang Anda kirim. Lokasi perangkat hanya dibaca saat Anda menekan Gunakan lokasi saya di formulir laporan dan tidak disimpan. Foto diperkecil lalu disimpan ulang tanpa metadata (EXIF), termasuk lokasi GPS. Bila verifikator meminta klarifikasi, jawaban Anda dan foto tambahannya ikut disimpan sebagai bagian laporan.",
           "Lokasi saya di Peta: lokasi perangkat hanya dibaca setelah Anda menekan Tampilkan lokasi saya. Bila izin lokasi belum diberikan, kami menjelaskan dulu kegunaannya, lalu browser meminta izin Anda. Lokasi itu hanya dipakai di browser Anda untuk menggeser peta dan menaruh titik di posisi Anda. Lokasi tidak dikirim ke server AksesBogor atau ke Anthropic, dan tidak disimpan. Bila Anda berada di luar wilayah peta Kota Bogor, peta tidak digeser. Seperti setiap tampilan peta, Mapbox menerima area peta yang dimuat, jadi setelah peta digeser, Mapbox menerima area di sekitar lokasi Anda.",
           "Pencarian tempat: kata kunci yang Anda ketik di pencarian formulir laporan diteruskan ke Mapbox lewat server kami, tanpa alamat IP Anda, dan tidak kami simpan.",
-          "Bantu memetakan: pertanyaan yang Anda ketik ke agen, beserta paling banyak 6 giliran sebelumnya di halaman itu, dikirim lewat server kami ke Anthropic (Claude API) untuk dijawab. Bersama pertanyaan ikut data terverifikasi tempat yang Anda pilih dan hasil pencarian agen di data AksesBogor, OpenStreetMap, dan basis pengetahuan. Kami tidak mengirim posisi, rute, email, nama, atau alamat IP Anda ke Anthropic, dan tidak menyimpan pertanyaan maupun jawabannya. Untuk kartu rute, titik awal yang Anda pilih di peta atau lokasi perangkat Anda dibulatkan sampai sekitar 11 m, lalu dikirim lewat server kami ke Mapbox hanya untuk menghitung rute jalan kaki. Titik dan rutenya tidak kami simpan dan tidak dikirim ke Anthropic.",
-          "Tanya rute: siapa pun, juga tanpa akun, bisa bertanya cara ke tempat yang tercatat di AksesBogor. Pertanyaan Anda, beserta paling banyak 6 giliran sebelumnya di halaman itu, dikirim lewat server kami ke Anthropic (Claude API) untuk dijawab, bersama data tempat yang Anda pilih dan hasil pencarian asisten di data AksesBogor dan basis pengetahuan. Lokasi perangkat hanya dibaca setelah kami menjelaskan kegunaannya dan browser meminta izin Anda; Anda juga bisa memilih titik awal di peta. Titik awal itu dikirim ke server kami bersama pertanyaan, dibulatkan sampai sekitar 11 m, dan hanya dipakai untuk mencari tempat terdekat dan, lewat Mapbox, menghitung rute jalan kaki untuk kartu rute. Anthropic tidak menerima titik awal, rute, email, nama, atau alamat IP Anda; asisten hanya menerima jarak garis lurus dari titik awal ke paling banyak 5 tempat, dibulatkan ke 100 m. Untuk membatasi pemakaian, server kami menghitung jumlah pertanyaan per akun, atau per alamat IP bila Anda tidak masuk; hitungan itu hanya ada di memori server sampai hari berganti. Pertanyaan, jawaban, dan titik awal tidak kami simpan.",
+          "Agen AI: siapa pun, juga tanpa akun, bisa bertanya kepada Agen AI tentang tempat, rute, dan aksesibilitas di Kota Bogor; bila Anda masuk, Agen AI juga membantu mencari tempat yang perlu dipetakan. Pertanyaan Anda, beserta paling banyak 6 giliran sebelumnya dalam percakapan itu, dikirim lewat server kami ke Anthropic (Claude API) untuk dijawab, bersama data tempat yang Anda pilih dan hasil pencarian agen di data AksesBogor, OpenStreetMap, dan basis pengetahuan. Lokasi perangkat hanya dibaca setelah kami menjelaskan kegunaannya dan browser meminta izin Anda; Anda juga bisa memilih titik awal di peta. Titik awal itu dikirim ke server kami bersama pertanyaan dan saat kartu rute dimuat, dibulatkan sampai sekitar 11 m, dan hanya dipakai untuk mencari tempat terdekat dan menghitung rute untuk kartu rute. Rute dihitung di server kami sendiri dengan data OpenStreetMap; bila rute itu belum tersedia, rute jalan kaki dihitung lewat Mapbox. Anthropic tidak menerima titik awal, rute, email, nama, atau alamat IP Anda; agen hanya menerima jarak garis lurus dari titik awal ke paling banyak 5 tempat, dibulatkan ke 100 m. Untuk membatasi pemakaian, server kami menghitung jumlah pertanyaan per akun, atau per alamat IP bila Anda tidak masuk; hitungan itu hanya ada di memori server sampai hari berganti. Percakapan disimpan di browser Anda, hanya di tab itu, supaya tidak hilang saat halaman dimuat ulang atau saat Anda kembali dari tautan di percakapan; percakapan hilang saat tab ditutup atau Anda memilih Percakapan baru. Bila Anda memakai perangkat bersama, pilih Percakapan baru setelah selesai. Titik awal tidak ikut disimpan. Pertanyaan, jawaban, dan titik awal tidak kami simpan di server.",
           "Teknis: alamat IP, alamat halaman yang dibuka, dan waktunya tercatat di log server untuk keamanan dan memperbaiki galat.",
           "Di perangkat Anda: pilihan tampilan (mode terang atau gelap, gerak) disimpan di browser Anda dan tidak dikirim ke kami. Draf laporan yang belum dikirim, termasuk fotonya, juga disimpan di browser Anda dan baru dikirim ke kami saat Anda menekan Kirim laporan. Cookie sesi hanya dipakai untuk menjaga Anda tetap masuk. Kami tidak memakai cookie iklan atau analitik."
         ]
@@ -513,13 +615,13 @@
           "Memasukkan Anda ke akun dan menjaga akun tetap aman.",
           "Menampilkan Laporan saya dan mengirim email saat laporan Anda diterbitkan, ditolak beserta alasannya, atau butuh klarifikasi.",
           "Memeriksa laporan sebelum tayang, menghubungi Anda bila verifikator butuh klarifikasi, dan mencegah spam.",
-          "Menjawab pertanyaan Anda di Bantu memetakan dan Tanya rute, mencari tempat terdekat dari titik awal yang Anda pilih, dan menghitung rute jalan kaki untuk kartu rute.",
+          "Menjawab pertanyaan Anda di Agen AI, mencari tempat terdekat dari titik awal yang Anda pilih, dan menghitung rute jalan kaki untuk kartu rute.",
           "Membatasi jumlah pertanyaan per akun atau per alamat IP supaya layanan tetap bisa dipakai semua orang.",
           "Mencatat siapa mengubah data tempat dan kapan (log audit), supaya perubahan bisa ditelusuri. Log ini berisi akun verifikator dan perubahan data tempat, tanpa email, nama pelapor, atau isi klarifikasi.",
           "Menjaga layanan tetap berjalan dan aman."
         ],
         "after": [
-          "Dasar pemrosesannya adalah persetujuan yang Anda berikan saat melengkapi akun. Anda bisa menarik persetujuan kapan saja dengan menghapus akun. Bila Anda memakai Tanya rute tanpa akun, dasarnya adalah persetujuan Anda saat mengirim pertanyaan setelah membaca pemberitahuan di halaman itu; berhenti bertanya berarti tidak ada data lagi yang dikirim."
+          "Dasar pemrosesannya adalah persetujuan yang Anda berikan saat melengkapi akun. Anda bisa menarik persetujuan kapan saja dengan menghapus akun. Bila Anda memakai Agen AI tanpa akun, dasarnya adalah persetujuan Anda saat mengirim pertanyaan setelah membaca pemberitahuan di halaman itu; berhenti bertanya berarti tidak ada data lagi yang dikirim."
         ]
       },
       {
@@ -533,8 +635,8 @@
           "Cloudflare: semua halaman dan permintaan ke API AksesBogor melewati jaringan Cloudflare, lalu diteruskan lewat Cloudflare Tunnel ke server kami. Cloudflare menerima alamat IP Anda dan data tentang permintaan, mis. halaman yang dibuka dan waktunya. Cloudflare juga menyimpan foto laporan di Cloudflare R2. Menurut Kebijakan Privasi Cloudflare dan perjanjian pemrosesan datanya, Cloudflare memproses data ini atas nama kami dan tidak boleh memakainya untuk pemasaran atau iklan.",
           "Resend: mengirim email kode masuk dan pemberitahuan.",
           "Google: hanya bila Anda memakai tombol Masuk dengan Google. Halaman Masuk memuat tombol dari Google.",
-          "Mapbox: menampilkan peta, mencari tempat, dan menghitung rute jalan kaki untuk kartu rute di Bantu memetakan dan Tanya rute. Mapbox menerima alamat IP dan area peta yang dilihat dari browser Anda, termasuk area di sekitar lokasi Anda setelah Tampilkan lokasi saya, serta kata kunci pencarian dan titik awal rute yang sudah dibulatkan dari server kami.",
-          "Anthropic: menjawab pertanyaan di Bantu memetakan dan Tanya rute lewat Claude API. Anthropic menerima pertanyaan, giliran sebelumnya, data tempat yang dipilih, hasil pencarian agen, dan jarak garis lurus yang dibulatkan ke tempat terdekat, tanpa posisi, email, nama, atau alamat IP Anda, juga bila Anda tidak punya akun. Menurut Ketentuan Komersial Anthropic, Anthropic tidak boleh memakai data ini untuk melatih model."
+          "Mapbox: menampilkan peta, mencari tempat, dan menghitung rute jalan kaki untuk kartu rute di Agen AI bila rute dari data OpenStreetMap di server kami belum tersedia. Mapbox menerima alamat IP dan area peta yang dilihat dari browser Anda, termasuk area di sekitar lokasi Anda setelah Tampilkan lokasi saya, serta kata kunci pencarian dan, untuk rute yang dihitung Mapbox, titik awal rute yang sudah dibulatkan dari server kami.",
+          "Anthropic: menjawab pertanyaan di Agen AI lewat Claude API. Anthropic menerima pertanyaan, giliran sebelumnya, data tempat yang dipilih, hasil pencarian agen, dan jarak garis lurus yang dibulatkan ke tempat terdekat, tanpa posisi, email, nama, atau alamat IP Anda, juga bila Anda tidak punya akun. Menurut Ketentuan Komersial Anthropic, Anthropic tidak boleh memakai data ini untuk melatih model."
         ],
         "after": [
           "Kami tidak menjual data pribadi dan tidak membagikannya untuk iklan."
@@ -544,7 +646,7 @@
         "id": "luar-negeri",
         "title": "Data yang diproses di luar Indonesia",
         "paragraphs": [
-          "Resend, Google, Mapbox, Cloudflare, dan Anthropic bisa memproses data di luar Indonesia, termasuk di Amerika Serikat. Anthropic menyimpan data di Amerika Serikat dan bisa menjalankan modelnya di negara lain. Situs web, API, database, dan log server kami berjalan di Batam, Indonesia, tetapi menurut kebijakan privasinya, Oracle bisa memproses data di layanannya di negara lain bila diperlukan untuk menjalankan layanan itu. Kami hanya mengirim data yang dibutuhkan layanan itu: email dan isi email ke Resend, lalu lintas situs web dan API lewat Cloudflare, alamat IP, area peta, kata kunci pencarian, dan titik awal rute ke Mapbox, pertanyaan Bantu memetakan dan Tanya rute ke Anthropic, dan foto laporan ke Cloudflare R2."
+          "Resend, Google, Mapbox, Cloudflare, dan Anthropic bisa memproses data di luar Indonesia, termasuk di Amerika Serikat. Anthropic menyimpan data di Amerika Serikat dan bisa menjalankan modelnya di negara lain. Situs web, API, database, dan log server kami berjalan di Batam, Indonesia, tetapi menurut kebijakan privasinya, Oracle bisa memproses data di layanannya di negara lain bila diperlukan untuk menjalankan layanan itu. Kami hanya mengirim data yang dibutuhkan layanan itu: email dan isi email ke Resend, lalu lintas situs web dan API lewat Cloudflare, alamat IP, area peta, kata kunci pencarian, dan titik awal rute yang dihitung Mapbox ke Mapbox, pertanyaan Agen AI ke Anthropic, dan foto laporan ke Cloudflare R2."
         ]
       },
       {
@@ -596,15 +698,15 @@
               "Sampai terkirim, sampai Anda keluar, atau 7 hari setelah terakhir diubah"
             ],
             [
-              "Pertanyaan dan jawaban Bantu memetakan dan Tanya rute",
-              "Tidak disimpan di server kami; percakapan hilang saat halaman ditutup. Anthropic menghapusnya paling lama 30 hari setelah diterima, kecuali ditandai melanggar kebijakan penggunaannya (sampai 2 tahun) atau diwajibkan hukum"
+              "Pertanyaan dan jawaban Agen AI",
+              "Tidak disimpan di server kami; percakapan ada di tab browser Anda sampai tab ditutup atau Anda memilih Percakapan baru. Anthropic menghapusnya paling lama 30 hari setelah diterima, kecuali ditandai melanggar kebijakan penggunaannya (sampai 2 tahun) atau diwajibkan hukum"
             ],
             [
               "Titik awal dan rute jalan kaki",
               "Tidak disimpan"
             ],
             [
-              "Jumlah pertanyaan Tanya rute per akun atau alamat IP",
+              "Jumlah pertanyaan Agen AI per akun atau alamat IP",
               "Di memori server sampai hari berganti (WIB)"
             ],
             [
@@ -651,14 +753,14 @@
         "id": "anak",
         "title": "Anak",
         "paragraphs": [
-          "Bila Anda berusia di bawah 18 tahun, minta orang tua atau wali Anda membaca kebijakan ini dan menyetujuinya bersama Anda sebelum membuat akun atau bertanya di Tanya rute."
+          "Bila Anda berusia di bawah 18 tahun, minta orang tua atau wali Anda membaca kebijakan ini dan menyetujuinya bersama Anda sebelum membuat akun atau bertanya kepada Agen AI."
         ]
       },
       {
         "id": "perubahan",
         "title": "Perubahan kebijakan",
         "paragraphs": [
-          "Bila kebijakan ini berubah, kami menaikkan nomor versinya dan meminta persetujuan Anda lagi saat Anda masuk berikutnya. Bila Anda memakai Tanya rute tanpa akun, versi yang berlaku adalah versi yang tertaut di halaman itu saat Anda bertanya."
+          "Bila kebijakan ini berubah, kami menaikkan nomor versinya dan meminta persetujuan Anda lagi saat Anda masuk berikutnya. Bila Anda memakai Agen AI tanpa akun, versi yang berlaku adalah versi yang tertaut di halaman itu saat Anda bertanya."
         ]
       },
       {
@@ -1302,7 +1404,7 @@
       "items": {
         "ringkasan": "Ringkasan",
         "laporan": "Laporan saya",
-        "bantu": "Bantu memetakan",
+        "agen": "Agen AI",
         "antrean": "Antrean",
         "jawaban": "Menunggu jawaban",
         "cekUlang": "Perlu dicek ulang",
@@ -1364,7 +1466,7 @@
         "source": "Sumber: {publisher}; jumlah tempat dari OpenStreetMap, {osm}.",
         "sourceDinsos": "Sumber: {publisher}.",
         "fallback": "Mulai dari tempat umum yang sering Anda datangi: kampus, masjid, halte, atau rumah sakit di Kota Bogor.",
-        "agent": "Cari tempat dengan agen",
+        "agent": "Cari tempat dengan Agen AI",
         "report": "Laporkan tempat",
         "map": "Lihat di peta"
       },
@@ -1397,7 +1499,7 @@
           }
         },
         "report": "Laporkan tempat pertama",
-        "agent": "Cari tempat dengan agen"
+        "agent": "Cari tempat dengan Agen AI"
       },
       "tim": {
         "title": "Tim verifikator",
@@ -2192,7 +2294,7 @@
     "awal": {
       "title": "Dari mana Anda berangkat?",
       "why": "Titik awal dipakai untuk menghitung rute jalan kaki ke tempat ini, mis. untuk datang memotret dan mencatat fasilitasnya.",
-      "privacy": "Titik awal dibulatkan sampai sekitar 11 m dan dikirim lewat server AksesBogor ke Mapbox hanya untuk menghitung rute. Titik ini tidak disimpan dan tidak pernah dikirim ke agen AI.",
+      "privacy": "Titik awal dibulatkan sampai sekitar 11 m dan dikirim ke server AksesBogor hanya untuk menghitung rute, dengan data OpenStreetMap di server kami sendiri atau lewat Mapbox. Titik ini tidak disimpan dan tidak pernah dikirim ke agen AI.",
       "useLocation": "Pakai lokasi saya",
       "locating": "Mencari lokasi Anda…",
       "pickOnMap": "Pilih titik awal di peta",
@@ -2203,9 +2305,17 @@
       "usePoint": "Pakai titik ini",
       "mapUnavailable": "Peta tidak bisa tampil, jadi titik awal hanya bisa diambil dari lokasi perangkat."
     },
+    "profil": {
+      "label": "Profil rute",
+      "kursi_roda": "Kursi roda",
+      "jalan_kaki": "Jalan kaki",
+      "hint": "Profil kursi roda menghindari tangga yang tercatat di OpenStreetMap dan lebih memilih trotoar. Data di peta bisa kurang lengkap, jadi tetap periksa peringatan di bawah.",
+      "noWheelchairPath": "Lihat rute jalan kaki"
+    },
     "rute": {
       "loading": "Menghitung rute…",
       "summary": "{distance} · sekitar {minutes, plural, other {# menit}} jalan kaki",
+      "summaryWheelchair": "{distance} · sekitar {minutes, plural, other {# menit}} dengan kursi roda",
       "warningTitle": "Belum tentu bisa dilewati kursi roda",
       "stepsTitle": "Langkah",
       "changeStart": "Ganti titik awal",
@@ -2215,7 +2325,8 @@
       "mapHint": "Peta hanya gambaran. Langkah dan daftar hambatan di bawah berisi informasi yang sama.",
       "mapLoading": "Memuat peta…",
       "mapUnavailable": "Peta tidak bisa tampil. Langkah dan daftar hambatan di bawah berisi informasi yang sama.",
-      "attribution": "Rute: <mapbox>© Mapbox</mapbox>. Data jalan dan hambatan: <osm>© kontributor OpenStreetMap</osm>."
+      "attribution": "Rute: <mapbox>© Mapbox</mapbox>. Data jalan dan hambatan: <osm>© kontributor OpenStreetMap</osm>.",
+      "attributionOsm": "Rute dan data jalan: <osm>© kontributor OpenStreetMap</osm>."
     },
     "hambatan": {
       "title": "Hambatan yang tercatat di OpenStreetMap",
@@ -2226,52 +2337,98 @@
       "osmLinkTarget": "({description})",
       "truncated": "Hanya 50 hambatan pertama yang ditampilkan.",
       "failed": "Hambatan di rute tidak bisa dimuat. Rute tetap bisa dilihat, tetapi hambatan di jalan tidak ditampilkan."
+    },
+    "cakupan": {
+      "title": "Kelengkapan data di rute ini",
+      "sidewalk": "Trotoar atau jalur pejalan kaki tercatat di {percent}% panjang rute",
+      "surface": "Jenis permukaan tercatat di {percent}% panjang rute",
+      "kerb": "Kerb tercatat di {withKerb} dari {crossings} penyeberangan",
+      "noCrossings": "Tidak ada jalur penyeberangan yang tercatat di rute ini",
+      "unknown": "Kelengkapan data belum bisa dihitung untuk rute ini.",
+      "dataDate": "Data OpenStreetMap per {date}.",
+      "warningsTitle": "Perlu diperhatikan"
     }
   },
-  "BantuMemetakan": {
-    "metaTitle": "Bantu memetakan",
-    "loading": "Memuat…",
-    "eyebrow": "Bantu memetakan",
-    "title": "Cari tempat yang",
-    "accent": "belum punya data",
-    "intro": "Tanyakan kepada agen kampus, masjid, halte, atau rumah sakit mana yang belum punya data AksesBogor, diurutkan menurut kecamatan yang paling perlu didata. Lalu datang, periksa fasilitasnya, dan kirim laporan.",
+  "Agen": {
+    "metaTitle": "Agen AI",
+    "metaDescription": "Tanya Agen AI cara ke kampus, masjid, halte, atau rumah sakit di Kota Bogor dan apa yang sudah diketahui tentang aksesibilitasnya, lalu lihat rute jalan kaki beserta peringatan dan hambatannya.",
+    "title": "Agen AI",
+    "loading": "Memuat Agen AI…",
     "unavailable": {
-      "title": "Bantu memetakan belum dibuka",
-      "body": "Fitur ini masih disiapkan. Anda tetap bisa melaporkan tempat lewat Laporkan."
+      "title": "Agen AI belum dibuka",
+      "body": "Fitur ini masih disiapkan. Anda tetap bisa mencari tempat lewat Jelajahi dan Peta."
     },
-    "entry": {
-      "title": "Belum tahu tempat mana yang perlu didata?",
-      "body": "Agen bisa menunjukkan tempat yang belum punya data AksesBogor di kecamatan yang paling perlu.",
-      "link": "Bantu memetakan"
-    },
-    "tanya": {
-      "title": "Tanya agen",
-      "intro": "Agen hanya tahu data AksesBogor, data tempat dari OpenStreetMap, peraturan, dan prioritas kecamatan. Agen tidak bisa menilai apakah sebuah tempat atau rute aksesibel; bila datanya belum ada, agen akan mengatakannya.",
-      "privacy": "Jangan tulis data pribadi, mis. nama, nomor telepon, atau alamat rumah. Pertanyaan dikirim lewat server AksesBogor ke Anthropic (Claude API) untuk dijawab dan tidak disimpan AksesBogor.",
-      "label": "Pertanyaan Anda",
-      "hint": "Paling banyak 500 karakter. Percakapan hilang saat halaman ditutup.",
-      "send": "Kirim pertanyaan",
-      "sending": "Agen sedang menjawab…",
-      "examples": "Contoh pertanyaan",
-      "example": {
+    "baru": "Percakapan baru",
+    "baruDone": "Percakapan baru dimulai.",
+    "kosong": {
+      "title": "Tanya soal tempat di",
+      "accent": "Kota Bogor",
+      "intro": "Agen AI menjawab dari data AksesBogor, OpenStreetMap, dan peraturan aksesibilitas, lalu menampilkan rute jalan kaki ke tempatnya.",
+      "introContributor": "Karena Anda masuk, Agen AI juga bisa mencari tempat yang belum punya data dan kecamatan yang paling perlu didata.",
+      "notice": "Pertanyaan dikirim lewat server AksesBogor ke Anthropic (Claude API) dan tidak disimpan AksesBogor. Jangan tulis data pribadi, mis. nama, nomor telepon, atau alamat rumah. Baca <link>Kebijakan Privasi</link>.",
+      "suggestions": "Coba tanyakan",
+      "saran": {
+        "place": "Bagaimana cara ke {name}?",
+        "hospital": "Rute ke rumah sakit terdekat dari sini",
+        "mosque": "Masjid terdekat yang aksesibel",
+        "halte": "Apakah halte terdekat ramah kursi roda?",
+        "rule": "Berapa kemiringan ramp menurut peraturan?",
         "priority": "Kecamatan mana yang paling perlu didata?",
-        "mosque": "Masjid mana di Bogor Barat yang belum punya data?",
-        "near": "Halte mana yang belum didata di Tanah Sareal?"
-      },
-      "conversation": "Percakapan dengan agen",
+        "toMap": "Masjid mana di Bogor Barat yang belum didata?"
+      }
+    },
+    "percakapan": {
+      "label": "Percakapan dengan Agen AI",
       "you": "Anda",
-      "agent": "Agen",
-      "answered": "Agen menjawab: {answer}",
-      "sources": "Sumber",
-      "sourcePlace": "Data terverifikasi AksesBogor: {name}, diverifikasi {date}",
-      "sourcePlaceAdmin": "Data AksesBogor: {name}, diterbitkan langsung oleh admin {date}",
-      "license": "Lisensi {license}",
-      "tooShort": "Tulis pertanyaan paling sedikit 2 karakter.",
+      "agent": "Agen AI",
+      "thinking": "Agen AI sedang menyusun jawaban…",
+      "answered": "Agen AI menjawab: {answer}",
+      "copy": "Salin",
+      "copyLabel": "jawaban",
+      "copied": "Jawaban disalin.",
+      "copyFailed": "Jawaban tidak bisa disalin.",
+      "retry": "Coba lagi",
+      "stopped": "Jawaban dihentikan.",
+      "signIn": "Masuk",
       "failed": "Pertanyaan tidak bisa dikirim. Coba lagi sebentar lagi.",
-      "note": "Jawaban agen bisa keliru. Periksa lagi di tempatnya sebelum mengirim laporan."
+      "latest": "Ke pesan terbaru"
+    },
+    "sumber": {
+      "title": "Sumber ({count})",
+      "place": "Data terverifikasi AksesBogor: {name}, diverifikasi {date}",
+      "placeAdmin": "Data AksesBogor: {name}, diterbitkan langsung oleh admin {date}",
+      "license": "Lisensi {license}"
+    },
+    "tulis": {
+      "label": "Pertanyaan untuk Agen AI",
+      "placeholder": "Tanya soal tempat atau rute…",
+      "send": "Kirim pertanyaan",
+      "stop": "Hentikan jawaban",
+      "tooShort": "Tulis pertanyaan paling sedikit 2 karakter.",
+      "remaining": "Sisa {count} karakter",
+      "note": "Agen AI bisa keliru, dan rute tidak memperhitungkan tangga atau kerb. Jatah {count} pertanyaan sehari.",
+      "keys": "Enter untuk kirim, Shift+Enter untuk baris baru."
+    },
+    "awal": {
+      "heading": "Titik awal",
+      "title": "Dari mana Anda berangkat?",
+      "why": "Titik awal dipakai untuk mencari tempat terdekat dan menghitung rute jalan kaki. Anda juga bisa bertanya tanpa titik awal.",
+      "privacy": "Titik awal dibulatkan sampai sekitar 11 m. Server AksesBogor memakainya untuk jarak ke tempat terdekat, dan Mapbox untuk menghitung rute. Titik ini tidak disimpan dan tidak pernah dikirim ke model AI.",
+      "none": "Pilih titik awal",
+      "chosen": {
+        "perangkat": "Dari lokasi Anda",
+        "peta": "Dari titik di peta"
+      },
+      "clear": "Hapus titik awal",
+      "close": "Tutup"
+    },
+    "tempat": {
+      "label": "Tujuan: {name}",
+      "clear": "Hapus tujuan {name}"
     },
     "kartu": {
-      "noData": "Belum ada data AksesBogor",
+      "label": "Kartu dari jawaban Agen AI",
+      "noData": "Belum ada data",
       "unnamed": "Tanpa nama di OpenStreetMap",
       "osmLink": "Lihat di OpenStreetMap",
       "report": "Laporkan tempat ini",
@@ -2279,66 +2436,13 @@
       "update": "Perbarui data",
       "verified": "Terakhir diverifikasi {date}",
       "verifiedAdmin": "Diterbitkan langsung oleh admin · {date}",
-      "cardsLabel": "Kartu dari jawaban agen"
-    }
-  },
-  "TanyaRute": {
-    "metaTitle": "Tanya rute",
-    "metaDescription": "Tanyakan cara ke kampus, masjid, halte, atau rumah sakit di Kota Bogor yang tercatat di AksesBogor, lalu lihat rute jalan kaki beserta peringatan dan hambatannya.",
-    "loading": "Memuat…",
-    "eyebrow": "Tanya rute",
-    "title": "Tanya cara ke",
-    "accent": "tempat di Kota Bogor",
-    "intro": "Asisten menjawab dari data AksesBogor dan menampilkan rute jalan kaki. Rute itu tidak memperhitungkan tangga, kerb, atau kemiringan jalan, jadi selalu periksa peringatan dan hambatannya.",
-    "unavailable": {
-      "title": "Tanya rute belum dibuka",
-      "body": "Fitur ini masih disiapkan. Anda tetap bisa mencari tempat lewat Jelajahi dan Peta."
-    },
-    "notice": "Pertanyaan Anda dikirim lewat server AksesBogor ke Anthropic (Claude API) untuk dijawab, dan tidak disimpan AksesBogor. Titik awal hanya dipakai server AksesBogor dan Mapbox, tidak pernah dikirim ke Anthropic. Jangan tulis data pribadi, mis. nama, nomor telepon, atau alamat rumah. Baca <link>Kebijakan Privasi</link>.",
-    "awal": {
-      "heading": "Titik awal",
-      "title": "Dari mana Anda berangkat?",
-      "why": "Titik awal dipakai untuk mencari tempat terdekat dan menghitung rute jalan kaki. Anda juga bisa bertanya tanpa titik awal.",
-      "privacy": "Titik awal dibulatkan sampai sekitar 11 m. Server AksesBogor memakainya untuk jarak ke tempat terdekat, dan Mapbox untuk menghitung rute. Titik ini tidak disimpan dan tidak pernah dikirim ke asisten AI.",
-      "chosen": {
-        "perangkat": "Titik awal: lokasi perangkat Anda.",
-        "peta": "Titik awal: titik yang Anda pilih di peta."
-      },
-      "change": "Ganti titik awal",
-      "clear": "Hapus titik awal",
-      "keep": "Tetap pakai titik awal sebelumnya"
-    },
-    "place": {
-      "label": "Tujuan: {name}",
-      "clear": "Hapus tujuan"
-    },
-    "tanya": {
-      "title": "Tanya asisten",
-      "label": "Pertanyaan Anda",
-      "hint": "Paling banyak 500 karakter dan {count} pertanyaan per hari. Percakapan hilang saat halaman ditutup.",
-      "send": "Kirim pertanyaan",
-      "sending": "Asisten sedang menjawab…",
-      "examples": "Contoh pertanyaan",
-      "example": {
-        "place": "Bagaimana cara ke {name}?",
-        "hospital": "Rute ke rumah sakit terdekat dari sini",
-        "mosque": "Masjid terdekat yang aksesibel",
-        "halte": "Apakah halte terdekat ramah kursi roda?"
-      },
-      "conversation": "Percakapan dengan asisten",
-      "you": "Anda",
-      "assistant": "Asisten",
-      "answered": "Asisten menjawab: {answer}",
-      "tooShort": "Tulis pertanyaan paling sedikit 2 karakter.",
-      "failed": "Pertanyaan tidak bisa dikirim. Coba lagi sebentar lagi.",
-      "note": "Jawaban asisten bisa keliru. Periksa peringatan dan hambatan di kartu rute, dan bila ragu, telepon tempatnya dulu."
-    },
-    "cards": "Kartu rute dari jawaban asisten",
-    "kandidat": {
-      "label": "Belum ada data",
-      "body": "Tempat ini dari OpenStreetMap dan belum punya data aksesibilitas dari tim AksesBogor.",
-      "report": "Laporkan tempat ini",
+      "candidate": "Tempat ini dari OpenStreetMap dan belum punya data aksesibilitas dari tim AksesBogor.",
       "attribution": "© kontributor OpenStreetMap"
+    },
+    "entry": {
+      "title": "Belum tahu tempat mana yang perlu didata?",
+      "body": "Agen AI bisa menunjukkan tempat yang belum punya data AksesBogor di kecamatan yang paling perlu.",
+      "link": "Tanya Agen AI"
     }
   },
   "PrioritasKecamatan": {

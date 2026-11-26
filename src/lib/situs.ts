@@ -14,7 +14,7 @@ export const PUBLIC_PATHS = [
   "/jelajahi",
   "/peta",
   "/aksesibilitas",
-  "/tanya-rute",
+  "/agen",
   "/tentang",
   "/kebijakan-privasi",
   "/syarat",

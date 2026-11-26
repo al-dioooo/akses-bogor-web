@@ -26,7 +26,7 @@ export function BottomNav({ labels, pathname, signedIn }: { labels: BottomNavLab
   // Di ponsel, Akun saya dibuka dari menu Lainnya (Frame Akun).
   const account = signedIn ? { href: "/akun", label: labels.akunSaya } : { href: "/masuk", label: labels.masuk };
   return (
-    <nav aria-label={labels.label} className="fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-40 xl:hidden">
+    <nav data-bottom-nav aria-label={labels.label} className="fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-40 xl:hidden">
       <ul className="panel-raised flex gap-1 rounded-3xl p-1.5">
         {BOTTOM_NAV.map((tab) => {
           const active = isActive(tab.href, pathname);

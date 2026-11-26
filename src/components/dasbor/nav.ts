@@ -1,17 +1,17 @@
 import type { Role } from "@/lib/akun";
-import { IconBuilding, IconClipboardCheck, IconLayoutDashboard, IconMessage, IconMessageReport, IconRefresh, IconRoute, IconSettings, IconUsers, type Glyph } from "@/ui/icons";
+import { IconBuilding, IconClipboardCheck, IconLayoutDashboard, IconMessage, IconMessageReport, IconRefresh, IconSettings, IconSparkles, IconUsers, type Glyph } from "@/ui/icons";
 
 // Menu dasbor akun (ADR-0046). Bagian verifikasi dan admin hanya disusun untuk peran itu; halaman dan API tetap
 // memeriksa peran sendiri (ADR-0035), jadi menu ini hanya memilih apa yang ditampilkan.
 
-export type DashboardKey = "ringkasan" | "laporan" | "bantu" | "antrean" | "jawaban" | "cekUlang" | "tempat" | "tim" | "pengaturan";
+export type DashboardKey = "ringkasan" | "laporan" | "agen" | "antrean" | "jawaban" | "cekUlang" | "tempat" | "tim" | "pengaturan";
 /** "utama" tidak berlabel: Ringkasan berdiri sendiri di atas bagian lain. */
 export type DashboardGroupKey = "utama" | "kontribusi" | "verifikasi" | "admin" | "akun";
 
 export type DashboardItem = { key: DashboardKey; href: string; icon: Glyph };
 export type DashboardGroup = { key: DashboardGroupKey; items: DashboardItem[] };
 
-/** Bagian menu untuk peran akun. Bantu memetakan hanya muncul selama API membuka agen (ADR-0043). */
+/** Bagian menu untuk peran akun. Agen AI ada di Kontribusi selama API membuka alat kontributor (ADR-0043, ADR-0054). */
 export function dashboardGroups({ role, agent }: { role: Role; agent: boolean }): DashboardGroup[] {
   const groups: DashboardGroup[] = [
     { key: "utama", items: [{ key: "ringkasan", href: "/akun", icon: IconLayoutDashboard }] },
@@ -19,7 +19,7 @@ export function dashboardGroups({ role, agent }: { role: Role; agent: boolean })
       key: "kontribusi",
       items: [
         { key: "laporan", href: "/akun/laporan", icon: IconMessageReport },
-        ...(agent ? [{ key: "bantu" as const, href: "/laporkan/bantu-memetakan", icon: IconRoute }] : []),
+        ...(agent ? [{ key: "agen" as const, href: "/agen", icon: IconSparkles }] : []),
       ],
     },
   ];

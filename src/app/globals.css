@@ -600,6 +600,25 @@ body:has(> .peta-app:not([data-rute-tersembunyi])) {
   }
 }
 
+/* Pilihan Peta tematik (ADR-0053): mengambang di bawah tombolnya, di atas kunci dan panel daftar selama terbuka, karena
+   tertutup lagi begitu pengguna memilih, mengetuk di luar, atau memindahkan fokus keluar. Tingginya dibatasi komponennya
+   sampai di atas Bottom nav. */
+.peta-pilihan {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  z-index: 1;
+  width: calc(100vw - 1.5rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  @media (width >= 48rem) {
+    width: 21rem;
+  }
+}
+.peta-lapisan:has(.peta-pilihan:not([hidden])) {
+  z-index: 3;
+}
+
 /* Ponsel landscape: tombol lapisan dan kontrol peta naik ke samping pencarian, supaya tidak masuk ke balik panel daftar
    yang kecil. Chip kategori tetap di bawah pencarian dan bisa digeser. */
 @media (width < 48rem) and (height < 32rem) {
@@ -618,8 +637,9 @@ body:has(> .peta-app:not([data-rute-tersembunyi])) {
     grid-column: 3;
     grid-row: 1;
   }
-  /* Tombol lapisan ada di kanan, jadi kuncinya mengambang ke kiri dari tepi kanan tombol itu. */
-  .peta-kunci {
+  /* Tombol lapisan ada di kanan, jadi kunci dan pilihannya mengambang ke kiri dari tepi kanan tombol itu. */
+  .peta-kunci,
+  .peta-pilihan {
     right: 0;
     left: auto;
     width: min(21rem, calc(100vw - 1.5rem));
@@ -867,4 +887,110 @@ body:has(> .peta-app:not([data-rute-tersembunyi])) {
   width: min(32rem, calc(100% - 1.5rem));
   translate: -50% -50%;
   box-shadow: 0 12px 32px -16px var(--color-shadow-soft);
+}
+
+/*
+ * Agen AI (ADR-0054): obrolan setinggi layar, seperti Peta. Halaman tidak digulir dan footer disembunyikan; percakapan
+ * digulir di dalam main, dan kotak tulis menempel di bawah, di atas Bottom nav di bawah 1280 px. Rute yang ditinggalkan
+ * tetap terpasang tetapi tersembunyi dan diberi data-rute-tersembunyi (components/agen/route-marker.tsx).
+ */
+body:has(> .agen-app:not([data-rute-tersembunyi])) {
+  height: 100dvh;
+  padding-bottom: 0;
+  overflow: hidden;
+  & > header {
+    border-bottom-color: var(--color-border-subtle);
+    background-color: var(--color-bg-canvas);
+  }
+  & > footer {
+    display: none;
+  }
+  /* Saat menulis, keyboard ponsel mengecilkan layar; Bottom nav disembunyikan supaya kotak tulis tidak tertutup. */
+  &:has(.agen-bawah[data-menulis]) > [data-bottom-nav] {
+    display: none;
+  }
+}
+
+.agen-app {
+  /* Ruang Bottom nav (70 px dan jarak 8 px dari tepinya) di bawah 1280 px. */
+  --agen-nav: calc(max(0.75rem, env(safe-area-inset-bottom)) + 4.875rem);
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  &:has(.agen-bawah[data-menulis]) {
+    --agen-nav: 0px;
+  }
+  @media (width >= 80rem) {
+    --agen-nav: 0px;
+  }
+}
+
+/* Lebar baca percakapan dan kotak tulis, dengan jarak tepi yang mengikuti safe area di ponsel landscape. */
+.agen-kolom {
+  width: min(48rem, 100% - 2 * max(1rem, env(safe-area-inset-left), env(safe-area-inset-right)));
+  margin-inline: auto;
+}
+
+/* Cincin fokus digambar di bingkai kotak tulis (composer.tsx), bukan di textarea di dalamnya. */
+.agen-tulis textarea:focus-visible {
+  outline: none;
+}
+
+.agen-atas {
+  flex-shrink: 0;
+  border-bottom: var(--border-width-default) solid var(--color-border-subtle);
+}
+
+.agen-gulir {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-padding-block: 1rem;
+}
+
+.agen-bawah {
+  flex-shrink: 0;
+  padding-top: 0.5rem;
+  padding-bottom: max(var(--agen-nav), env(safe-area-inset-bottom), 0.75rem);
+  background: linear-gradient(to bottom, transparent, var(--color-bg-canvas) 1.5rem);
+}
+
+/* Indikator mengetik: tiga titik yang naik bergantian, diam bila gerak dikurangi. */
+.agen-titik {
+  display: inline-flex;
+  gap: 0.3rem;
+  & > i {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 9999px;
+    background: var(--color-icon-brand);
+    opacity: 0.4;
+  }
+}
+
+@keyframes agen-titik {
+  0%,
+  70%,
+  100% {
+    opacity: 0.4;
+    transform: translateY(0);
+  }
+  35% {
+    opacity: 1;
+    transform: translateY(-0.2rem);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :root:not([data-motion="off"]) .agen-titik > i {
+    animation: agen-titik 1.2s var(--ease-out-expo) infinite;
+    &:nth-child(2) {
+      animation-delay: 0.15s;
+    }
+    &:nth-child(3) {
+      animation-delay: 0.3s;
+    }
+  }
 }

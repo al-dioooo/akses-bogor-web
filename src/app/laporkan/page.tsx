@@ -52,7 +52,7 @@ async function Report({ searchParams }: { searchParams: PageProps<"/laporkan">["
   if (placeId && !place) notFound();
   const kind: ReportKind = place ? (params.jenis === "kekurangan" ? "kekurangan" : "perubahan") : "baru";
   const prefill = placeId ? null : parseCandidatePrefill(params);
-  // Bantu memetakan hanya ditawarkan untuk laporan baru, kepada akun yang sudah masuk, selama API membuka agen.
+  // Agen AI untuk memetakan hanya ditawarkan untuk laporan baru, kepada akun yang sudah masuk, selama API membuka agen.
   const helper = kind === "baru" && signedIn && (await agentEnabled());
   // Pilihan terbit langsung hanya untuk admin (ADR-0051); API tetap menolak akun lain.
   const admin = signedIn && (await currentAccount().catch(() => null))?.user.role === "admin";
@@ -72,17 +72,17 @@ async function Report({ searchParams }: { searchParams: PageProps<"/laporkan">["
   );
 }
 
-/** Jalan ke Bantu memetakan (ADR-0043) untuk pelapor yang belum tahu tempat mana yang perlu didata. */
+/** Jalan ke Agen AI (ADR-0054) untuk pelapor yang belum tahu tempat mana yang perlu didata. */
 async function MappingHelper() {
-  const t = await getTranslations("BantuMemetakan.entry");
+  const t = await getTranslations("Agen.entry");
   return (
-    <aside aria-labelledby="bantu-memetakan-judul" className="flex flex-col items-start gap-3 rounded-3xl bg-surface-brand-subtle p-5">
-      <h2 id="bantu-memetakan-judul" className="flex items-start gap-2 font-heading text-lg font-bold">
+    <aside aria-labelledby="agen-ai-judul" className="flex flex-col items-start gap-3 rounded-3xl bg-surface-brand-subtle p-5">
+      <h2 id="agen-ai-judul" className="flex items-start gap-2 font-heading text-lg font-bold">
         <Icon icon={IconCompass} className="mt-0.5 size-5 shrink-0 text-icon-brand" />
         {t("title")}
       </h2>
       <p>{t("body")}</p>
-      <Link href="/laporkan/bantu-memetakan" className={buttonClass("outline", "sm")}>
+      <Link href="/agen" className={buttonClass("outline", "sm")}>
         {t("link")}
       </Link>
     </aside>

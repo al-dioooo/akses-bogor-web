@@ -66,7 +66,7 @@ export async function FirstRoute({ agent }: { agent: boolean }) {
         </Link>
         {agent && (
           <Link
-            href="/laporkan/bantu-memetakan"
+            href="/agen"
             className="inline-flex min-h-13 items-center justify-center gap-2 rounded-full border-2 border-text-on-inverse/40 px-6 text-center font-bold transition-colors duration-200 hover:bg-text-on-inverse/10 max-sm:w-full"
           >
             <Icon icon={IconRoute} />

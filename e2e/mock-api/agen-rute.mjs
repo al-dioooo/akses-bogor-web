@@ -98,7 +98,8 @@ const OBSTACLES = {
   attribution: "© kontributor OpenStreetMap",
 };
 
-function answer(places, question) {
+/** Jawaban agen kontributor tiruan dengan empat kartu; dipakai juga Agen AI untuk akun dengan alat kontributor. */
+export function contributorAnswer(places, question) {
   const halte = places.find((p) => p.id === HALTE);
   const osm = OSM_PLACES[0];
   const osmTarget = { kind: "osm", osmType: osm.type, osmId: osm.id };
@@ -161,7 +162,7 @@ export function handleAgenRute(method, url, headers, body, places) {
     const question = String(body?.question ?? "");
     if (question.includes("sibuk-tiruan")) return error(503, "agen_sibuk", "Agen sedang sibuk, coba lagi nanti.");
     if (question.includes("batas-tiruan")) return error(429, "agen_terlalu_sering", "Batas 5 pertanyaan per hari untuk akun Anda tercapai. Coba lagi besok.");
-    return [200, answer(places, question)];
+    return [200, contributorAnswer(places, question)];
   }
   return error(404, "tidak_ditemukan", "Alamat tidak ditemukan.");
 }
