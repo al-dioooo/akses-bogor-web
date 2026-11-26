@@ -1,7 +1,9 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const port = 3100;
-export const mockApiPort = 3101;
+// Port dan jumlah worker bisa diatur lewat environment. Runner self-hosted di Evergarden mengisinya per runner,
+// karena dua runner berbagi jaringan host dan jatah CPU satu runner lebih kecil dari jumlah core host (issue #240).
+const port = Number(process.env.E2E_PORT ?? 3100);
+export const mockApiPort = Number(process.env.E2E_MOCK_API_PORT ?? 3101);
 export const webServerSecret = "rahasia-tiruan-untuk-tes-playwright-saja";
 
 // ADR-0021: pemeriksaan otomatis di CI. Diuji di ponsel (mobile-first, ADR-0012) dan desktop.
@@ -9,6 +11,8 @@ export default defineConfig({
   testDir: "./e2e",
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
+  // Tanpa E2E_WORKERS: bawaan Playwright, separuh jumlah core.
+  workers: process.env.E2E_WORKERS ? Number(process.env.E2E_WORKERS) : undefined,
   reporter: process.env.CI ? [["github"], ["html", { open: "never" }]] : "list",
   use: {
     // Browser tetap membuka localhost: Next.js menulis asal 127.0.0.1 sebagai localhost di `request.nextUrl`, sehingga
