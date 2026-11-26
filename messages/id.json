@@ -2408,6 +2408,7 @@
       "title": "Sumber ({count})",
       "place": "Data terverifikasi AksesBogor: {name}, diverifikasi {date}",
       "placeAdmin": "Data AksesBogor: {name}, diterbitkan langsung oleh admin {date}",
+      "placeStreetView": "Data AksesBogor: {name}, {month, select, none {diverifikasi dari Street View} other {diverifikasi dari Street View, gambar {month}}}",
       "license": "Lisensi {license}"
     },
     "tulis": {
@@ -2447,6 +2448,7 @@
       "update": "Perbarui data",
       "verified": "Terakhir diverifikasi {date}",
       "verifiedAdmin": "Diterbitkan langsung oleh admin · {date}",
+      "verifiedStreetView": "{month, select, none {Diverifikasi dari Street View} other {Diverifikasi dari Street View · gambar {month}}}",
       "candidate": "Tempat ini dari OpenStreetMap dan belum punya data aksesibilitas dari tim AksesBogor.",
       "attribution": "© kontributor OpenStreetMap"
     },

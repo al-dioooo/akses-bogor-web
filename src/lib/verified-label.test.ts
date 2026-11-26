@@ -27,6 +27,14 @@ describe("verifiedLabel (ADR-0057)", () => {
     expect(card(admin.key, admin.values)).toMatch(/^Diterbitkan langsung oleh admin · /);
   });
 
+  it("has a Street View wording for the Agen AI cards and sources", () => {
+    const label = verifiedLabel({ ...PLACE, verificationSource: "street_view", streetViewImageDate: "2026-02" }, format, "long");
+    const cards = createTranslator({ locale: "id", messages, namespace: "Agen.kartu" });
+    const sources = createTranslator({ locale: "id", messages, namespace: "Agen.sumber" });
+    expect(cards(label.key, label.values)).toBe("Diverifikasi dari Street View · gambar Februari 2026");
+    expect(sources("placeStreetView", { name: "IBI Kesatuan", ...label.values })).toBe("Data AksesBogor: IBI Kesatuan, diverifikasi dari Street View, gambar Februari 2026");
+  });
+
   it("formats the image month in Indonesian", () => {
     expect(imageMonth("2025-12", format)).toBe("Desember 2025");
     expect(imageMonth(null, format)).toBe("");
