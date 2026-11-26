@@ -47,9 +47,10 @@ const item = (place) => ({
   unpublishedReason: place.unpublishedReason ?? null,
 });
 
-function record(id, user, action, changes) {
+function record(id, user, action, changes, photoId = null) {
   const entries = history.get(id) ?? [];
-  entries.unshift({ id: entries.length + 1, action, actor: { name: user.displayName, label: null }, at: new Date().toISOString(), changes });
+  const entity = photoId ? "foto" : "lokasi";
+  entries.unshift({ id: entries.length + 1, entity, photoId, action, actor: { name: user.displayName, label: null }, at: new Date().toISOString(), changes });
   history.set(id, entries);
 }
 
@@ -191,6 +192,8 @@ export function handleKelolaTempat(method, url, headers, body, places) {
       // Seperti API: foto yang ditambah atau dihapus tercatat di riwayat tempat.
       ...(added > 0 || removed.length > 0 ? { photos: { ditambah: added, dihapus: removed.length } } : {}),
     });
+    // Seperti API: setiap foto yang dihapus juga punya entri `foto` sendiri dengan tag dan alasannya.
+    for (const photo of place.photos.filter((p) => removed.includes(p.id))) record(id, user, "dihapus", { lokasi: id, tag: photo.tag, alasan: body.reason }, photo.id);
     return [200, { placeId: id, status: changed.status, downgraded }];
   }
 

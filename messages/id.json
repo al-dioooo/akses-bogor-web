@@ -1585,6 +1585,8 @@
       "reason": "Alasan: {reason}",
       "reasonDown": "Alasan diturunkan sebelumnya: {reason}",
       "fromReport": "Dari laporan warga",
+      "photoRemoved": "Foto dihapus",
+      "photoRemovedTag": "Foto dihapus: {tag}",
       "field": {
         "name": "nama",
         "category": "kategori",
