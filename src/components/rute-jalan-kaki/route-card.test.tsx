@@ -18,6 +18,30 @@ const ROUTE = {
   warning: WARNING,
   attribution: "© Mapbox © OpenStreetMap",
 };
+/** API tanpa `ACCESSIBLE_ROUTER_URL`: kartu kembali ke rute Mapbox. */
+const OFF = { status: 503, body: { galat: "rute_aksesibel_belum_aktif", pesan: "Rute dari data OpenStreetMap belum diatur di server." } };
+const NOTE = "Dihitung dari data OpenStreetMap; kondisi lapangan bisa berbeda.";
+const osmRoute = (profil: "kursi_roda" | "jalan_kaki") => ({
+  destination: ROUTE.destination,
+  profil,
+  distanceMeters: profil === "kursi_roda" ? 1620 : 1460,
+  durationSeconds: profil === "kursi_roda" ? 1500 : 1100,
+  steps: [
+    { instruction: "Mulai berjalan ke arah selatan", distanceMeters: 1620, durationSeconds: 1500, name: null, maneuver: "depart", location: { lat: -6.56, lng: 106.76 } },
+    { instruction: "Tiba di tujuan", distanceMeters: 0, durationSeconds: 0, name: null, maneuver: "arrive", location: { lat: -6.5712, lng: 106.7655 } },
+  ],
+  geometry: ROUTE.geometry,
+  polyline: profil === "kursi_roda" ? "kursi" : "kaki",
+  coverage: { sidewalkPercent: 62, surfacePercent: 18, crossings: 3, crossingsWithKerb: 1, dataDate: "2026-11-25" },
+  warnings: [
+    ...(profil === "jalan_kaki" ? [{ code: "melewati_tangga", message: "Rute ini melewati tangga sekitar 20 m." }] : []),
+    { code: "kerb_tinggi", message: "Ada kerb tinggi yang tercatat di 1 ruas jalur yang dilewati rute ini." },
+    { code: "data_trotoar_kurang", message: "Data trotoar belum tercatat di OpenStreetMap untuk 38% panjang rute." },
+    ...(profil === "kursi_roda" ? [{ code: "kemiringan_tidak_dihitung", message: "Kemiringan jalan belum ikut dihitung; tanjakan hanya diketahui bila tercatat di OSM." }] : []),
+  ],
+  note: NOTE,
+  attribution: "© kontributor OpenStreetMap (https://www.openstreetmap.org/copyright)",
+});
 const OBSTACLES = {
   bufferMeters: 20,
   truncated: false,
@@ -57,7 +81,7 @@ describe("routeTarget", () => {
 describe("RouteCard", () => {
   it("explains the location first, then shows the route with the fixed warning, steps and obstacles", async () => {
     grantLocation({ coords: { latitude: -6.56, longitude: 106.76 } });
-    const fetch = mockFetch({ status: 200, body: ROUTE }, { status: 200, body: OBSTACLES });
+    const fetch = mockFetch(OFF, { status: 200, body: ROUTE }, { status: 200, body: OBSTACLES });
     render(<RouteCard target={{ kind: "osm", osmType: "node", osmId: 9001 }} name="Masjid Al-Hidayah" />, { wrapper: WithIntl });
     expect(screen.getByRole("heading", { name: "Rute jalan kaki ke Masjid Al-Hidayah" })).toBeTruthy();
     expect(screen.getByText(/tidak pernah dikirim ke agen AI/)).toBeTruthy();
@@ -67,11 +91,17 @@ describe("RouteCard", () => {
     // Fokus dipindah efek setelah render, jadi ditunggu juga.
     await waitFor(() => expect(document.activeElement?.textContent).toBe("1,5 km · sekitar 18 menit jalan kaki"));
     expect(screen.getByText(WARNING)).toBeTruthy();
+    expect(screen.queryByRole("group", { name: "Profil rute" })).toBeNull();
+    expect(screen.queryByText(NOTE)).toBeNull();
     expect(screen.getByRole("region", { name: "Langkah" }).querySelectorAll("li")).toHaveLength(2);
     await waitFor(() => expect(screen.getByText("Tangga, 4 anak tangga")).toBeTruthy());
     expect(screen.getByRole("link", { name: /^Lihat di OpenStreetMap\s*\(Tangga, 4 anak tangga\)$/ }).getAttribute("href")).toBe("https://www.openstreetmap.org/way/1");
-    expect(JSON.parse((fetch.mock.calls[0] as unknown as [string, RequestInit])[1].body as string)).toEqual({ from: { lat: -6.56, lng: 106.76 }, osm: { type: "node", id: 9001 } });
-    expect(JSON.parse((fetch.mock.calls[1] as unknown as [string, RequestInit])[1].body as string)).toEqual({ polyline: "abc" });
+    const bodies = (fetch.mock.calls as unknown as [string, RequestInit][]).map(([, init]) => JSON.parse(init.body as string));
+    expect(bodies).toEqual([
+      { from: { lat: -6.56, lng: 106.76 }, osm: { type: "node", id: 9001 }, profil: "kursi_roda" },
+      { from: { lat: -6.56, lng: 106.76 }, osm: { type: "node", id: 9001 } },
+      { polyline: "abc" },
+    ]);
   });
 
   it("opens the map picker when the location is denied", async () => {
@@ -95,7 +125,7 @@ describe("RouteCard", () => {
   });
 
   it("loads the route right away from a start point chosen on the page, through the given route handlers", async () => {
-    const fetch = mockFetch({ status: 200, body: ROUTE }, { status: 200, body: OBSTACLES });
+    const fetch = mockFetch(OFF, { status: 200, body: ROUTE }, { status: 200, body: OBSTACLES });
     render(
       <RouteCard
         target={{ kind: "aksesbogor", placeId: "4037ba19-b366-45bc-aceb-270944fe9372" }}
@@ -111,6 +141,63 @@ describe("RouteCard", () => {
     const calls = fetch.mock.calls as unknown as [string, RequestInit][];
     expect(calls.map(([url]) => url).slice(-2)).toEqual(["/tanya-rute/rute", "/tanya-rute/hambatan"]);
     expect(JSON.parse(calls.at(-2)![1].body as string)).toEqual({ from: { lat: -6.5965, lng: 106.7972 }, placeId: "4037ba19-b366-45bc-aceb-270944fe9372" });
+  });
+
+  it("shows a wheelchair route from OpenStreetMap with the fixed note, coverage and warnings, then switches to walking", async () => {
+    const fetch = mockFetch({ status: 200, body: osmRoute("kursi_roda") }, { status: 200, body: OBSTACLES }, { status: 200, body: osmRoute("jalan_kaki") }, { status: 200, body: OBSTACLES });
+    render(<RouteCard target={{ kind: "osm", osmType: "node", osmId: 9001 }} name="Masjid Al-Hidayah" from={{ lat: -6.56, lng: 106.76 }} />, { wrapper: WithIntl });
+    await waitFor(() => expect(screen.getByText("1,6 km · sekitar 25 menit dengan kursi roda")).toBeTruthy());
+    const profiles = screen.getByRole("group", { name: "Profil rute" });
+    expect(screen.getByRole("button", { name: "Kursi roda", pressed: true })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Jalan kaki", pressed: false })).toBeTruthy();
+    expect(profiles.getAttribute("aria-describedby")).toBeTruthy();
+    expect(screen.getByText(NOTE)).toBeTruthy();
+    expect(screen.queryByText(WARNING)).toBeNull();
+    const coverage = screen.getByRole("region", { name: "Kelengkapan data di rute ini" });
+    expect([...coverage.querySelectorAll("li")].map((li) => li.textContent)).toEqual([
+      "Trotoar atau jalur pejalan kaki tercatat di 62% panjang rute",
+      "Jenis permukaan tercatat di 18% panjang rute",
+      "Kerb tercatat di 1 dari 3 penyeberangan",
+    ]);
+    expect(coverage.textContent).toContain("Data OpenStreetMap per 25 November 2026.");
+    const warnings = screen.getByRole("region", { name: "Perlu diperhatikan" });
+    expect([...warnings.querySelectorAll("li")].map((li) => li.textContent)).toEqual([
+      "Ada kerb tinggi yang tercatat di 1 ruas jalur yang dilewati rute ini.",
+      "Kemiringan jalan belum ikut dihitung; tanjakan hanya diketahui bila tercatat di OSM.",
+    ]);
+    expect(screen.getByText(/Rute dan data jalan:/)).toBeTruthy();
+    expect(screen.queryByRole("link", { name: "© Mapbox" })).toBeNull();
+    await waitFor(() => expect(screen.getByText("Tangga, 4 anak tangga")).toBeTruthy());
+
+    fireEvent.click(screen.getByRole("button", { name: "Jalan kaki" }));
+    await waitFor(() => expect(screen.getByText("1,5 km · sekitar 18 menit jalan kaki")).toBeTruthy());
+    expect(screen.getByRole("button", { name: "Jalan kaki", pressed: true })).toBeTruthy();
+    expect(screen.getByText("Rute ini melewati tangga sekitar 20 m.")).toBeTruthy();
+    const bodies = (fetch.mock.calls as unknown as [string, RequestInit][]).map(([, init]) => JSON.parse(init.body as string));
+    expect(bodies.map((body) => body.profil ?? body.polyline)).toEqual(["kursi_roda", "kursi", "jalan_kaki", "kaki"]);
+  });
+
+  it("offers the walking route when no wheelchair path is found", async () => {
+    mockFetch(
+      { status: 422, body: { galat: "tanpa_rute_kursi_roda", pesan: "Tidak ditemukan rute tanpa tangga yang bisa dilewati kursi roda menurut data OpenStreetMap." } },
+      { status: 200, body: osmRoute("jalan_kaki") },
+      { status: 200, body: OBSTACLES },
+    );
+    render(<RouteCard target={{ kind: "osm", osmType: "node", osmId: 9001 }} name="Masjid Al-Hidayah" from={{ lat: -6.56, lng: 106.76 }} />, { wrapper: WithIntl });
+    await waitFor(() => expect(screen.getByRole("alert").textContent).toContain("Tidak ditemukan rute tanpa tangga"));
+    expect(screen.getByRole("button", { name: "Kursi roda", pressed: true })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Coba lagi" })).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Lihat rute jalan kaki" }));
+    await waitFor(() => expect(screen.getByText("1,5 km · sekitar 18 menit jalan kaki")).toBeTruthy());
+    expect(screen.getByRole("button", { name: "Jalan kaki", pressed: true })).toBeTruthy();
+  });
+
+  it("says when the data coverage cannot be measured", async () => {
+    const route = { ...osmRoute("kursi_roda"), coverage: { sidewalkPercent: null, surfacePercent: null, crossings: null, crossingsWithKerb: null, dataDate: null } };
+    mockFetch({ status: 200, body: route }, { status: 200, body: OBSTACLES });
+    render(<RouteCard target={{ kind: "osm", osmType: "node", osmId: 9001 }} name="Masjid Al-Hidayah" from={{ lat: -6.56, lng: 106.76 }} />, { wrapper: WithIntl });
+    await waitFor(() => expect(screen.getByText("Kelengkapan data belum bisa dihitung untuk rute ini.")).toBeTruthy());
+    expect(screen.queryByText(/Data OpenStreetMap per/)).toBeNull();
   });
 });
 
