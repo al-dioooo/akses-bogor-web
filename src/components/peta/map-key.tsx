@@ -6,7 +6,7 @@ import { Icon } from "@/ui/icon";
 import { IconChevronRight, IconList } from "@/ui/icons";
 
 /** Lapisan tematik yang punya kunci; nama ini juga namespace teksnya di `Peta.<nama>`. */
-export type KeyName = "prioritas";
+export type KeyName = "prioritas" | "disabilitas";
 
 /**
  * Kunci lapisan tematik yang mengambang di atas peta (ADR-0053): judul, tombol ke tabel atau daftar di panel, dan isi

@@ -350,8 +350,52 @@
         "prioritas": {
           "label": "Prioritas pemetaan",
           "body": "Kecamatan yang paling perlu didata, dari penyandang disabilitas terdaftar dan tempat yang belum punya data."
+        },
+        "disabilitas": {
+          "label": "Persebaran disabilitas",
+          "body": "Penyandang disabilitas yang terdaftar di Dinas Sosial per kecamatan, menurut jenis dan tahun."
         }
       }
+    },
+    "disabilitas": {
+      "title": "Persebaran disabilitas {year}",
+      "keyShort": "{jenis} {year}",
+      "jenisShort": {
+        "semua": "Disabilitas",
+        "fisik": "Disabilitas fisik",
+        "netra": "Disabilitas netra",
+        "mental": "Disabilitas mental",
+        "lainnya": "Disabilitas jenis lain"
+      },
+      "table": "Tabel",
+      "showTable": "Tabel persebaran disabilitas",
+      "more": "Catatan",
+      "moreLabel": "Catatan, sumber, filter, dan legenda persebaran disabilitas",
+      "less": "Ringkas kunci persebaran disabilitas",
+      "category": "Jenis disabilitas",
+      "year": "Tahun",
+      "jenis": {
+        "semua": "Semua jenis",
+        "fisik": "Disabilitas fisik",
+        "netra": "Disabilitas netra",
+        "mental": "Disabilitas mental",
+        "lainnya": "Jenis lain"
+      },
+      "legend": "Legenda jumlah terdaftar",
+      "range": "{from}–{to}",
+      "caveatLabel": "Catatan:",
+      "source": "Sumber: Open Data Kota Bogor, Dinas Sosial Kota Bogor, data tahun {year}.",
+      "sourceFull": "Sumber: <link>{title}</link>, Open Data Kota Bogor, Dinas Sosial Kota Bogor, data tahun {year}, diambil {date}. {terms}",
+      "newTab": "(tab baru)",
+      "failed": "Data persebaran disabilitas tidak bisa dimuat, jadi lapisan ini tidak tampil. Coba lagi nanti.",
+      "boundariesFailed": "Batas kecamatan tidak bisa dimuat, jadi warna tidak tampil di peta. Tabel di panel daftar berisi data yang sama.",
+      "intro": "Warna kecamatan menunjukkan jumlah penyandang disabilitas yang terdaftar di Dinas Sosial: {jenis}, tahun {year}. Jenis dan tahun dipilih di kunci peta.",
+      "caption": "Penyandang disabilitas terdaftar di Dinas Sosial per kecamatan: {jenis}, tahun {year}, urut dari yang terbanyak",
+      "region": "Tabel persebaran disabilitas, bisa digeser ke samping",
+      "district": "Kecamatan",
+      "registered": "Terdaftar",
+      "class": "Kelas warna",
+      "total": "Kota Bogor"
     },
     "prioritas": {
       "failed": "Batas kecamatan tidak bisa dimuat, jadi lapisan tidak tampil di peta. Tabel di panel daftar berisi data yang sama.",
