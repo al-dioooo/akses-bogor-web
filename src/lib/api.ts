@@ -131,6 +131,18 @@ export type DistrictPriority = {
   source: { title: string; url: string; publisher: string; retrievedAt: string; terms: string };
 };
 
+export const DISABILITY_CATEGORIES = ["fisik", "netra", "mental", "lainnya"] as const;
+export type DisabilityCategory = (typeof DISABILITY_CATEGORIES)[number];
+
+/** Penyandang disabilitas terdaftar per kecamatan, jenis, dan tahun; sama dengan GET /districts/disability (ADR-0053). */
+export type DisabilityCounts = {
+  years: number[];
+  categories: DisabilityCategory[];
+  districts: { slug: string; name: string; counts: { year: number; category: DisabilityCategory; count: number }[] }[];
+  caveat: string;
+  source: DistrictPriority["source"];
+};
+
 /** Batas kecamatan dari OpenStreetMap (ADR-0034), disederhanakan untuk peta; data ODbL. */
 export type DistrictBoundaries = {
   type: "FeatureCollection";
@@ -356,6 +368,9 @@ export async function getDistrictPriority(): Promise<DistrictPriority | null> {
     throw error;
   }
 }
+
+/** Jumlah terdaftar untuk lapisan Persebaran disabilitas; 503 selama API belum membuka data disabilitas. */
+export const getDisabilityCounts = () => get<DisabilityCounts>("/districts/disability");
 
 /** Batas keenam kecamatan untuk lapisan peta. Publik dan jarang berubah. */
 export const getDistrictBoundaries = () => get<DistrictBoundaries>("/districts/boundaries");
