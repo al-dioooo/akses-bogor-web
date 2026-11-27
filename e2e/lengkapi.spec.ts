@@ -20,7 +20,7 @@ async function signInNew(page: Page, kembali?: string) {
 }
 
 const nameField = (page: Page) => page.getByLabel("Nama tampilan");
-const consent = (page: Page) => page.getByLabel("Saya sudah membaca dan menyetujui Kebijakan Privasi AksesBogor.");
+const consent = (page: Page) => page.getByLabel("Saya sudah membaca dan menyetujui Kebijakan Privasi AksesBogor, termasuk pengiriman data ke penyedia layanan di luar Indonesia. Bila saya berusia di bawah 18 tahun, orang tua atau wali saya ikut menyetujuinya.");
 const save = (page: Page) => page.getByRole("button", { name: "Simpan dan lanjut" });
 
 test("saves the name and consent, then returns to the page that asked for sign-in", async ({ page }) => {
