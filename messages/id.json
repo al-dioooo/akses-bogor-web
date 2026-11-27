@@ -563,7 +563,7 @@
     "privacyVerifier": "Verifikator hanya melihat nama tampilan Anda, bukan email.",
     "privacyDelete": "Anda bisa menghapus akun kapan saja dari Akun Saya.",
     "privacyLink": "Baca Kebijakan Privasi versi {version} (tab baru)",
-    "consentLabel": "Saya sudah membaca dan menyetujui Kebijakan Privasi AksesBogor.",
+    "consentLabel": "Saya sudah membaca dan menyetujui Kebijakan Privasi AksesBogor, termasuk pengiriman data ke penyedia layanan di luar Indonesia. Bila saya berusia di bawah 18 tahun, orang tua atau wali saya ikut menyetujuinya.",
     "termsNotice": "Dengan menekan \"Simpan dan lanjut\", Anda juga menyetujui <link>Syarat Layanan AksesBogor versi {version} (tab baru)</link>.",
     "submit": "Simpan dan lanjut",
     "saving": "Menyimpan…",
@@ -589,22 +589,23 @@
         "id": "siapa-kami",
         "title": "Siapa kami",
         "paragraphs": [
-          "AksesBogor adalah web yang mencatat aksesibilitas fasilitas publik di Kota Bogor bagi penyandang disabilitas dan pendampingnya. AksesBogor dikelola Tim AksesBogor sebagai proyek mahasiswa. Tim AksesBogor adalah pengendali data pribadi Anda sesuai UU No. 27 Tahun 2022 tentang Pelindungan Data Pribadi."
+          "AksesBogor adalah web yang mencatat aksesibilitas fasilitas publik di Kota Bogor bagi penyandang disabilitas dan pendampingnya. AksesBogor dikelola Tim AksesBogor, kelompok mahasiswa Program Studi Teknologi Rekayasa Perangkat Lunak, Sekolah Vokasi IPB University, sebagai proyek mahasiswa. Tim AksesBogor adalah pengendali data pribadi Anda sesuai UU No. 27 Tahun 2022 tentang Pelindungan Data Pribadi (UU PDP): kami yang menentukan data apa yang dikumpulkan, untuk apa, dan siapa yang ikut memprosesnya.",
+          "Anggota Tim AksesBogor adalah Aldio Lisafron, Arief Adhitya Ramadhan, Badzlan Nur Dhabith, Muhammad Rifal Dzulfikar, dan Rizky Ramadhan Agmer. Penanggung jawab pelindungan data pribadi di Tim AksesBogor adalah Aldio Lisafron, anggota tim yang mengelola server dan menjadi admin AksesBogor. Semua pertanyaan dan permintaan tentang data pribadi Anda ditangani lewat kontak di bagian Kontak."
         ]
       },
       {
         "id": "data",
         "title": "Data yang kami kumpulkan",
         "paragraphs": [
-          "Anda bisa menjelajahi AksesBogor tanpa akun. Kami hanya mengumpulkan data pribadi bila Anda membuat akun, melapor, atau bertanya kepada Agen AI."
+          "Anda bisa menjelajahi AksesBogor tanpa akun. Setiap kali Anda membuka halaman, alamat IP Anda tercatat di log server dan diterima Cloudflare (lihat Teknis di bawah). Data pribadi lain hanya kami kumpulkan bila Anda membuat akun, melapor, atau bertanya kepada Agen AI."
         ],
         "items": [
           "Akun: alamat email, nama tampilan, peran (pengguna, verifikator, atau admin), serta waktu dan versi Kebijakan Privasi yang Anda setujui.",
-          "Masuk: kode 6 digit yang kami kirim ke email Anda, disimpan dalam bentuk acak (hash) selama 10 menit, dan sesi masuk (token, waktu dibuat, dan waktu terakhir dipakai). Bila Anda masuk dengan Google, kami menyimpan nomor akun Google Anda untuk menyambungkannya ke akun AksesBogor. Kami tidak menyimpan foto profil, kontak, atau token akses Google.",
+          "Masuk: kode 6 digit yang kami kirim ke email Anda, disimpan dalam bentuk acak (hash) selama 10 menit, dan sesi masuk (token, waktu dibuat, dan waktu terakhir dipakai). Bila Anda masuk dengan Google, kami menyimpan nomor akun Google Anda untuk menyambungkannya ke akun AksesBogor. Nama akun Google hanya dipakai sebagai usulan nama tampilan di Lengkapi Akun. Kami tidak menyimpan foto profil, kontak, atau token akses Google.",
           "Laporan: isian laporan (nama tempat, kategori, patokan, jawaban fasilitas, catatan, dan deskripsi), titik yang Anda konfirmasi di peta, dan foto yang Anda kirim. Lokasi perangkat hanya dibaca saat Anda menekan Gunakan lokasi saya di formulir laporan dan tidak disimpan. Foto diperkecil lalu disimpan ulang tanpa metadata (EXIF), termasuk lokasi GPS. Bila verifikator meminta klarifikasi, jawaban Anda dan foto tambahannya ikut disimpan sebagai bagian laporan.",
           "Lokasi saya di Peta: lokasi perangkat hanya dibaca setelah Anda menekan Tampilkan lokasi saya. Bila izin lokasi belum diberikan, kami menjelaskan dulu kegunaannya, lalu browser meminta izin Anda. Lokasi itu hanya dipakai di browser Anda untuk menggeser peta dan menaruh titik di posisi Anda. Lokasi tidak dikirim ke server AksesBogor atau ke Anthropic, dan tidak disimpan. Bila Anda berada di luar wilayah peta Kota Bogor, peta tidak digeser. Seperti setiap tampilan peta, Mapbox menerima area peta yang dimuat, jadi setelah peta digeser, Mapbox menerima area di sekitar lokasi Anda.",
           "Pencarian tempat: kata kunci yang Anda ketik di pencarian formulir laporan diteruskan ke Mapbox lewat server kami, tanpa alamat IP Anda, dan tidak kami simpan.",
-          "Agen AI: siapa pun, juga tanpa akun, bisa bertanya kepada Agen AI tentang tempat, rute, dan aksesibilitas di Kota Bogor; bila Anda masuk, Agen AI juga membantu mencari tempat yang perlu dipetakan. Pertanyaan Anda, beserta paling banyak 6 giliran sebelumnya dalam percakapan itu, dikirim lewat server kami ke Anthropic (Claude API) untuk dijawab, bersama data tempat yang Anda pilih dan hasil pencarian agen di data AksesBogor, OpenStreetMap, dan basis pengetahuan. Lokasi perangkat hanya dibaca setelah kami menjelaskan kegunaannya dan browser meminta izin Anda; Anda juga bisa memilih titik awal di peta. Titik awal itu dikirim ke server kami bersama pertanyaan dan saat kartu rute dimuat, dibulatkan sampai sekitar 11 m, dan hanya dipakai untuk mencari tempat terdekat dan menghitung rute untuk kartu rute. Rute dihitung di server kami sendiri dengan data OpenStreetMap; bila rute itu belum tersedia, rute jalan kaki dihitung lewat Mapbox. Anthropic tidak menerima titik awal, rute, email, nama, atau alamat IP Anda; agen hanya menerima jarak garis lurus dari titik awal ke paling banyak 5 tempat, dibulatkan ke 100 m. Untuk membatasi pemakaian, server kami menghitung jumlah pertanyaan per akun, atau per alamat IP bila Anda tidak masuk; hitungan itu hanya ada di memori server sampai hari berganti. Percakapan disimpan di browser Anda, hanya di tab itu, supaya tidak hilang saat halaman dimuat ulang atau saat Anda kembali dari tautan di percakapan; percakapan hilang saat tab ditutup atau Anda memilih Percakapan baru. Bila Anda memakai perangkat bersama, pilih Percakapan baru setelah selesai. Titik awal tidak ikut disimpan. Pertanyaan, jawaban, dan titik awal tidak kami simpan di server.",
+          "Agen AI: siapa pun, juga tanpa akun, bisa bertanya kepada Agen AI tentang tempat, rute, dan aksesibilitas di Kota Bogor; bila Anda masuk, Agen AI juga membantu mencari tempat yang perlu dipetakan. Pertanyaan Anda, beserta paling banyak 6 giliran sebelumnya dalam percakapan itu, dikirim lewat server kami ke Anthropic (Claude API) untuk dijawab, bersama data tempat yang Anda pilih dan hasil pencarian agen di data AksesBogor, OpenStreetMap, dan basis pengetahuan. Pertanyaan Anda bisa memuat keterangan tentang kebutuhan Anda, mis. bahwa Anda memakai kursi roda. Keterangan seperti itu bisa termasuk data kesehatan, jadi tulis seperlunya dan jangan sertakan nama atau kontak. Lokasi perangkat hanya dibaca setelah kami menjelaskan kegunaannya dan browser meminta izin Anda; Anda juga bisa memilih titik awal di peta. Titik awal itu dikirim ke server kami bersama pertanyaan dan saat kartu rute dimuat, dibulatkan sampai sekitar 11 m, dan hanya dipakai untuk mencari tempat terdekat dan menghitung rute untuk kartu rute. Rute dihitung di server kami sendiri dengan data OpenStreetMap; bila rute itu belum tersedia, rute jalan kaki dihitung lewat Mapbox. Anthropic tidak menerima titik awal, rute, email, nama, atau alamat IP Anda; agen hanya menerima jarak garis lurus dari titik awal ke paling banyak 5 tempat, dibulatkan ke 100 m. Untuk membatasi pemakaian, server kami menghitung jumlah pertanyaan per akun, atau per alamat IP bila Anda tidak masuk; hitungan itu hanya ada di memori server sampai hari berganti. Percakapan disimpan di browser Anda, hanya di tab itu, supaya tidak hilang saat halaman dimuat ulang atau saat Anda kembali dari tautan di percakapan; percakapan hilang saat tab ditutup atau Anda memilih Percakapan baru. Bila Anda memakai perangkat bersama, pilih Percakapan baru setelah selesai. Titik awal tidak ikut disimpan. Pertanyaan, jawaban, dan titik awal tidak kami simpan di server.",
           "Teknis: alamat IP, alamat halaman yang dibuka, dan waktunya tercatat di log server untuk keamanan dan memperbaiki galat.",
           "Di perangkat Anda: pilihan tampilan (mode terang atau gelap, gerak) disimpan di browser Anda dan tidak dikirim ke kami. Draf laporan yang belum dikirim, termasuk fotonya, juga disimpan di browser Anda dan baru dikirim ke kami saat Anda menekan Kirim laporan. Cookie sesi hanya dipakai untuk menjaga Anda tetap masuk. Kami tidak memakai cookie iklan atau analitik."
         ]
@@ -622,20 +623,23 @@
           "Menjaga layanan tetap berjalan dan aman."
         ],
         "after": [
-          "Dasar pemrosesannya adalah persetujuan yang Anda berikan saat melengkapi akun. Anda bisa menarik persetujuan kapan saja dengan menghapus akun. Bila Anda memakai Agen AI tanpa akun, dasarnya adalah persetujuan Anda saat mengirim pertanyaan setelah membaca pemberitahuan di halaman itu; berhenti bertanya berarti tidak ada data lagi yang dikirim."
+          "Dasar pemrosesan data akun dan laporan adalah persetujuan yang Anda berikan saat melengkapi akun (Pasal 20 ayat (2) huruf a UU PDP). Kami menyimpan waktu dan versi persetujuan itu sebagai buktinya. Anda bisa menarik persetujuan kapan saja dengan menghapus akun di Akun Saya, atau meminta kami menghapusnya lewat kontak di bawah; permintaan lewat kontak kami jalankan paling lambat 3 × 24 jam.",
+          "Sebelum Anda melengkapi akun, email yang Anda ketik di halaman Masuk, atau nomor akun, email, dan nama dari Google bila Anda masuk dengan Google, hanya dipakai untuk mengirim kode dan memasukkan Anda, karena Anda memintanya (Pasal 20 ayat (2) huruf b). Bila akun tidak dilengkapi, data itu dihapus dalam 24 jam.",
+          "Bila Anda bertanya kepada Agen AI tanpa akun, pertanyaan Anda diproses untuk menjawabnya, karena Anda memintanya saat memakai AksesBogor sesuai Syarat Layanan (Pasal 20 ayat (2) huruf b). Berhenti bertanya berarti tidak ada data lagi yang dikirim.",
+          "Alamat IP dan data permintaan di log server, lalu lintas yang melewati Cloudflare, alamat IP yang diterima Mapbox saat peta dimuat, hitungan pertanyaan per alamat IP, dan log audit perubahan data tempat diproses berdasarkan kepentingan yang sah (Pasal 20 ayat (2) huruf f): menjaga layanan tetap aman dan bisa dipakai semua orang, serta menelusuri siapa mengubah data tempat. Ini juga berlaku bila Anda tidak punya akun. Kami hanya memproses data ini seperti yang tertulis di kebijakan ini dan selama masa simpan di bawah."
         ]
       },
       {
         "id": "penerima",
         "title": "Siapa yang bisa melihat data Anda",
         "paragraphs": [
-          "Verifikator AksesBogor melihat nama tampilan pelapor, bukan email, beserta isian, foto, dan jawaban klarifikasi saat memeriksanya. Sebelum diverifikasi, laporan dan foto tidak bisa dilihat publik. Sebelum foto terbit, verifikator mengaburkan wajah dan pelat nomor atau menyembunyikan fotonya; hanya hasil yang sudah dikaburkan yang tayang. Admin AksesBogor melihat nama tampilan dan email anggota tim verifikator untuk mengatur peran mereka. Pengunjung AksesBogor melihat informasi tempat dan foto yang sudah diterbitkan, tanpa nama pelapor. Penyedia layanan berikut memproses data atas nama kami:"
+          "Verifikator AksesBogor melihat nama tampilan pelapor, bukan email, beserta isian, foto, dan jawaban klarifikasi saat memeriksanya. Sebelum diverifikasi, laporan dan foto tidak bisa dilihat publik. Sebelum foto terbit, verifikator mengaburkan wajah dan pelat nomor atau menyembunyikan fotonya; hanya hasil yang sudah dikaburkan yang tayang. Sebagian foto pintu masuk diambil tim dari Google Street View dan diberi keterangan sumbernya; Google sudah mengaburkan wajah dan pelat nomor di gambar itu. Bila Anda melihat wajah atau pelat nomor yang masih jelas di foto mana pun, beri tahu kami, dan kami mengaburkan atau menghapus foto itu. Admin AksesBogor melihat nama tampilan dan email anggota tim verifikator untuk mengatur peran mereka. Pengunjung AksesBogor melihat informasi tempat dan foto yang sudah diterbitkan, tanpa nama pelapor. Penyedia layanan berikut menerima data Anda. Kecuali Google, mereka memprosesnya atas nama kami:"
         ],
         "items": [
-          "Oracle Cloud: menyediakan server di region Indonesia North, Batam, tempat situs web, API, database, dan log server AksesBogor berjalan. Tim kami yang mengelola server dan database. Menurut Kebijakan Privasi Layanan Oracle, Oracle memproses data di layanannya atas nama kami untuk menjalankan layanan itu.",
-          "Cloudflare: semua halaman dan permintaan ke API AksesBogor melewati jaringan Cloudflare, lalu diteruskan lewat Cloudflare Tunnel ke server kami. Cloudflare menerima alamat IP Anda dan data tentang permintaan, mis. halaman yang dibuka dan waktunya. Cloudflare juga menyimpan foto laporan di Cloudflare R2. Menurut Kebijakan Privasi Cloudflare dan perjanjian pemrosesan datanya, Cloudflare memproses data ini atas nama kami dan tidak boleh memakainya untuk pemasaran atau iklan.",
-          "Resend: mengirim email kode masuk dan pemberitahuan.",
-          "Google: hanya bila Anda memakai tombol Masuk dengan Google. Halaman Masuk memuat tombol dari Google.",
+          "Server AksesBogor: situs web, API, database, cadangan harian database, log server, dan penghitung rute pejalan kaki berjalan di server milik tim kami di Karawang, Jawa Barat, Indonesia. Tim kami yang mengelola server dan database.",
+          "Cloudflare: semua halaman dan permintaan ke API AksesBogor melewati jaringan Cloudflare, lalu diteruskan lewat Cloudflare Tunnel ke server kami. Cloudflare menerima alamat IP Anda dan data tentang permintaan, mis. halaman yang dibuka dan waktunya. Cloudflare juga menyimpan foto laporan dan cadangan harian database di Cloudflare R2. Cadangan itu berisi seluruh isi database, termasuk email, nama tampilan, dan laporan, disimpan di bucket privat yang terpisah dari foto, dan dihapus otomatis setelah 30 hari. Menurut Kebijakan Privasi Cloudflare dan perjanjian pemrosesan datanya, Cloudflare memproses data ini atas nama kami dan tidak boleh memakainya untuk pemasaran atau iklan.",
+          "Resend: mengirim email kode masuk dan pemberitahuan. Resend menerima alamat email Anda dan isi email itu, lalu mengirimnya dari region Tokyo, Jepang.",
+          "Google: halaman Masuk memuat tombol dari Google, jadi Google menerima alamat IP Anda saat halaman itu dibuka. Bila Anda memakai Masuk dengan Google, Google memproses data masuk Anda menurut Kebijakan Privasi Google sendiri, bukan atas nama kami, lalu mengirimi kami nomor akun, email, dan nama akun Google Anda.",
           "Mapbox: menampilkan peta, mencari tempat, dan menghitung rute jalan kaki untuk kartu rute di Agen AI bila rute dari data OpenStreetMap di server kami belum tersedia. Mapbox menerima alamat IP dan area peta yang dilihat dari browser Anda, termasuk area di sekitar lokasi Anda setelah Tampilkan lokasi saya, serta kata kunci pencarian dan, untuk rute yang dihitung Mapbox, titik awal rute yang sudah dibulatkan dari server kami.",
           "Anthropic: menjawab pertanyaan di Agen AI lewat Claude API. Anthropic menerima pertanyaan, giliran sebelumnya, data tempat yang dipilih, hasil pencarian agen, dan jarak garis lurus yang dibulatkan ke tempat terdekat, tanpa posisi, email, nama, atau alamat IP Anda, juga bila Anda tidak punya akun. Menurut Ketentuan Komersial Anthropic, Anthropic tidak boleh memakai data ini untuk melatih model."
         ],
@@ -647,7 +651,9 @@
         "id": "luar-negeri",
         "title": "Data yang diproses di luar Indonesia",
         "paragraphs": [
-          "Resend, Google, Mapbox, Cloudflare, dan Anthropic bisa memproses data di luar Indonesia, termasuk di Amerika Serikat. Anthropic menyimpan data di Amerika Serikat dan bisa menjalankan modelnya di negara lain. Situs web, API, database, dan log server kami berjalan di Batam, Indonesia, tetapi menurut kebijakan privasinya, Oracle bisa memproses data di layanannya di negara lain bila diperlukan untuk menjalankan layanan itu. Kami hanya mengirim data yang dibutuhkan layanan itu: email dan isi email ke Resend, lalu lintas situs web dan API lewat Cloudflare, alamat IP, area peta, kata kunci pencarian, dan titik awal rute yang dihitung Mapbox ke Mapbox, pertanyaan Agen AI ke Anthropic, dan foto laporan ke Cloudflare R2."
+          "Situs web, API, database, dan log server kami berjalan di server di Indonesia. Resend, Google, Mapbox, Cloudflare, dan Anthropic bisa memproses data di luar Indonesia, termasuk di Amerika Serikat. Resend mengirim email kami dari Tokyo, Jepang. Anthropic menyimpan data di Amerika Serikat dan bisa menjalankan modelnya di negara lain. Foto laporan dan cadangan database di Cloudflare R2 disimpan di lokasi Asia-Pasifik (APAC) Cloudflare.",
+          "Kami hanya mengirim data yang dibutuhkan layanan itu: email dan isi email ke Resend, lalu lintas situs web dan API lewat Cloudflare, alamat IP, area peta, kata kunci pencarian, dan titik awal rute yang dihitung Mapbox ke Mapbox, pertanyaan Agen AI ke Anthropic, serta foto laporan dan cadangan harian database ke Cloudflare R2.",
+          "UU PDP mewajibkan kami memastikan data yang dikirim ke luar Indonesia tetap terlindungi setara dengan UU PDP. Anthropic, Resend, dan Mapbox terikat perjanjian pemrosesan data yang mewajibkan mereka melindungi data yang mereka proses atas nama kami. Untuk penyedia lain, atau bila pelindungan itu belum memadai, dasar pengiriman ini adalah persetujuan yang Anda berikan saat melengkapi akun."
         ]
       },
       {
@@ -724,11 +730,19 @@
             ],
             [
               "Cadangan database",
-              "Paling lama 30 hari"
+              "Tujuh salinan harian terakhir di server kami; salinan di Cloudflare R2 dihapus otomatis setelah 30 hari"
             ],
             [
               "Log server",
               "30 hari"
+            ],
+            [
+              "Email yang dikirim lewat Resend",
+              "30 hari di Resend, termasuk isi email dan log pengirimannya"
+            ],
+            [
+              "Log permintaan di Cloudflare",
+              "Menurut kebijakan penyedia, yaitu Kebijakan Privasi Cloudflare"
             ]
           ]
         }
@@ -737,38 +751,61 @@
         "id": "hak",
         "title": "Hak Anda",
         "items": [
-          "Melihat data: nama tampilan, email, dan laporan Anda ada di halaman Akun Saya.",
-          "Memperbaiki data: ubah nama tampilan di Akun Saya. Untuk mengganti email, buat akun baru dengan email itu.",
+          "Mendapat informasi: kebijakan ini menjelaskan siapa kami, data apa yang kami proses, untuk apa, dasar pemrosesannya, siapa yang menerimanya, di mana diproses, dan berapa lama disimpan.",
+          "Melihat dan meminta salinan data: nama tampilan, email, dan laporan Anda ada di halaman Akun Saya. Untuk salinan lengkap, termasuk waktu dan versi persetujuan, sesi masuk, jawaban klarifikasi, dan catatan kapan data Anda diproses, kirim permintaan ke kontak di bawah. Kami mengirimkannya paling lambat 3 × 24 jam dalam berkas yang bisa dibaca komputer (JSON), yang juga bisa Anda bawa ke layanan lain.",
+          "Memperbaiki data: ubah nama tampilan di Akun Saya. Untuk mengganti email atau memperbaiki data lain, hubungi kami. Kami memperbaikinya paling lambat 3 × 24 jam dan memberi tahu Anda hasilnya.",
           "Menghapus akun: pilih Hapus akun di Akun Saya. Penghapusan langsung berjalan dan tidak bisa dibatalkan. Nama, email, waktu persetujuan, semua sesi, dan laporan yang belum terbit beserta fotonya dihapus. Informasi tempat dan foto yang sudah terbit tetap tayang tanpa nama Anda. Kami mengirim satu email terakhir sebagai konfirmasi. Salinan di cadangan database hilang paling lama 30 hari kemudian.",
-          "Bertanya atau mengadu: hubungi kami lewat kontak di bawah. Kami menjawab paling lambat 3 × 24 jam."
+          "Menarik persetujuan: hapus akun di Akun Saya, atau minta kami menghapusnya lewat kontak di bawah. Permintaan lewat kontak kami jalankan paling lambat 3 × 24 jam.",
+          "Menunda atau membatasi pemrosesan: mis. meminta kami menahan laporan Anda yang belum diperiksa, atau berhenti mengirim email pemberitahuan laporan. Kami melakukannya paling lambat 3 × 24 jam dan memberi tahu Anda, kecuali peraturan perundang-undangan tidak memungkinkannya atau penundaan itu membahayakan keselamatan orang lain.",
+          "Keputusan otomatis: kami tidak mengambil keputusan tentang Anda yang hanya didasarkan pada pemrosesan otomatis. Status tempat dihitung otomatis dari jawaban fasilitas, tetapi itu penilaian tentang tempat, bukan tentang Anda. Bila Anda merasa terdampak keputusan otomatis, ajukan keberatan lewat kontak di bawah.",
+          "Bertanya atau mengadu: hubungi kami lewat kontak di bawah. Kami menjawab paling lambat 3 × 24 jam.",
+          "Mengadu ke lembaga atau menggugat: bila jawaban kami tidak memuaskan, Anda bisa mengadu ke lembaga penyelenggara pelindungan data pribadi yang ditetapkan Presiden, menyelesaikan sengketa lewat arbitrase, pengadilan, atau lembaga penyelesaian sengketa lainnya, dan menggugat serta meminta ganti rugi atas pelanggaran pemrosesan data Anda sesuai peraturan perundang-undangan."
+        ],
+        "after": [
+          "Setiap permintaan kami catat. Kami boleh menolak permintaan yang akan mengungkap data pribadi orang lain atau membahayakan keselamatan atau kesehatan seseorang, dan kami memberi tahu alasannya."
         ]
       },
       {
         "id": "keamanan",
         "title": "Keamanan",
         "paragraphs": [
-          "Semua koneksi memakai HTTPS. Kode masuk disimpan dalam bentuk hash dan sesi memakai token bertanda tangan. Hanya anggota tim yang mengelola server yang bisa membuka database. Bila terjadi kebocoran data pribadi, kami memberi tahu Anda paling lambat 3 × 24 jam setelah mengetahuinya."
+          "Semua koneksi memakai HTTPS. Kode masuk disimpan dalam bentuk hash dan sesi memakai token bertanda tangan. Hanya anggota tim yang mengelola server yang bisa membuka database. Cadangan database disimpan di bucket Cloudflare R2 privat dengan kunci akses yang hanya berlaku untuk bucket itu.",
+          "Bila terjadi kegagalan pelindungan data pribadi, yaitu data pribadi bocor, hilang, rusak, diubah, atau dibuka pihak yang tidak berhak, kami memberi tahu Anda secara tertulis lewat email paling lambat 3 × 24 jam. Pemberitahuan itu menyebut data apa yang terungkap, kapan dan bagaimana data itu terungkap, serta apa yang kami lakukan untuk menangani dan memulihkannya. Dalam waktu yang sama kami memberi tahu lembaga penyelenggara pelindungan data pribadi.",
+          "Bila kami tidak punya email Anda, mis. Anda memakai AksesBogor tanpa akun, atau bila kegagalan itu berdampak serius bagi masyarakat, kami juga mengumumkannya di Beranda AksesBogor."
         ]
       },
       {
         "id": "anak",
         "title": "Anak",
         "paragraphs": [
-          "Bila Anda berusia di bawah 18 tahun, minta orang tua atau wali Anda membaca kebijakan ini dan menyetujuinya bersama Anda sebelum membuat akun atau bertanya kepada Agen AI."
+          "Bila Anda berusia di bawah 18 tahun, data pribadi Anda termasuk data anak. UU PDP mewajibkan data anak diproses secara khusus dan dengan persetujuan orang tua atau wali.",
+          "Minta orang tua atau wali Anda membaca kebijakan ini dan mencentang persetujuan bersama Anda sebelum membuat akun. Kotak persetujuan memuat pernyataan bahwa orang tua atau wali Anda ikut menyetujuinya, dan pernyataan itu kami simpan bersama waktu persetujuan. Bila Anda bertanya kepada Agen AI, lakukan bersama orang tua atau wali Anda dan jangan menulis data pribadi di pertanyaan.",
+          "Bila kami mengetahui sebuah akun dibuat oleh anak tanpa persetujuan orang tua atau wali, kami menghapus akun itu dan memberi tahu pemiliknya lewat email."
+        ]
+      },
+      {
+        "id": "penyandang-disabilitas",
+        "title": "Penyandang disabilitas dan pendamping",
+        "paragraphs": [
+          "Banyak pengguna AksesBogor adalah penyandang disabilitas. Kami tidak menanyakan apakah Anda penyandang disabilitas dan tidak menyimpan keterangan itu di akun Anda.",
+          "Halaman ini dibuat supaya bisa dibaca dengan pembaca layar dan diperbesar. Bila Anda butuh penjelasan kebijakan ini dengan cara lain, hubungi kami lewat kontak di bawah, dan kami menjelaskannya lewat email dengan bahasa yang lebih sederhana. Pendamping boleh membantu Anda membaca kebijakan ini, mencentang persetujuan, dan mengajukan permintaan atas data Anda. Bila Anda didampingi wali, persetujuan diberikan oleh Anda bersama wali Anda."
         ]
       },
       {
         "id": "perubahan",
         "title": "Perubahan kebijakan",
         "paragraphs": [
-          "Bila kebijakan ini berubah, kami menaikkan nomor versinya dan meminta persetujuan Anda lagi saat Anda masuk berikutnya. Bila Anda memakai Agen AI tanpa akun, versi yang berlaku adalah versi yang tertaut di halaman itu saat Anda bertanya."
+          "Bila kebijakan ini berubah, kami menaikkan nomor versinya. Bila perubahan itu menyangkut data yang kami proses, tujuannya, penerimanya, tempat data diproses, atau masa simpannya, kami memberi tahu pemilik akun lewat email paling lambat 7 hari sebelum perubahan berlaku, lalu meminta persetujuan Anda lagi saat Anda masuk berikutnya. Bila Anda tidak setuju, Anda bisa menghapus akun sebelum perubahan berlaku.",
+          "Bila Anda memakai Agen AI tanpa akun, versi yang berlaku adalah versi yang tertaut di halaman itu saat Anda bertanya.",
+          "Bila AksesBogor dihentikan, kami memberi tahu pemilik akun lewat email paling lambat 30 hari sebelumnya, lalu menghapus akun, sesi, dan laporan yang belum terbit beserta fotonya. Informasi tempat dan foto yang sudah terbit bisa tetap dibagikan sebagai data terbuka, tanpa nama atau email pelapor."
         ]
       },
       {
         "id": "kontak",
         "title": "Kontak",
         "paragraphs": [
-          "Email kontak resmi diisi tim sebelum peluncuran."
+          "Email: aliceevrasaldio@apps.ipb.ac.id. Penanggung jawab pelindungan data pribadi: Aldio Lisafron, anggota tim yang mengelola server dan menjadi admin AksesBogor. Alamat surat: Tim AksesBogor, d.a. Sekolah Vokasi IPB University, Jl. Kumbang No. 14, Kelurahan Babakan, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16128.",
+          "Untuk permintaan atas data Anda, kirim email dari alamat email akun AksesBogor Anda supaya kami bisa memastikan permintaan itu dari Anda. Kami membalas paling lambat 3 × 24 jam."
         ]
       }
     ]
@@ -787,7 +824,7 @@
         "id": "tentang-syarat",
         "title": "Tentang syarat ini",
         "paragraphs": [
-          "AksesBogor adalah web yang mencatat aksesibilitas fasilitas publik di Kota Bogor bagi penyandang disabilitas dan pendampingnya. AksesBogor dikelola Tim AksesBogor sebagai proyek mahasiswa.",
+          "AksesBogor adalah web yang mencatat aksesibilitas fasilitas publik di Kota Bogor bagi penyandang disabilitas dan pendampingnya. AksesBogor dikelola Tim AksesBogor, kelompok mahasiswa Program Studi Teknologi Rekayasa Perangkat Lunak, Sekolah Vokasi IPB University, sebagai proyek mahasiswa.",
           "Syarat ini berlaku saat Anda memakai AksesBogor. Cara kami mengelola data pribadi Anda dijelaskan di Kebijakan Privasi. Saat melengkapi akun, Anda menyetujui syarat ini dengan menekan \"Simpan dan lanjut\"."
         ]
       },
@@ -843,7 +880,8 @@
           "membagikan informasi tempat dan foto yang sudah terbit, termasuk dengan lisensi data terbuka yang dipilih tim. Data yang dibagikan tidak memuat nama atau email Anda."
         ],
         "after": [
-          "Izin ini tetap berlaku untuk bagian yang sudah terbit setelah Anda menghapus akun, sehingga informasi tempat tetap bisa dipakai orang lain. Anda menyatakan bahwa Anda berhak memberi izin ini, misalnya karena foto itu Anda ambil sendiri."
+          "Izin ini tetap berlaku untuk bagian yang sudah terbit setelah Anda menghapus akun, sehingga informasi tempat tetap bisa dipakai orang lain. Anda menyatakan bahwa Anda berhak memberi izin ini, misalnya karena foto itu Anda ambil sendiri.",
+          "Izin ini hanya untuk laporan dan foto sebagai informasi tempat. Izin ini bukan persetujuan atas data pribadi Anda: pemrosesan data pribadi diatur di Kebijakan Privasi, dan persetujuan itu bisa Anda tarik kapan saja. Bila laporan atau foto yang sudah terbit ternyata memuat data pribadi Anda atau orang lain, mis. wajah, pelat nomor, nama, atau nomor telepon, hubungi kami dan kami mengaburkan atau menghapus bagian itu."
         ]
       },
       {
@@ -878,7 +916,8 @@
         "id": "ketersediaan",
         "title": "Ketersediaan layanan",
         "paragraphs": [
-          "AksesBogor dikerjakan tim mahasiswa. Kami berusaha menjaganya tetap berjalan, tetapi layanan bisa terhenti sementara, berubah, atau dihentikan."
+          "AksesBogor dikerjakan tim mahasiswa. Kami berusaha menjaganya tetap berjalan, tetapi layanan bisa terhenti sementara, berubah, atau dihentikan.",
+          "Bila AksesBogor dihentikan, kami memberi tahu pemilik akun lewat email paling lambat 30 hari sebelumnya. Apa yang terjadi pada data Anda dijelaskan di Kebijakan Privasi."
         ]
       },
       {
@@ -906,7 +945,7 @@
         "id": "kontak",
         "title": "Kontak",
         "paragraphs": [
-          "Email kontak resmi diisi tim sebelum peluncuran."
+          "Email: aliceevrasaldio@apps.ipb.ac.id. Alamat surat: Tim AksesBogor, d.a. Sekolah Vokasi IPB University, Jl. Kumbang No. 14, Kelurahan Babakan, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16128."
         ]
       }
     ]
@@ -2372,7 +2411,7 @@
       "accent": "Kota Bogor",
       "intro": "Agen AI menjawab dari data AksesBogor, OpenStreetMap, dan peraturan aksesibilitas, lalu menampilkan rute jalan kaki ke tempatnya.",
       "introContributor": "Karena Anda masuk, Agen AI juga bisa mencari tempat yang belum punya data dan kecamatan yang paling perlu didata.",
-      "notice": "Pertanyaan dikirim lewat server AksesBogor ke Anthropic (Claude API) dan tidak disimpan AksesBogor. Jangan tulis data pribadi, mis. nama, nomor telepon, atau alamat rumah. Baca <link>Kebijakan Privasi</link>.",
+      "notice": "Pertanyaan dikirim lewat server AksesBogor ke Anthropic (Claude API) dan tidak disimpan AksesBogor. Jangan tulis data pribadi, mis. nama, nomor telepon, atau alamat rumah. Keterangan tentang kebutuhan Anda, mis. memakai kursi roda, cukup ditulis seperlunya. Baca <link>Kebijakan Privasi</link>.",
       "suggestions": "Coba tanyakan",
       "saran": {
         "place": "Bagaimana cara ke {name}?",
@@ -2420,7 +2459,7 @@
       "heading": "Titik awal",
       "title": "Dari mana Anda berangkat?",
       "why": "Titik awal dipakai untuk mencari tempat terdekat dan menghitung rute jalan kaki. Anda juga bisa bertanya tanpa titik awal.",
-      "privacy": "Titik awal dibulatkan sampai sekitar 11 m. Server AksesBogor memakainya untuk jarak ke tempat terdekat, dan Mapbox untuk menghitung rute. Titik ini tidak disimpan dan tidak pernah dikirim ke model AI.",
+      "privacy": "Titik awal dibulatkan sampai sekitar 11 m. Server AksesBogor memakainya untuk jarak ke tempat terdekat dan untuk menghitung rute; Mapbox hanya menerimanya bila rute dari server kami belum tersedia. Titik ini tidak disimpan dan tidak pernah dikirim ke model AI.",
       "none": "Pilih titik awal",
       "chosen": {
         "perangkat": "Dari lokasi Anda",
