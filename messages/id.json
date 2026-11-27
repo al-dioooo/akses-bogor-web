@@ -563,7 +563,7 @@
     "privacyVerifier": "Verifikator hanya melihat nama tampilan Anda, bukan email.",
     "privacyDelete": "Anda bisa menghapus akun kapan saja dari Akun Saya.",
     "privacyLink": "Baca Kebijakan Privasi versi {version} (tab baru)",
-    "consentLabel": "Saya sudah membaca dan menyetujui Kebijakan Privasi AksesBogor.",
+    "consentLabel": "Saya sudah membaca dan menyetujui Kebijakan Privasi AksesBogor, termasuk pengiriman data ke penyedia layanan di luar Indonesia. Bila saya berusia di bawah 18 tahun, orang tua atau wali saya ikut menyetujuinya.",
     "termsNotice": "Dengan menekan \"Simpan dan lanjut\", Anda juga menyetujui <link>Syarat Layanan AksesBogor versi {version} (tab baru)</link>.",
     "submit": "Simpan dan lanjut",
     "saving": "Menyimpan…",
