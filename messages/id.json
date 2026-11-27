@@ -787,7 +787,7 @@
         "id": "tentang-syarat",
         "title": "Tentang syarat ini",
         "paragraphs": [
-          "AksesBogor adalah web yang mencatat aksesibilitas fasilitas publik di Kota Bogor bagi penyandang disabilitas dan pendampingnya. AksesBogor dikelola Tim AksesBogor sebagai proyek mahasiswa.",
+          "AksesBogor adalah web yang mencatat aksesibilitas fasilitas publik di Kota Bogor bagi penyandang disabilitas dan pendampingnya. AksesBogor dikelola Tim AksesBogor, kelompok mahasiswa Program Studi Teknologi Rekayasa Perangkat Lunak, Sekolah Vokasi IPB University, sebagai proyek mahasiswa.",
           "Syarat ini berlaku saat Anda memakai AksesBogor. Cara kami mengelola data pribadi Anda dijelaskan di Kebijakan Privasi. Saat melengkapi akun, Anda menyetujui syarat ini dengan menekan \"Simpan dan lanjut\"."
         ]
       },
@@ -843,7 +843,8 @@
           "membagikan informasi tempat dan foto yang sudah terbit, termasuk dengan lisensi data terbuka yang dipilih tim. Data yang dibagikan tidak memuat nama atau email Anda."
         ],
         "after": [
-          "Izin ini tetap berlaku untuk bagian yang sudah terbit setelah Anda menghapus akun, sehingga informasi tempat tetap bisa dipakai orang lain. Anda menyatakan bahwa Anda berhak memberi izin ini, misalnya karena foto itu Anda ambil sendiri."
+          "Izin ini tetap berlaku untuk bagian yang sudah terbit setelah Anda menghapus akun, sehingga informasi tempat tetap bisa dipakai orang lain. Anda menyatakan bahwa Anda berhak memberi izin ini, misalnya karena foto itu Anda ambil sendiri.",
+          "Izin ini hanya untuk laporan dan foto sebagai informasi tempat. Izin ini bukan persetujuan atas data pribadi Anda: pemrosesan data pribadi diatur di Kebijakan Privasi, dan persetujuan itu bisa Anda tarik kapan saja. Bila laporan atau foto yang sudah terbit ternyata memuat data pribadi Anda atau orang lain, mis. wajah, pelat nomor, nama, atau nomor telepon, hubungi kami dan kami mengaburkan atau menghapus bagian itu."
         ]
       },
       {
@@ -878,7 +879,8 @@
         "id": "ketersediaan",
         "title": "Ketersediaan layanan",
         "paragraphs": [
-          "AksesBogor dikerjakan tim mahasiswa. Kami berusaha menjaganya tetap berjalan, tetapi layanan bisa terhenti sementara, berubah, atau dihentikan."
+          "AksesBogor dikerjakan tim mahasiswa. Kami berusaha menjaganya tetap berjalan, tetapi layanan bisa terhenti sementara, berubah, atau dihentikan.",
+          "Bila AksesBogor dihentikan, kami memberi tahu pemilik akun lewat email paling lambat 30 hari sebelumnya. Apa yang terjadi pada data Anda dijelaskan di Kebijakan Privasi."
         ]
       },
       {
@@ -906,7 +908,7 @@
         "id": "kontak",
         "title": "Kontak",
         "paragraphs": [
-          "Email kontak resmi diisi tim sebelum peluncuran."
+          "Email: aliceevrasaldio@apps.ipb.ac.id. Alamat surat: Tim AksesBogor, d.a. Sekolah Vokasi IPB University, Jl. Kumbang No. 14, Kelurahan Babakan, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16128."
         ]
       }
     ]
