@@ -2374,7 +2374,7 @@
       "accent": "Kota Bogor",
       "intro": "Agen AI menjawab dari data AksesBogor, OpenStreetMap, dan peraturan aksesibilitas, lalu menampilkan rute jalan kaki ke tempatnya.",
       "introContributor": "Karena Anda masuk, Agen AI juga bisa mencari tempat yang belum punya data dan kecamatan yang paling perlu didata.",
-      "notice": "Pertanyaan dikirim lewat server AksesBogor ke Anthropic (Claude API) dan tidak disimpan AksesBogor. Jangan tulis data pribadi, mis. nama, nomor telepon, atau alamat rumah. Baca <link>Kebijakan Privasi</link>.",
+      "notice": "Pertanyaan dikirim lewat server AksesBogor ke Anthropic (Claude API) dan tidak disimpan AksesBogor. Jangan tulis data pribadi, mis. nama, nomor telepon, atau alamat rumah. Keterangan tentang kebutuhan Anda, mis. memakai kursi roda, cukup ditulis seperlunya. Baca <link>Kebijakan Privasi</link>.",
       "suggestions": "Coba tanyakan",
       "saran": {
         "place": "Bagaimana cara ke {name}?",
@@ -2422,7 +2422,7 @@
       "heading": "Titik awal",
       "title": "Dari mana Anda berangkat?",
       "why": "Titik awal dipakai untuk mencari tempat terdekat dan menghitung rute jalan kaki. Anda juga bisa bertanya tanpa titik awal.",
-      "privacy": "Titik awal dibulatkan sampai sekitar 11 m. Server AksesBogor memakainya untuk jarak ke tempat terdekat, dan Mapbox untuk menghitung rute. Titik ini tidak disimpan dan tidak pernah dikirim ke model AI.",
+      "privacy": "Titik awal dibulatkan sampai sekitar 11 m. Server AksesBogor memakainya untuk jarak ke tempat terdekat dan untuk menghitung rute; Mapbox hanya menerimanya bila rute dari server kami belum tersedia. Titik ini tidak disimpan dan tidak pernah dikirim ke model AI.",
       "none": "Pilih titik awal",
       "chosen": {
         "perangkat": "Dari lokasi Anda",
